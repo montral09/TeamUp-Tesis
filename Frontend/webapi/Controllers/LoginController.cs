@@ -9,8 +9,7 @@ namespace webapi.Controllers
     {
         IFachadaWeb fach = new FabricaFachadas().CrearFachadaWEB;
 
-        [EnableCors(origins: "https://localhost:44372", headers: "*", methods: "*")]
-
+        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
         [HttpPost]
         [Route("api/login2")]
         public IHttpActionResult Post([FromBody]Usuario correo)
@@ -20,19 +19,18 @@ namespace webapi.Controllers
             //retorno.Mensaje = "";
             try
             {
-                string mensaje = "";
                 bool condicion = fach.existeUsuario(correo.Nombre);
-
+                Usuario usuarioRespuesta = new Usuario("","","","");
                 if (condicion == true)
                 {
-                    mensaje = "VERDADERO";
+                    usuarioRespuesta.Nombre = "VERDADERO";
                 }
                 else
                 {
-                    mensaje = "FALSO";
+                    usuarioRespuesta.Nombre = "FALSO";
                 }
                 //retorno.Mensaje = "Ingreso al sistema con exito";
-                return Ok(mensaje);
+                return Ok(usuarioRespuesta);
             }
             catch (Exception e)
             {
