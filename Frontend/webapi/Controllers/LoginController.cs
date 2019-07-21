@@ -1,4 +1,5 @@
-﻿using backend.Logica;
+﻿using backend.Logic;
+using backend.Data_Access.VO;
 using System;
 using System.Web.Http;
 using System.Web.Http.Cors;
@@ -12,31 +13,38 @@ namespace webapi.Controllers
         [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
         [HttpPost]
         [Route("api/login2")]
-        public IHttpActionResult Post([FromBody]Usuario correo)
+        public IHttpActionResult Post([FromBody]VOUserLogin voUserLog)
         {
-            //VORetorno retorno = new VORetorno();
-            //retorno.Error = "ok";
-            //retorno.Mensaje = "";
             try
             {
-                bool condicion = fach.existeUsuario(correo.Nombre);
-                Usuario usuarioRespuesta = new Usuario("","","","");
-                if (condicion == true)
+                
+                bool userMailExists = fach.userExists(voUserLog.Mail);
+                VOResponseLogin voresp = new VOResponseLogin();
+                if (userMailExists == true)
                 {
-                    usuarioRespuesta.Nombre = "VERDADERO";
+                    VOUserLogin userLogged = fach.ValidUserLogin(voUserLog.Mail, voUserLog.Password);
+                    if(userLogged != null)
+                    {
+                        voresp.responseCode = "SUCC-USRLOGSUCCESS ";
+                        voresp.vouserLog = userLogged;
+                    }
+                    else
+                    {
+                        voresp.responseCode = "ERR-USRWRONGPASS";
+                    }
                 }
                 else
                 {
-                    usuarioRespuesta.Nombre = "FALSO";
+                    voresp.responseCode = "ERR-USRMAILNOTEXIST";
                 }
-                //retorno.Mensaje = "Ingreso al sistema con exito";
-                return Ok(usuarioRespuesta);
+                return Ok(voresp);
             }
             catch (Exception e)
             {
                 return InternalServerError(new Exception(e.Message));
             }
         }
+        /*
         [HttpGet]
         [Route("api/login/{user}")]
         public IHttpActionResult GetCitas(String correo)
@@ -62,6 +70,6 @@ namespace webapi.Controllers
             {
                 return InternalServerError(new Exception(e.Message));
             }
-        }
+        }*/
     }
 }
