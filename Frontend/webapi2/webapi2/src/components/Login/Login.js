@@ -31,7 +31,7 @@ class Login extends React.Component {
         }
 
         fetch('https://localhost:44372/api/login2', {
-            header: { "Content-Type": "application/json" , "Accept": "application/json"},
+            header: { 'Content-Type': 'application/json' , 'Accept': 'application/json'},
             method: 'POST',
             body: JSON.stringify(tempTESTLOGINHARDCODED)
         })
