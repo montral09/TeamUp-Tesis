@@ -1,4 +1,5 @@
-﻿using backend.Logica;
+﻿using backend.Logic;
+using backend.Data_Access.VO;
 using System;
 using System.Web.Http;
 using System.Web.Http.Cors;
@@ -11,52 +12,32 @@ namespace webapi.Controllers
 
         [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
         [HttpPost]
-        [Route("api/login2")]
-        public IHttpActionResult Post([FromBody]Usuario correo)
-        {
-            //VORetorno retorno = new VORetorno();
-            //retorno.Error = "ok";
-            //retorno.Mensaje = "";
-            try
-            {
-                bool condicion = fach.existeUsuario(correo.Nombre);
-                Usuario usuarioRespuesta = new Usuario("","","","");
-                if (condicion == true)
-                {
-                    usuarioRespuesta.Nombre = "VERDADERO";
-                }
-                else
-                {
-                    usuarioRespuesta.Nombre = "FALSO";
-                }
-                //retorno.Mensaje = "Ingreso al sistema con exito";
-                return Ok(usuarioRespuesta);
-            }
-            catch (Exception e)
-            {
-                return InternalServerError(new Exception(e.Message));
-            }
-        }
-        [HttpGet]
-        [Route("api/login/{user}")]
-        public IHttpActionResult GetCitas(String correo)
+        [Route("api/login")]
+        public IHttpActionResult Post([FromBody]VOUserLogin voUserLog)
         {
             try
             {
-                bool condicion = fach.existeUsuario(correo);
-                String mensaje = "";
 
-                if (condicion == true)
+                bool userMailExists = fach.userExists(voUserLog.Mail);
+                VOResponseLogin voresp = new VOResponseLogin();
+                if (userMailExists == true)
                 {
-                    mensaje = "VERDADERO";
+                    VOUserLogin userLogged = fach.ValidUserLogin(voUserLog.Mail, voUserLog.Password);
+                    if (userLogged != null)
+                    {
+                        voresp.responseCode = "SUCC-USRLOGSUCCESS ";
+                        voresp.vouserLog = userLogged;
+                    }
+                    else
+                    {
+                        voresp.responseCode = "ERR-USRWRONGPASS";
+                    }
                 }
                 else
                 {
-                    mensaje = "FALSO";
+                    voresp.responseCode = "ERR-USRMAILNOTEXIST";
                 }
-                //retorno.Mensaje = "Ingreso al sistema con exito";
-                return Ok(mensaje);
-                //return Ok(fach.ListadoCitasCliente(user));
+                return Ok(voresp);
             }
             catch (Exception e)
             {

@@ -1,6 +1,8 @@
 import React from 'react';
 import './Login.css';
 import { Button, Form, FormGroup, Label, Input } from 'reactstrap';
+import {Navigation} from '../Navigation/Navigation';
+
 
 
 class Login extends React.Component {
@@ -18,38 +20,33 @@ class Login extends React.Component {
         this.setState({ password: text.target.value })
     }
     login() {
-        /*
-        let loginObj = {
-            email: this.state.email,
-            password: this.state.password
-        };*/
-        let tempTESTLOGINHARDCODED = {
-            Nombre: this.state.email,
-            Apellido: this.state.email,
-            Contrasena: this.state.email,
-            Correo: this.state.email
-        }
 
-        fetch('https://localhost:44372/api/login2', {
-            header: { "Content-Type": "application/json" , "Accept": "application/json"},
+        fetch('https://localhost:44372/api/Login', {
             method: 'POST',
-            body: JSON.stringify(tempTESTLOGINHARDCODED)
-        })
-            .then(response => {
-                console.log("Retrieved data:");
-                console.log(response);
+            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+
+            body: JSON.stringify({
+                Nombre: this.state.email,
+                Apellido: null,
+                Contrasena: null,
+                Correo: null
             })
-            .catch(error => {
-                console.log(error);
-            });
+        })
+            .then(response => response.json())
+            .then((result) => {
+                console.log(result);
+            }
+            ).catch(error =>  {
+            console.log(error);
+        }
+            )
     }
 
     render() {
         return (
+            <div>
+                <Navigation />
             <Form className='login-form'>
-                <h1>
-                    <span className='font-weight-bold'>TEAMUP</span>.com
-        </h1>
                 <h2 className="text-center">Bienvenidos</h2>
                 <FormGroup>
                     <Label>Correo</Label>
@@ -59,13 +56,14 @@ class Login extends React.Component {
                     <Label>Contraseña</Label>
                     <Input type="password" placeholder="Contraseña" onChange={(text) => { this.handlePassowrd(text) }} />
                 </FormGroup>
-                <Button className='btn-lg btn-dark btn-block' onClick={()=>{this.login()}}>Iniciar sesion</Button>
+                <Button className='btn-lg btn-dark btn-block' onClick={() => { this.login() }}>Iniciar sesion</Button>
                 <div className="text-center">
                     <a href='/registrarse'>Registrarse</a>
                     <span className='p-2'> | </span><br />
                     <a href='/olvidoclave'>Olvido su contraseña</a>
                 </div>
             </Form>
+            </div>
         );
     }
 }
