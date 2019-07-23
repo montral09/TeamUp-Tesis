@@ -1,0 +1,17 @@
+.search {
+    background-image: url('./SearchPic.jpg');
+    width: '100%';
+}
+.location-field {
+    width: 100%;
+    max-width: 330px;
+    height: 32px
+}
+.search-line {
+    display: flex;
+    flex-direction: row
+}
+.space-types {
+    width: 200px;
+    
+}
