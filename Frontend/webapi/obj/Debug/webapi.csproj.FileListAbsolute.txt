@@ -1,3 +1,5 @@
+D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\obj\Debug\webapi.csprojAssemblyReference.cache
+D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\obj\Debug\webapi.csproj.CoreCompileInputs.cache
 D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\bin\webapi.dll.config
 D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\bin\webapi.dll
 D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\bin\webapi.pdb
@@ -52,7 +54,12 @@ D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\bin\backend.dll
 D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
 D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\bin\Microsoft.Web.Infrastructure.dll
 D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\bin\Newtonsoft.Json.dll
+D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\bin\System.Configuration.ConfigurationManager.dll
+D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\bin\System.Data.SqlClient.dll
 D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\bin\System.Net.Http.Formatting.dll
+D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\bin\System.Security.AccessControl.dll
+D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\bin\System.Security.Permissions.dll
+D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\bin\System.Security.Principal.Windows.dll
 D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\bin\System.Web.Cors.dll
 D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\bin\System.Web.Helpers.dll
 D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\bin\System.Web.Http.Cors.dll
@@ -90,13 +97,6 @@ D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\bin\es\System.We
 D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\bin\es\System.Web.WebPages.resources.dll
 D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\bin\es\System.Web.WebPages.Deployment.resources.dll
 D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\bin\es\System.Web.WebPages.Razor.resources.dll
-D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\obj\Debug\webapi.csprojAssemblyReference.cache
-D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\obj\Debug\webapi.csproj.CoreCompileInputs.cache
 D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\obj\Debug\webapi.csproj.CopyComplete
 D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\obj\Debug\webapi.dll
 D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\obj\Debug\webapi.pdb
-D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\bin\System.Data.SqlClient.dll
-D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\bin\System.Configuration.ConfigurationManager.dll
-D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\bin\System.Security.AccessControl.dll
-D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\bin\System.Security.Permissions.dll
-D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Frontend\webapi\bin\System.Security.Principal.Windows.dll
