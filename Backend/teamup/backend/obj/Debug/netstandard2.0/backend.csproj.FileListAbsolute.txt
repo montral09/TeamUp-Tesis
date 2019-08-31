@@ -6,3 +6,12 @@ D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Backend\teamup\backend\obj\Debug
 D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Backend\teamup\backend\obj\Debug\netstandard2.0\backend.AssemblyInfo.cs
 D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Backend\teamup\backend\obj\Debug\netstandard2.0\backend.dll
 D:\Mis Documentos\UDE\Tesis\github\TeamUp-Tesis\Backend\teamup\backend\obj\Debug\netstandard2.0\backend.pdb
+C:\Users\Alex\Documents\Github\TeamUp-Tesis\TeamUp-Tesis\Backend\teamup\backend\bin\Debug\netstandard2.0\backend.deps.json
+C:\Users\Alex\Documents\Github\TeamUp-Tesis\TeamUp-Tesis\Backend\teamup\backend\bin\Debug\netstandard2.0\backend.dll
+C:\Users\Alex\Documents\Github\TeamUp-Tesis\TeamUp-Tesis\Backend\teamup\backend\bin\Debug\netstandard2.0\backend.pdb
+C:\Users\Alex\Documents\Github\TeamUp-Tesis\TeamUp-Tesis\Backend\teamup\backend\obj\Debug\netstandard2.0\backend.csprojAssemblyReference.cache
+C:\Users\Alex\Documents\Github\TeamUp-Tesis\TeamUp-Tesis\Backend\teamup\backend\obj\Debug\netstandard2.0\backend.csproj.CoreCompileInputs.cache
+C:\Users\Alex\Documents\Github\TeamUp-Tesis\TeamUp-Tesis\Backend\teamup\backend\obj\Debug\netstandard2.0\backend.AssemblyInfoInputs.cache
+C:\Users\Alex\Documents\Github\TeamUp-Tesis\TeamUp-Tesis\Backend\teamup\backend\obj\Debug\netstandard2.0\backend.AssemblyInfo.cs
+C:\Users\Alex\Documents\Github\TeamUp-Tesis\TeamUp-Tesis\Backend\teamup\backend\obj\Debug\netstandard2.0\backend.dll
+C:\Users\Alex\Documents\Github\TeamUp-Tesis\TeamUp-Tesis\Backend\teamup\backend\obj\Debug\netstandard2.0\backend.pdb
