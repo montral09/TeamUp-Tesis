@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import Header from "../header/header";
 import { Link, Redirect } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual'
 
-class Login extends React.Component {
+class Register extends React.Component {
 
     constructor(props) {
         super(props);
@@ -93,42 +93,47 @@ class Login extends React.Component {
             <>
                 {/*SEO Support*/}
                 <Helmet>
-                    <title>TeamUp | Login</title>
+                    <title>TeamUp | Registrarse</title>
                     <meta name="description" content="---" />
                 </Helmet>
                 {/*SEO Support End */}
                 <Header />
                 <div className="main-content  full-width  home">
                     <div className="pattern" >
-                            <div>
-                                <div className="row">
-                                    <div className="col-md-12 ">
-                                        <div className="row">
-                                            <div className="col-md-9 center-column" id="content">
-                                                <div className="row">
-                                                    <div className="col-md-5">
-                                                        <div className="well">
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-md-5">
-                                                        <div className="well">
-                                                        <form class="text-center border border-light p-5" action="#!">
-                                                            <p class="h4 mb-4">Iniciar sesión</p>
-                                                            <input type="email" name="email" id="input-email" class="form-control mb-4" placeholder="Correo" onChange={this.onChange}></input>
-                                                            <input type="password" name="password" id="input-password" class="form-control mb-4" placeholder="Password" onChange={this.onChange}></input>
-                                                            <div class="d-flex justify-content-around mb-2">
-                                                                <div>
-                                                                    <a href="">Olvido su contraseña?</a>
-                                                                </div>
-                                                            </div>
-                                                            <input readOnly defaultValue='Login' className="btn btn-primary" onClick={() => { this.login() }} />
-                                                            <p>No tiene cuenta?
-                                                                <a href="">  Registrarse</a>
-                                                            </p>
-                                                        </form>
+                        <div>
+                            <div className="row">
+                                <div className="col-md-12 ">
+                                    <div className="row">
+                                        <div className="col-md-9 center-column" id="content">
+                                            <div className="row">
+                                                <div className="col-md-6">
+                                                    <div className="well">
                                                     </div>
                                                 </div>
-                                                <div className="col-md-2"></div>
+                                                <div className="col-md-6">
+                                                    <form className="border border-light p-6">
+                                                        <p className="h4 mb-4 text-center">Registrarse</p>
+                                                        <input type="text" id="firstName" className="form-control mb-4" placeholder="Nombre"></input>
+                                                        <input type="text" id="lastName" className="form-control mb-4" placeholder="Apellido"></input>
+                                                        <input type="email" id="email" className="form-control" placeholder="Correo"></input>
+                                                        <small id="emailHelper" className="form-text text-muted mb-2">Este va a ser su usuario</small>
+                                                        <input type="text" id="phone" className="form-control mb-4" placeholder="Numero telefónico" aria-describedby="phone"></input>
+                                                        <div className="custom-control custom-checkbox">
+                                                            <input type="checkbox" className="custom-control-input mb-4" id="gestorCheckbox"></input>
+                                                            <label className="custom-control-label mb-4" for="gestorCheckbox">Desea aplicar para ser gestor?</label>
+                                                        </div>
+                                                        
+                                                        <div className="text-center">
+                                                        <input readOnly defaultValue='Registrarse' className="btn btn-primary" onClick={() => { this.login() }} />
+                                                            <hr></hr>
+                                                            <p>Al hacer click en  
+                                                                <em> Registrarse</em> usted acepta nuestros
+                                                                <a href="" target="_blank"> terminos y condiciones</a>
+                                                            </p>
+                                                        </div>
+                                                    </form>
+                                                </div>
+
                                             </div>
                                         </div>
                                     </div>
@@ -143,4 +148,4 @@ class Login extends React.Component {
     }
 }
 
-export default withTranslate(Login);
+export default withTranslate(Register);

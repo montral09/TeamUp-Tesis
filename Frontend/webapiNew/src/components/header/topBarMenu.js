@@ -19,8 +19,8 @@ class TopBarMenu extends React.Component {
                     <li><Link to="/account/login">Opción 2</Link></li>
                     </ul>
                 </li>
+                <li><Link to="/account/register">Registrarse</Link></li>
                 <li><Link to="/account/login">Iniciar sesión</Link></li>
-                <li><Link to="/home/index">Crear cuenta</Link></li>
             </ul>
 	    );
 	}
