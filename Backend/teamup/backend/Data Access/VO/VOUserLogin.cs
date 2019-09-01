@@ -12,10 +12,10 @@ namespace backend.Data_Access.VO
         public String Name { get; set; }
         public String LastName { get; set; }
         public String Phone { get; set; }
-        public String UserType { get; set; }
+        public bool CheckPublisher { get; set; }
 
         public VOUserLogin() { }
-        public VOUserLogin(Int64 idUser, string mail, string password, string name, string lastName, string phone, string userType)
+        public VOUserLogin(Int64 idUser, string mail, string password, string name, string lastName, string phone, bool checkPublisher)
         {
             IdUser = idUser;
             Mail = mail;
@@ -23,7 +23,7 @@ namespace backend.Data_Access.VO
             Name = name;
             LastName = lastName;
             Phone = phone;
-            UserType = userType;
+            CheckPublisher = checkPublisher;
         }
     }
 }

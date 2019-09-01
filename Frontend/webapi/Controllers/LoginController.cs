@@ -10,7 +10,7 @@ namespace webapi.Controllers
     {
         IFachadaWeb fach = new FabricaFachadas().CrearFachadaWEB;
 
-        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
+        [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpPost]
         [Route("api/login")]
         public IHttpActionResult Post([FromBody]VOUserLogin voUserLog)
@@ -25,17 +25,17 @@ namespace webapi.Controllers
                     VOUserLogin userLogged = fach.ValidUserLogin(voUserLog.Mail, voUserLog.Password);
                     if (userLogged != null)
                     {
-                        voresp.responseCode = "SUCC-USRLOGSUCCESS ";
+                        voresp.responseCode = EnumMessages.SUCC_USRLOGSUCCESS.ToString();
                         voresp.vouserLog = userLogged;
                     }
                     else
                     {
-                        voresp.responseCode = "ERR-USRWRONGPASS";
+                        voresp.responseCode = EnumMessages.ERR_USRWRONGPASS.ToString();
                     }
                 }
                 else
                 {
-                    voresp.responseCode = "ERR-USRMAILNOTEXIST";
+                    voresp.responseCode = EnumMessages.ERR_USRMAILNOTEXIST.ToString();
                 }
                 return Ok(voresp);
             }
