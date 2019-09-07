@@ -2,7 +2,7 @@ export const GestNav = [
     {
         icon: 'pe-7s-up-arrow',
         label: 'Pendiente Aprobacion',
-        to: '#/Gestores/PendienteAprobacion',
+        to: '#/publishers/pendienteaprobacion',
     },
 ];  
 export const MainNav = [

@@ -14,10 +14,27 @@ const Charts = lazy(() => import('../../DemoPages/Charts'));
 const Forms = lazy(() => import('../../DemoPages/Forms'));
 const Tables = lazy(() => import('../../DemoPages/Tables'));
 
+const Publishers = lazy(() => import('../../DemoPages/Publishers'));
+
 const AppMain = () => {
 
     return (
         <Fragment>
+            {/* Publishers */}
+
+            <Suspense fallback={
+                <div className="loader-container">
+                    <div className="loader-container-inner">
+                        <h6 className="mt-5">
+                            Please wait while we load all the Publishers data
+                            <small>Because this is a demonstration we load at once all the Publishers data. This wouldn't happen in a real live app!</small>
+                        </h6>
+                    </div>
+                </div>
+            }>
+                <Route path="/publishers" component={Publishers}/>
+            </Suspense>
+
 
             {/* Components */}
 

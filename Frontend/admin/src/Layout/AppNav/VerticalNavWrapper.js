@@ -12,17 +12,6 @@ class Nav extends Component {
     render() {
         return (
             <Fragment>
-                <h5 className="app-sidebar__heading">PRO VERSION</h5>
-                <div className="metismenu vertical-nav-menu">
-                    <ul className="metismenu-container">
-                        <li className="metismenu-item">
-                            <a className="metismenu-link" href="https://dashboardpack.com/theme-details/architectui-dashboard-react-pro" target="_blank">
-                                <i className="metismenu-icon pe-7s-diamond"></i>
-                                Upgrade to PRO
-                            </a>
-                        </li>
-                    </ul>
-                </div>
                 <h5 className="app-sidebar__heading">Gestores</h5>
                 <MetisMenu content={GestNav} activeLinkFromLocation className="vertical-nav-menu" iconNamePrefix="" classNameStateIcon="pe-7s-angle-down"/>
                 <h5 className="app-sidebar__heading">Menu</h5>

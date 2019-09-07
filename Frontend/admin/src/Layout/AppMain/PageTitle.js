@@ -34,7 +34,7 @@ class PageTitle extends Component {
                         </div>
                     </div>
                     <div className="page-title-actions">
-                        <TitleComponent2/>
+                        {/*<TitleComponent2/> LO SAQUE*/}
                     </div>
                 </div>
             </div>
