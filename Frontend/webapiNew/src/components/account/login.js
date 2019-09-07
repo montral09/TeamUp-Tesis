@@ -41,7 +41,7 @@ class Login extends React.Component {
                 })
             }).then(response => response.json()).then(data => {
                 console.log("data:" + JSON.stringify(data));
-                if (data.responseCode == "SUCC-USRLOGSUCCESS ") {
+                if (data.responseCode == "SUCC-USRLOGSUCCESS") {
                     toast.success('Bienvenido, ' + data.vouserLog.Name, {
                         position: "top-right",
                         autoClose: 5000,

@@ -47,6 +47,12 @@ class Register extends React.Component {
     }
 
     register() {
+        console.log("Check: "+this.state.gestorCheckbox)
+        if(this.state.gestorCheckbox =='on'){
+            this.state.gestorCheckbox = true;
+        }else{
+            this.state.gestorCheckbox = false;
+        }
         if (this.checkRequiredInputs()) {
             fetch('https://localhost:44372/api/user', {
                 method: 'POST',
@@ -57,11 +63,11 @@ class Register extends React.Component {
                     Mail: this.state.email,
                     Name: this.state.firstName,
                     LastName: this.state.lastName,
-                    Phone: this.state.email,
-                    CheckPublisher: this.state.email,
-                    Rut: this.state.email,
-                    RazonSocial: this.state.email,
-                    Address: this.state.email,
+                    Phone: this.state.phone,
+                    CheckPublisher: this.state.gestorCheckbox,
+                    Rut: this.state.rut,
+                    RazonSocial: this.state.razonSocial,
+                    Address: this.state.direccion,
                 })
             }).then(response => response.json()).then(data => {
                 console.log("data:" + JSON.stringify(data));
@@ -76,14 +82,27 @@ class Register extends React.Component {
                     });
                     this.props.history.push('/account/login')
                 } else {
-                    toast.error('Ese correo ya esta en uso, por favor elija otro.', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
+                    if(data.Message){
+                        toast.error('Hubo un error: '+data.Message, {
+                            position: "top-right",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                        });
+                    }else{
+                        toast.error('Ese correo ya esta en uso, por favor elija otro.', {
+                            position: "top-right",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                        });
+                    }
+
+
                 }
             }
             ).catch(error => {

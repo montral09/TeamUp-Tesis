@@ -4,6 +4,8 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using backend.Data_Access.VO;
+using backend.Data_Access.VO.Data;
+using backend.Exceptions;
 using backend.Logic;
 
 namespace backend.Data_Access.Query
@@ -15,7 +17,7 @@ namespace backend.Data_Access.Query
         {
             cns = new QueryDAOUsers();
         }
-        private String ObtenerConnectionString()
+        private String GetConnectionString()
         {
             String con = ConfigurationManager.ConnectionStrings["ConnectionString"].ToString();
             return con;
@@ -27,7 +29,7 @@ namespace backend.Data_Access.Query
             bool member = false;
             try
             {
-                con = new SqlConnection(ObtenerConnectionString());
+                con = new SqlConnection(GetConnectionString());
                 con.Open();
                 String query = cns.Member();
                 SqlCommand selectCommand = new SqlCommand(query, con);
@@ -45,9 +47,9 @@ namespace backend.Data_Access.Query
                 }
                 dr.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw e;//("Error al verificar si existe el usuario");
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             finally
             {
@@ -65,7 +67,7 @@ namespace backend.Data_Access.Query
             User user = null;
             try
             {
-                con = new SqlConnection(ObtenerConnectionString());
+                con = new SqlConnection(GetConnectionString());
                 con.Open();
                 String query = cns.User();
                 SqlCommand selectCommand = new SqlCommand(query, con);
@@ -79,13 +81,13 @@ namespace backend.Data_Access.Query
                 SqlDataReader dr = selectCommand.ExecuteReader();
                 while (dr.Read())
                 {
-                    user = new User(Convert.ToString(dr["mail"]), Convert.ToString(dr["password"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToBoolean(dr["checkPublisher"]), Convert.ToString(dr["rut"]), Convert.ToString(dr["razonSocial"]), Convert.ToString(dr["address"]), Convert.ToBoolean(dr["mailValidated"]), Convert.ToBoolean(dr["publishValidated"]), Convert.ToBoolean(dr["active"]));
+                    user = new User(Convert.ToString(dr["mail"]), Convert.ToString(dr["password"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToBoolean(dr["checkPublisher"]), Convert.ToString(dr["rut"]), Convert.ToString(dr["razonSocial"]), Convert.ToString(dr["address"]), Convert.ToBoolean(dr["mailValidated"]), Convert.ToBoolean(dr["publisherValidated"]), Convert.ToBoolean(dr["active"]));
                 }
                 dr.Close();
             }
             catch (Exception e)
             {
-                throw e;// new Excepcion("Error al verificar si existe el usuario");
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             finally
             {
@@ -102,7 +104,7 @@ namespace backend.Data_Access.Query
             SqlConnection con = null;
             try
             {
-                con = new SqlConnection(ObtenerConnectionString());
+                con = new SqlConnection(GetConnectionString());
                 con.Open();
                 String query = cns.InsertUser();
                 SqlCommand insertCommand = new SqlCommand(query, con);
@@ -121,9 +123,9 @@ namespace backend.Data_Access.Query
                 insertCommand.Parameters.AddRange(prm.ToArray());
                 insertCommand.ExecuteNonQuery();
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw e;
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             finally
             {
@@ -139,7 +141,7 @@ namespace backend.Data_Access.Query
             SqlConnection con = null;
             try
             {
-                con = new SqlConnection(ObtenerConnectionString());
+                con = new SqlConnection(GetConnectionString());
                 con.Open();
                 String query = cns.UpdateUser();
                 SqlCommand updateCommand = new SqlCommand(query, con);
@@ -157,9 +159,9 @@ namespace backend.Data_Access.Query
                 updateCommand.Parameters.AddRange(prm.ToArray());
                 updateCommand.ExecuteNonQuery();
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw e;
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             finally
             {
@@ -185,7 +187,7 @@ namespace backend.Data_Access.Query
             SqlConnection con = null;
             try
             {
-                con = new SqlConnection(ObtenerConnectionString());
+                con = new SqlConnection(GetConnectionString());
                 con.Open();
                 String query = cns.DeleteUser();
                 SqlCommand deleteCommand = new SqlCommand(query, con);
@@ -198,9 +200,9 @@ namespace backend.Data_Access.Query
                 deleteCommand.Parameters.Add(parametroMail);
                 deleteCommand.ExecuteNonQuery();
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw e;
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             finally
             {
@@ -211,27 +213,27 @@ namespace backend.Data_Access.Query
             }
         }
 
-        public List<VOUser> GetPublishers()
+        public List<VOPublisher> GetPublishers()
         {
             SqlConnection con = null;
-            List<VOUser> publishers = new List<VOUser>();
+            List<VOPublisher> publishers = new List<VOPublisher>();
             try
             {
-                con = new SqlConnection(ObtenerConnectionString());
+                con = new SqlConnection(GetConnectionString());
                 con.Open();
                 String query = cns.GetPublishers();
                 SqlCommand selectCommand = new SqlCommand(query, con);
                 SqlDataReader dr = selectCommand.ExecuteReader();
                 while (dr.Read())
-                {
-                    VOUser vo = new VOUser(Convert.ToString(dr["mail"]), Convert.ToString(dr["password"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToBoolean(dr["checkPublisher"]), Convert.ToString(dr["rut"]), Convert.ToString(dr["razonSocial"]), Convert.ToString(dr["address"]));
+                {                                                  
+                    VOPublisher vo = new VOPublisher(Convert.ToString(dr["mail"]), Convert.ToString(dr["password"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]),  Convert.ToString(dr["rut"]), Convert.ToString(dr["razonSocial"]), Convert.ToString(dr["address"]), Convert.ToBoolean(dr ["publisherValidated"]), Convert.ToBoolean(dr["mailValidated"]));
                     publishers.Add(vo);
                 }
                 dr.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw e;
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             finally
             {
@@ -243,27 +245,27 @@ namespace backend.Data_Access.Query
             return publishers;
         }
 
-        public List<VOUser> GetCustomers()
+        public List<VOCustomer> GetCustomers()
         {
             SqlConnection con = null;
-            List<VOUser> customers = new List<VOUser>();
+            List<VOCustomer> customers = new List<VOCustomer>();
             try
             {
-                con = new SqlConnection(ObtenerConnectionString());
+                con = new SqlConnection(GetConnectionString());
                 con.Open();
                 String query = cns.GetCustomers();
                 SqlCommand selectCommand = new SqlCommand(query, con);
                 SqlDataReader dr = selectCommand.ExecuteReader();
                 while (dr.Read())
                 {
-                    VOUser vo = new VOUser(Convert.ToString(dr["mail"]), Convert.ToString(dr["password"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToBoolean(dr["checkPublisher"]), Convert.ToString(dr["rut"]), Convert.ToString(dr["razonSocial"]), Convert.ToString(dr["address"]));
+                    VOCustomer vo = new VOCustomer(Convert.ToString(dr["mail"]), Convert.ToString(dr["password"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToString(dr["rut"]), Convert.ToString(dr["razonSocial"]), Convert.ToString(dr["address"]), Convert.ToBoolean(dr["mailValidated"]));
                     customers.Add(vo);
                 }
                 dr.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw e;
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             finally
             {
@@ -275,21 +277,21 @@ namespace backend.Data_Access.Query
             return customers;
         }
 
-        public void ApprovePublishers(List<VOUser> publishers)
+        public void ApprovePublishers(List<String> mails)
         {
             SqlConnection con = null;
             try
             {
-                con = new SqlConnection(ObtenerConnectionString());
+                con = new SqlConnection(GetConnectionString());
                 con.Open();
                 String query = cns.ApprovePublishers();                
-                for (int i = 0; i < publishers.Count; i++)
+                for (int i = 0; i < mails.Count; i++)
                 {
                     SqlCommand updateCommand = new SqlCommand(query, con);
                     SqlParameter parametroMails = new SqlParameter()
                     {
                         ParameterName = "@publisherMail",
-                        Value = publishers[i].Mail,
+                        Value = mails[i],
                         SqlDbType = SqlDbType.VarChar
                     };
 
@@ -297,9 +299,9 @@ namespace backend.Data_Access.Query
                     updateCommand.ExecuteNonQuery();
                 }                                             
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw e;
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             finally
             {
@@ -316,7 +318,7 @@ namespace backend.Data_Access.Query
             bool member = false;
             try
             {
-                con = new SqlConnection(ObtenerConnectionString());
+                con = new SqlConnection(GetConnectionString());
                 con.Open();
                 String query = cns.AdminExists();
                 SqlCommand selectCommand = new SqlCommand(query, con);
@@ -334,9 +336,9 @@ namespace backend.Data_Access.Query
                 }
                 dr.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw e;//("Error al verificar si existe el admin");
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             finally
             {
@@ -348,13 +350,13 @@ namespace backend.Data_Access.Query
             return member;
         }
 
-        public User GetAdmin(String mail, String password)
+        public Admin GetAdmin(String mail, String password)
         {
             SqlConnection con = null;
-            User user = null;
+            Admin admin = null;
             try
             {
-                con = new SqlConnection(ObtenerConnectionString());
+                con = new SqlConnection(GetConnectionString());
                 con.Open();
                 String query = cns.GetAdmin();
                 SqlCommand selectCommand = new SqlCommand(query, con);
@@ -368,13 +370,13 @@ namespace backend.Data_Access.Query
                 SqlDataReader dr = selectCommand.ExecuteReader();
                 while (dr.Read())
                 {
-                    user = new User(Convert.ToString(dr["mail"]), Convert.ToString(dr["password"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToBoolean(dr["active"]));
+                    admin = new Admin(Convert.ToString(dr["mail"]), Convert.ToString(dr["password"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]));
                 }
                 dr.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw e;// new Excepcion("Error al verificar si existe el usuario");
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             finally
             {
@@ -383,7 +385,7 @@ namespace backend.Data_Access.Query
                     con.Close();
                 }
             }
-            return user;
+            return admin;
         }
     }
 }

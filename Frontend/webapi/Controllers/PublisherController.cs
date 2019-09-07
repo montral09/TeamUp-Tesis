@@ -4,12 +4,14 @@ using System;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using System.Collections.Generic;
+using backend.Data_Access.VO.Data;
+using backend.Exceptions;
 
 namespace webapi.Controllers
 {
     public class PublisherController : ApiController
     {
-        IFachadaWeb fach = new FabricaFachadas().CrearFachadaWEB;
+        IFacadeWeb fach = new FacadeFactory().CreateFacadeWeb;
 
         [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpGet]
@@ -18,36 +20,36 @@ namespace webapi.Controllers
         {
             try
             {               
-                VOResponseGetUsers voResp = new VOResponseGetUsers();
-                List<VOUser> publishers = fach.GetPublishers();
+                VOResponseGetPublishers voResp = new VOResponseGetPublishers();
+                List<VOPublisher> publishers = fach.GetPublishers();
                 voResp.responseCode = EnumMessages.SUCC_PUBLISHERSOK.ToString();
                 voResp.voUsers = publishers;
 
 
                 return Ok(voResp);
             }
-            catch (Exception e)
+            catch (GeneralException e)
             {
-                return InternalServerError(new Exception(e.Message));
+                return InternalServerError(new Exception(e.Codigo));
             }
         }
 
         [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpPut]
         [Route("api/publisher")]
-        public IHttpActionResult Put([FromBody] List<VOUser> publishers)
+        public IHttpActionResult Put([FromBody] VORequestApprovePublishers publishers)
         {
             try
             {
-                VOResponse voResp = new VOResponse();
-                fach.ApprovePublishers(publishers);
+                VOResponseApprovePublishers voResp = new VOResponseApprovePublishers();
+                fach.ApprovePublishers(publishers.Mails);
                 voResp.responseCode = EnumMessages.SUCC_PUBLISHERSOK.ToString();
 
                 return Ok(voResp);
             }
-            catch (Exception e)
+            catch (GeneralException e)
             {
-                return InternalServerError(new Exception(e.Message));
+                return InternalServerError(new Exception(e.Codigo));
             }
         }
 
