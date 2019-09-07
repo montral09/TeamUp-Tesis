@@ -3,45 +3,46 @@ using backend.Data_Access.VO;
 using System;
 using System.Web.Http;
 using System.Web.Http.Cors;
+using backend.Exceptions;
+using backend.Data_Access.VO.Data;
 
 namespace webapi.Controllers
 {
     public class LoginController : ApiController
     {
-        IFachadaWeb fach = new FabricaFachadas().CrearFachadaWEB;
+        IFacadeWeb fach = new FacadeFactory().CreateFacadeWeb;
 
-        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
+        [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpPost]
         [Route("api/login")]
-        public IHttpActionResult Post([FromBody]VOUserLogin voUserLog)
+        public IHttpActionResult Post([FromBody]VORequestLogin voLogin)
         {
             try
             {
-
-                bool userMailExists = fach.userExists(voUserLog.Mail);
-                VOResponseLogin voresp = new VOResponseLogin();
+                bool userMailExists = fach.userExists(voLogin.Mail);
+                VOResponseLogin voResp = new VOResponseLogin();
                 if (userMailExists == true)
                 {
-                    VOUserLogin userLogged = fach.ValidUserLogin(voUserLog.Mail, voUserLog.Password);
+                    VOUser userLogged = fach.ValidUserLogin(voLogin.Mail, voLogin.Password);
                     if (userLogged != null)
                     {
-                        voresp.responseCode = "SUCC-USRLOGSUCCESS ";
-                        voresp.vouserLog = userLogged;
+                        voResp.responseCode = EnumMessages.SUCC_USRLOGSUCCESS.ToString();
+                        voResp.voUserLog = userLogged;
                     }
                     else
                     {
-                        voresp.responseCode = "ERR-USRWRONGPASS";
+                        voResp.responseCode = EnumMessages.ERR_USRWRONGPASS.ToString();
                     }
                 }
                 else
                 {
-                    voresp.responseCode = "ERR-USRMAILNOTEXIST";
+                    voResp.responseCode = EnumMessages.ERR_USRMAILNOTEXIST.ToString();
                 }
-                return Ok(voresp);
+                return Ok(voResp);
             }
-            catch (Exception e)
+            catch (GeneralException e)
             {
-                return InternalServerError(new Exception(e.Message));
+                return InternalServerError(e);
             }
         }
     }
