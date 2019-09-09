@@ -3,17 +3,18 @@ using backend.Data_Access.VO;
 using System;
 using System.Web.Http;
 using System.Web.Http.Cors;
+using backend.Exceptions;
 
 namespace webapi.Controllers
 {
     public class UserController : ApiController
     {
-        IFachadaWeb fach = new FabricaFachadas().CrearFachadaWEB;
+        IFacadeWeb fach = new FacadeFactory().CreateFacadeWeb;
 
         [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpPost]
         [Route("api/user")]
-        public IHttpActionResult Post([FromBody]VOUser voUser)
+        public IHttpActionResult Post([FromBody]VORequestUserCreate voUser)
         {
             try
             {
@@ -38,36 +39,36 @@ namespace webapi.Controllers
         [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpPut]
         [Route("api/user")]
-        public IHttpActionResult Put([FromBody]VOUser voUser)
+        public IHttpActionResult Put([FromBody]VORequestUserUpdate voUser)
         {
             try
             {
-                VOResponse voResp = new VOResponse();
+                VOResponseUserUpdate voResp = new VOResponseUserUpdate();
                 fach.UpdateUser(voUser);
                 voResp.responseCode = EnumMessages.SUCC_USRUPDATED.ToString();
                 return Ok(voResp);
             }             
-            catch (Exception e)
+            catch (GeneralException e)
             {
-                return InternalServerError(new Exception(e.Message));
+                return InternalServerError(new Exception(e.Codigo));
             }
         }
 
         [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpDelete]
         [Route("api/user")]
-        public IHttpActionResult Delete([FromBody]VOUser voUser)
+        public IHttpActionResult Delete([FromBody]VORequestUserDelete voUser)
         {
             try
             {
-                VOResponse voResp = new VOResponse();
+                VOResponseUserDelete voResp = new VOResponseUserDelete();
                 fach.DeleteUser(voUser.Mail);
                 voResp.responseCode = EnumMessages.SUCC_USRDELETED.ToString();
                 return Ok(voResp);
             }
-            catch (Exception e)
+            catch (GeneralException e)
             {
-                return InternalServerError(new Exception(e.Message));
+                return InternalServerError(new Exception(e.Codigo));
             }
         }
     }

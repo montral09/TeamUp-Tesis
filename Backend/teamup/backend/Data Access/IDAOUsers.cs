@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using backend.Data_Access.VO;
+using backend.Data_Access.VO.Data;
 using backend.Logic;
 
 namespace backend.Data_Access.Query
@@ -13,10 +14,10 @@ namespace backend.Data_Access.Query
         void UpdateUser(User user);
         bool ValidateDeletion(String mail);
         void DeleteUser(String mail);
-        List<VOUser> GetPublishers();
-        List<VOUser> GetCustomers();
-        void ApprovePublishers(List<VOUser> publishers);
+        List<VOPublisher> GetPublishers();
+        List<VOCustomer> GetCustomers();
+        void ApprovePublishers(List<String> mails);
         bool AdminExists(String user);
-        User GetAdmin(String mail, String password);
+        Admin GetAdmin(String mail, String password);
     }
 }

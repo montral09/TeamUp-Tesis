@@ -12,7 +12,7 @@ namespace backend.Data_Access.Query
 
         public String User()
         {
-            String query = "select idUser,mail,name,lastName,password,phone,rut,razonSocial from USERS where mail=@mail";
+            String query = "select idUser,mail,name,lastName,password,phone,rut,razonSocial,address,checkPublisher,mailValidated,publisherValidated,active from USERS where mail=@mail";
             return query;
         }
 

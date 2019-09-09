@@ -6,6 +6,9 @@ namespace backend.Logic
 {
     public enum EnumMessages
     {
+
+        //System errors
+        ERR_SYSTEM,
         //Users
         ERR_USRMAILNOTEXIST,
         ERR_USRWRONGPASS,
@@ -16,6 +19,8 @@ namespace backend.Logic
         SUCC_USRDELETED,
         SUCC_PUBLISHERSOK,
         SUCC_CUSTOMERSOK
+
+
     }
     
 }

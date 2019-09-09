@@ -1,4 +1,5 @@
-﻿using System;
+﻿using backend.Data_Access.VO.Data;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,12 +7,12 @@ namespace backend.Data_Access.VO
 {
     public class VOResponseLogin : VOResponse
     {
-        public VOUserLogin vouserLog;
+        public VOUser voUserLog;
 
         public VOResponseLogin() { }
-        public VOResponseLogin(VOUserLogin vouser)
+        public VOResponseLogin(VOUser voUser)
         {
-            this.vouserLog = vouser;
+            this.voUserLog = voUser;
         }
     }
 }

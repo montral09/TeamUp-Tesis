@@ -1,15 +1,17 @@
 ﻿using backend.Data_Access.Query;
 using backend.Data_Access.VO;
+using backend.Data_Access.VO.Data;
+using backend.Exceptions;
 using System;
 using System.Collections.Generic;
 
 namespace backend.Logic
 {
-    public class Fachada : IFachadaWeb
+    public class Facade: IFacadeWeb
     {
         private IDAOUsers users;
 
-        public Fachada()
+        public Facade()
         {
             users = new DAOUsers();
         }
@@ -29,25 +31,25 @@ namespace backend.Logic
                     return false;
                 }
             }
-            catch (Exception e)
+            catch (GeneralException e)
             {
                 throw e;
             }
         }
         /* This function will return the user or null if user/password doesn't match  */
-        public VOUserLogin ValidUserLogin(string mail, string password)
+        public VOUser ValidUserLogin(string mail, string password)
         {
-            VOUserLogin result = null;
+            VOUser result = null;
             try
             {
                 User usr = users.Find(mail);
                 // TO DO : Validate password better
-                if (usr.Password.Equals(password))
+                if (usr != null && usr.Password.Equals(password))
                 {
-                    result = new VOUserLogin(usr.IdUser, usr.Mail, null, usr.Name, usr.LastName, usr.Phone, usr.CheckPublisher);
+                    result = new VOUser(usr.Mail, null, usr.Name, usr.LastName, usr.Phone, usr.Rut, usr.RazonSocial, usr.Address);                    
                 }
             }
-            catch (Exception e)
+            catch (GeneralException e)
             {
                 throw e;
             }
@@ -55,7 +57,7 @@ namespace backend.Logic
         }
 
         /* This function creates a new user (publisher, or customer)  */
-        public void CreateUser(VOUser voUser)
+        public void CreateUser(VORequestUserCreate voUser)
         {
             try
             {
@@ -63,13 +65,13 @@ namespace backend.Logic
                 users.InsertUser(u);
 
             }
-            catch (Exception e)
+            catch (GeneralException e)
             {
                 throw e;
             }
         }
         /* This function updates data from an specific user  */
-        public void UpdateUser(VOUser voUser)
+        public void UpdateUser(VORequestUserUpdate voUser)
         {
             try
             {
@@ -77,7 +79,7 @@ namespace backend.Logic
                 users.UpdateUser(u);
 
             }
-            catch (Exception e)
+            catch (GeneralException e)
             {
                 throw e;
             }
@@ -93,48 +95,48 @@ namespace backend.Logic
                     users.DeleteUser(mail);
                 }
             }
-            catch (Exception e)
+            catch (GeneralException e)
             {
                 throw e;
             }
         }
 
         /* This function obtains all Publishers  */
-        public List<VOUser> GetPublishers()
+        public List<VOPublisher> GetPublishers()
         {
-            List<VOUser> publishers = new List<VOUser>();
+            List<VOPublisher> publishers = new List<VOPublisher>();
             try
             {
                 publishers = users.GetPublishers();
             }
-            catch (Exception e)
+            catch (GeneralException e)
             {
                 throw e;
             }
             return publishers;
         }
         /* This function obtains all Customers  */
-        public List<VOUser> GetCustomers()
+        public List<VOCustomer> GetCustomers()
         {
-            List<VOUser> customers = new List<VOUser>();
+            List<VOCustomer> customers = new List<VOCustomer>();
             try
             {
                 customers = users.GetCustomers();
             }
-            catch (Exception e)
+            catch (GeneralException e)
             {
                 throw e;
             }
             return customers;
         }
         /* This function recieve a list of Publishers to be approved  */
-        public void ApprovePublishers(List<VOUser> publishers)
+        public void ApprovePublishers(List<String> mails)
         {            
             try
             {
-                users.ApprovePublishers(publishers);
+                users.ApprovePublishers(mails);
             }
-            catch (Exception e)
+            catch (GeneralException e)
             {
                 throw e;
             }
@@ -154,25 +156,25 @@ namespace backend.Logic
                     return false;
                 }
             }
-            catch (Exception e)
+            catch (GeneralException e)
             {
                 throw e;
             }
         }
 
         /* This function returns admin user  */
-        public VOUser GetAdmin(string mail, string password)
+        public VOAdmin GetAdmin(string mail, string password)
         {
-            VOUser result = null;
+            VOAdmin result = null;
             try
             {
-                User usr = users.GetAdmin(mail, password);
+                Admin usr = users.GetAdmin(mail, password);
                 if (usr.Password.Equals(password))
-                {
-                    result = new VOUser(usr.Mail, null, usr.Name, usr.LastName, usr.Phone, usr.Address);
+                {                    
+                    result = new VOAdmin(usr.Mail, null, usr.Name, usr.LastName, usr.Phone);
                 }
             }
-            catch (Exception e)
+            catch (GeneralException e)
             {
                 throw e;
             }

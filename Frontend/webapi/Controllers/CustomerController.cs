@@ -4,12 +4,14 @@ using System;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using System.Collections.Generic;
+using backend.Data_Access.VO.Data;
+using backend.Exceptions;
 
 namespace webapi.Controllers
 {
     public class CustomerController : ApiController
     {
-        IFachadaWeb fach = new FabricaFachadas().CrearFachadaWEB;
+        IFacadeWeb fach = new FacadeFactory().CreateFacadeWeb;
 
         [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpGet]
@@ -17,16 +19,16 @@ namespace webapi.Controllers
         public IHttpActionResult Get()
         {
             try
-            {               
-                VOResponseGetUsers voResp = new VOResponseGetUsers();
-                List<VOUser> customers = fach.GetCustomers();
+            {
+                VOResponseGetCustomers voResp = new VOResponseGetCustomers();
+                List<VOCustomer> customers = fach.GetCustomers();
                 voResp.responseCode = EnumMessages.SUCC_CUSTOMERSOK.ToString();
-                voResp.voUsers = customers;
+                voResp.voCustomers = customers;
                 return Ok(voResp);
             }
-            catch (Exception e)
+            catch (GeneralException e)
             {
-                return InternalServerError(new Exception(e.Message));
+                return InternalServerError(new Exception(e.Codigo));
             }
         }
 
