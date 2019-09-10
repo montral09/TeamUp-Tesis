@@ -48,12 +48,12 @@ export default class TableHover extends React.Component {
 
   // This function will send to API one publisher to be approved
   approvePublisher(index) {
-    this.submitPublisher([{Mail:this.state.gestPendApr[index].Mail}], index);
+    this.submitPublisher([this.state.gestPendApr[index].Mail], index);
   };
 
   // This function will create the object to send to API
   mapPublisher(publisherObj){
-    return {Mail: publisherObj.Mail}
+    return publisherObj.Mail;
   }
 
   saveAll(){
@@ -67,7 +67,7 @@ export default class TableHover extends React.Component {
         header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
 
         body: JSON.stringify({
-            publishersEmails
+            Mails: publishersEmails
         })
     }).then(response => response.json()).then(data => {
         console.log("data:" + JSON.stringify(data));

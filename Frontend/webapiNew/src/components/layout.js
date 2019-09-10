@@ -1,9 +1,8 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 
-// Layout
+// Layout Components
 import HomePage from './home';
-
 import Login from './account/login';
 import Register from './account/register';
 
