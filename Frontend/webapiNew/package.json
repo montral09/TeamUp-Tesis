@@ -12,6 +12,7 @@
     "owl.carousel": "^2.3.4",
     "react": "^16.9.0",
     "react-bootstrap": "^1.0.0-beta.9",
+    "react-datepicker": "^2.9.6",
     "react-dom": "^16.9.0",
     "react-helmet": "^5.2.1",
     "react-inner-image-zoom": "^1.0.4",

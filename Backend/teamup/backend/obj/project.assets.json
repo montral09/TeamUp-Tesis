@@ -954,11 +954,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Alex\\Documents\\Github\\TeamUp-Tesis\\TeamUp-Tesis\\Backend\\teamup\\backend\\backend.csproj",
+      "projectUniqueName": "D:\\Mis Documentos\\UDE\\Tesis\\github\\TeamUp-Tesis\\Backend\\teamup\\backend\\backend.csproj",
       "projectName": "backend",
-      "projectPath": "C:\\Users\\Alex\\Documents\\Github\\TeamUp-Tesis\\TeamUp-Tesis\\Backend\\teamup\\backend\\backend.csproj",
+      "projectPath": "D:\\Mis Documentos\\UDE\\Tesis\\github\\TeamUp-Tesis\\Backend\\teamup\\backend\\backend.csproj",
       "packagesPath": "C:\\Users\\Alex\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Alex\\Documents\\Github\\TeamUp-Tesis\\TeamUp-Tesis\\Backend\\teamup\\backend\\obj\\",
+      "outputPath": "D:\\Mis Documentos\\UDE\\Tesis\\github\\TeamUp-Tesis\\Backend\\teamup\\backend\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

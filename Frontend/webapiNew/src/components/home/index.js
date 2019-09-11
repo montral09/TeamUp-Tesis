@@ -2,6 +2,7 @@ import React from 'react';
 import Header from "../header/header";
 import BackPicture from "../images/BackPicture.jpg";
 import Footer from "../footer/footer";
+import Browser from "./browser";
 
 class Index extends React.Component {
     componentDidMount() {
@@ -10,21 +11,16 @@ class Index extends React.Component {
     render() {
         return (
             <>
-                <title>TeamUp | Página Principal</title>
+                <title>TeamUp! | Página Principal</title>
                 <meta name="description" content="TeamUP - Alquileres de espacios" />
                 <Header />
                 <div style={PictureStyle}>
                     <br />
-                    <br />
-                    <input
-                        type="text"
-                        name="search"
-                        placeholder='Buscar'
-                        id="input-search"
-                        className="form-control"
-                    />
-                    <br />
-                    <br />
+                    <div className="custom-footer full-width">
+                        <div className="container">
+                            <Browser />
+                        </div>
+                    </div>
                 </div>
                 <Footer />
             </>
@@ -36,6 +32,8 @@ const PictureStyle = {
     backgroundImage: "url(" + BackPicture + ")",
     width: "100%",
     height: "100%",
-    fontSize: "90px"
+    "backgroundRepeat": "no-repeat",
+    "backgroundSize": "100% 100%",
 }
+
 export default Index;

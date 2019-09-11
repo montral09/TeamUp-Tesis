@@ -5,6 +5,10 @@ import { Helmet } from 'react-helmet';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import { connect } from 'react-redux';
+import { logIn } from '../../services/login/actions';
+
+
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual'
 
@@ -21,6 +25,7 @@ class Login extends React.Component {
 
     componentDidMount() {
         window.scrollTo(0, 0);
+
     }
 
     onChange = (e) => {
@@ -40,9 +45,9 @@ class Login extends React.Component {
                     Mail: this.state.email
                 })
             }).then(response => response.json()).then(data => {
-                console.log("data:" + JSON.stringify(data));
-                if (data.responseCode == "SUCC-USRLOGSUCCESS") {
-                    toast.success('Bienvenido, ' + data.vouserLog.Name, {
+                //console.log("data:" + JSON.stringify(data));
+                if (data.responseCode == "SUCC_USRLOGSUCCESS") {
+                    toast.success('Bienvenid@, ' + data.voUserLog.Name, {
                         position: "top-right",
                         autoClose: 5000,
                         hideProgressBar: false,
@@ -50,6 +55,8 @@ class Login extends React.Component {
                         pauseOnHover: true,
                         draggable: true,
                     });
+                    console.log(data.voUserLog);
+                    this.props.logIn(data.voUserLog);
                     this.props.history.push('/')
                 } else {
                     toast.error('Datos incorrectos', {
@@ -88,7 +95,7 @@ class Login extends React.Component {
     }
 
     render() {
-        const { translate } = this.props;
+
         return (
             <>
                 {/*SEO Support*/}
@@ -112,18 +119,18 @@ class Login extends React.Component {
                                                     </div>
                                                     <div className="col-md-5">
                                                         <div className="well">
-                                                        <form class="text-center border border-light p-5" action="#!">
-                                                            <p class="h4 mb-4">Iniciar sesión</p>
-                                                            <input type="email" name="email" id="input-email" class="form-control mb-4" placeholder="Correo" onChange={this.onChange}></input>
-                                                            <input type="password" name="password" id="input-password" class="form-control mb-4" placeholder="Password" onChange={this.onChange}></input>
-                                                            <div class="d-flex justify-content-around mb-2">
+                                                        <form className="text-center border border-light p-5" action="#!">
+                                                            <p className="h4 mb-4">Iniciar sesión</p>
+                                                            <input type="email" name="email" id="input-email" className="form-control mb-4" placeholder="Correo" onChange={this.onChange}></input>
+                                                            <input type="password" name="password" id="input-password" className="form-control mb-4" placeholder="Password" onChange={this.onChange}></input>
+                                                            <div className="d-flex justify-content-around mb-2">
                                                                 <div>
                                                                     <a href="">Olvido su contraseña?</a>
                                                                 </div>
                                                             </div>
                                                             <input readOnly defaultValue='Login' className="btn btn-primary" onClick={() => { this.login() }} />
                                                             <p>No tiene cuenta?
-                                                                <a href="">  Registrarse</a>
+                                                                <a href="/account/register">  Registrarse</a>
                                                             </p>
                                                         </form>
                                                     </div>
@@ -143,4 +150,17 @@ class Login extends React.Component {
     }
 }
 
-export default withTranslate(Login);
+const mapStateToProps = (state) =>{
+    return {
+        login_status: state.loginData.login_status,
+        userData: state.loginData.userData,
+    }
+}
+
+const mapDispatchToProps = (dispatch) =>{
+    return{
+        logIn : (userData) => { dispatch (logIn(userData))}
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

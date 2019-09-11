@@ -11,18 +11,21 @@ import './App.css';
 // Layouts
 import Page from './components/layout';
 
+// Redux
 import store from './services/store'
 import { Provider } from 'react-redux'
+
 
 // Notify
 import { ToastContainer } from 'react-toastify';
 
+
 class App extends React.Component {
+
    render() {
 
       return (
          <Provider store={store}>
-            
                <Router basename={process.env.PUBLIC_URL}> 
                   <div className="standard-body">
                      <div id="main">
