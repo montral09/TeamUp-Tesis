@@ -5,6 +5,7 @@ import { Helmet } from 'react-helmet';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import { connect } from 'react-redux';
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual'
 
@@ -131,7 +132,8 @@ class Register extends React.Component {
     }
 
     render() {
-        const { translate } = this.props;
+        const { login_status } = this.props;
+        if(login_status == 'LOGGED_IN') return <Redirect to='/'/>
         return (
             <>
                 {/*SEO Support*/}
@@ -161,10 +163,10 @@ class Register extends React.Component {
                                                         <input type="email" id="email" className="form-control" placeholder="Correo (*)" onChange={this.onChange}></input>
                                                         <small id="emailHelper" className="form-text text-muted mb-2">Este va a ser su usuario</small>
                                                         <input type="text" id="phone" className="form-control mb-4" placeholder="Numero telefónico (*)" aria-describedby="phone" onChange={this.onChange}></input>
-                                                        <input type="password" name="password" id="password" class="form-control mb-4" placeholder="Contraseña (*)" onChange={this.onChange}></input>
+                                                        <input type="password" name="password" id="password" className="form-control mb-4" placeholder="Contraseña (*)" onChange={this.onChange}></input>
                                                         <div className="custom-control custom-checkbox">
                                                             <input type="checkbox" className="custom-control-input mb-4" id="gestorCheckbox" onChange={this.onChange}></input>
-                                                            <label className="custom-control-label mb-4" for="gestorCheckbox">Desea aplicar para ser gestor?</label>
+                                                            <label className="custom-control-label mb-4" htmlFor="gestorCheckbox">Desea aplicar para ser gestor?</label>
                                                         </div>
                                                         <small id="emailHelper" className="form-text text-muted mb-2">Si es empresa, por favor llene lo siguiente:</small>
                                                         <input type="text" id="rut" className="form-control mb-4" placeholder="Rut" aria-describedby="rut" onChange={this.onChange}></input>
@@ -195,5 +197,10 @@ class Register extends React.Component {
         );
     }
 }
+const mapStateToProps = (state) =>{
+    return {
+        login_status: state.loginData.login_status
+    }
+}
 
-export default withTranslate(Register);
+export default connect(mapStateToProps)(Register);

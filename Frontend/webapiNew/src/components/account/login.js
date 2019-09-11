@@ -56,8 +56,8 @@ class Login extends React.Component {
                         draggable: true,
                     });
                     console.log(data.voUserLog);
-                    this.props.logIn(data.voUserLog);
-                    this.props.history.push('/')
+                    this.props.logIn(data.voUserLog); // this is calling the reducer to store the data on redux Store
+                    this.props.history.push('/');
                 } else {
                     toast.error('Datos incorrectos', {
                         position: "top-right",
@@ -95,6 +95,8 @@ class Login extends React.Component {
     }
 
     render() {
+        const { login_status } = this.props;
+        if(login_status == 'LOGGED_IN') return <Redirect to='/'/>
 
         return (
             <>

@@ -12,14 +12,23 @@ const initState = {
 
 const loginReducer = (state = initState, action) =>{
     console.log(action);
-    if(action.type == LOG_IN){
-        return{
-            ...state,
-            login_status: 'LOGGED_IN',
-            userData: action.userData
-        }
+    switch(action.type){
+        case LOG_IN : 
+            return{
+                ...state,
+                login_status: 'LOGGED_IN',
+                userData: action.userData
+            }
+        break;
+        case LOG_OUT : 
+            return{
+                ...state,
+                login_status: 'NOT_LOGGED_IN',
+                userData: []
+            }
+        break;
+        default: return state;
     }
-    return state;
 }
 
 export default loginReducer
