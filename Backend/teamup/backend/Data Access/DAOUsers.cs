@@ -85,7 +85,7 @@ namespace backend.Data_Access.Query
                 }
                 dr.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -136,30 +136,71 @@ namespace backend.Data_Access.Query
             }
         }
 
-        public void UpdateUser(User user)
+        public void UpdateUser(User user, String newMail)
         {
             SqlConnection con = null;
             try
             {
                 con = new SqlConnection(GetConnectionString());
-                con.Open();
-                String query = cns.UpdateUser();
+                con.Open();          
+                if (!user.Mail.Equals(newMail))
+                {
+                    string queryInvalidateMail = cns.InvalidateMail();
+                    SqlCommand invalidateMailCommand = new SqlCommand(queryInvalidateMail, con);
+                    SqlParameter parametroInvalidate = new SqlParameter()
+                    {
+                        ParameterName = "@mail",
+                        Value = user.Mail,
+                        SqlDbType = SqlDbType.VarChar
+                    };
+                    invalidateMailCommand.Parameters.Add(parametroInvalidate);
+                    invalidateMailCommand.ExecuteNonQuery();
+                }
+                if (user.Password != "")
+                {
+                    String queryPassword = cns.UpdatePassword();
+                    SqlCommand updatePassword = new SqlCommand(queryPassword, con);
+                    List<SqlParameter> parameterPassword = new List<SqlParameter>()
+                    {
+                        new SqlParameter("@password", SqlDbType.VarChar) {Value = user.Password},
+                        new SqlParameter("@mail", SqlDbType.VarChar) {Value = user.Mail},
+                    };
+                    updatePassword.Parameters.AddRange(parameterPassword.ToArray());
+                    updatePassword.ExecuteNonQuery();
+                }
+                int? idUser = null;
+                String queryGetID = cns.Member();
+                SqlCommand selectCommand = new SqlCommand(queryGetID, con);
+                SqlParameter parametroID = new SqlParameter()
+                {
+                    ParameterName = "@mail",
+                    Value = user.Mail,
+                    SqlDbType = SqlDbType.VarChar
+                };
+                selectCommand.Parameters.Add(parametroID);
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                while (dr.Read())
+                {
+                    idUser = Convert.ToInt32(dr["idUser"]);
+                }
+                dr.Close();
+                String query = cns.UpdateUser();                
                 SqlCommand updateCommand = new SqlCommand(query, con);
                 List<SqlParameter> prm = new List<SqlParameter>()
-                    {
-                        new SqlParameter("@mail", SqlDbType.VarChar) {Value = user.Mail},
-                        new SqlParameter("@name", SqlDbType.VarChar) {Value = user.Name},
-                        new SqlParameter("@lastName", SqlDbType.VarChar) {Value = user.LastName},
-                        new SqlParameter("@password", SqlDbType.VarChar) {Value = user.Password},
-                        new SqlParameter("@phone", SqlDbType.VarChar) {Value = user.Phone},
-                        new SqlParameter("@rut", SqlDbType.VarChar) {Value = user.Rut},
-                        new SqlParameter("@razonSocial", SqlDbType.VarChar) {Value = user.RazonSocial},
-                        new SqlParameter("@address", SqlDbType.VarChar) { Value = user.Address},
-                    };
+                 {
+                    new SqlParameter("@idUser", SqlDbType.Int) { Value = idUser},
+                    new SqlParameter("@mail", SqlDbType.VarChar) {Value = newMail},
+                    new SqlParameter("@name", SqlDbType.VarChar) {Value = user.Name},
+                    new SqlParameter("@lastName", SqlDbType.VarChar) {Value = user.LastName},
+                    new SqlParameter("@phone", SqlDbType.VarChar) {Value = user.Phone},
+                    new SqlParameter("@rut", SqlDbType.VarChar) {Value = user.Rut},
+                    new SqlParameter("@razonSocial", SqlDbType.VarChar) {Value = user.RazonSocial},
+                    new SqlParameter("@address", SqlDbType.VarChar) { Value = user.Address},                    
+                };
                 updateCommand.Parameters.AddRange(prm.ToArray());
                 updateCommand.ExecuteNonQuery();
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -386,6 +427,77 @@ namespace backend.Data_Access.Query
                 }
             }
             return admin;
+        }
+
+        public bool isMailValidated(String mail)
+        {
+            SqlConnection con = null;
+            bool mailValidated = false;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.UserValidated();
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                SqlParameter parametro = new SqlParameter()
+                {
+                    ParameterName = "@mail",
+                    Value = mail,
+                    SqlDbType = SqlDbType.VarChar
+                };
+                selectCommand.Parameters.Add(parametro);
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                if (dr.HasRows)
+                {
+                    mailValidated = true;
+                }
+                dr.Close();
+            }
+            catch (Exception)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+            return mailValidated;
+        }
+
+        public void RequestPublisher(String mail)
+        {
+            SqlConnection con = null;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.RequestPublisher();
+
+                SqlCommand updateCommand = new SqlCommand(query, con);
+                SqlParameter parametroMail = new SqlParameter()
+                {
+                    ParameterName = "@customerMail",
+                    Value = mail,
+                    SqlDbType = SqlDbType.VarChar
+                };
+
+                updateCommand.Parameters.Add(parametroMail);
+                updateCommand.ExecuteNonQuery();                
+            }
+            catch (Exception)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
         }
     }
 }

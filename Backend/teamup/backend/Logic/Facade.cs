@@ -36,6 +36,26 @@ namespace backend.Logic
                 throw e;
             }
         }
+
+        public bool isMailValidated (String mail)
+        {
+            try
+            {
+
+                if (users.isMailValidated(mail))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
         /* This function will return the user or null if user/password doesn't match  */
         public VOUser ValidUserLogin(string mail, string password)
         {
@@ -46,7 +66,7 @@ namespace backend.Logic
                 // TO DO : Validate password better
                 if (usr != null && usr.Password.Equals(password))
                 {
-                    result = new VOUser(usr.Mail, null, usr.Name, usr.LastName, usr.Phone, usr.Rut, usr.RazonSocial, usr.Address);                    
+                    result = new VOUser(usr.Mail, null, usr.Name, usr.LastName, usr.Phone, usr.Rut, usr.RazonSocial, usr.Address, usr.CheckPublisher);                    
                 }
             }
             catch (GeneralException e)
@@ -76,7 +96,7 @@ namespace backend.Logic
             try
             {
                 User u = new User(voUser.Mail, voUser.Password, voUser.Name, voUser.LastName, voUser.Phone, voUser.CheckPublisher, voUser.Rut, voUser.RazonSocial, voUser.Address, false, false, true);
-                users.UpdateUser(u);
+                users.UpdateUser(u, voUser.NewMail);
 
             }
             catch (GeneralException e)
@@ -179,6 +199,18 @@ namespace backend.Logic
                 throw e;
             }
             return result;
+        }
+
+        public void RequestPublisher(String mail)
+        {
+            try
+            {
+                users.RequestPublisher(mail);
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
         }
     }
 }

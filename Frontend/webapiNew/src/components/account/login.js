@@ -17,8 +17,8 @@ class Login extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            email: '',
-            password: ''
+            email: 'fabi@gmail.com',
+            password: '123'
         }
         this.login = this.login.bind(this);
     }
@@ -45,7 +45,7 @@ class Login extends React.Component {
                     Mail: this.state.email
                 })
             }).then(response => response.json()).then(data => {
-                //console.log("data:" + JSON.stringify(data));
+                console.log("data:" + JSON.stringify(data));
                 if (data.responseCode == "SUCC_USRLOGSUCCESS") {
                     toast.success('Bienvenid@, ' + data.voUserLog.Name, {
                         position: "top-right",
@@ -58,7 +58,16 @@ class Login extends React.Component {
                     console.log(data.voUserLog);
                     this.props.logIn(data.voUserLog); // this is calling the reducer to store the data on redux Store
                     this.props.history.push('/');
-                } else {
+                } else if(data.responseCode ==  "ERR_MAILNOTVALIDATED"){
+                    toast.error("Correo pendiente de validar", {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                }else{
                     toast.error('Datos incorrectos', {
                         position: "top-right",
                         autoClose: 5000,

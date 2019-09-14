@@ -8,7 +8,6 @@ import SignedOutLinks from './SignedOutLinks';
 class TopBarMenu extends React.Component {
     
     render() {
-        console.log("status: "+JSON.stringify(this.props.login_status));
         const availableLinks = this.props.login_status === "NOT_LOGGED_IN" ? <SignedOutLinks/> : <SignedInLinks/>;
 	    return (
             <ul className="menu">
@@ -20,8 +19,6 @@ class TopBarMenu extends React.Component {
 }
 
 const mapStateToProps = (state) =>{
-    console.log("mapStateToProps");
-    console.log(state);
     return{
         login_status: state.loginData.login_status,
     }

@@ -3,7 +3,36 @@ import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { logOut } from '../../services/login/actions';
 
+import Modal from 'react-bootstrap/Modal';
+import {Button} from 'react-bootstrap';
+
 const SignedInLinks = (props) =>{
+    let harcodedIsPublisher = true;
+    const [show, setShow] = React.useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    let bePublisherLink = harcodedIsPublisher ? (
+        <>
+        <li><a onClick = { () => (handleShow())}>Quiero publicar</a></li>
+  
+        <Modal show={show} onHide={handleClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>Quiero publicar</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Si quieres ser uno de nuestros colaboradores, pudiendo realizar publicaciones en el sito, haz click en el boton 'Quiero!'. Se enviara una solicitud y uno de nuestros representantes se comunicara contigo a la brevedad.</Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+              Me lo pierdo
+            </Button>
+            <Button variant="primary" onClick={handleClose}>
+              Quiero!
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
+    ) : (null);
 
     return(
 
@@ -15,8 +44,15 @@ const SignedInLinks = (props) =>{
                     <li><a onClick = { () => (props.logOut())}>Log out</a></li>
                 </ul>
             </li>
+            {bePublisherLink}
         </React.Fragment>
     )
+}
+
+const mapStateToProps = (state) => {
+    return {
+        userData: state.loginData.userData,
+    }
 }
 
 const mapDispatchToProps = (dispatch) =>{
@@ -25,4 +61,4 @@ const mapDispatchToProps = (dispatch) =>{
     }
 }
 
-export default connect(null,mapDispatchToProps)(SignedInLinks);
+export default connect(mapStateToProps,mapDispatchToProps)(SignedInLinks);

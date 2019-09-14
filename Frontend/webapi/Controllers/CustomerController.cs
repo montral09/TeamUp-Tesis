@@ -9,6 +9,7 @@ using backend.Exceptions;
 
 namespace webapi.Controllers
 {
+    // [Authorize]
     public class CustomerController : ApiController
     {
         IFacadeWeb fach = new FacadeFactory().CreateFacadeWeb;
@@ -25,6 +26,25 @@ namespace webapi.Controllers
                 voResp.responseCode = EnumMessages.SUCC_CUSTOMERSOK.ToString();
                 voResp.voCustomers = customers;
                 return Ok(voResp);
+            }
+            catch (GeneralException e)
+            {
+                return InternalServerError(new Exception(e.Codigo));
+            }
+        }
+
+        [EnableCors(origins: "*", headers: "*", methods: "*")]
+        [HttpPut]
+        [Route("api/customer")]
+        public IHttpActionResult Put([FromBody]VORequestRequestPublisher voRequest)
+        {
+            try
+            {
+                VOResponseRequestPublisher voResp = new VOResponseRequestPublisher();
+                fach.RequestPublisher(voRequest.Mail);
+                voResp.responseCode = EnumMessages.SUCC_USRUPDATED.ToString();
+                return Ok(voResp);
+
             }
             catch (GeneralException e)
             {

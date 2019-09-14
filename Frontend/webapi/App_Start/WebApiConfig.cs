@@ -1,4 +1,5 @@
-﻿using System.Web.Http;
+using System.Web.Http;
+using webapi.Controllers;
 
 namespace webapi
 {
@@ -10,6 +11,7 @@ namespace webapi
 
             // Rutas de API web
             config.MapHttpAttributeRoutes();
+            config.MessageHandlers.Add(new TokenValidationHandler());
             config.EnableCors();
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",

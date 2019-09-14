@@ -1,7 +1,8 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-const SignedOutLinks = () =>{
+const SignedOutLinks = (props) =>{
+
     return(
         <React.Fragment>
                 <li><NavLink to="/account/register">Registrarse</NavLink></li>

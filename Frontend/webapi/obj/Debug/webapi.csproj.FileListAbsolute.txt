@@ -202,3 +202,11 @@ C:\Users\Alex\Documents\Github\TeamUp-Tesis\TeamUp-Tesis\Frontend\webapi\obj\Deb
 C:\Users\Alex\Documents\Github\TeamUp-Tesis\TeamUp-Tesis\Frontend\webapi\obj\Debug\webapi.csproj.CopyComplete
 C:\Users\Alex\Documents\Github\TeamUp-Tesis\TeamUp-Tesis\Frontend\webapi\obj\Debug\webapi.dll
 C:\Users\Alex\Documents\Github\TeamUp-Tesis\TeamUp-Tesis\Frontend\webapi\obj\Debug\webapi.pdb
+C:\Users\Alex\Documents\Github\TeamUp-Tesis\TeamUp-Tesis\Frontend\webapi\bin\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\Users\Alex\Documents\Github\TeamUp-Tesis\TeamUp-Tesis\Frontend\webapi\bin\Microsoft.IdentityModel.Logging.dll
+C:\Users\Alex\Documents\Github\TeamUp-Tesis\TeamUp-Tesis\Frontend\webapi\bin\Microsoft.IdentityModel.Tokens.dll
+C:\Users\Alex\Documents\Github\TeamUp-Tesis\TeamUp-Tesis\Frontend\webapi\bin\System.IdentityModel.Tokens.Jwt.dll
+C:\Users\Alex\Documents\Github\TeamUp-Tesis\TeamUp-Tesis\Frontend\webapi\bin\Microsoft.IdentityModel.JsonWebTokens.xml
+C:\Users\Alex\Documents\Github\TeamUp-Tesis\TeamUp-Tesis\Frontend\webapi\bin\Microsoft.IdentityModel.Logging.xml
+C:\Users\Alex\Documents\Github\TeamUp-Tesis\TeamUp-Tesis\Frontend\webapi\bin\Microsoft.IdentityModel.Tokens.xml
+C:\Users\Alex\Documents\Github\TeamUp-Tesis\TeamUp-Tesis\Frontend\webapi\bin\System.IdentityModel.Tokens.Jwt.xml
