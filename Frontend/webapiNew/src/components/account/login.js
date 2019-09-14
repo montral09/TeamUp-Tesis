@@ -2,7 +2,7 @@ import React from 'react';
 import Header from "../header/header";
 import { Link, Redirect } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { connect } from 'react-redux';
@@ -136,12 +136,12 @@ class Login extends React.Component {
                                                             <input type="password" name="password" id="input-password" className="form-control mb-4" placeholder="Password" onChange={this.onChange}></input>
                                                             <div className="d-flex justify-content-around mb-2">
                                                                 <div>
-                                                                    <a href="">Olvido su contraseña?</a>
+                                                                    <Link to="/account/forgotPassword">Olvido su contraseña?</Link>
                                                                 </div>
                                                             </div>
                                                             <input readOnly defaultValue='Login' className="btn btn-primary" onClick={() => { this.login() }} />
-                                                            <p>No tiene cuenta?
-                                                                <a href="/account/register">  Registrarse</a>
+                                                            <p>No tiene cuenta? 
+                                                                <Link to="/account/register"> Registrarse</Link>
                                                             </p>
                                                         </form>
                                                     </div>
