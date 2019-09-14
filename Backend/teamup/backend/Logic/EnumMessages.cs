@@ -18,7 +18,8 @@ namespace backend.Logic
         SUCC_USRUPDATED,
         SUCC_USRDELETED,
         SUCC_PUBLISHERSOK,
-        SUCC_CUSTOMERSOK
+        SUCC_CUSTOMERSOK,
+        ERR_MAILNOTVALIDATED
 
 
     }

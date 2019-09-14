@@ -9,9 +9,10 @@ namespace backend.Data_Access.Query
     interface IDAOUsers
     {
         bool Member(String user);
+        bool isMailValidated(String mail);
         User Find(string mail);
         void InsertUser(User user);
-        void UpdateUser(User user);
+        void UpdateUser(User user, String newMail);
         bool ValidateDeletion(String mail);
         void DeleteUser(String mail);
         List<VOPublisher> GetPublishers();
@@ -19,5 +20,6 @@ namespace backend.Data_Access.Query
         void ApprovePublishers(List<String> mails);
         bool AdminExists(String user);
         Admin GetAdmin(String mail, String password);
+        void RequestPublisher(String mail);
     }
 }

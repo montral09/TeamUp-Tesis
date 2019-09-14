@@ -8,6 +8,7 @@ namespace backend.Logic
     public interface IFacadeWeb
     {
         bool userExists(string mail);
+        bool isMailValidated(String mail);
         VOUser ValidUserLogin(string mail, string password);
         void CreateUser(VORequestUserCreate voUser);
         void UpdateUser(VORequestUserUpdate voUser);
@@ -17,5 +18,6 @@ namespace backend.Logic
         void ApprovePublishers(List<String> mails);
         bool AdminExists(String mail);
         VOAdmin GetAdmin(String mail, String password);
+        void RequestPublisher(String mail);
     }
 }
