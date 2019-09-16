@@ -2,18 +2,66 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { logOut } from '../../services/login/actions';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import Modal from 'react-bootstrap/Modal';
 import {Button} from 'react-bootstrap';
 
 const SignedInLinks = (props) =>{
-    let harcodedIsPublisher = true;
+    const { CheckPublisher, Mail } = props.userData;
     const [show, setShow] = React.useState(false);
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
-    let bePublisherLink = harcodedIsPublisher ? (
+    const requestBePublisher = () =>{
+      fetch('https://localhost:44372/api/customer', {
+          method: 'PUT',
+          header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+
+          body: JSON.stringify({
+              Mail: Mail
+          })
+      }).then(response => response.json()).then(data => {
+          console.log("data:" + JSON.stringify(data));
+          if (data.responseCode == "SUCC_USRUPDATED") {
+              toast.success('Solicitud enviada correctamente', {
+                  position: "top-right",
+                  autoClose: 5000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+              });
+              setShow(false);
+          } else{
+              toast.error('Hubo un error', {
+                  position: "top-right",
+                  autoClose: 5000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+              });
+          }
+      }
+      ).catch(error => {
+          toast.error('Internal error', {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+          });
+          console.log(error);
+      }
+      )
+      
+    }
+
+    let bePublisherLink = !CheckPublisher ? (
         <>
         <li><a onClick = { () => (handleShow())}>Quiero publicar</a></li>
   
@@ -26,7 +74,7 @@ const SignedInLinks = (props) =>{
             <Button variant="secondary" onClick={handleClose}>
               Me lo pierdo
             </Button>
-            <Button variant="primary" onClick={handleClose}>
+            <Button variant="primary" onClick={requestBePublisher}>
               Quiero!
             </Button>
           </Modal.Footer>
