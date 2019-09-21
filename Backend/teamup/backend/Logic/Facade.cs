@@ -1,4 +1,5 @@
-﻿using backend.Data_Access.Query;
+﻿using backend.Data_Access;
+using backend.Data_Access.Query;
 using backend.Data_Access.VO;
 using backend.Data_Access.VO.Data;
 using backend.Exceptions;
@@ -10,10 +11,13 @@ namespace backend.Logic
     public class Facade: IFacadeWeb
     {
         private IDAOUsers users;
+        private IDAOSpaces spaces;
 
         public Facade()
         {
             users = new DAOUsers();
+            spaces = new DAOSpaces();
+
         }
 
         /* This function will check if the user email is exists*/
@@ -63,8 +67,10 @@ namespace backend.Logic
             try
             {
                 User usr = users.Find(mail);
+                PasswordHasher passwordHasher = new PasswordHasher();
+
                 // TO DO : Validate password better
-                if (usr != null && usr.Password.Equals(password))
+                if (usr != null && passwordHasher.VerifyHashedPassword(usr.Password, password))
                 {
                     result = new VOUser(usr.Mail, null, usr.Name, usr.LastName, usr.Phone, usr.Rut, usr.RazonSocial, usr.Address, usr.CheckPublisher);                    
                 }
@@ -211,6 +217,34 @@ namespace backend.Logic
             {
                 throw e;
             }
+        }
+
+        public List<VOSpaceType> GetSpaceTypes()
+        {
+            List<VOSpaceType> spaceTypes = new List<VOSpaceType>();
+            try
+            {
+                spaceTypes = spaces.GetSpaceTypes();
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+            return spaceTypes;
+        }
+
+        public List<VOLocation> GetLocations()
+        {
+            List<VOLocation> locations = new List<VOLocation>();
+            try
+            {
+                locations = spaces.GetLocations();
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+            return locations;
         }
     }
 }
