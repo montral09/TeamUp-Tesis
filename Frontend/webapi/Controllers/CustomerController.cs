@@ -9,7 +9,7 @@ using backend.Exceptions;
 
 namespace webapi.Controllers
 {
-    // [Authorize]
+    //[Authorize]
     public class CustomerController : ApiController
     {
         IFacadeWeb fach = new FacadeFactory().CreateFacadeWeb;

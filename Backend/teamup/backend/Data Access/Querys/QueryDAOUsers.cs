@@ -90,6 +90,12 @@ namespace backend.Data_Access.Query
             String query = "update USERS set checkPublisher = 1 where mail = @customerMail";
             return query;
         }
+
+        public String InsertActivationCode()
+        {
+            String query = "update USERS set activationCode=@activationCode where mail=@mail";
+            return query;
+        }
     }
      
 }
