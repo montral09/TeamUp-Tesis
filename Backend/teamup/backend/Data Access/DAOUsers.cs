@@ -102,10 +102,17 @@ namespace backend.Data_Access.Query
         public void InsertUser (User user)
         {
             SqlConnection con = null;
+            SqlTransaction objTrans = null;
+            const string URL = "http://localhost:3000/account/login/";
             try
             {
+
+                // Create secure password
+                PasswordHasher passwordHasher = new PasswordHasher();
+                string hashPassword = passwordHasher.HashPassword(user.Password);
                 con = new SqlConnection(GetConnectionString());
                 con.Open();
+                objTrans = con.BeginTransaction();
                 String query = cns.InsertUser();
                 SqlCommand insertCommand = new SqlCommand(query, con);
                 List<SqlParameter> prm = new List<SqlParameter>()                
@@ -113,7 +120,7 @@ namespace backend.Data_Access.Query
                         new SqlParameter("@mail", SqlDbType.VarChar) {Value = user.Mail},
                         new SqlParameter("@name", SqlDbType.VarChar) {Value = user.Name},
                         new SqlParameter("@lastName", SqlDbType.VarChar) {Value = user.LastName},
-                        new SqlParameter("@password", SqlDbType.VarChar) {Value = user.Password},
+                        new SqlParameter("@password", SqlDbType.VarChar) {Value = hashPassword},
                         new SqlParameter("@phone", SqlDbType.VarChar) {Value = user.Phone},
                         new SqlParameter("@checkPublisher", SqlDbType.Bit) {Value = user.CheckPublisher},
                         new SqlParameter("@rut", SqlDbType.VarChar) {Value = user.Rut},
@@ -121,10 +128,35 @@ namespace backend.Data_Access.Query
                         new SqlParameter("@address", SqlDbType.VarChar) { Value = user.Address},
                     };
                 insertCommand.Parameters.AddRange(prm.ToArray());
+                insertCommand.Transaction = objTrans;
                 insertCommand.ExecuteNonQuery();
+                // Generate activation code
+                String queryActivation = cns.InsertActivationCode();
+                string activationCode = Guid.NewGuid().ToString();
+                SqlCommand updateCommand = new SqlCommand(queryActivation, con);
+                List<SqlParameter> parameters = new List<SqlParameter>()
+                    {
+                        new SqlParameter("@activationCode", SqlDbType.VarChar) {Value = activationCode},
+                        new SqlParameter("@mail", SqlDbType.VarChar) {Value = user.Mail},
+                    };
+                updateCommand.Parameters.AddRange(parameters.ToArray());
+                updateCommand.Transaction = objTrans;
+                updateCommand.ExecuteNonQuery();
+                // Generate body
+                string subject = "Account Activation";
+                string body = "Hello " + user.Name + ",";
+                body += "<br /><br />Please click the following link to activate your account";
+                string activationLink = URL + activationCode;
+                body += "<br /><a href = '" + activationLink + "'>Click here to activate your account.</a>";
+                body += "<br /><br />Thanks";
+                Util util = new Util();
+                util.SendEmail(user.Mail, body, subject);
+
+                objTrans.Commit();
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                objTrans.Rollback();
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             finally
@@ -200,7 +232,7 @@ namespace backend.Data_Access.Query
                 updateCommand.Parameters.AddRange(prm.ToArray());
                 updateCommand.ExecuteNonQuery();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }

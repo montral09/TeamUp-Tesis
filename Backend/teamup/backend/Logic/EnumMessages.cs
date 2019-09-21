@@ -19,7 +19,11 @@ namespace backend.Logic
         SUCC_USRDELETED,
         SUCC_PUBLISHERSOK,
         SUCC_CUSTOMERSOK,
-        ERR_MAILNOTVALIDATED
+        ERR_MAILNOTVALIDATED,
+        //SpaceTypes
+        SUCC_SPACETYPESOK,
+        //Locations
+        SUCC_LOCATIONSOK
 
 
     }
