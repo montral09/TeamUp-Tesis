@@ -68,10 +68,9 @@ namespace backend.Logic
             {
                 User usr = users.Find(mail);
                 PasswordHasher passwordHasher = new PasswordHasher();
-
-                // TO DO : Validate password better
                 if (usr != null && passwordHasher.VerifyHashedPassword(usr.Password, password))
                 {
+                    users.CreateTokens(mail);
                     result = new VOUser(usr.Mail, null, usr.Name, usr.LastName, usr.Phone, usr.Rut, usr.RazonSocial, usr.Address, usr.CheckPublisher);                    
                 }
             }
@@ -207,6 +206,7 @@ namespace backend.Logic
             return result;
         }
 
+        /*This function update a customer who wants to be a publisher*/
         public void RequestPublisher(String mail)
         {
             try
@@ -219,6 +219,7 @@ namespace backend.Logic
             }
         }
 
+        /*This function return all types of spaces*/
         public List<VOSpaceType> GetSpaceTypes()
         {
             List<VOSpaceType> spaceTypes = new List<VOSpaceType>();
@@ -233,6 +234,7 @@ namespace backend.Logic
             return spaceTypes;
         }
 
+        /*This function return all locations available*/
         public List<VOLocation> GetLocations()
         {
             List<VOLocation> locations = new List<VOLocation>();
@@ -245,6 +247,33 @@ namespace backend.Logic
                 throw e;
             }
             return locations;
+        }
+
+        public void CreateTokens(String mail)
+        {
+            try
+            {
+                users.CreateTokens(mail);
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+
+        public void RecoverPassword(VORequestPasswordRecovery voPasswordRecovery)
+        {
+            try
+            {
+                if (users.ValidAccessToken (voPasswordRecovery.AccessToken, voPasswordRecovery.Name))
+                {
+                    users.UpdatePassword(voPasswordRecovery.Mail, voPasswordRecovery.Name);                    
+                }
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
         }
     }
 }

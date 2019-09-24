@@ -96,6 +96,13 @@ namespace backend.Data_Access.Query
             String query = "update USERS set activationCode=@activationCode where mail=@mail";
             return query;
         }
+
+        public String CreateTokens()
+        {
+            String query = "update USERS set accessToken=@accessToken, accessTokenExpiration=@accessTokenExpiration," +
+                " refreshToken=@refreshToken, refreshTokenExpiration=@refreshTokenExpiration where mail = @mail";
+            return query;
+        }
     }
      
 }

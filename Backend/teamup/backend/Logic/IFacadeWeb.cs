@@ -21,5 +21,7 @@ namespace backend.Logic
         void RequestPublisher(String mail);
         List<VOSpaceType> GetSpaceTypes();
         List<VOLocation> GetLocations();
+        void CreateTokens(String mail);
+        void RecoverPassword(VORequestPasswordRecovery voPasswordRecovery);
     }
 }

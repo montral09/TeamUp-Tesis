@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using backend.Data_Access.VO;
 using backend.Data_Access.VO.Data;
 using backend.Exceptions;
 using backend.Logic;
+using webapi.Controllers;
 
 namespace backend.Data_Access.Query
 {
@@ -151,7 +153,6 @@ namespace backend.Data_Access.Query
                 body += "<br /><br />Thanks";
                 Util util = new Util();
                 util.SendEmail(user.Mail, body, subject);
-
                 objTrans.Commit();
             }
             catch (Exception e)
@@ -518,6 +519,103 @@ namespace backend.Data_Access.Query
 
                 updateCommand.Parameters.Add(parametroMail);
                 updateCommand.ExecuteNonQuery();                
+            }
+            catch (Exception)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        public void CreateTokens(String mail)
+        {
+            SqlConnection con = null;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.CreateTokens();
+                // Create access token and access token expiration
+                string accessToken = TokenGenerator.GenerateTokenJwt(mail);
+                var accessMinutesExpiration = ConfigurationManager.AppSettings["JWT_EXPIRE_MINUTES"];
+                DateTime accessTokenExpiration = DateTime.UtcNow.AddMinutes(Convert.ToInt32(accessMinutesExpiration));
+                // Create refresh token and refresh token expiration
+                string refreshToken = TokenGenerator.GenerateTokenJwt(mail);
+                var refreshDaysExpiration = ConfigurationManager.AppSettings["JWT_REFRESH_EXPIRE_DAYS"];
+                DateTime refreshTokenExpiration = DateTime.UtcNow.AddDays(Convert.ToInt32(refreshDaysExpiration));
+                SqlCommand updateCommand = new SqlCommand(query, con);
+                List<SqlParameter> prm = new List<SqlParameter>()
+                 {
+                    new SqlParameter("@accessToken", SqlDbType.VarChar) {Value = accessToken},
+                    new SqlParameter("@accessTokenExpiration", SqlDbType.SmallDateTime) {Value = accessTokenExpiration},
+                    new SqlParameter("@refreshToken", SqlDbType.VarChar) {Value = refreshToken},
+                    new SqlParameter("@refreshTokenExpiration", SqlDbType.SmallDateTime) {Value = refreshTokenExpiration},
+                    new SqlParameter("@mail", SqlDbType.VarChar) {Value = mail},
+                };
+                updateCommand.Parameters.AddRange(prm.ToArray());
+                updateCommand.ExecuteNonQuery();
+            }
+            catch (Exception)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        public bool ValidAccessToken(String mail, String accessToken)
+        {
+            //TODO
+            return true;
+        }
+
+        public void UpdatePassword (String mail, String name)
+        {
+            SqlConnection con = null;
+            SqlTransaction objTrans = null;
+            const string URL = "http://localhost:3000/account/login/";
+            Util util = new Util();
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                objTrans = con.BeginTransaction();
+                string queryPassword = cns.UpdatePassword();
+                // Generate random password
+                string randomPassword = Path.GetRandomFileName().Replace(".", "").Substring(0, 8);
+                // Encrypted password
+                PasswordHasher passwordHasher = new PasswordHasher();
+                string hashPassword = passwordHasher.HashPassword(randomPassword);
+                SqlCommand updatePassword = new SqlCommand(queryPassword, con);
+                List<SqlParameter> parameterPassword = new List<SqlParameter>()
+                        {
+                            new SqlParameter("@password", SqlDbType.VarChar) {Value = hashPassword},
+                            new SqlParameter("@mail", SqlDbType.VarChar) {Value = mail},
+                        };
+                updatePassword.Parameters.AddRange(parameterPassword.ToArray());
+                updatePassword.ExecuteNonQuery();
+
+                // Generate body
+                string subject = "Your password was reset";
+                string body = "Hello " + name + ",";
+                body += "<br /><br />Your account has been updated and a new random password has been generated. Your new password is " + randomPassword;
+                body += "We strongly recommend to change it";
+                string activationLink = URL;
+                body += "<br /><a href = '" + activationLink + "'>You can log in from here.</a>";
+                body += "<br /><br />Thanks";
+                util.SendEmail(mail, body, subject);
+                objTrans.Commit();
             }
             catch (Exception)
             {

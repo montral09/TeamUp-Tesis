@@ -9,6 +9,7 @@ namespace backend.Data_Access.VO
     {
         public VOUser voUserLog;
         public string token;
+        public string refreshToken;
 
         public VOResponseLogin() { }
         public VOResponseLogin(VOUser voUser)

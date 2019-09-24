@@ -9,7 +9,7 @@ using System.Threading;
 
 namespace webapi.Controllers
 {
-    [AllowAnonymous]
+    
     public class LoginController : ApiController
     {
         IFacadeWeb fach = new FacadeFactory().CreateFacadeWeb;
@@ -31,10 +31,13 @@ namespace webapi.Controllers
                         VOUser userLogged = fach.ValidUserLogin(voLogin.Mail, voLogin.Password);
                         if (userLogged != null)
                         {
-                            var token = TokenGenerator.GenerateTokenJwt(voLogin.Mail);                            
+                            var token = TokenGenerator.GenerateTokenJwt(voLogin.Mail);
+                            //var refreshToken = RefreshTokenGenerator.GenerateRefreshTokenJwt(voLogin.Mail);
                             voResp.responseCode = EnumMessages.SUCC_USRLOGSUCCESS.ToString();
                             voResp.voUserLog = userLogged;
-                            voResp.token = token;
+                            //voResp.token = token;
+                            //voResp.refreshToken = refreshToken;
+                            //fach.InsertRefreshToken(refreshToken, voLogin.Mail);
                         }
                         else
                         {                            

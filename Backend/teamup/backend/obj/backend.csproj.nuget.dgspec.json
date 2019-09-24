@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Alex\\Documents\\Github\\TeamUp-Tesis\\TeamUp-Tesis\\Backend\\teamup\\backend\\backend.csproj": {}
+    "C:\\Users\\fitur\\Documents\\github2\\TeamUp-Tesis\\Backend\\teamup\\backend\\backend.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Alex\\Documents\\Github\\TeamUp-Tesis\\TeamUp-Tesis\\Backend\\teamup\\backend\\backend.csproj": {
+    "C:\\Users\\fitur\\Documents\\github2\\TeamUp-Tesis\\Backend\\teamup\\backend\\backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Alex\\Documents\\Github\\TeamUp-Tesis\\TeamUp-Tesis\\Backend\\teamup\\backend\\backend.csproj",
+        "projectUniqueName": "C:\\Users\\fitur\\Documents\\github2\\TeamUp-Tesis\\Backend\\teamup\\backend\\backend.csproj",
         "projectName": "backend",
-        "projectPath": "C:\\Users\\Alex\\Documents\\Github\\TeamUp-Tesis\\TeamUp-Tesis\\Backend\\teamup\\backend\\backend.csproj",
-        "packagesPath": "C:\\Users\\Alex\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Alex\\Documents\\Github\\TeamUp-Tesis\\TeamUp-Tesis\\Backend\\teamup\\backend\\obj\\",
+        "projectPath": "C:\\Users\\fitur\\Documents\\github2\\TeamUp-Tesis\\Backend\\teamup\\backend\\backend.csproj",
+        "packagesPath": "C:\\Users\\fitur\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\fitur\\Documents\\github2\\TeamUp-Tesis\\Backend\\teamup\\backend\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "C:\\Users\\Alex\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\fitur\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -41,6 +41,10 @@
       "frameworks": {
         "netstandard2.0": {
           "dependencies": {
+            "Microsoft.AspNet.WebApi.Cors": {
+              "target": "Package",
+              "version": "[5.2.7, )"
+            },
             "NETStandard.Library": {
               "suppressParent": "All",
               "target": "Package",
@@ -54,6 +58,10 @@
             "System.Data.SqlClient": {
               "target": "Package",
               "version": "[4.6.1, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[5.5.0, )"
             }
           },
           "imports": [

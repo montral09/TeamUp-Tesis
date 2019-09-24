@@ -6,14 +6,14 @@ namespace backend.Data_Access.VO.Data
 {
     public class VOLocation
     {
-        int idLocation { get; set; }
-        string description { get; set; }
+        public int IdLocation { get; set; }
+        public string Description { get; set; }
 
         public VOLocation() { }
         public VOLocation(int idLocation, string description)
         {
-            this.idLocation = idLocation;
-            this.description = description;
+            this.IdLocation = idLocation;
+            this.Description = description;
         }
     }
 }
