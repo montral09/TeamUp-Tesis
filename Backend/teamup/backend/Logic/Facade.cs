@@ -12,12 +12,12 @@ namespace backend.Logic
     {
         private IDAOUsers users;
         private IDAOSpaces spaces;
-
+        private IDAOUtil util;
         public Facade()
         {
             users = new DAOUsers();
             spaces = new DAOSpaces();
-
+            util = new DAOUtil();
         }
 
         /* This function will check if the user email is exists*/
@@ -61,18 +61,20 @@ namespace backend.Logic
             }
         }
         /* This function will return the user or null if user/password doesn't match  */
-        public VOUser ValidUserLogin(string mail, string password)
+        public VOResponseLogin ValidUserLogin(string mail, string password)
         {
-            VOUser result = null;
+            VOResponseLogin result = null;
             try
             {
                 User usr = users.Find(mail);
                 PasswordHasher passwordHasher = new PasswordHasher();
-
-                // TO DO : Validate password better
                 if (usr != null && passwordHasher.VerifyHashedPassword(usr.Password, password))
                 {
-                    result = new VOUser(usr.Mail, null, usr.Name, usr.LastName, usr.Phone, usr.Rut, usr.RazonSocial, usr.Address, usr.CheckPublisher);                    
+                    VOTokens voTokens = users.CreateTokens(mail);
+                    result = new VOResponseLogin();
+                    result.RefreshToken = voTokens.RefreshToken;
+                    result.AccessToken = voTokens.AccessToken;
+                    result.voUserLog = new VOUser(usr.Mail, null, usr.Name, usr.LastName, usr.Phone, usr.Rut, usr.RazonSocial, usr.Address, usr.CheckPublisher);                    
                 }
             }
             catch (GeneralException e)
@@ -207,6 +209,7 @@ namespace backend.Logic
             return result;
         }
 
+        /*This function update a customer who wants to be a publisher*/
         public void RequestPublisher(String mail)
         {
             try
@@ -219,6 +222,7 @@ namespace backend.Logic
             }
         }
 
+        /*This function return all types of spaces*/
         public List<VOSpaceType> GetSpaceTypes()
         {
             List<VOSpaceType> spaceTypes = new List<VOSpaceType>();
@@ -233,6 +237,7 @@ namespace backend.Logic
             return spaceTypes;
         }
 
+        /*This function return all locations available*/
         public List<VOLocation> GetLocations()
         {
             List<VOLocation> locations = new List<VOLocation>();
@@ -245,6 +250,61 @@ namespace backend.Logic
                 throw e;
             }
             return locations;
+        }
+
+        public void CreateTokens(String mail)
+        {
+            try
+            {
+                users.CreateTokens(mail);
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+
+        public void RecoverPassword(VORequestPasswordRecovery voPasswordRecovery)
+        {
+            try
+            {
+                   users.UpdatePassword(voPasswordRecovery.Mail);                    
+             
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+        
+        public int ValidateEmail(VORequestValidateEmail voValidateEmail)
+        {
+            try
+            {
+                return users.ValidateEmail(voValidateEmail.ActivationCode);
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+
+        public string UpdateUserAdmin(VORequestUpdateUserAdmin voRequestUpdate)
+        {
+            try
+            {
+                String message = util.ValidAccessToken(voRequestUpdate.Mail, voRequestUpdate.AccessToken);
+                if (EnumMessages.OK.Equals(message))
+                {
+                    users.UpdateUserAdmin(voRequestUpdate);
+                   
+                }
+                return message;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
         }
     }
 }

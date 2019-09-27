@@ -9,7 +9,7 @@ namespace backend.Logic
     {
         bool userExists(string mail);
         bool isMailValidated(String mail);
-        VOUser ValidUserLogin(string mail, string password);
+        VOResponseLogin ValidUserLogin(string mail, string password);
         void CreateUser(VORequestUserCreate voUser);
         void UpdateUser(VORequestUserUpdate voUser);
         void DeleteUser(String mail);
@@ -21,5 +21,9 @@ namespace backend.Logic
         void RequestPublisher(String mail);
         List<VOSpaceType> GetSpaceTypes();
         List<VOLocation> GetLocations();
+        void CreateTokens(String mail);
+        void RecoverPassword(VORequestPasswordRecovery voPasswordRecovery);
+        int ValidateEmail(VORequestValidateEmail voValidateEmail);
+        string UpdateUserAdmin(VORequestUpdateUserAdmin voRequestUpdate);
     }
 }

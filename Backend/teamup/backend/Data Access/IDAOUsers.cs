@@ -20,6 +20,11 @@ namespace backend.Data_Access.Query
         void ApprovePublishers(List<String> mails);
         bool AdminExists(String user);
         Admin GetAdmin(String mail, String password);
-        void RequestPublisher(String mail); 
+        void RequestPublisher(String mail);
+        VOTokens CreateTokens(String mail);
+        bool ValidAccessToken(String mail, String accessToken);
+        void UpdatePassword(String mail);
+        int ValidateEmail(String activationCode);
+        void UpdateUserAdmin(VORequestUpdateUserAdmin voRequest);
     }
 }

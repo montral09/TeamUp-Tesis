@@ -16,3 +16,11 @@ C:\Users\Alex\Documents\Github\TeamUp-Tesis\TeamUp-Tesis\Backend\teamup\backend\
 C:\Users\Alex\Documents\Github\TeamUp-Tesis\TeamUp-Tesis\Backend\teamup\backend\obj\Debug\netstandard2.0\backend.AssemblyInfo.cs
 C:\Users\Alex\Documents\Github\TeamUp-Tesis\TeamUp-Tesis\Backend\teamup\backend\obj\Debug\netstandard2.0\backend.dll
 C:\Users\Alex\Documents\Github\TeamUp-Tesis\TeamUp-Tesis\Backend\teamup\backend\obj\Debug\netstandard2.0\backend.pdb
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\backend\bin\Debug\netstandard2.0\backend.deps.json
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\backend\bin\Debug\netstandard2.0\backend.dll
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\backend\bin\Debug\netstandard2.0\backend.pdb
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\backend\obj\Debug\netstandard2.0\backend.csproj.CoreCompileInputs.cache
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\backend\obj\Debug\netstandard2.0\backend.AssemblyInfoInputs.cache
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\backend\obj\Debug\netstandard2.0\backend.AssemblyInfo.cs
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\backend\obj\Debug\netstandard2.0\backend.dll
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\backend\obj\Debug\netstandard2.0\backend.pdb

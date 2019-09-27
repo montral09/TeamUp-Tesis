@@ -6,14 +6,14 @@ namespace backend.Data_Access.VO.Data
 {
     public class VOSpaceType
     {
-        int idSpaceType { get; set; }
-        string description { get; set; }
+        public int IdSpaceType { get; set; }
+        public string Description { get; set; }
 
         public VOSpaceType() { }
         public VOSpaceType (int idSpaceType, string description)
         {
-            this.idSpaceType = idSpaceType;
-            this.description = description;
+            this.IdSpaceType = idSpaceType;
+            this.Description = description;
         }
     }
 }

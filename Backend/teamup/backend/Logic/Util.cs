@@ -1,11 +1,7 @@
-﻿using backend.Data_Access.Query;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data.SqlClient;
+﻿using backend.Exceptions;
+using System.IO;
 using System.Net;
 using System.Net.Mail;
-using System.Text;
 
 namespace backend.Logic
 {
@@ -13,11 +9,6 @@ namespace backend.Logic
     {
         const string SENDER_MAIL = "teamupude@gmail.com";
         const string SENDER_PASSWORD = "teamupudeude";
-        private String GetConnectionString()
-        {
-            String con = ConfigurationManager.ConnectionStrings["ConnectionString"].ToString();
-            return con;
-        }
         public void SendEmail(string to, string body, string subject)
         {
             MailMessage mm = new MailMessage(SENDER_MAIL, to);            
@@ -33,6 +24,13 @@ namespace backend.Logic
             smtp.Credentials = NetworkCred;
             smtp.Port = 587;
             smtp.Send(mm);           
+        }
+
+        public static string GetRandomString()
+        {
+            string path = Path.GetRandomFileName();
+            path = path.Replace(".", "");
+            return path;
         }
     }
 }
