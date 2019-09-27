@@ -19,6 +19,7 @@ class Register extends React.Component {
             phone : '',
             email: '',
             password: '',
+            passwordConfirm: "",
             gestorCheckbox : '',
             rut : '',
             razonSocial : '',
@@ -39,11 +40,29 @@ class Register extends React.Component {
     
     // Validate if all the required inputs are inputted, returns true or false
     checkRequiredInputs() {
-        var returnValue = false;
-        if (this.state.password && this.state.email && this.state.firstName
-            && this.state.lastName && this.state.phone) {
+        let returnValue = false;
+        let message = "";
+        if (!this.state.password && !this.state.email && !this.state.firstName
+            && !this.state.lastName && !this.state.phone) {
+                message='Por favor ingrese los campos obligatorios (*)';
                 returnValue = true;
         }
+        if (this.state.password != this.state.passwordConfirm) {
+            returnValue = true;
+            message = "Ambos campos de contraseña deben ser iguales";
+        }
+        
+        if(message){
+            toast.error(message, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+        }
+        
         return returnValue;
     }
 
@@ -118,15 +137,6 @@ class Register extends React.Component {
                 console.log(error);
             }
             )
-        } else {
-            toast.error('Por favor ingrese los campos obligatorios (*)', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
         }
 
     }
@@ -158,20 +168,21 @@ class Register extends React.Component {
                                                 <div className="col-md-6">
                                                     <form className="border border-light p-6">
                                                         <p className="h4 mb-4 text-center">Registrarse</p>
-                                                        <input type="text" id="firstName" className="form-control mb-4" placeholder="Nombre (*)" onChange={this.onChange}></input>
-                                                        <input type="text" id="lastName" className="form-control mb-4" placeholder="Apellido (*)" onChange={this.onChange}></input>
-                                                        <input type="email" id="email" className="form-control" placeholder="Correo (*)" onChange={this.onChange}></input>
+                                                        <input type="text" id="firstName" className="form-control mb-4" placeholder="Nombre (*)" maxLength="25" onChange={this.onChange}></input>
+                                                        <input type="text" id="lastName" className="form-control mb-4" placeholder="Apellido (*)" maxLength="25" onChange={this.onChange}></input>
+                                                        <input type="email" id="email" className="form-control" placeholder="Correo (*)" maxLength="25" onChange={this.onChange}></input>
                                                         <small id="emailHelper" className="form-text text-muted mb-2">Este va a ser su usuario</small>
-                                                        <input type="text" id="phone" className="form-control mb-4" placeholder="Numero telefónico (*)" aria-describedby="phone" onChange={this.onChange}></input>
-                                                        <input type="password" name="password" id="password" className="form-control mb-4" placeholder="Contraseña (*)" onChange={this.onChange}></input>
+                                                        <input type="text" id="phone" className="form-control mb-4" placeholder="Numero telefónico (*)" aria-describedby="phone" maxLength="25" onChange={this.onChange}></input>
+                                                        <input type="password" name="password" id="password" className="form-control mb-4" placeholder="Contraseña (*)" maxLength="25" onChange={this.onChange}></input>
+                                                        <input type="password" name="passwordConfirm" id="passwordConfirm" className="form-control mb-4" placeholder="Repetir contraseña (*)" maxLength="25" onChange={this.onChange}></input>
                                                         <div className="custom-control custom-checkbox">
                                                             <input type="checkbox" className="custom-control-input mb-4" id="gestorCheckbox" onChange={this.onChange}></input>
                                                             <label className="custom-control-label mb-4" htmlFor="gestorCheckbox">Desea aplicar para ser gestor?</label>
                                                         </div>
                                                         <small id="emailHelper" className="form-text text-muted mb-2">Si es empresa, por favor llene lo siguiente:</small>
-                                                        <input type="text" id="rut" className="form-control mb-4" placeholder="Rut" aria-describedby="rut" onChange={this.onChange}></input>
-                                                        <input type="text" id="razonSocial" className="form-control mb-4" placeholder="Razón Social" aria-describedby="razonSocial" onChange={this.onChange}></input>
-                                                        <input type="text" id="direccion" className="form-control mb-4" placeholder="Dirección" aria-describedby="direccion" onChange={this.onChange}></input>
+                                                        <input type="text" id="rut" className="form-control mb-4" placeholder="Rut" aria-describedby="rut" maxLength="25" onChange={this.onChange}></input>
+                                                        <input type="text" id="razonSocial" className="form-control mb-4" placeholder="Razón Social" aria-describedby="razonSocial" maxLength="25" onChange={this.onChange}></input>
+                                                        <input type="text" id="direccion" className="form-control mb-4" placeholder="Dirección" aria-describedby="direccion" maxLength="25" onChange={this.onChange}></input>
                                                         <div className="text-center">
                                                         <input readOnly defaultValue='Registrarse' className="btn btn-primary" onClick={() => { this.register() }} />
                                                             <hr></hr>

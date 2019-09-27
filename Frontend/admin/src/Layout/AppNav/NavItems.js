@@ -12,6 +12,13 @@ export const MainNav = [
         to: '#/dashboards/basic',
     },
 ];
+export const UsrNav = [
+    {
+        icon: 'pe-7s-users',
+        label: 'Usuarios',
+        to: '#/users/allusers',
+    },
+];
 export const ComponentsNav = [
     {
         icon: 'pe-7s-diamond',
