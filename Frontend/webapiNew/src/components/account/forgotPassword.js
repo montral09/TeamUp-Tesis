@@ -19,7 +19,7 @@ class ForgotPassword extends React.Component {
         this.state = {
             email: '',
         }
-        this.login = this.restore.bind(this);
+        this.restore = this.restore.bind(this);
     }
 
     componentDidMount() {
@@ -34,7 +34,61 @@ class ForgotPassword extends React.Component {
     }
 
     restore() {
-        console.log("email to send: "+this.state.email)
+        if(this.state.email){
+            fetch('https://localhost:44372/api/passwordRecovery', {
+                method: 'POST',
+                header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({
+                    Mail: this.state.email
+                })
+            }).then(response => response.json()).then(data => {
+                console.log("data:" + JSON.stringify(data));
+                if (data.responseCode == "SUCC_PASSWORDUPDATED") {
+                    toast.success('Se ha enviado un correo con su nueva password ', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                    this.setState({
+                        isLoading: false
+                    });
+                    this.props.history.push('/account/login');
+                } else {
+                    toast.error('Hubo un error', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                }
+            }
+            ).catch(error => {
+                toast.error('Internal error', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
+                console.log(error);
+            }
+            )
+        }else{
+            toast.error('Por favor ingrese un correo', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+        }
     }
 
     render() {
