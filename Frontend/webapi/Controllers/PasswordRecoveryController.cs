@@ -20,7 +20,16 @@ namespace webapi.Controllers
             try
             {
                 VOResponsePasswordRecovery voResp = new VOResponsePasswordRecovery();
-                voResp.responseCode = EnumMessages.SUCC_PASSWORDUPDATED.ToString();
+                bool userExists = fach.userExists(voPasswordRecovery.Mail);
+                if (userExists)
+                {
+                    fach.RecoverPassword(voPasswordRecovery);
+                    voResp.responseCode = EnumMessages.SUCC_PASSWORDUPDATED.ToString();
+                } else
+                {
+                    voResp.responseCode = EnumMessages.ERR_USRMAILNOTEXIST.ToString();
+                }
+                
                 return Ok(voResp);
             }
             catch (GeneralException e)

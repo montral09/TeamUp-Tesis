@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using backend.Exceptions;
+using System.IO;
+using System.Net;
 using System.Net.Mail;
 
 namespace backend.Logic
@@ -22,6 +24,13 @@ namespace backend.Logic
             smtp.Credentials = NetworkCred;
             smtp.Port = 587;
             smtp.Send(mm);           
+        }
+
+        public static string GetRandomString()
+        {
+            string path = Path.GetRandomFileName();
+            path = path.Replace(".", "");
+            return path;
         }
     }
 }

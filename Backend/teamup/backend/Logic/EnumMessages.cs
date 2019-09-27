@@ -6,7 +6,8 @@ namespace backend.Logic
 {
     public enum EnumMessages
     {
-
+        // General success message
+        OK,
         //System errors
         ERR_SYSTEM,
         //Users
@@ -21,6 +22,8 @@ namespace backend.Logic
         SUCC_CUSTOMERSOK,
         ERR_MAILNOTVALIDATED,
         SUCC_PASSWORDUPDATED,
+        SUCC_EMAILVALIDATED,
+        ERR_ACTIVATIONCODENOTEXIST,
         //SpaceTypes
         SUCC_SPACETYPESOK,
         //Locations

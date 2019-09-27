@@ -103,6 +103,17 @@ namespace backend.Data_Access.Query
                 " refreshToken=@refreshToken, refreshTokenExpiration=@refreshTokenExpiration where mail = @mail";
             return query;
         }
+        public String ValidateEmail()
+        {
+            String query = "update USERS set activationCode=null, mailValidated=1 where activationCode=@activationCode";
+            return query;
+        }
+
+        public String UpdateUserAdmin()
+        {
+            String query = "update USERS set mail = @mail, name = @name, lastName = @lastName, phone = @phone, checkPublisher=@checkPublisher, rut = @rut, razonSocial = @razonSocial, address = @address, mailValidated=@mailValidated, publisherValidated=@publisherValidated WHERE idUser = @idUser ";
+            return query;
+        }
     }
      
 }

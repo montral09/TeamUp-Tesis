@@ -6,16 +6,12 @@ namespace backend.Data_Access.VO
 {
     public class VORequestPasswordRecovery
     {
-        public String Mail { get; set; }
-        public String Name { get; set; } 
-        public String AccessToken { get; set; }
+        public String Mail { get; set; }        
 
         public VORequestPasswordRecovery() { }
-        public VORequestPasswordRecovery(string mail, string accessToken, string name)
+        public VORequestPasswordRecovery(string mail)
         {
             Mail = mail;
-            Name = name;
-            AccessToken = accessToken;
         }
     }
 }

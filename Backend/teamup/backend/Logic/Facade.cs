@@ -12,12 +12,12 @@ namespace backend.Logic
     {
         private IDAOUsers users;
         private IDAOSpaces spaces;
-
+        private IDAOUtil util;
         public Facade()
         {
             users = new DAOUsers();
             spaces = new DAOSpaces();
-
+            util = new DAOUtil();
         }
 
         /* This function will check if the user email is exists*/
@@ -61,17 +61,20 @@ namespace backend.Logic
             }
         }
         /* This function will return the user or null if user/password doesn't match  */
-        public VOUser ValidUserLogin(string mail, string password)
+        public VOResponseLogin ValidUserLogin(string mail, string password)
         {
-            VOUser result = null;
+            VOResponseLogin result = null;
             try
             {
                 User usr = users.Find(mail);
                 PasswordHasher passwordHasher = new PasswordHasher();
                 if (usr != null && passwordHasher.VerifyHashedPassword(usr.Password, password))
                 {
-                    users.CreateTokens(mail);
-                    result = new VOUser(usr.Mail, null, usr.Name, usr.LastName, usr.Phone, usr.Rut, usr.RazonSocial, usr.Address, usr.CheckPublisher);                    
+                    VOTokens voTokens = users.CreateTokens(mail);
+                    result = new VOResponseLogin();
+                    result.RefreshToken = voTokens.RefreshToken;
+                    result.AccessToken = voTokens.AccessToken;
+                    result.voUserLog = new VOUser(usr.Mail, null, usr.Name, usr.LastName, usr.Phone, usr.Rut, usr.RazonSocial, usr.Address, usr.CheckPublisher);                    
                 }
             }
             catch (GeneralException e)
@@ -265,10 +268,38 @@ namespace backend.Logic
         {
             try
             {
-                if (users.ValidAccessToken (voPasswordRecovery.AccessToken, voPasswordRecovery.Name))
+                   users.UpdatePassword(voPasswordRecovery.Mail);                    
+             
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+        
+        public int ValidateEmail(VORequestValidateEmail voValidateEmail)
+        {
+            try
+            {
+                return users.ValidateEmail(voValidateEmail.ActivationCode);
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+
+        public string UpdateUserAdmin(VORequestUpdateUserAdmin voRequestUpdate)
+        {
+            try
+            {
+                String message = util.ValidAccessToken(voRequestUpdate.Mail, voRequestUpdate.AccessToken);
+                if (EnumMessages.OK.Equals(message))
                 {
-                    users.UpdatePassword(voPasswordRecovery.Mail, voPasswordRecovery.Name);                    
+                    users.UpdateUserAdmin(voRequestUpdate);
+                   
                 }
+                return message;
             }
             catch (GeneralException e)
             {

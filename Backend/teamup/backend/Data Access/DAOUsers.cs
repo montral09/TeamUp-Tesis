@@ -300,7 +300,7 @@ namespace backend.Data_Access.Query
                 SqlDataReader dr = selectCommand.ExecuteReader();
                 while (dr.Read())
                 {                                                  
-                    VOPublisher vo = new VOPublisher(Convert.ToString(dr["mail"]), Convert.ToString(dr["password"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]),  Convert.ToString(dr["rut"]), Convert.ToString(dr["razonSocial"]), Convert.ToString(dr["address"]), Convert.ToBoolean(dr ["publisherValidated"]), Convert.ToBoolean(dr["mailValidated"]));
+                    VOPublisher vo = new VOPublisher(Convert.ToString(dr["mail"]), "", Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]),  Convert.ToString(dr["rut"]), Convert.ToString(dr["razonSocial"]), Convert.ToString(dr["address"]), Convert.ToBoolean(dr ["publisherValidated"]), Convert.ToBoolean(dr["mailValidated"]));
                     publishers.Add(vo);
                 }
                 dr.Close();
@@ -332,7 +332,7 @@ namespace backend.Data_Access.Query
                 SqlDataReader dr = selectCommand.ExecuteReader();
                 while (dr.Read())
                 {
-                    VOCustomer vo = new VOCustomer(Convert.ToString(dr["mail"]), Convert.ToString(dr["password"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToString(dr["rut"]), Convert.ToString(dr["razonSocial"]), Convert.ToString(dr["address"]), Convert.ToBoolean(dr["mailValidated"]));
+                    VOCustomer vo = new VOCustomer(Convert.ToString(dr["mail"]), "", Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToString(dr["rut"]), Convert.ToString(dr["razonSocial"]), Convert.ToString(dr["address"]), Convert.ToBoolean(dr["mailValidated"]));
                     customers.Add(vo);
                 }
                 dr.Close();
@@ -533,20 +533,20 @@ namespace backend.Data_Access.Query
             }
         }
 
-        public void CreateTokens(String mail)
+        public VOTokens CreateTokens(String mail)
         {
             SqlConnection con = null;
             try
-            {
+            {                
                 con = new SqlConnection(GetConnectionString());
                 con.Open();
                 String query = cns.CreateTokens();
                 // Create access token and access token expiration
-                string accessToken = TokenGenerator.GenerateTokenJwt(mail);
+                string accessToken = Util.GetRandomString();
                 var accessMinutesExpiration = ConfigurationManager.AppSettings["JWT_EXPIRE_MINUTES"];
                 DateTime accessTokenExpiration = DateTime.UtcNow.AddMinutes(Convert.ToInt32(accessMinutesExpiration));
                 // Create refresh token and refresh token expiration
-                string refreshToken = TokenGenerator.GenerateTokenJwt(mail);
+                string refreshToken = Util.GetRandomString();
                 var refreshDaysExpiration = ConfigurationManager.AppSettings["JWT_REFRESH_EXPIRE_DAYS"];
                 DateTime refreshTokenExpiration = DateTime.UtcNow.AddDays(Convert.ToInt32(refreshDaysExpiration));
                 SqlCommand updateCommand = new SqlCommand(query, con);
@@ -560,8 +560,9 @@ namespace backend.Data_Access.Query
                 };
                 updateCommand.Parameters.AddRange(prm.ToArray());
                 updateCommand.ExecuteNonQuery();
+                return new VOTokens(accessToken, refreshToken);
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -580,7 +581,7 @@ namespace backend.Data_Access.Query
             return true;
         }
 
-        public void UpdatePassword (String mail, String name)
+        public void UpdatePassword (String mail)
         {
             SqlConnection con = null;
             SqlTransaction objTrans = null;
@@ -591,6 +592,7 @@ namespace backend.Data_Access.Query
                 con = new SqlConnection(GetConnectionString());
                 con.Open();
                 objTrans = con.BeginTransaction();
+                User user = Find(mail);
                 string queryPassword = cns.UpdatePassword();
                 // Generate random password
                 string randomPassword = Path.GetRandomFileName().Replace(".", "").Substring(0, 8);
@@ -604,18 +606,108 @@ namespace backend.Data_Access.Query
                             new SqlParameter("@mail", SqlDbType.VarChar) {Value = mail},
                         };
                 updatePassword.Parameters.AddRange(parameterPassword.ToArray());
+                updatePassword.Transaction = objTrans;
                 updatePassword.ExecuteNonQuery();
 
                 // Generate body
                 string subject = "Your password was reset";
-                string body = "Hello " + name + ",";
+                string body = "Hello " + user.Name + ",";
                 body += "<br /><br />Your account has been updated and a new random password has been generated. Your new password is " + randomPassword;
-                body += "We strongly recommend to change it";
+                body += "<br /><br />We strongly recommend to change it";
                 string activationLink = URL;
                 body += "<br /><a href = '" + activationLink + "'>You can log in from here.</a>";
                 body += "<br /><br />Thanks";
                 util.SendEmail(mail, body, subject);
                 objTrans.Commit();
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+        }
+        public int ValidateEmail(String activationCode)
+        {
+            SqlConnection con = null;
+            Util util = new Util();
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                string query = cns.ValidateEmail();               
+                SqlCommand updateCommand = new SqlCommand(query, con);
+                SqlParameter parameterActivationCode = new SqlParameter()
+                {
+                    ParameterName = "@activationCode",
+                    Value = activationCode,
+                    SqlDbType = SqlDbType.VarChar
+                                             
+                };
+                updateCommand.Parameters.Add(parameterActivationCode);
+                int numberOfRecords = updateCommand.ExecuteNonQuery();
+                return numberOfRecords;
+            }
+            catch (Exception)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        public void UpdateUserAdmin(VORequestUpdateUserAdmin voRequest)
+        {
+            SqlConnection con = null;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();               
+                int? idUser = null;
+                String queryGetID = cns.Member();
+                SqlCommand selectCommand = new SqlCommand(queryGetID, con);
+                SqlParameter parametroID = new SqlParameter()
+                {
+                    ParameterName = "@mail",
+                    Value = voRequest.Mail,
+                    SqlDbType = SqlDbType.VarChar
+                };
+                selectCommand.Parameters.Add(parametroID);
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                while (dr.Read())
+                {
+                    idUser = Convert.ToInt32(dr["idUser"]);
+                }
+                dr.Close();
+                String query = cns.UpdateUserAdmin();
+                SqlCommand updateCommand = new SqlCommand(query, con);
+                List<SqlParameter> prm = new List<SqlParameter>()
+                 {
+                    new SqlParameter("@idUser", SqlDbType.Int) { Value = idUser},
+                    new SqlParameter("@mail", SqlDbType.VarChar) {Value = voRequest.Mail},
+                    new SqlParameter("@name", SqlDbType.VarChar) {Value = voRequest.Name},
+                    new SqlParameter("@lastName", SqlDbType.VarChar) {Value = voRequest.LastName},
+                    new SqlParameter("@phone", SqlDbType.VarChar) {Value = voRequest.Phone},
+                    new SqlParameter("@checkPublisher", SqlDbType.Bit) {Value = voRequest.CheckPublisher},
+                    new SqlParameter("@rut", SqlDbType.VarChar) {Value = voRequest.Rut},
+                    new SqlParameter("@razonSocial", SqlDbType.VarChar) {Value = voRequest.RazonSocial},
+                    new SqlParameter("@address", SqlDbType.VarChar) { Value = voRequest.Address},
+                    new SqlParameter("@mailValidated", SqlDbType.Bit) { Value = voRequest.MailValidated},
+                    new SqlParameter("@publisherValidated", SqlDbType.Bit) { Value = voRequest.PublisherValidated},
+
+                };
+                updateCommand.Parameters.AddRange(prm.ToArray());
+                updateCommand.ExecuteNonQuery();
             }
             catch (Exception)
             {
