@@ -181,18 +181,18 @@ class Modify extends React.Component {
                                                 </div>
                                                 <div className="col-md-6">
                                                     <form className="border border-light p-6">
-                                                        <p className="h4 mb-4 text-center">Registrarse</p>
-                                                        <input type="text" id="firstName" className="form-control mb-4" placeholder="Nombre" onChange={this.onChange} value={this.state.firstName} readOnly ></input>
-                                                        <input type="text" id="lastName" className="form-control mb-4" placeholder="Apellido" onChange={this.onChange} value={this.state.lastName} readOnly></input>
-                                                        <input type="email" id="email" className="form-control" placeholder="Correo (*)" onChange={this.onChange} value={this.state.email}></input>
+                                                        <p className="h4 mb-4 text-center">Modificar Datos</p>
+                                                        <input type="text" id="firstName" className="form-control mb-4" placeholder="Nombre" maxLength="25" onChange={this.onChange} value={this.state.firstName} readOnly ></input>
+                                                        <input type="text" id="lastName" className="form-control mb-4" placeholder="Apellido" maxLength="25" onChange={this.onChange} value={this.state.lastName} readOnly></input>
+                                                        <input type="email" id="email" className="form-control" placeholder="Correo (*)" maxLength="50" onChange={this.onChange} value={this.state.email}></input>
                                                         <small id="emailHelper" className="form-text text-muted mb-2">Este es su usuario</small>
-                                                        <input type="text" id="phone" className="form-control mb-4" placeholder="Numero telefónico" aria-describedby="phone" onChange={this.onChange} value={this.state.phone}></input>
-                                                        <input type="password" name="password" id="password" className="form-control mb-4" placeholder="Contraseña (*)" onChange={this.onChange}></input>
-                                                        <input type="password" name="passwordConfirm" id="passwordConfirm" className="form-control mb-4" placeholder="Repetir contraseña (*)" onChange={this.onChange}></input>
+                                                        <input type="text" id="phone" className="form-control mb-4" placeholder="Numero telefónico" aria-describedby="phone" maxLength="25" onChange={this.onChange} value={this.state.phone}></input>
+                                                        <input type="password" name="password" id="password" className="form-control mb-4" placeholder="Contraseña (*)" maxLength="25" onChange={this.onChange}></input>
+                                                        <input type="password" name="passwordConfirm" id="passwordConfirm" className="form-control mb-4" placeholder="Repetir contraseña (*)" maxLength="25" onChange={this.onChange}></input>
                                                         <small id="emailHelper" className="form-text text-muted mb-2">Estos son los datos de su empresa (si aplica):</small>
-                                                        <input type="text" id="rut" className="form-control mb-4" placeholder="Rut" aria-describedby="rut" onChange={this.onChange} value={this.state.rut} readOnly></input>
-                                                        <input type="text" id="razonSocial" className="form-control mb-4" placeholder="Razón Social" aria-describedby="razonSocial" onChange={this.onChange} value={this.state.razonSocial} readOnly></input>
-                                                        <input type="text" id="address" className="form-control mb-4" placeholder="Dirección" aria-describedby="address" onChange={this.onChange} value={this.state.address}></input>
+                                                        <input type="text" id="rut" className="form-control mb-4" placeholder="Rut" aria-describedby="rut" maxLength="25" onChange={this.onChange} value={this.state.rut} readOnly></input>
+                                                        <input type="text" id="razonSocial" className="form-control mb-4" placeholder="Razón Social" aria-describedby="razonSocial" maxLength="25" onChange={this.onChange} value={this.state.razonSocial} readOnly></input>
+                                                        <input type="text" id="address" className="form-control mb-4" placeholder="Dirección" aria-describedby="address" maxLength="25" onChange={this.onChange} value={this.state.address}></input>
                                                         <div className="text-center">
                                                             <input readOnly defaultValue='Guardar' className="btn btn-primary" onClick={() => { this.modify() }} />
                                                             <div className="mb-5" ></div>

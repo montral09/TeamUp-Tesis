@@ -5,10 +5,12 @@ import {
     CHECK_LOGIN,
     MODIFY_DATA } 
 from "./actionTypes";
+import { loadState, saveState } from '../auth/cookieStore';
 
 const initState = {
     login_status : 'NOT_LOGGED_IN',
-    userData : {}
+    userData : {},
+    tokenObj : {}
 }
 
 const loginReducer = (state = initState, action) =>{
@@ -17,18 +19,24 @@ const loginReducer = (state = initState, action) =>{
     let newStateObj = {...state}
     switch(action.type){
         case LOG_IN : 
+            console.log("This is the token obj:");
+            console.log(action.tokenObj)
             newStateObj = {
                 ...state,
                 login_status: 'LOGGED_IN',
-                userData: action.userData
+                userData: action.userData,
+                tokenObj: action.tokenObj
             }
+            saveState(newStateObj);
         break;
         case LOG_OUT : 
             newStateObj = {
                 ...state,
                 login_status: 'NOT_LOGGED_IN',
-                userData: []
+                userData: [],
+                tokenObj: {}
             }
+            saveState(newStateObj);
         break;
         case MODIFY_DATA : 
             newStateObj = {

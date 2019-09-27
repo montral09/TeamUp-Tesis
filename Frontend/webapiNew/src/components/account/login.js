@@ -17,7 +17,7 @@ class Login extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            email: 'fabi@gmail.com',
+            email: 'fabi@gjsonalexmail.com',
             password: '123'
         }
         this.login = this.login.bind(this);
@@ -56,7 +56,16 @@ class Login extends React.Component {
                         draggable: true,
                     });
                     console.log(data.voUserLog);
-                    this.props.logIn(data.voUserLog); // this is calling the reducer to store the data on redux Store
+                    let originalDate = new Date();
+                    var quinceMinDateTime = new Date(originalDate.getTime() + 15*60000);
+                    var cincoDiasDateTime = new Date(originalDate.getTime() + 7200*60000);
+                    let tokenObj = {
+                        accesToken : data.token,
+                        accesTokenExp : quinceMinDateTime,
+                        refreshToken : 'd2343im4odi3m4oidm3oi4d3oi4dmo3i4dmoi34md',
+                        refreshTokenExp:cincoDiasDateTime
+                    }
+                    this.props.logIn(data.voUserLog, tokenObj); // this is calling the reducer to store the data on redux Store
                     this.props.history.push('/');
                 } else if(data.responseCode ==  "ERR_MAILNOTVALIDATED"){
                     toast.error("Correo pendiente de validar", {
@@ -170,7 +179,7 @@ const mapStateToProps = (state) =>{
 
 const mapDispatchToProps = (dispatch) =>{
     return{
-        logIn : (userData) => { dispatch (logIn(userData))}
+        logIn : (userData, tokenObj) => { dispatch (logIn(userData, tokenObj))}
     }
 }
 
