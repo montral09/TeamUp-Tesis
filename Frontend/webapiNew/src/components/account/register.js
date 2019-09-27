@@ -67,13 +67,12 @@ class Register extends React.Component {
     }
 
     register() {
-        console.log("Check: "+this.state.gestorCheckbox)
         if(this.state.gestorCheckbox =='on'){
             this.state.gestorCheckbox = true;
         }else{
             this.state.gestorCheckbox = false;
         }
-        if (this.checkRequiredInputs()) {
+        if (!this.checkRequiredInputs()) {
             fetch('https://localhost:44372/api/user', {
                 method: 'POST',
                 header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
@@ -170,7 +169,7 @@ class Register extends React.Component {
                                                         <p className="h4 mb-4 text-center">Registrarse</p>
                                                         <input type="text" id="firstName" className="form-control mb-4" placeholder="Nombre (*)" maxLength="25" onChange={this.onChange}></input>
                                                         <input type="text" id="lastName" className="form-control mb-4" placeholder="Apellido (*)" maxLength="25" onChange={this.onChange}></input>
-                                                        <input type="email" id="email" className="form-control" placeholder="Correo (*)" maxLength="25" onChange={this.onChange}></input>
+                                                        <input type="email" id="email" className="form-control" placeholder="Correo (*)" maxLength="50" onChange={this.onChange}></input>
                                                         <small id="emailHelper" className="form-text text-muted mb-2">Este va a ser su usuario</small>
                                                         <input type="text" id="phone" className="form-control mb-4" placeholder="Numero telefónico (*)" aria-describedby="phone" maxLength="25" onChange={this.onChange}></input>
                                                         <input type="password" name="password" id="password" className="form-control mb-4" placeholder="Contraseña (*)" maxLength="25" onChange={this.onChange}></input>

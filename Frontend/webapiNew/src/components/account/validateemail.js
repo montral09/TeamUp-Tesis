@@ -17,48 +17,52 @@ class ValidateEmail extends React.Component {
     }
 
     componentDidMount() {
-        /*
-        fetch('https://localhost:44372/api/validateEmail', {
-            method: 'POST',
-            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify({
-                ValidateToken: this.state.emailtoken
-            })
-        }).then(response => response.json()).then(data => {
-            console.log("data:" + JSON.stringify(data));
-            if (data.responseCode == "SUCC_EMAILVALIDATED") {
-                toast.success('Correo validado correctamente ', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                this.props.history.push('/account/login')
-            } else {
-                toast.error('Hubo un error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
+        if(this.state.emailtoken){
+            fetch('https://localhost:44372/api/validateEmail', {
+                method: 'POST',
+                header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({
+                    ActivationCode: this.state.emailtoken
+                })
+            }).then(response => response.json()).then(data => {
+                console.log("data:" + JSON.stringify(data));
+                if (data.responseCode == "SUCC_EMAILVALIDATED") {
+                    toast.success('Correo validado correctamente ', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                    this.setState({
+                        isLoading: false
+                    });
+                    this.props.history.push('/account/login');
+                } else {
+                    toast.error('Hubo un error', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                }
             }
+            ).catch(error => {
+                toast.error('Internal error', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
+                console.log(error);
+            }
+            )
         }
-        ).catch(error => {
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-            console.log(error);
-        }
-        )*/
     }
 
     render() {
