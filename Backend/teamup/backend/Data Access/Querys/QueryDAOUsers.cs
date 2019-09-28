@@ -67,15 +67,10 @@ namespace backend.Data_Access.Query
             String query = "update USERS set publisherValidated = 1 where mail = @publisherMail";
             return query;
         }
-        public String AdminExists()
-        {
-            String query = "select idUser from ADMIN where mail=@mail and active = 1";
-            return query;
-        }
 
         public String GetAdmin()
         {
-            String query = "select * from ADMIN where mail=@mail";
+            String query = "select mail, password, name, lastName, phone from USERS where mail=@mail";
             return query;
         }
 
@@ -111,7 +106,13 @@ namespace backend.Data_Access.Query
 
         public String UpdateUserAdmin()
         {
-            String query = "update USERS set mail = @mail, name = @name, lastName = @lastName, phone = @phone, checkPublisher=@checkPublisher, rut = @rut, razonSocial = @razonSocial, address = @address, mailValidated=@mailValidated, publisherValidated=@publisherValidated WHERE idUser = @idUser ";
+            String query = "update USERS set mail = @mail, name = @name, lastName = @lastName, phone = @phone, checkPublisher=@checkPublisher, rut = @rut, razonSocial = @razonSocial, address = @address, mailValidated=@mailValidated, publisherValidated=@publisherValidated, active=@active WHERE idUser = @idUser ";
+            return query;
+        }
+
+        public String GetUsers()
+        {
+            String query = "select idUser,mail,name,lastName,phone,checkPublisher,rut,razonSocial,address,mailValidated,publisherValidated,active from USERS";
             return query;
         }
     }

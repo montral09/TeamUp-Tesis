@@ -19,15 +19,14 @@ namespace webapi.Controllers
         {
             try
             {
-                bool adminMailExists = fach.AdminExists(voAdmin.Mail);
+                bool adminMailExists = fach.userExists(voAdmin.Mail);
                 VOResponseAdminLogin voResp = new VOResponseAdminLogin();
                 if (adminMailExists == true)
                 {
-                    VOAdmin admin = fach.GetAdmin(voAdmin.Mail, voAdmin.Password);
-                    if (admin != null)
+                    voResp = fach.GetAdmin(voAdmin.Mail, voAdmin.Password);
+                    if (voResp != null)
                     {
-                        voResp.responseCode = EnumMessages.SUCC_USRLOGSUCCESS.ToString();
-                        voResp.voAdmin = admin;
+                        voResp.responseCode = EnumMessages.SUCC_USRLOGSUCCESS.ToString();                       
                     }
                     else
                     {

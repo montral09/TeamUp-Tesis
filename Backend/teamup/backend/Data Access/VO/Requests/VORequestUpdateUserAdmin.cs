@@ -17,10 +17,11 @@ namespace backend.Data_Access.VO
         public bool CheckPublisher { get; set; }
         public bool PublisherValidated { get; set; }
         public bool MailValidated { get; set; }
+        public bool Active { get; set; }
 
         public VORequestUpdateUserAdmin() { }
         public VORequestUpdateUserAdmin(string mail, string name, string lastName, string phone, string rut,
-            string razonSocial, string address, bool checkPublisher, bool publisherValidated, bool mailValidated, string accessToken)
+            string razonSocial, string address, bool checkPublisher, bool publisherValidated, bool mailValidated, bool active, string accessToken)
             : base (accessToken)
 
         {
@@ -35,6 +36,7 @@ namespace backend.Data_Access.VO
             PublisherValidated = publisherValidated;
             MailValidated = mailValidated;
             AccessToken = accessToken;
+            Active = active;
         }
     }
 }
