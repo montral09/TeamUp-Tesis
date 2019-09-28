@@ -105,7 +105,7 @@ namespace backend.Data_Access.Query
         {
             SqlConnection con = null;
             SqlTransaction objTrans = null;
-            const string URL = "http://localhost:3000/account/login/";
+            const string URL = "http://localhost:3000/account/validateemail/";
             try
             {
 
@@ -384,44 +384,6 @@ namespace backend.Data_Access.Query
                     con.Close();
                 }
             }
-        }
-
-        public bool AdminExists(String mail)
-        {
-            SqlConnection con = null;
-            bool member = false;
-            try
-            {
-                con = new SqlConnection(GetConnectionString());
-                con.Open();
-                String query = cns.AdminExists();
-                SqlCommand selectCommand = new SqlCommand(query, con);
-                SqlParameter parametro = new SqlParameter()
-                {
-                    ParameterName = "@mail",
-                    Value = mail,
-                    SqlDbType = SqlDbType.VarChar
-                };
-                selectCommand.Parameters.Add(parametro);
-                SqlDataReader dr = selectCommand.ExecuteReader();
-                if (dr.HasRows)
-                {
-                    member = true;
-                }
-                dr.Close();
-            }
-            catch (Exception)
-            {
-                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
-            }
-            finally
-            {
-                if (con != null)
-                {
-                    con.Close();
-                }
-            }
-            return member;
         }
 
         public Admin GetAdmin(String mail, String password)

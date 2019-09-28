@@ -16,8 +16,7 @@ namespace backend.Logic
         List<VOPublisher> GetPublishers();
         List<VOCustomer> GetCustomers();
         void ApprovePublishers(List<String> mails);
-        bool AdminExists(String mail);
-        VOAdmin GetAdmin(String mail, String password);
+        VOResponseAdminLogin GetAdmin(String mail, String password);
         void RequestPublisher(String mail);
         List<VOSpaceType> GetSpaceTypes();
         List<VOLocation> GetLocations();

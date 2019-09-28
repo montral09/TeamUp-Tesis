@@ -18,7 +18,6 @@ namespace backend.Data_Access.Query
         List<VOPublisher> GetPublishers();
         List<VOCustomer> GetCustomers();
         void ApprovePublishers(List<String> mails);
-        bool AdminExists(String user);
         Admin GetAdmin(String mail, String password);
         void RequestPublisher(String mail);
         VOTokens CreateTokens(String mail);

@@ -27,7 +27,12 @@ namespace backend.Logic
         //SpaceTypes
         SUCC_SPACETYPESOK,
         //Locations
-        SUCC_LOCATIONSOK
+        SUCC_LOCATIONSOK,
+        //Tokens
+        ERR_ACCESSTOKENEXPIRED,
+        ERR_INVALIDACCESSTOKEN,
+        ERR_REFRESHTOKENEXPIRED,
+        ERR_INVALIDREFRESHTOKEN
 
 
     }

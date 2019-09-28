@@ -67,15 +67,10 @@ namespace backend.Data_Access.Query
             String query = "update USERS set publisherValidated = 1 where mail = @publisherMail";
             return query;
         }
-        public String AdminExists()
-        {
-            String query = "select idUser from ADMIN where mail=@mail and active = 1";
-            return query;
-        }
 
         public String GetAdmin()
         {
-            String query = "select * from ADMIN where mail=@mail";
+            String query = "select mail, password, name, lastName, phone from USERS where mail=@mail";
             return query;
         }
 
