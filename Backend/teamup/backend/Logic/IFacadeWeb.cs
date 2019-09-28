@@ -24,5 +24,6 @@ namespace backend.Logic
         void RecoverPassword(VORequestPasswordRecovery voPasswordRecovery);
         int ValidateEmail(VORequestValidateEmail voValidateEmail);
         string UpdateUserAdmin(VORequestUpdateUserAdmin voRequestUpdate);
+        VOResponseGetUsers GetUsers(VORequestGetUsers voRequest);
     }
 }

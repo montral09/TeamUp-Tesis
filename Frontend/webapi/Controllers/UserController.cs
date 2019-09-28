@@ -82,5 +82,27 @@ namespace webapi.Controllers
                 return InternalServerError(new Exception(e.Codigo));
             }
         }
+
+        [EnableCors(origins: "*", headers: "*", methods: "*")]
+        [HttpGet]
+        [Route("api/user")]
+        public IHttpActionResult Get([FromBody]VORequestGetUsers voRequest)
+        {
+            try
+            {
+                VOResponseGetUsers voResp = new VOResponseGetUsers();
+                voResp = fach.GetUsers(voRequest);
+                if (voResp.responseCode.Equals(EnumMessages.OK.ToString()))
+                {
+                    voResp.responseCode = EnumMessages.SUCC_USERSOK.ToString();
+                }
+                return Ok(voResp);
+            
+            }
+            catch (GeneralException e)
+            {
+                return InternalServerError(new Exception(e.Codigo));
+            }
+        }
     }
 }

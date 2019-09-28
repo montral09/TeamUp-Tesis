@@ -20,6 +20,7 @@ namespace backend.Logic
         SUCC_USRDELETED,
         SUCC_PUBLISHERSOK,
         SUCC_CUSTOMERSOK,
+        SUCC_USERSOK,
         ERR_MAILNOTVALIDATED,
         SUCC_PASSWORDUPDATED,
         SUCC_EMAILVALIDATED,

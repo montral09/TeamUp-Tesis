@@ -192,10 +192,13 @@ namespace backend.Data_Access.Query
                 if (user.Password != "")
                 {
                     String queryPassword = cns.UpdatePassword();
+                    // Create secure password
+                    PasswordHasher passwordHasher = new PasswordHasher();
+                    string hashPassword = passwordHasher.HashPassword(user.Password);
                     SqlCommand updatePassword = new SqlCommand(queryPassword, con);
                     List<SqlParameter> parameterPassword = new List<SqlParameter>()
                     {
-                        new SqlParameter("@password", SqlDbType.VarChar) {Value = user.Password},
+                        new SqlParameter("@password", SqlDbType.VarChar) {Value = hashPassword},
                         new SqlParameter("@mail", SqlDbType.VarChar) {Value = user.Mail},
                     };
                     updatePassword.Parameters.AddRange(parameterPassword.ToArray());
@@ -666,6 +669,7 @@ namespace backend.Data_Access.Query
                     new SqlParameter("@address", SqlDbType.VarChar) { Value = voRequest.Address},
                     new SqlParameter("@mailValidated", SqlDbType.Bit) { Value = voRequest.MailValidated},
                     new SqlParameter("@publisherValidated", SqlDbType.Bit) { Value = voRequest.PublisherValidated},
+                    new SqlParameter("@active", SqlDbType.Bit) { Value = voRequest.Active},
 
                 };
                 updateCommand.Parameters.AddRange(prm.ToArray());
@@ -682,6 +686,38 @@ namespace backend.Data_Access.Query
                     con.Close();
                 }
             }
+        }
+
+        public List<VOUserAdmin> GetUsers()
+        {
+            SqlConnection con = null;
+            List<VOUserAdmin> users = new List<VOUserAdmin>();
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.GetUsers();
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                while (dr.Read())
+                {
+                    VOUserAdmin vo = new VOUserAdmin(Convert.ToString(dr["mail"]), "", Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToString(dr["rut"]), Convert.ToString(dr["razonSocial"]), Convert.ToString(dr["address"]), Convert.ToBoolean(dr["checkPublisher"]), Convert.ToBoolean(dr["mailValidated"]), Convert.ToBoolean(dr["publisherValidated"]), Convert.ToBoolean(dr["active"]));
+                    users.Add(vo);
+                }
+                dr.Close();
+            }
+            catch (Exception)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+            return users;
         }
     }
 }

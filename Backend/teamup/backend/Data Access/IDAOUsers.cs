@@ -25,5 +25,6 @@ namespace backend.Data_Access.Query
         void UpdatePassword(String mail);
         int ValidateEmail(String activationCode);
         void UpdateUserAdmin(VORequestUpdateUserAdmin voRequest);
+        List<VOUserAdmin> GetUsers();
     }
 }

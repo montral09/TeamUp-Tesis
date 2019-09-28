@@ -291,5 +291,27 @@ namespace backend.Logic
                 throw e;
             }
         }
+
+        /* This function obtains all users  */
+        public VOResponseGetUsers GetUsers(VORequestGetUsers voRequest)
+        {
+            VOResponseGetUsers response = new VOResponseGetUsers();
+            List<VOUserAdmin> usersList = new List<VOUserAdmin>();
+            try
+            {
+                String message = util.ValidAccessToken(voRequest.AccessToken, voRequest.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    usersList = users.GetUsers();
+                    response.voUsers = usersList;
+                }
+                response.responseCode = message;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+            return response;
+        }
     }
 }

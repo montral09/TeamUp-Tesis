@@ -106,7 +106,13 @@ namespace backend.Data_Access.Query
 
         public String UpdateUserAdmin()
         {
-            String query = "update USERS set mail = @mail, name = @name, lastName = @lastName, phone = @phone, checkPublisher=@checkPublisher, rut = @rut, razonSocial = @razonSocial, address = @address, mailValidated=@mailValidated, publisherValidated=@publisherValidated WHERE idUser = @idUser ";
+            String query = "update USERS set mail = @mail, name = @name, lastName = @lastName, phone = @phone, checkPublisher=@checkPublisher, rut = @rut, razonSocial = @razonSocial, address = @address, mailValidated=@mailValidated, publisherValidated=@publisherValidated, active=@active WHERE idUser = @idUser ";
+            return query;
+        }
+
+        public String GetUsers()
+        {
+            String query = "select idUser,mail,name,lastName,phone,checkPublisher,rut,razonSocial,address,mailValidated,publisherValidated,active from USERS";
             return query;
         }
     }
