@@ -20,6 +20,7 @@ namespace backend.Logic
         SUCC_USRDELETED,
         SUCC_PUBLISHERSOK,
         SUCC_CUSTOMERSOK,
+        SUCC_USERSOK,
         ERR_MAILNOTVALIDATED,
         SUCC_PASSWORDUPDATED,
         SUCC_EMAILVALIDATED,
@@ -27,7 +28,12 @@ namespace backend.Logic
         //SpaceTypes
         SUCC_SPACETYPESOK,
         //Locations
-        SUCC_LOCATIONSOK
+        SUCC_LOCATIONSOK,
+        //Tokens
+        ERR_ACCESSTOKENEXPIRED,
+        ERR_INVALIDACCESSTOKEN,
+        ERR_REFRESHTOKENEXPIRED,
+        ERR_INVALIDREFRESHTOKEN
 
 
     }

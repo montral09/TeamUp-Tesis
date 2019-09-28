@@ -170,36 +170,21 @@ namespace backend.Logic
             }
         }
 
-        /* This function validate if given mail matches with some admin mail  */
-        public bool AdminExists(String mail)
-        {
-            try
-            {
-                if (users.AdminExists(mail))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            catch (GeneralException e)
-            {
-                throw e;
-            }
-        }
-
         /* This function returns admin user  */
-        public VOAdmin GetAdmin(string mail, string password)
+        public VOResponseAdminLogin GetAdmin(string mail, string password)
         {
-            VOAdmin result = null;
+            VOResponseAdminLogin result = null;
             try
             {
                 Admin usr = users.GetAdmin(mail, password);
-                if (usr.Password.Equals(password))
-                {                    
-                    result = new VOAdmin(usr.Mail, null, usr.Name, usr.LastName, usr.Phone);
+                PasswordHasher passwordHasher = new PasswordHasher();
+                if (usr != null && passwordHasher.VerifyHashedPassword(usr.Password, password))                    
+                {
+                    VOTokens voTokens = users.CreateTokens(mail);
+                    result = new VOResponseAdminLogin();
+                    result.voAdmin = new VOAdmin(usr.Mail, null, usr.Name, usr.LastName, usr.Phone);
+                    result.RefreshToken = voTokens.RefreshToken;
+                    result.AccessToken = voTokens.AccessToken;
                 }
             }
             catch (GeneralException e)
@@ -293,8 +278,8 @@ namespace backend.Logic
         {
             try
             {
-                String message = util.ValidAccessToken(voRequestUpdate.Mail, voRequestUpdate.AccessToken);
-                if (EnumMessages.OK.Equals(message))
+                String message = util.ValidAccessToken(voRequestUpdate.AccessToken, voRequestUpdate.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
                 {
                     users.UpdateUserAdmin(voRequestUpdate);
                    
@@ -305,6 +290,28 @@ namespace backend.Logic
             {
                 throw e;
             }
+        }
+
+        /* This function obtains all users  */
+        public VOResponseGetUsers GetUsers(VORequestGetUsers voRequest)
+        {
+            VOResponseGetUsers response = new VOResponseGetUsers();
+            List<VOUserAdmin> usersList = new List<VOUserAdmin>();
+            try
+            {
+                String message = util.ValidAccessToken(voRequest.AccessToken, voRequest.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    usersList = users.GetUsers();
+                    response.voUsers = usersList;
+                }
+                response.responseCode = message;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+            return response;
         }
     }
 }
