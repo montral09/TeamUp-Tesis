@@ -4,6 +4,7 @@ import {
     FormGroup, Label, Input,
     Button
 } from 'reactstrap';
+import {BrowserRouter as Router, Route, Redirect} from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './Login.css';
@@ -14,6 +15,7 @@ class Login extends React.Component {
         this.state = {
             email: 'admin@admin',
             password: 'admin',
+            loggedIn: false
         }
         this.handleChange = this.handleChange.bind(this);
     }
@@ -52,6 +54,7 @@ class Login extends React.Component {
                         draggable: true,
                     });
                     console.log(data.voAdmin);
+                    this.setState({loggedIn: true});
                     //his.props.logIn(data.voAdmin); // this is calling the reducer to store the data on redux Store
                     //this.props.history.push('#/dashboards/basic'); // TBD how to redirect???????????????
                 } else {
@@ -126,6 +129,9 @@ class Login extends React.Component {
                         <Button>Login</Button>
                     </Form>
                 </Container>
+                {this.state.loggedIn && 
+                <Redirect to="/dashboards/basic"/>
+                }
                 <ToastContainer/>
             </Fragment>
         );

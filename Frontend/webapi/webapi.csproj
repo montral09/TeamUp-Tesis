@@ -202,6 +202,7 @@
     <Compile Include="Controllers\PublisherController.cs" />
     <Compile Include="Controllers\TokenValidationHandler.cs" />
     <Compile Include="Controllers\UserController.cs" />
+    <Compile Include="Controllers\ValidateEmailController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

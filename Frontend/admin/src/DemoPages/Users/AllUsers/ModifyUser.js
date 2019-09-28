@@ -16,9 +16,16 @@ class ModifyUserModal extends React.Component {
         };
 
         this.toggle = this.toggle.bind(this);
+        this.save = this.save.bind(this);
     }
 
-    toggle(userData) {
+    toggle() {
+        this.setState({
+            modal: !this.state.modal,
+        });
+    }
+
+    save(userData) {
         console.log("userData: ");
         console.log(userData);
         this.setState({
@@ -33,7 +40,6 @@ class ModifyUserModal extends React.Component {
         if(e.target.value == 'on'){
             // adapt to checkbox behavior
             valueToUpdate = !this.state.userDataChanged[e.target.name];
-            console.log("status changed: "+valueToUpdate);
         }
         this.setState({
             userDataChanged: {
@@ -78,21 +84,21 @@ class ModifyUserModal extends React.Component {
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label for="Rut" sm={2}>Teléfono</Label>
+                            <Label for="Rut" sm={2}>RUT</Label>
                             <Col sm={10}>
                                 <Input type="text" name="Rut" id="Rut"
                                         value={this.state.userDataChanged.Rut || ""} onChange={this.onChange}/>
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label for="RazonSocial" sm={2}>Teléfono</Label>
+                            <Label for="RazonSocial" sm={2}>Razon Social</Label>
                             <Col sm={10}>
                                 <Input type="text" name="RazonSocial" id="RazonSocial"
                                         value={this.state.userDataChanged.RazonSocial || ""} onChange={this.onChange}/>
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label for="Address" sm={2}>Teléfono</Label>
+                            <Label for="Address" sm={2}>Direccion</Label>
                             <Col sm={10}>
                                 <Input type="text" name="Address" id="Address"
                                         value={this.state.userDataChanged.Address || ""} onChange={this.onChange}/>
@@ -126,7 +132,7 @@ class ModifyUserModal extends React.Component {
                     </ModalBody>
                     <ModalFooter>
                         <Button color="link" onClick={this.toggle}>Cancel</Button>
-                        <Button color="primary" onClick={this.toggle}>Guardar</Button>{' '}
+                        <Button color="primary" onClick={this.save}>Guardar</Button>{' '}
                     </ModalFooter>
                 </Modal>
             </span>
