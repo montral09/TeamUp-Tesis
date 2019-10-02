@@ -9,7 +9,7 @@ using backend.Exceptions;
 
 namespace webapi.Controllers
 {
-    //[Authorize]
+
     public class CustomerController : ApiController
     {
         IFacadeWeb fach = new FacadeFactory().CreateFacadeWeb;
@@ -41,8 +41,7 @@ namespace webapi.Controllers
             try
             {
                 VOResponseRequestPublisher voResp = new VOResponseRequestPublisher();
-                fach.RequestPublisher(voRequest.Mail);
-                voResp.responseCode = EnumMessages.SUCC_USRUPDATED.ToString();
+                voResp = fach.RequestPublisher(voRequest);
                 return Ok(voResp);
 
             }

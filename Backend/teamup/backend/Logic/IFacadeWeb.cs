@@ -7,23 +7,26 @@ namespace backend.Logic
 {
     public interface IFacadeWeb
     {
-        bool userExists(string mail);
-        bool isMailValidated(String mail);
+        bool UserExists(string mail);
+        bool AdminExists(string mail);
+        bool IsMailValidated(String mail);
         VOResponseLogin ValidUserLogin(string mail, string password);
-        void CreateUser(VORequestUserCreate voUser);
-        void UpdateUser(VORequestUserUpdate voUser);
-        void DeleteUser(String mail);
+        void CreateUser(VORequestUserCreate voUserCreate);
+        VOResponseUserUpdate UpdateUser(VORequestUserUpdate voUserUpdate);
+        VOResponseUserDelete DeleteUser(VORequestUserDelete voUserDelete);
         List<VOPublisher> GetPublishers();
         List<VOCustomer> GetCustomers();
-        void ApprovePublishers(List<String> mails);
+        VOResponseApprovePublishers ApprovePublishers(VORequestApprovePublishers voPublishers);
         VOResponseAdminLogin GetAdmin(String mail, String password);
-        void RequestPublisher(String mail);
+        VOResponseRequestPublisher RequestPublisher(VORequestRequestPublisher voRequestRequestPublisher);
         List<VOSpaceType> GetSpaceTypes();
         List<VOLocation> GetLocations();
         void CreateTokens(String mail);
         void RecoverPassword(VORequestPasswordRecovery voPasswordRecovery);
         int ValidateEmail(VORequestValidateEmail voValidateEmail);
-        string UpdateUserAdmin(VORequestUpdateUserAdmin voRequestUpdate);
-        VOResponseGetUsers GetUsers(VORequestGetUsers voRequest);
+        string UpdateUserAdmin(VORequestUpdateUserAdmin voRequestUpdateUser);
+        VOResponseGetUsers GetUsers(VORequestGetUsers voRequestGetUsers);
+        VOResponseGetUserData GetUserData(VORequestGetUserData voUserData);
+        VOResponseTokensUpdate UpdateTokens(VORequestTokensUpdate voTokensUpdate);
     }
 }
