@@ -23,7 +23,9 @@ class Register extends React.Component {
             gestorCheckbox : '',
             rut : '',
             razonSocial : '',
-            direccion : ''
+            direccion : '',
+            isLoading : false,
+            buttonIsDisable: false
         }
         this.register = this.register.bind(this);
     }
@@ -73,6 +75,7 @@ class Register extends React.Component {
             this.state.gestorCheckbox = false;
         }
         if (!this.checkRequiredInputs()) {
+            this.setState({isLoading: true, buttonIsDisable:true});
             fetch('https://localhost:44372/api/user', {
                 method: 'POST',
                 header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
@@ -89,6 +92,7 @@ class Register extends React.Component {
                     Address: this.state.direccion,
                 })
             }).then(response => response.json()).then(data => {
+                this.setState({isLoading: false, buttonIsDisable:false});
                 console.log("data:" + JSON.stringify(data));
                 if (data.responseCode == "SUCC_USRCREATED") {
                     toast.success('Usuario creado correctamente ', {
@@ -125,6 +129,7 @@ class Register extends React.Component {
                 }
             }
             ).catch(error => {
+                this.setState({isLoading: false, buttonIsDisable:false});
                 toast.error('Internal error', {
                     position: "top-right",
                     autoClose: 5000,
@@ -183,7 +188,12 @@ class Register extends React.Component {
                                                         <input type="text" id="razonSocial" className="form-control mb-4" placeholder="Razón Social" aria-describedby="razonSocial" maxLength="25" onChange={this.onChange}></input>
                                                         <input type="text" id="direccion" className="form-control mb-4" placeholder="Dirección" aria-describedby="direccion" maxLength="25" onChange={this.onChange}></input>
                                                         <div className="text-center">
-                                                        <input readOnly defaultValue='Registrarse' className="btn btn-primary" onClick={() => { this.register() }} />
+                                                        <button className="btn btn-primary" disabled= {this.state.buttonIsDisable} type="button" value='Registrarse' onClick={() => { this.register() }} >
+                                                            Registrarse&nbsp;&nbsp;
+                                                            { this.state.isLoading && 
+                                                            <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                            }
+                                                        </button>
                                                             <hr></hr>
                                                             <p>Al hacer click en  
                                                                 <em> Registrarse</em> usted acepta nuestros

@@ -17,8 +17,10 @@ class Login extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            email: 'fabi@gjsonalexmail.com',
-            password: '123'
+            email: '',
+            password: '',
+            isLoading : false,
+            buttonIsDisable: false
         }
         this.login = this.login.bind(this);
     }
@@ -36,6 +38,7 @@ class Login extends React.Component {
 
     login() {
         if (this.state.password && this.state.email) {
+            this.setState({isLoading: true, buttonIsDisable:true});
             fetch('https://localhost:44372/api/login', {
                 method: 'POST',
                 header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
@@ -45,6 +48,7 @@ class Login extends React.Component {
                     Mail: this.state.email
                 })
             }).then(response => response.json()).then(data => {
+                this.setState({isLoading: false, buttonIsDisable:false});
                 console.log("data:" + JSON.stringify(data));
                 if (data.responseCode == "SUCC_USRLOGSUCCESS") {
                     toast.success('Bienvenid@, ' + data.voUserLog.Name, {
@@ -88,6 +92,7 @@ class Login extends React.Component {
                 }
             }
             ).catch(error => {
+                this.setState({isLoading: false, buttonIsDisable:false});
                 toast.error('Internal error', {
                     position: "top-right",
                     autoClose: 5000,
@@ -148,7 +153,13 @@ class Login extends React.Component {
                                                                     <Link to="/account/forgotPassword">Olvido su contraseña?</Link>
                                                                 </div>
                                                             </div>
-                                                            <input readOnly defaultValue='Login' className="btn btn-primary" onClick={() => { this.login() }} />
+                                                            <button className="btn btn-primary" disabled= {this.state.buttonIsDisable} type="button" value='Registrarse' onClick={() => {  this.login() }} >
+
+                                                                Login&nbsp;&nbsp;
+                                                                { this.state.isLoading && 
+                                                                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                                }
+                                                            </button>
                                                             <p>No tiene cuenta? 
                                                                 <Link to="/account/register"> Registrarse</Link>
                                                             </p>
