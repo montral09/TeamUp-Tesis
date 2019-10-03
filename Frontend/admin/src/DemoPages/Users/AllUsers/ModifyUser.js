@@ -5,6 +5,10 @@ import {
     Col, Card, CardBody,
     CardTitle,
 } from 'reactstrap';
+
+import {toast} from 'react-toastify';
+
+
 class ModifyUserModal extends React.Component {
     constructor(props) {
         super(props);
@@ -28,11 +32,102 @@ class ModifyUserModal extends React.Component {
     save(userData) {
         console.log("userData: ");
         console.log(userData);
+        return; // pending fabi to add
+        let {Mail, Name, LastName, Phone, Rut, RazonSocial, Address, CheckPublisher, PublisherValidated, MailValidated, Active  } = this.state.userDataChanged;
+        let tempAccessToken = "rdoyflyvv5o"; // TO DO: CHANGE THIS!!!
+        let objUser = {
+            Mail: Mail,
+            Name: Name,
+            LastName: LastName,
+            Phone: Phone,
+            Rut: Rut,
+            RazonSocial: RazonSocial,
+            Address: Address,
+            CheckPublisher: CheckPublisher,
+            PublisherValidated: PublisherValidated,
+            MailValidated: MailValidated,
+            AccessToken: tempAccessToken,
+            Active: Active
+        }
+
+        fetch('https://localhost:44372/api/updateUserAdminr', {
+            method: 'PUT',
+            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(objUser)
+        }).then(response => response.json()).then(data => {
+            console.log("data:" + JSON.stringify(data));
+            if (data.responseCode == "SUCC_USRUPDATED") {
+                if(this.state.email != this.state.originalEmail){
+                    toast.success('Usuario actualizado correctamente, se ha enviado un correo de verificacion a su nueva casilla ', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                    this.props.logOut();
+                    this.props.history.push('/account/login');
+                }else{
+                    this.props.modifyData({
+                        Mail: this.state.originalEmail,
+                        Name: this.state.firstName,
+                        LastName: this.state.lastName,
+                        Phone: this.state.phone,
+                        Rut: this.state.rut,
+                        RazonSocial: this.state.razonSocial,
+                        Address: this.state.address,
+                    }); // this is calling the reducer to store the data on redux Store
+                    toast.success('Usuario actualizado correctamente', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                    this.props.history.push('/');
+                }
+            } else
+                if (data.responseCode == "ERR_MAILALREADYEXIST") {
+                    toast.error('Ese correo ya esta en uso, por favor elija otro.', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                } else if (data.Message) {
+                    toast.error('Hubo un error', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                }
+        }
+        ).catch(error => {
+            toast.error('Internal error', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+            console.log(error);
+        }
+        )
+            
         this.setState({
             modal: !this.state.modal,
             userData: userData,
             userDataChanged: userData
         });
+
     }
     onChange = (e) => {
         console.log("name: "+e.target.name+",value:"+e.target.value);
