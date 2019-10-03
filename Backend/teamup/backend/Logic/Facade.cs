@@ -21,11 +21,10 @@ namespace backend.Logic
         }
 
         /* This function will check if the user email is exists*/
-        public bool userExists(string mail)
+        public bool UserExists(string mail)
         {
             try
             {
-
                 if (users.Member(mail))
                 {
                     return true;
@@ -41,12 +40,29 @@ namespace backend.Logic
             }
         }
 
-        public bool isMailValidated (String mail)
+        public bool AdminExists(string mail)
         {
             try
             {
-
-                if (users.isMailValidated(mail))
+                if (users.AdminMember(mail))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+        public bool IsMailValidated (String mail)
+        {
+            try
+            {
+                if (users.IsMailValidated(mail))
                 {
                     return true;
                 }
@@ -99,13 +115,20 @@ namespace backend.Logic
             }
         }
         /* This function updates data from an specific user  */
-        public void UpdateUser(VORequestUserUpdate voUser)
+        public VOResponseUserUpdate UpdateUser(VORequestUserUpdate voUser)
         {
             try
             {
-                User u = new User(voUser.Mail, voUser.Password, voUser.Name, voUser.LastName, voUser.Phone, voUser.CheckPublisher, voUser.Rut, voUser.RazonSocial, voUser.Address, false, false, true);
-                users.UpdateUser(u, voUser.NewMail);
-
+                VOResponseUserUpdate response = new VOResponseUserUpdate();
+                String message = util.ValidAccessToken(voUser.AccessToken, voUser.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    User u = new User(voUser.Mail, voUser.Password, voUser.Name, voUser.LastName, voUser.Phone, voUser.CheckPublisher, voUser.Rut, voUser.RazonSocial, voUser.Address, false, false, true);
+                    users.UpdateUser(u, voUser.NewMail);
+                    message = EnumMessages.SUCC_USRUPDATED.ToString();
+                }
+                response.responseCode = message;
+                return response;
             }
             catch (GeneralException e)
             {
@@ -114,14 +137,26 @@ namespace backend.Logic
         }
 
         /* This function set user as inactive. There is no physical deletion from DB  */
-        public void DeleteUser(String mail)
+        public VOResponseUserDelete DeleteUser (VORequestUserDelete voUserDelete)
         {
             try
             {
-                if (users.ValidateDeletion(mail))
+                VOResponseUserDelete response = new VOResponseUserDelete();
+                String message = util.ValidAccessToken(voUserDelete.AccessToken, voUserDelete.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
                 {
-                    users.DeleteUser(mail);
+                    if (users.ValidateDeletion(voUserDelete.Mail))
+                    {
+                        users.DeleteUser(voUserDelete.Mail);
+                        message = EnumMessages.SUCC_USRDELETED.ToString();
+                    }
+                    else
+                    {
+                        message = EnumMessages.ERR_PENDINGPROCESSES.ToString();
+                    }
                 }
+                response.responseCode = message;
+                return response;
             }
             catch (GeneralException e)
             {
@@ -158,11 +193,19 @@ namespace backend.Logic
             return customers;
         }
         /* This function recieve a list of Publishers to be approved  */
-        public void ApprovePublishers(List<String> mails)
-        {            
+        public VOResponseApprovePublishers ApprovePublishers(VORequestApprovePublishers voPublishers)
+        {
             try
             {
-                users.ApprovePublishers(mails);
+                VOResponseApprovePublishers response = new VOResponseApprovePublishers();
+                String message = util.ValidAccessToken(voPublishers.AccessToken, voPublishers.AdminMail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    users.ApprovePublishers(voPublishers.Mails);
+                    message = EnumMessages.SUCC_PUBLISHERSOK.ToString();
+                }
+                response.responseCode = message;
+                return response;
             }
             catch (GeneralException e)
             {
@@ -195,12 +238,20 @@ namespace backend.Logic
         }
 
         /*This function update a customer who wants to be a publisher*/
-        public void RequestPublisher(String mail)
+        public VOResponseRequestPublisher RequestPublisher(VORequestRequestPublisher voRequestRequestPublisher)
         {
             try
             {
-                users.RequestPublisher(mail);
-            }
+                VOResponseRequestPublisher response = new VOResponseRequestPublisher();
+                String message = util.ValidAccessToken(voRequestRequestPublisher.AccessToken, voRequestRequestPublisher.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    users.RequestPublisher(voRequestRequestPublisher.Mail);
+                    message = EnumMessages.SUCC_USRUPDATED.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }            
             catch (GeneralException e)
             {
                 throw e;
@@ -304,6 +355,52 @@ namespace backend.Logic
                 {
                     usersList = users.GetUsers();
                     response.voUsers = usersList;
+                }
+                response.responseCode = message;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+            return response;
+        }
+
+        public VOResponseGetUserData GetUserData(VORequestGetUserData voRequestUserData)
+        {
+            VOResponseGetUserData response = new VOResponseGetUserData();
+            try
+            {
+                string message;
+                User usr = users.GetUserData(voRequestUserData);
+                if (usr != null)
+                {
+                    message = EnumMessages.SUCC_USERSOK.ToString();
+                    response.User = new VOUser(usr.Mail, null, usr.Name, usr.LastName, usr.Phone, usr.Rut, usr.RazonSocial, usr.Address, usr.CheckPublisher);
+                } else
+                {
+                    message = EnumMessages.ERR_INVALIDACCESSTOKEN.ToString();
+                }               
+                response.responseCode = message;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+            return response;
+        }
+
+        public VOResponseTokensUpdate UpdateTokens(VORequestTokensUpdate voTokensUpdate)
+        {
+            VOResponseTokensUpdate response = new VOResponseTokensUpdate();
+            try
+            {
+                String message = util.ValidRefreshToken(voTokensUpdate.RefreshToken, voTokensUpdate.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    VOTokens voTokens = users.CreateTokens(voTokensUpdate.Mail);
+                    response.RefreshToken = voTokens.RefreshToken;
+                    response.AccessToken = voTokens.AccessToken;
+                    message = EnumMessages.SUCC_TOKENSUPDATED.ToString();
                 }
                 response.responseCode = message;
             }

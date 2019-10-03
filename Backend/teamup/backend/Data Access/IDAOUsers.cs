@@ -9,7 +9,8 @@ namespace backend.Data_Access.Query
     interface IDAOUsers
     {
         bool Member(String user);
-        bool isMailValidated(String mail);
+        bool AdminMember(String user);
+        bool IsMailValidated(String mail);
         User Find(string mail);
         void InsertUser(User user);
         void UpdateUser(User user, String newMail);
@@ -26,5 +27,7 @@ namespace backend.Data_Access.Query
         int ValidateEmail(String activationCode);
         void UpdateUserAdmin(VORequestUpdateUserAdmin voRequest);
         List<VOUserAdmin> GetUsers();
+        User GetUserData(VORequestGetUserData voRequestUserData);
+
     }
 }

@@ -9,7 +9,11 @@ namespace backend.Data_Access.Query
             String query = "select idUser from USERS where mail=@mail and active = 1";
             return query;
         }
-
+        public String AdminMember()
+        {
+            String query = "select idAdmin from ADMIN where mail=@mail";
+            return query;
+        }
         public String UserValidated()
         {
             String query = "select idUser from USERS where mail=@mail and mailValidated = 1";
@@ -46,7 +50,7 @@ namespace backend.Data_Access.Query
 
         public String InvalidateMail()
         {
-            String query = "update USERS set mailValidated = 0 where mail = @mail";
+            String query = "update USERS set mailValidated = 0, activationCode = @activationCode where mail = @mail";
             return query;
         }
 
@@ -113,6 +117,18 @@ namespace backend.Data_Access.Query
         public String GetUsers()
         {
             String query = "select idUser,mail,name,lastName,phone,checkPublisher,rut,razonSocial,address,mailValidated,publisherValidated,active from USERS";
+            return query;
+        }
+
+        public String UpdateActivationCode()
+        {
+            String query = "update USERS set activationCode=@activationCode and mailValidated = 0 where mail=@mail";
+            return query;
+        }
+
+        public String GetUserData()
+        {
+            String query = "select idUser,mail,name,lastName,password,phone,rut,razonSocial,address,checkPublisher,mailValidated,publisherValidated,active from USERS where accessToken=@accessToken";
             return query;
         }
     }

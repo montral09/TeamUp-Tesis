@@ -25,6 +25,8 @@ namespace backend.Logic
         SUCC_PASSWORDUPDATED,
         SUCC_EMAILVALIDATED,
         ERR_ACTIVATIONCODENOTEXIST,
+        SUCC_VERIFICATIONMAILSENT,
+        ERR_PENDINGPROCESSES,
         //SpaceTypes
         SUCC_SPACETYPESOK,
         //Locations
@@ -33,7 +35,8 @@ namespace backend.Logic
         ERR_ACCESSTOKENEXPIRED,
         ERR_INVALIDACCESSTOKEN,
         ERR_REFRESHTOKENEXPIRED,
-        ERR_INVALIDREFRESHTOKEN
+        ERR_INVALIDREFRESHTOKEN,
+        SUCC_TOKENSUPDATED
 
 
     }

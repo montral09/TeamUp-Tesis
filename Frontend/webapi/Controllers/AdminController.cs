@@ -19,7 +19,7 @@ namespace webapi.Controllers
         {
             try
             {
-                bool adminMailExists = fach.userExists(voAdmin.Mail);
+                bool adminMailExists = fach.AdminExists(voAdmin.Mail);
                 VOResponseAdminLogin voResp = new VOResponseAdminLogin();
                 if (adminMailExists == true)
                 {
