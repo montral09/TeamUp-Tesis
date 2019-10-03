@@ -68,6 +68,7 @@ const loginReducer = (state = initState, action) =>{
                 ...state,
                 userData: action.userData
             }
+            saveState(newStateObj);
         break;
     }
     console.log("newStateObj: ");console.log(newStateObj);

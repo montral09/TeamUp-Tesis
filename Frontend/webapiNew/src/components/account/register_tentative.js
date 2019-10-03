@@ -1,11 +1,15 @@
 ﻿import React from 'react';
 import Header from "../header/header";
-import { Link, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+//
 import { connect } from 'react-redux';
+import {registerUser} from '../../services/account/actions';
+
+
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual'
 
@@ -75,72 +79,20 @@ class Register extends React.Component {
             this.state.gestorCheckbox = false;
         }
         if (!this.checkRequiredInputs()) {
-            this.setState({isLoading: true, buttonIsDisable:true});
-            fetch('https://localhost:44372/api/user', {
-                method: 'POST',
-                header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-
-                body: JSON.stringify({
-                    Password: this.state.password,
-                    Mail: this.state.email,
-                    Name: this.state.firstName,
-                    LastName: this.state.lastName,
-                    Phone: this.state.phone,
-                    CheckPublisher: this.state.gestorCheckbox,
-                    Rut: this.state.rut,
-                    RazonSocial: this.state.razonSocial,
-                    Address: this.state.direccion,
-                })
-            }).then(response => response.json()).then(data => {
-                this.setState({isLoading: false, buttonIsDisable:false});
-                console.log("data:" + JSON.stringify(data));
-                if (data.responseCode == "SUCC_USRCREATED") {
-                    toast.success('Usuario creado correctamente ', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                    this.props.history.push('/account/login')
-                } else {
-                    if(data.Message){
-                        toast.error('Hubo un error: '+data.Message, {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                        });
-                    }else{
-                        toast.error('Ese correo ya esta en uso, por favor elija otro.', {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                        });
-                    }
-
-
-                }
-            }
-            ).catch(error => {
-                this.setState({isLoading: false, buttonIsDisable:false});
-                toast.error('Internal error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                console.log(error);
-            }
-            )
+            //this.setState({isLoading: true, buttonIsDisable:true});
+            var userData =
+            {
+                Password: this.state.password,
+                Mail: this.state.email,
+                Name: this.state.firstName,
+                LastName: this.state.lastName,
+                Phone: this.state.phone,
+                CheckPublisher: this.state.gestorCheckbox,
+                Rut: this.state.rut,
+                RazonSocial: this.state.razonSocial,
+                Address: this.state.direccion,
+            };
+            this.props.registerUser(userData);
         }
 
     }
@@ -223,4 +175,10 @@ const mapStateToProps = (state) =>{
     }
 }
 
-export default connect(mapStateToProps)(Register);
+const mapDispatchToProps = (dispatch) => {
+    return{
+        registerUser: (userData) => dispatch(registerUser(userData))
+    }
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(Register);
