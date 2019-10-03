@@ -1,0 +1,3 @@
+export const REGISTER_USER = 'REGISTER_USER';
+export const MODIFY_USER = 'MODIFY_USER';
+export const REGISTER_USER_ERROR = 'REGISTER_USER_ERROR';

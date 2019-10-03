@@ -28,20 +28,16 @@ class AllUsers extends Component {
         this.modalElement = React.createRef(); // esto hace unas magias para cambiar el estado de un componente hijo
     }
     
-    // This function will try to approve an specific publisher
+    // This function will trigger the save function inside the modal to update the values
     editUser = (key) => {
-
+        console.log("arr data: ");
+        console.log(this.state.arrData);
         const userData = this.state.arrData.filter(usr => {
             return usr.Mail === key
         });
 
-        this.modalElement.current.toggle(userData[0]);
-/*
-        const arrDataNew = this.state.arrData.filter(gest => {
-            return gest.Mail !== key
-        });
+        this.modalElement.current.save(userData[0]);
 
-        this.submitPublisher([gestToApprove[0].Mail], arrDataNew);*/
     }
 
 
