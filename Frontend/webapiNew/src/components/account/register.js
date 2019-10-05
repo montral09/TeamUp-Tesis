@@ -132,7 +132,7 @@ class Register extends React.Component {
                 this.setState({isLoading: false, buttonIsDisable:false});
                 console.log("data:" + JSON.stringify(data));
                 if (data.responseCode == "SUCC_USRCREATED") {
-                    toast.success('Usuario creado correctamente ', {
+                    toast.success('Usuario creado correctamente, por favor revise su correo para activar la cuenta ', {
                         position: "top-right",
                         autoClose: 5000,
                         hideProgressBar: false,

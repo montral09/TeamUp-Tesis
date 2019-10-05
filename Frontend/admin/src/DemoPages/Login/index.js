@@ -9,6 +9,9 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './Login.css';
 
+import { connect } from 'react-redux';
+import { logIn } from '../../reducers/auth/actions';
+
 class Login extends React.Component {
     constructor(props) {
         super(props);
@@ -34,52 +37,7 @@ class Login extends React.Component {
         console.log(`Email: ${this.state.email}`)
         console.log(`password: ${this.state.password}`)
         if (this.state.password && this.state.email) {
-            fetch('https://localhost:44372/api/admin', {
-                method: 'POST',
-                header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-
-                body: JSON.stringify({
-                    Password: this.state.password,
-                    Mail: this.state.email
-                })
-            }).then(response => response.json()).then(data => {
-                console.log("data:" + JSON.stringify(data));
-                if (data.responseCode == "SUCC_USRLOGSUCCESS") {
-                    toast.success('Bienvenid@, ' + data.voAdmin.Name, {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                    console.log(data.voAdmin);
-                    this.setState({loggedIn: true});
-                    //his.props.logIn(data.voAdmin); // this is calling the reducer to store the data on redux Store
-                    //this.props.history.push('#/dashboards/basic'); // TBD how to redirect???????????????
-                } else {
-                    toast.error('Datos incorrectos', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                }
-            }
-            ).catch(error => {
-                toast.error('Internal error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                console.log(error);
-            }
-            )
+            this.props.logIn(this.state);
         } else {
             toast.error('Por favor ingrese correo y contraseña', {
                 position: "top-right",
@@ -93,6 +51,8 @@ class Login extends React.Component {
     }
     render() {
         const { email, password } = this.state;
+        let { login_status } = this.props;
+        if(login_status == 'LOGGED_IN') return <Redirect to='/'/>
         return (
             <Fragment>
                 <Container className="LoginForm">
@@ -129,13 +89,22 @@ class Login extends React.Component {
                         <Button>Login</Button>
                     </Form>
                 </Container>
-                {this.state.loggedIn && 
-                <Redirect to="/dashboards/basic"/>
-                }
                 <ToastContainer/>
             </Fragment>
         );
     }
 }
+const mapStateToProps = (state) =>{
+    return {
+        login_status: state.loginData.login_status,
+        adminData: state.loginData.adminData,
+    }
+}
 
-export default Login;
+const mapDispatchToProps = (dispatch) =>{
+    return{
+        logIn : (adminData) => { dispatch (logIn(adminData))}
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

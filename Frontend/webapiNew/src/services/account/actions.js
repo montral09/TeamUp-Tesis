@@ -3,7 +3,8 @@ import {
     REGISTER_USER,
     MODIFY_USER,
     MODIFY_USER_ERROR,
-    REGISTER_USER_ERROR
+    REGISTER_USER_ERROR,
+    TOKEN_UPDATED
 } 
 from "./actionTypes";
 
