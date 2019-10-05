@@ -10,8 +10,10 @@ import {Button} from 'react-bootstrap';
 
 const SignedInLinks = (props) =>{
     const { CheckPublisher, Mail } = props.userData;
+    const { tokenObj } = props;
     const [show, setShow] = React.useState(false);
-
+    console.log("SignedInLinks - props");
+    console.log(props);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
@@ -21,7 +23,8 @@ const SignedInLinks = (props) =>{
           header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
 
           body: JSON.stringify({
-              Mail: Mail
+              Mail: Mail,
+              AccessToken : tokenObj.accesToken
           })
       }).then(response => response.json()).then(data => {
           console.log("data:" + JSON.stringify(data));
@@ -100,6 +103,7 @@ const SignedInLinks = (props) =>{
 const mapStateToProps = (state) => {
     return {
         userData: state.loginData.userData,
+        tokenObj: state.loginData.tokenObj,
     }
 }
 

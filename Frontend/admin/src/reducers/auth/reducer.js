@@ -3,15 +3,16 @@ import {
     LOG_IN,
     LOG_OUT,
     CHECK_LOGIN,
-    MODIFY_DATA,
     LOG_IN_ERROR } 
 from "./actionTypes";
+
 import { toast } from 'react-toastify';
-import { loadState, saveState } from '../auth/cookieStore';
+
+import { loadState, saveState } from './cookieStore';
 
 const initState = {
     login_status : 'NOT_LOGGED_IN',
-    userData : {},
+    adminData : {},
     tokenObj : {},
     messageObj: {},
 }
@@ -27,7 +28,7 @@ const loginReducer = (state = initState, action) =>{
             newStateObj = {
                 ...state,
                 login_status: 'LOGGED_IN',
-                userData: action.userData,
+                adminData: action.adminData,
                 tokenObj: action.tokenObj,
             }
             toast.success(action.messageObj.successMessage, {
@@ -58,15 +59,8 @@ const loginReducer = (state = initState, action) =>{
             newStateObj = {
                 ...state,
                 login_status: 'NOT_LOGGED_IN',
-                userData: [],
+                adminData: [],
                 tokenObj: {}
-            }
-            saveState(newStateObj);
-        break;
-        case MODIFY_DATA : 
-            newStateObj = {
-                ...state,
-                userData: action.userData
             }
             saveState(newStateObj);
         break;

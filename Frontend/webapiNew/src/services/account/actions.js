@@ -1,7 +1,9 @@
 
 import {
     REGISTER_USER,
-    MODIFY_USER
+    MODIFY_USER,
+    MODIFY_USER_ERROR,
+    REGISTER_USER_ERROR
 } 
 from "./actionTypes";
 
@@ -10,77 +12,33 @@ export const registerUser = (userData) =>{
     // Return function to use with thunk (for async call)
     return (dispatch, getState) =>{
         //Call to API
-        
-        dispatch({ type: REGISTER_USER, userData: userData}); // to update the store
-        /*
+        console.log("registerUser - userData:");
+        console.log(userData);
+
         fetch('https://localhost:44372/api/user', {
             method: 'POST',
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-
-            body: JSON.stringify({
-                Password: userData.password,
-                Mail: userData.email,
-                Name: userData.firstName,
-                LastName: userData.lastName,
-                Phone: userData.phone,
-                CheckPublisher: userData.gestorCheckbox,
-                Rut: userData.rut,
-                RazonSocial: userData.razonSocial,
-                Address: userData.direccion,
-            })
+            body: JSON.stringify(userData)
         }).then(response => response.json()).then(data => {
             //this.setState({isLoading: false, buttonIsDisable:false});
             
-            console.log("data:" + JSON.stringify(data));
+            console.log("registerUser- data:" + JSON.stringify(data));
             if (data.responseCode == "SUCC_USRCREATED") {
-                toast.success('Usuario creado correctamente ', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                //this.props.history.push('/account/login')
+                dispatch({ type: REGISTER_USER, userData: userData,  messageObj: { responseCode: data.responseCode, successMessage: "Usuario creado correctamente"}}); // to update the store
+                //this.props.history.push('/account/login');
             } else {
+                let message = "Ese correo ya esta en uso, por favor elija otro.";
                 if(data.Message){
-                    toast.error('Hubo un error: '+data.Message, {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                }else{
-                    toast.error('Ese correo ya esta en uso, por favor elija otro.', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
+                    message='Hubo un error';
                 }
-
-
+                dispatch({ type: REGISTER_USER_ERROR, messageObj: { responseCode: data.responseCode, errorMessage: message}}); // to update the store
             }
         }
         ).catch(error => {
-            dispatch({ type: REGISTER_USER_ERROR, error: error}); // to update the store with error
-            /*
-            this.setState({isLoading: false, buttonIsDisable:false});
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-            console.log(error);*//*
+            console.log(error);
+            dispatch({ type: REGISTER_USER_ERROR, messageObj: { responseCode: "ERR_SYSTEM_ERROR", errorMessage: "Internal Error"}}); // to update the store 
         }
         );
-        */
+
     }
 }

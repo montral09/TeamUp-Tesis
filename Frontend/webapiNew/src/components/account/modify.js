@@ -15,6 +15,8 @@ class Modify extends React.Component {
 
     constructor(props) {
         super(props);
+        console.log("Modify - props:")
+        console.log(props);
         const { Address, LastName, Mail, Name, Phone, RazonSocial, Rut } = props.userData;
         this.state = {
             firstName: Name,
