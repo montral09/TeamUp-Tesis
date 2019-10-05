@@ -4,7 +4,7 @@ import { Redirect } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { modifyData } from '../../services/login/actions';
+import { modifyData, updateToken } from '../../services/login/actions';
 import { logOut } from '../../services/login/actions';
 
 import { connect } from 'react-redux';
@@ -18,6 +18,7 @@ class Modify extends React.Component {
         console.log("Modify - props:")
         console.log(props);
         const { Address, LastName, Mail, Name, Phone, RazonSocial, Rut } = props.userData;
+        const tokenObj = props.tokenObj;
         this.state = {
             firstName: Name,
             lastName: LastName,
@@ -29,7 +30,8 @@ class Modify extends React.Component {
             rut: Rut,
             razonSocial: RazonSocial,
             address: Address,
-            anyChange: false
+            anyChange: false,
+            tokenObj: tokenObj
         }
         this.modify = this.modify.bind(this);
     }
@@ -69,26 +71,29 @@ class Modify extends React.Component {
         return returnValue;
     }
 
-
     modify() {
         if (this.checkRequiredInputs()) {
+            console.log("Token OBJ: ");
+            console.log(this.state.tokenObj);
             fetch('https://localhost:44372/api/user', {
-                method: 'PUT',
-                header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                body: JSON.stringify({
-                    Password: this.state.password || "",
-                    Mail: this.state.originalEmail,
-                    Name: this.state.firstName,
-                    LastName: this.state.lastName,
-                    Phone: this.state.phone,
-                    Rut: this.state.rut,
-                    RazonSocial: this.state.razonSocial,
-                    Address: this.state.address,
-                    NewMail: this.state.email,
-                })
-            }).then(response => response.json()).then(data => {
-                console.log("data:" + JSON.stringify(data));
-                if (data.responseCode == "SUCC_USRUPDATED") {
+            method: 'PUT',
+            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({
+                Password: this.state.password || "",
+                Mail: this.state.originalEmail,
+                Name: this.state.firstName,
+                LastName: this.state.lastName,
+                Phone: this.state.phone,
+                Rut: this.state.rut,
+                RazonSocial: this.state.razonSocial,
+                Address: this.state.address,
+                NewMail: this.state.email,
+                AccessToken: this.state.tokenObj.accesToken
+            })
+        }).then(response => response.json()).then(data => {
+            console.log("data:" + JSON.stringify(data));
+            switch(data.responseCode){
+                case "SUCC_USRUPDATED":
                     if(this.state.email != this.state.originalEmail){
                         toast.success('Usuario actualizado correctamente, se ha enviado un correo de verificacion a su nueva casilla ', {
                             position: "top-right",
@@ -120,40 +125,100 @@ class Modify extends React.Component {
                         });
                         this.props.history.push('/');
                     }
-                } else
-                    if (data.responseCode == "ERR_MAILALREADYEXIST") {
-                        toast.error('Ese correo ya esta en uso, por favor elija otro.', {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                        });
-                    } else if (data.Message) {
-                        toast.error('Hubo un error', {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                        });
+                break;
+                case "ERR_MAILALREADYEXIST":
+                    toast.error('Ese correo ya esta en uso, por favor elija otro.', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                break;
+                case "ERR_INVALIDACCESSTOKEN":
+                    fetch('https://localhost:44372/api/tokens', {
+                        method: 'PUT',
+                        header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        
+                        body: JSON.stringify({
+                            Mail: this.state.email,
+                            RefreshToken: this.state.tokenObj.refreshToken
+                        })
+                    }).then(response => response.json()).then(data => {
+                        this.setState({isLoading: false, buttonIsDisable:false});
+                        console.log("data:" + JSON.stringify(data));
+                        
+                        switch(data.responseCode){
+                            case "SUCC_TOKENSUPDATED":
+                                let newTokenObj = {
+                                    accesToken: data.AccessToken,
+                                    refreshToken: data.RefreshToken
+                                };
+                                this.props.updateToken(newTokenObj);
+                                this.setState({tokenObj: newTokenObj}, () => this.modify());                            
+                            break;
+                            case "ERR_INVALIDREFRESHTOKEN":
+                                console.log(data.responseCode);
+                            break;
+                            case "ERR_REFRESHTOKENEXPIRED":
+                                    console.log(data.responseCode);
+                            break;
+                            default:
+                            case "ERR_SYSTEM":
+                                    console.log(data.responseCode);
+                            break;
+                        }
                     }
+                    ).catch(error => {
+                        this.setState({isLoading: false, buttonIsDisable:false});
+                        toast.error('Internal error', {
+                            position: "top-right",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                        });
+                        console.log(error);
+                    }
+                    )
+                break;
+
+                case "ERR_ACCESSTOKENEXPIRED":
+                        console.log(data.responseCode);
+                break;
+
+                default:
+                    toast.error('Hubo un error', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                break;
             }
-            ).catch(error => {
-                toast.error('Internal error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                console.log(error);
-            }
-            )
         }
+        ).catch(error => {
+            toast.error('Internal error', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+            console.log(error);
+        }
+        )
+            
+        }
+
+    }
+
+    refreshToken(){
 
     }
 
@@ -219,13 +284,15 @@ const mapStateToProps = (state) => {
     return {
         login_status: state.loginData.login_status,
         userData: state.loginData.userData,
+        tokenObj: state.loginData.tokenObj,
     }
 }
 
 const mapDispatchToProps = (dispatch) =>{
     return{
         modifyData : (userData) => { dispatch (modifyData(userData))},
-        logOut: () => dispatch(logOut())
+        logOut: () => dispatch(logOut()),
+        updateToken: (tokenObj) => dispatch(updateToken(tokenObj))
     }
 }
 export default connect(mapStateToProps,mapDispatchToProps)(Modify);

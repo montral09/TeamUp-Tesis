@@ -4,7 +4,8 @@ import {
     LOG_OUT,
     CHECK_LOGIN,
     MODIFY_DATA,
-    LOG_IN_ERROR } 
+    LOG_IN_ERROR,
+    TOKEN_UPDATED } 
 from "./actionTypes";
 
 // Here are all of the actions for account process, this is going to be called on login/logout page
@@ -61,4 +62,11 @@ export const modifyData = (userData) =>{
          type: MODIFY_DATA, 
          userData: userData
     }
+}
+
+export const updateToken = (tokenObj) =>{
+    return {
+        type: TOKEN_UPDATED, 
+        tokenObj: tokenObj
+   }
 }

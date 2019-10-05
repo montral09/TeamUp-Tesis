@@ -4,7 +4,8 @@ import {
     LOG_OUT,
     CHECK_LOGIN,
     MODIFY_DATA,
-    LOG_IN_ERROR } 
+    LOG_IN_ERROR,
+    TOKEN_UPDATED } 
 from "./actionTypes";
 import { toast } from 'react-toastify';
 import { loadState, saveState } from '../auth/cookieStore';
@@ -67,6 +68,13 @@ const loginReducer = (state = initState, action) =>{
             newStateObj = {
                 ...state,
                 userData: action.userData
+            }
+            saveState(newStateObj);
+        break;
+        case TOKEN_UPDATED : 
+            newStateObj = {
+                ...state,
+                tokenObj: action.tokenObj
             }
             saveState(newStateObj);
         break;
