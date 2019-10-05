@@ -80,7 +80,7 @@ namespace backend.Data_Access
                 }
                 return result;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -122,20 +122,20 @@ namespace backend.Data_Access
                 {
                     DateTime expirationDate = DateTime.Now;
                     String queryExpiration = cns.GetExpirationTimeRefreshTokenUser();
-                    SqlCommand selectCommandExpiration = new SqlCommand(query, con);
-                    SqlParameter parametroExpiration = new SqlParameter()
+                    SqlCommand selectCommandExpiration = new SqlCommand(queryExpiration, con);
+                    SqlParameter parameterExpiration = new SqlParameter()
                     {
                         ParameterName = "@mail",
                         Value = mail,
                         SqlDbType = SqlDbType.VarChar
                     };
-                    selectCommand.Parameters.Add(parametro);
-                    SqlDataReader drExpiration = selectCommand.ExecuteReader();
+                    selectCommandExpiration.Parameters.Add(parameterExpiration);
+                    SqlDataReader drExpiration = selectCommandExpiration.ExecuteReader();
                     while (drExpiration.Read())
                     {
-                        expirationDate = Convert.ToDateTime(dr["refreshTokenExpiration"]);
+                        expirationDate = Convert.ToDateTime(drExpiration["refreshTokenExpiration"]);
                     }
-                    dr.Close();
+                    drExpiration.Close();
 
                     if (expirationDate < DateTime.Now)
                     {
@@ -151,7 +151,7 @@ namespace backend.Data_Access
                 }
                 return result;
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }

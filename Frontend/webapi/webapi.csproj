@@ -192,6 +192,8 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Controllers\TokensController.cs" />
+    <Compile Include="Controllers\UserDataController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PasswordRecoveryController.cs" />
     <Compile Include="Controllers\LocationController.cs" />
@@ -201,6 +203,7 @@
     <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\PublisherController.cs" />
     <Compile Include="Controllers\TokenValidationHandler.cs" />
+    <Compile Include="Controllers\UpdateUserAdminController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="Controllers\ValidateEmailController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />

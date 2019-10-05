@@ -20,7 +20,7 @@ namespace webapi.Controllers
             try
             {
                 VOResponsePasswordRecovery voResp = new VOResponsePasswordRecovery();
-                bool userExists = fach.userExists(voPasswordRecovery.Mail);
+                bool userExists = fach.UserExists(voPasswordRecovery.Mail);
                 if (userExists)
                 {
                     fach.RecoverPassword(voPasswordRecovery);

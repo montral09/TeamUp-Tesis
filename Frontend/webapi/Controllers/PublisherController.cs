@@ -37,14 +37,12 @@ namespace webapi.Controllers
         [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpPut]
         [Route("api/publisher")]
-        public IHttpActionResult Put([FromBody] VORequestApprovePublishers publishers)
+        public IHttpActionResult Put([FromBody] VORequestApprovePublishers voPublishers)
         {
             try
             {
                 VOResponseApprovePublishers voResp = new VOResponseApprovePublishers();
-                fach.ApprovePublishers(publishers.Mails);
-                voResp.responseCode = EnumMessages.SUCC_PUBLISHERSOK.ToString();
-
+                voResp = fach.ApprovePublishers(voPublishers);
                 return Ok(voResp);
             }
             catch (GeneralException e)
