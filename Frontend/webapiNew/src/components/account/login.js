@@ -36,12 +36,19 @@ class Login extends React.Component {
         })
     }
 
-    login() {
-        if (this.state.password && this.state.email) {
-            //this.setState({isLoading: true, buttonIsDisable:true});
-            this.props.logIn(this.state);
-        } else {
-            toast.error('Por favor ingrese correo y contraseña', {
+    checkRequiredInputs() {
+        let returnValue = false;
+        let message = "";
+        if (!this.state.password || !this.state.email) {
+                message='Por favor ingrese correo y contraseña';
+                returnValue = true;        
+        } else if (!this.state.email.match(/\S+@\S+/)) {
+            message='Formato de email incorrecto';
+            returnValue = true;
+        }
+        
+        if(message){
+            toast.error(message, {
                 position: "top-right",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -50,7 +57,14 @@ class Login extends React.Component {
                 draggable: true,
             });
         }
+        
+        return returnValue;
+    }
 
+    login() {
+        if (!this.checkRequiredInputs()) {
+            this.props.logIn(this.state);
+        } 
     }
 
     render() {
@@ -83,8 +97,8 @@ class Login extends React.Component {
                                                         <div className="well">
                                                         <form className="text-center border border-light p-5" action="#!">
                                                             <p className="h4 mb-4">Iniciar sesión</p>
-                                                            <input type="email" name="email" id="input-email" className="form-control mb-4" placeholder="Correo" onChange={this.onChange}></input>
-                                                            <input type="password" name="password" id="input-password" className="form-control mb-4" placeholder="Password" onChange={this.onChange}></input>
+                                                            <input type="email" name="email" id="input-email" className="form-control mb-4" placeholder="Correo" maxLength="50" onChange={this.onChange}></input>
+                                                            <input type="password" name="password" id="input-password" className="form-control mb-4" placeholder="Password" maxLength="100" onChange={this.onChange}></input>
                                                             <div className="d-flex justify-content-around mb-2">
                                                                 <div>
                                                                     <Link to="/account/forgotPassword">Olvido su contraseña?</Link>
