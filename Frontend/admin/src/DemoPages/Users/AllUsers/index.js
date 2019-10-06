@@ -11,6 +11,7 @@ import AllUsersTable from './AllUsersTable';
 
 import ModifyUserModal from './ModifyUser';
 
+import { connect } from 'react-redux';
 // Table
 
 import {
@@ -23,9 +24,12 @@ class AllUsers extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            arrData: []
+            arrData: [],
+            tokenObj: this.props.tokenObj,
+            adminData: this.props.adminData
         }
         this.modalElement = React.createRef(); // esto hace unas magias para cambiar el estado de un componente hijo
+        this.updateTable = this.updateTable.bind(this);
     }
     
     // This function will trigger the save function inside the modal to update the values
@@ -36,90 +40,57 @@ class AllUsers extends Component {
             return usr.Mail === key
         });
 
-        this.modalElement.current.save(userData[0]);
+        //this.modalElement.current.save(userData[0]);
+        console.log("this.modalElement ");
+        console.log(this.modalElement);
 
+        this.modalElement.current.toggle(userData[0],this.state.tokenObj,this.state.adminData);
     }
 
+
+    updateTable(){
+        fetch('https://localhost:44372/api/users', {
+            method: 'POST',
+            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({
+                Mail: this.state.adminData.Mail,
+                AccessToken: this.state.tokenObj.accesToken
+            })
+        }).then(response => response.json()).then(data => {
+            if (data.responseCode == "SUCC_USERSOK") {
+                this.setState({
+                    ...this.state,
+                    arrData : data.voUsers })
+            } else {
+                toast.error('Hubo un error', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
+            }
+        }
+        ).catch(error => {
+            toast.error('Internal error', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+            console.log(error);
+        }
+        )
+    }
 
     // This function will trigger when the component is mounted, to fill the data from the state
     componentDidMount() {
-        fetch('https://localhost:44372/api/customer'
-        ).then(response => response.json()).then(data => {
-            if (data.responseCode == "SUCC_CUSTOMERSOK") {
-                this.setState({
-                    ...this.state,
-                    arrData : data.voCustomers })
-            } else {
-                toast.error('Hubo un error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-            }
-        }
-        ).catch(error => {
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-            console.log(error);
-        }
-        )
-    }
-
-    // This funciton will call the api to submit the publisher
-    submitPublisher(usersEmails, newArrIfSuccess) {
-        fetch('https://localhost:44372/api/customer', {
-            method: 'PUT',
-            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify({
-                Mails: usersEmails
-            })
-        }).then(response => response.json()).then(data => {
-            console.log("data:" + JSON.stringify(data));
-            if (data.responseCode == "SUCC_PUBLISHERSOK") {
-                let text = "Solicitud ejecutada correctamente";
-                this.setState({
-                    arrData: newArrIfSuccess,
-                });
-                toast.success(text, {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-            } else {
-                toast.error('Hubo un error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-            }
-        }
-        ).catch(error => {
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-            console.log(error);
-        }
-        )
+        console.log("component did mount state");
+        console.log(this.state)
+        this.updateTable();
     }
 
     render() {
@@ -139,7 +110,7 @@ class AllUsers extends Component {
                     transitionEnter={false}
                     transitionLeave={false}>
                     <Row>
-                        <ModifyUserModal ref = {this.modalElement} />
+                        <ModifyUserModal ref = {this.modalElement} updateTable={this.updateTable}/>
                         <Col lg="12">
                             <Card className="main-card mb-3">
                                 <CardBody>
@@ -154,5 +125,12 @@ class AllUsers extends Component {
         );
     }
 }
+const mapStateToProps = (state) => {
+    return {
+        login_status: state.loginData.login_status,
+        adminData: state.loginData.adminData,
+        tokenObj: state.loginData.tokenObj,
+    }
+}
 
-export default AllUsers;
+export default connect(mapStateToProps,null)(AllUsers);

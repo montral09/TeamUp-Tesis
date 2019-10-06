@@ -16,27 +16,32 @@ class ModifyUserModal extends React.Component {
         this.state = {
             modal: false,
             userData: {},
-            userDataChanged: {}
+            userDataChanged: {},
+            tokenObj: {},
+            adminData: {}
         };
 
         this.toggle = this.toggle.bind(this);
         this.save = this.save.bind(this);
     }
 
-    toggle() {
+    toggle(userData,tokenObj,adminData) {
         this.setState({
             modal: !this.state.modal,
+            userData: userData,
+            userDataChanged: userData,
+            tokenObj: tokenObj,
+            adminData: adminData
         });
     }
 
-    save(userData) {
-        console.log("userData: ");
-        console.log(userData);
-        return; // pending fabi to add
+    save() {
+        console.log("save - this.state: ");
+        console.log(this.state);
         let {Mail, Name, LastName, Phone, Rut, RazonSocial, Address, CheckPublisher, PublisherValidated, MailValidated, Active  } = this.state.userDataChanged;
-        let tempAccessToken = "rdoyflyvv5o"; // TO DO: CHANGE THIS!!!
         let objUser = {
             Mail: Mail,
+            OriginalMail : this.state.userData.Mail,
             Name: Name,
             LastName: LastName,
             Phone: Phone,
@@ -46,48 +51,32 @@ class ModifyUserModal extends React.Component {
             CheckPublisher: CheckPublisher,
             PublisherValidated: PublisherValidated,
             MailValidated: MailValidated,
-            AccessToken: tempAccessToken,
+            AccessToken: this.state.tokenObj.accesToken,
+            AdminMail: this.state.adminData.Mail,
             Active: Active
         }
 
-        fetch('https://localhost:44372/api/updateUserAdminr', {
+        fetch('https://localhost:44372/api/updateUserAdmin', {
             method: 'PUT',
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify(objUser)
         }).then(response => response.json()).then(data => {
             console.log("data:" + JSON.stringify(data));
             if (data.responseCode == "SUCC_USRUPDATED") {
-                if(this.state.email != this.state.originalEmail){
-                    toast.success('Usuario actualizado correctamente, se ha enviado un correo de verificacion a su nueva casilla ', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                    this.props.logOut();
-                    this.props.history.push('/account/login');
-                }else{
-                    this.props.modifyData({
-                        Mail: this.state.originalEmail,
-                        Name: this.state.firstName,
-                        LastName: this.state.lastName,
-                        Phone: this.state.phone,
-                        Rut: this.state.rut,
-                        RazonSocial: this.state.razonSocial,
-                        Address: this.state.address,
-                    }); // this is calling the reducer to store the data on redux Store
-                    toast.success('Usuario actualizado correctamente', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                    this.props.history.push('/');
-                }
+                toast.success('Usuario actualizado correctamente ', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
+                this.setState({
+                    modal: !this.state.modal,
+                    userData: this.state.userData,
+                    userDataChanged: this.state.userData
+                });
+                this.props.updateTable();
             } else
                 if (data.responseCode == "ERR_MAILALREADYEXIST") {
                     toast.error('Ese correo ya esta en uso, por favor elija otro.', {
@@ -122,15 +111,10 @@ class ModifyUserModal extends React.Component {
         }
         )
             
-        this.setState({
-            modal: !this.state.modal,
-            userData: userData,
-            userDataChanged: userData
-        });
+
 
     }
     onChange = (e) => {
-        console.log("name: "+e.target.name+",value:"+e.target.value);
         var valueToUpdate = e.target.value;
         if(e.target.value == 'on'){
             // adapt to checkbox behavior
