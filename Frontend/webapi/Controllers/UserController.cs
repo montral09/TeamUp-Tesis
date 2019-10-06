@@ -82,7 +82,7 @@ namespace webapi.Controllers
         }
 
         [EnableCors(origins: "*", headers: "*", methods: "*")]
-        [HttpGet]
+        [HttpPost]
         [Route("api/user")]
         public IHttpActionResult Get([FromBody]VORequestGetUsers voRequest)
         {

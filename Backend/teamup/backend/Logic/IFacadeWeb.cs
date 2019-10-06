@@ -14,7 +14,7 @@ namespace backend.Logic
         void CreateUser(VORequestUserCreate voUserCreate);
         VOResponseUserUpdate UpdateUser(VORequestUserUpdate voUserUpdate);
         VOResponseUserDelete DeleteUser(VORequestUserDelete voUserDelete);
-        List<VOPublisher> GetPublishers();
+        VOResponseGetPublishers GetPublishers(VORequestGetPublishers voPublishers);
         List<VOCustomer> GetCustomers();
         VOResponseApprovePublishers ApprovePublishers(VORequestApprovePublishers voPublishers);
         VOResponseAdminLogin GetAdmin(String mail, String password);

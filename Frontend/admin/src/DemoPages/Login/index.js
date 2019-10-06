@@ -32,6 +32,30 @@ class Login extends React.Component {
         });
     }
 
+    checkRequiredInputs() {
+        let returnValue = false;
+        let message = "";
+        if (!this.state.password || !this.state.email) {
+                message='Por favor ingrese correo y contraseña';
+                returnValue = true;        
+        } else if (!this.state.email.match(/\S+@\S+/)) {
+            message='Formato de email incorrecto';
+            returnValue = true;
+        }
+        
+        if(message){
+            toast.error(message, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+        }
+        
+        return returnValue;
+    }
     submitForm(e) {
         e.preventDefault();
         console.log(`Email: ${this.state.email}`)
@@ -65,8 +89,7 @@ class Login extends React.Component {
                                     type="email"
                                     name="email"
                                     id="exampleEmail"
-                                    placeholder="myemail@email.com"
-                                    value={email}
+                                    placeholder="Correo"
                                     onChange={(e) => {
                                         this.handleChange(e)
                                     }}
@@ -80,8 +103,7 @@ class Login extends React.Component {
                                     type="password"
                                     name="password"
                                     id="adminPassword"
-                                    placeholder="********"
-                                    value={password}
+                                    placeholder="Password"
                                     onChange={(e) => this.handleChange(e)}
                                 />
                             </FormGroup>
