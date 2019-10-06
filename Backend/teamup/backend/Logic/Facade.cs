@@ -165,18 +165,25 @@ namespace backend.Logic
         }
 
         /* This function obtains all Publishers  */
-        public List<VOPublisher> GetPublishers()
+        public VOResponseGetPublishers GetPublishers(VORequestGetPublishers voPublishers)
         {
-            List<VOPublisher> publishers = new List<VOPublisher>();
             try
             {
-                publishers = users.GetPublishers();
+                VOResponseGetPublishers response = new VOResponseGetPublishers();
+                String message = util.ValidAccessToken(voPublishers.AccessToken, voPublishers.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    response.voUsers = users.GetPublishers();
+                    message = EnumMessages.SUCC_PUBLISHERSOK.ToString();
+                }
+                response.responseCode = message;
+                return response;
             }
             catch (GeneralException e)
             {
                 throw e;
             }
-            return publishers;
+
         }
         /* This function obtains all Customers  */
         public List<VOCustomer> GetCustomers()
@@ -329,7 +336,14 @@ namespace backend.Logic
         {
             try
             {
-                String message = util.ValidAccessToken(voRequestUpdate.AccessToken, voRequestUpdate.Mail);
+                String message = util.ValidAccessToken(voRequestUpdate.AccessToken, voRequestUpdate.AdminMail);
+                if (!voRequestUpdate.OriginalMail.Equals(voRequestUpdate.Mail))
+                {
+                    if (users.Member (voRequestUpdate.Mail))
+                    {
+                        message = EnumMessages.ERR_MAILALREADYEXIST.ToString();
+                    }
+                }
                 if (EnumMessages.OK.ToString().Equals(message))
                 {
                     users.UpdateUserAdmin(voRequestUpdate);

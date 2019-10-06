@@ -15,7 +15,7 @@ namespace webapi.Controllers
         IFacadeWeb fach = new FacadeFactory().CreateFacadeWeb;
 
         [EnableCors(origins: "*", headers: "*", methods: "*")]
-        [HttpGet]
+        [HttpPost]
         [Route("api/userData")]
         public IHttpActionResult Get(VORequestGetUserData voUserData)
         {

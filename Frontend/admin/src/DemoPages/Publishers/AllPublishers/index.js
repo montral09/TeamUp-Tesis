@@ -8,6 +8,7 @@ import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import PageTitle from '../../../Layout/AppMain/PageTitle';
 
 import PublisherApprovTable from './PublisherApprovTable';
+import { connect } from 'react-redux';
 
 // Table
 
@@ -18,9 +19,17 @@ import {
 } from 'reactstrap';
 
 class AllPublishers extends Component {
-
-    state = {
-        gestPendApr: []
+    constructor(props) {
+        super(props);
+        console.log("AllPublishers - props:")
+        console.log(props);
+        const tokenObj = props.tokenObj;
+        const adminMail = props.adminData.Mail
+        this.state = {
+            gestPendApr: [],
+            tokenObj: tokenObj,
+            adminMail : adminMail
+        }
     }
 
     // This function will try to approve an specific publisher
@@ -33,12 +42,12 @@ class AllPublishers extends Component {
             return gest.Mail !== key
         });
 
-        this.submitPublisher([gestToApprove[0].Mail], gestPendAprNew);
+        this.submitPublisher([gestToApprove[0].Mail], gestPendAprNew, this.state.tokenObj, this.state.adminEmail);
     }
 
     approveAllPublishers = () => {
         const gestPendAprNew = [];
-        this.submitPublisher(this.state.gestPendApr.map(publisherObj =>{return publisherObj.Mail}), gestPendAprNew);
+        this.submitPublisher(this.state.gestPendApr.map(publisherObj =>{return publisherObj.Mail}), gestPendAprNew, this.state.tokenObj, this.state.adminEmail);
     }
 
     // This function will trigger when the component is mounted, to fill the data from the state
@@ -76,12 +85,17 @@ class AllPublishers extends Component {
     }
 
     // This funciton will call the api to submit the publisher
-    submitPublisher(publishersEmails, newArrIfSuccess) {
+    submitPublisher(publishersEmails, newArrIfSuccess, tokenObj, adminMail) {
+        console.log ("entre al submit con mails y access token");
+        console.log(publishersEmails);
+        console.log(tokenObj);
         fetch('https://localhost:44372/api/publisher', {
             method: 'PUT',
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify({
-                Mails: publishersEmails
+                Mails: publishersEmails,
+                AccessToken : tokenObj.accesToken,
+                AdminMail : adminMail
             })
         }).then(response => response.json()).then(data => {
             console.log("data:" + JSON.stringify(data));
@@ -156,4 +170,12 @@ class AllPublishers extends Component {
     }
 }
 
-export default AllPublishers;
+const mapStateToProps = (state) => {
+    return {
+        tokenObj: state.loginData.tokenObj,
+        adminData : state.loginData.adminData
+    }
+}
+
+
+export default connect(mapStateToProps) (AllPublishers);
