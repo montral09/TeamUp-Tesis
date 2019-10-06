@@ -29,6 +29,7 @@ class AllUsers extends Component {
             adminData: this.props.adminData
         }
         this.modalElement = React.createRef(); // esto hace unas magias para cambiar el estado de un componente hijo
+        this.updateTable = this.updateTable.bind(this);
     }
     
     // This function will trigger the save function inside the modal to update the values
@@ -47,17 +48,14 @@ class AllUsers extends Component {
     }
 
 
-    // This function will trigger when the component is mounted, to fill the data from the state
-    componentDidMount() {
-        console.log("component did mount state");
-        console.log(this.state)
+    updateTable(){
         fetch('https://localhost:44372/api/users', {
             method: 'POST',
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: {
+            body: JSON.stringify({
                 Mail: this.state.adminData.Mail,
-                AccessToken: this.state.tokenObj.AccessToken
-            }
+                AccessToken: this.state.tokenObj.accesToken
+            })
         }).then(response => response.json()).then(data => {
             if (data.responseCode == "SUCC_USERSOK") {
                 this.setState({
@@ -88,6 +86,13 @@ class AllUsers extends Component {
         )
     }
 
+    // This function will trigger when the component is mounted, to fill the data from the state
+    componentDidMount() {
+        console.log("component did mount state");
+        console.log(this.state)
+        this.updateTable();
+    }
+
     render() {
 
         return (
@@ -105,7 +110,7 @@ class AllUsers extends Component {
                     transitionEnter={false}
                     transitionLeave={false}>
                     <Row>
-                        <ModifyUserModal ref = {this.modalElement} />
+                        <ModifyUserModal ref = {this.modalElement} updateTable={this.updateTable}/>
                         <Col lg="12">
                             <Card className="main-card mb-3">
                                 <CardBody>

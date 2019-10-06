@@ -17,7 +17,7 @@ namespace webapi.Controllers
         [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpPut]
         [Route("api/updateUserAdmin")]
-        public IHttpActionResult Post([FromBody]VORequestUpdateUserAdmin voRequestUpdate)
+        public IHttpActionResult Put([FromBody]VORequestUpdateUserAdmin voRequestUpdate)
         {
             try
             {

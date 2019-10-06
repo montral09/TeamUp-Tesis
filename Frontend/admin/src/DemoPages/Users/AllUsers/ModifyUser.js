@@ -56,7 +56,7 @@ class ModifyUserModal extends React.Component {
             Active: Active
         }
 
-        fetch('https://localhost:44372/api/updateUserAdminr', {
+        fetch('https://localhost:44372/api/updateUserAdmin', {
             method: 'PUT',
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify(objUser)
@@ -71,7 +71,12 @@ class ModifyUserModal extends React.Component {
                     pauseOnHover: true,
                     draggable: true,
                 });
-
+                this.setState({
+                    modal: !this.state.modal,
+                    userData: this.state.userData,
+                    userDataChanged: this.state.userData
+                });
+                this.props.updateTable();
             } else
                 if (data.responseCode == "ERR_MAILALREADYEXIST") {
                     toast.error('Ese correo ya esta en uso, por favor elija otro.', {
@@ -106,15 +111,10 @@ class ModifyUserModal extends React.Component {
         }
         )
             
-        this.setState({
-            modal: !this.state.modal,
-            userData: userData,
-            userDataChanged: userData
-        });
+
 
     }
     onChange = (e) => {
-        console.log("name: "+e.target.name+",value:"+e.target.value);
         var valueToUpdate = e.target.value;
         if(e.target.value == 'on'){
             // adapt to checkbox behavior
