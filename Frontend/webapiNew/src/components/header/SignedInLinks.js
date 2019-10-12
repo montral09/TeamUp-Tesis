@@ -64,27 +64,6 @@ const SignedInLinks = (props) =>{
       
     }
 
-    let bePublisherLink = !CheckPublisher ? (
-        <>
-        <li><a onClick = { () => (handleShow())}>Quiero publicar</a></li>
-  
-        <Modal show={show} onHide={handleClose}>
-          <Modal.Header closeButton>
-            <Modal.Title>Quiero publicar</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>Si quieres ser uno de nuestros colaboradores, pudiendo realizar publicaciones en el sito, haz click en el boton 'Quiero!'. Se enviara una solicitud y uno de nuestros representantes se comunicara contigo a la brevedad.</Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleClose}>
-              Me lo pierdo
-            </Button>
-            <Button variant="primary" onClick={requestBePublisher}>
-              Quiero!
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      </>
-    ) : (null);
-
     return(
 
         <React.Fragment>
@@ -95,7 +74,34 @@ const SignedInLinks = (props) =>{
                     <li><a onClick = { () => (props.logOut())}>Log out</a></li>
                 </ul>
             </li>
-            {bePublisherLink}
+            {!CheckPublisher ? (
+            <>
+                <li><a onClick = { () => (handleShow())}>Quiero publicar</a></li>
+        
+                <Modal show={show} onHide={handleClose}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Quiero publicar</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Si quieres ser uno de nuestros colaboradores, pudiendo realizar publicaciones en el sito, haz click en el boton 'Quiero!'. Se enviara una solicitud y uno de nuestros representantes se comunicara contigo a la brevedad.</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleClose}>
+                    Me lo pierdo
+                    </Button>
+                    <Button variant="primary" onClick={requestBePublisher}>
+                    Quiero!
+                    </Button>
+                </Modal.Footer>
+                </Modal>
+
+            </>
+            ) : (                
+            <li className="">
+                <a href="#publications" title="Publicaciones" data-hover="dropdown" className="dropdown-toggle" data-toggle="dropdown">Publicaciones <b className="caret"></b></a>
+                <ul className="dropdown-menu dropdown-menu-right">
+                    <li><NavLink to="/publications/createPublication/createPublicationMaster">Crear publicacion</NavLink></li>
+                    <li><NavLink to="/publications/createPublication/createPublicationMaster">Crear publicacion</NavLink></li>
+                </ul>
+            </li>)}
         </React.Fragment>
     )
 }

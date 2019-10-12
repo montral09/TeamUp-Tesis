@@ -8,6 +8,7 @@ import Register from './account/register';
 import Modify from './account/modify';
 import ForgotPassword from './account/forgotPassword';
 import ValidateEmail from './account/validateemail';
+import CreatePublication from './publications/createPublication/createPublicationMaster';
 
 const Page = () => {
   return (
@@ -19,6 +20,7 @@ const Page = () => {
         <Route path="/account/modify" component={Modify} />
         <Route path="/account/forgotPassword" component={ForgotPassword} />
         <Route path="/account/validateemail/:emailtoken" component={ValidateEmail} />
+        <Route path="/publications/createPublication/createPublicationMaster" component={CreatePublication} />
       </Switch>
     </>
   );
