@@ -9,6 +9,8 @@ import CreatePublicationStep1 from './createPublicationStep1';
 import CreatePublicationStep2 from './createPublicationStep2';
 import CreatePublicationStep3 from './createPublicationStep3';
 import CreatePublicationStep4 from './createPublicationStep4';
+import CreatePublicationStep5 from './createPublicationStep5';
+
 
 class CreatePublication extends React.Component {
 
@@ -30,7 +32,9 @@ class CreatePublication extends React.Component {
             facilitiesSelect: "",
             spaceImages: [],
             reservationTypes: [],
-            maxSteps: 4
+            premiumOptions: [],
+            premiumOptionsSelected: [],
+            maxSteps: 5
         }
         this.submitPublication = this.submitPublication.bind(this);
         this.onChange = this.onChange.bind(this);
@@ -89,11 +93,28 @@ class CreatePublication extends React.Component {
         return null;
     }
 
+    get endButton() {
+        let currentStep = this.state.currentStep;
+        // If the current step is the last step, then render the "end" button
+        if (currentStep === this.state.maxSteps) {
+            return (
+                <button
+                    className="btn btn-primary float-right"
+                    type="button" onClick={this.submitPublication}>
+                    Finalizar
+            </button>
+            )
+        }
+        // ...else render nothing
+        return null;
+    }
+    
     componentDidMount() {
         window.scrollTo(0, 0);
         this.loadSpaceTypes();
         this.loadInfraestructure();
         this.loadReservationTypes();
+        this.loadPremiumOptions();
     }
 
     onChange = (e) => {
@@ -229,6 +250,43 @@ class CreatePublication extends React.Component {
             });
         }
     }
+
+    loadPremiumOptions(){
+        try {
+            // call API
+            var dummyData = {
+                premiumOptions: [
+                    {
+                        "Code": "premium1",
+                        "Description": "Premium 1",
+                        "Price": 100
+                    },
+                    {
+                        "Code": "premium2",
+                        "Description": "Premium 2",
+                        "Price": 150
+                    },
+                    {
+                        "Code": "premium3",
+                        "Description": "Premium 3",
+                        "Price": 200
+                    }
+                ],
+                "responseCode": "SUCC_premiumOptionsOK"
+             };
+            this.setState({ premiumOptions: dummyData.premiumOptions });
+
+        } catch (error) {
+            toast.error('Internal error', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+        }
+    }
     // Validate if all the required inputs are inputted, returns true or false
     checkRequiredInputs() {
         let returnValue = false;
@@ -304,7 +362,18 @@ class CreatePublication extends React.Component {
             data.append('file', this.state.spaceImages[x])
         }
         */
-        
+        console.log("State to send to API:");
+        console.log(this.state);
+        toast.success('Su publicación ha sido enviada correctamente, revise su casilla de correo para más informacion. ', {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+        });
+        this.props.history.push('/');
+        /*
         if (this.state.gestorCheckbox == 'on') {
             this.state.gestorCheckbox = true;
         } else {
@@ -378,7 +447,7 @@ class CreatePublication extends React.Component {
             }
             )
         }
-
+        */
     }
 
     render() {
@@ -409,9 +478,12 @@ class CreatePublication extends React.Component {
                                                     <CreatePublicationStep1 parentState={this.state} onChange={this.onChange} />
                                                     <CreatePublicationStep2 parentState={this.state} onChange={this.onChange} />
                                                     <CreatePublicationStep3 parentState={this.state} onChange={this.onChange} />
-                                                    <CreatePublicationStep4 parentState={this.state} onChange={this.onChange} />                                                   
+                                                    <CreatePublicationStep4 parentState={this.state} onChange={this.onChange} />    
+                                                    <CreatePublicationStep5 parentState={this.state} onChange={this.onChange} /> 
+                                                                                                   
                                                     {this.previousButton}
                                                     {this.nextButton}
+                                                    {this.endButton}
                                                 </div>
 
                                             </div>

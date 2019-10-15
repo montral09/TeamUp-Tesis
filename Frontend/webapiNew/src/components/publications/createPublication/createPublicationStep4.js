@@ -5,6 +5,53 @@ import {Form, FormGroup, Label, Input} from 'reactstrap';
 
 class CreatePublicationStep3 extends React.Component {
 
+    constructor(props) {
+      super(props);
+      this.state = {
+        totalToPay: 0,
+        totalToPayText: "Total a pagar $0",
+        premOptionsSelected: []
+      }
+    }
+
+    totalToPay = (e) => {
+      const premOpcion = this.state.premOptionsSelected.filter(premOpc => {
+        return premOpc.Code === e.target.id
+      });
+      // if the option is in the array --> remove it
+      if(premOpcion.length != 0){
+        const premOptionsSelectedNew = this.state.premOptionsSelected.filter(premOpc => {
+          return premOpc.Code != e.target.id
+        });
+        const totalToPayNew = this.state.totalToPay-parseInt(premOpcion[0].Price);
+        const totalToPayTextNew = "Total a pagar $"+totalToPayNew;
+        this.setState({
+          premOptionsSelected: premOptionsSelectedNew,
+          totalToPay: totalToPayNew,
+          totalToPayText: totalToPayTextNew
+        }, () => {      
+          this.props.onChange({target :{value:this.state.premOptionsSelected,id:"premiumOptionsSelected"}});
+        });
+      }else{
+        // if the option is not in the array -> add it
+        const premOption = this.props.parentState.premiumOptions.filter(premOpc => {
+          return premOpc.Code === e.target.id
+        });
+        const premOptionsSelectedNew = this.state.premOptionsSelected;
+        premOptionsSelectedNew.push(premOption[0]);
+        const totalToPayNew = this.state.totalToPay+parseInt(premOption[0].Price);
+        const totalToPayTextNew = "Total a pagar $"+totalToPayNew;
+        this.setState({
+          premOptionsSelected: premOptionsSelectedNew,
+          totalToPay: totalToPayNew,
+          totalToPayText: totalToPayTextNew
+        }, () => {      
+          this.props.onChange({target :{value:this.state.premOptionsSelected,id:"premiumOptionsSelected"}});
+        });
+      }
+
+    }
+
     render() {
       if (this.props.parentState.currentStep !== 4) { // Prop: The current step
         return null
@@ -17,27 +64,17 @@ class CreatePublicationStep3 extends React.Component {
                 <Label for="prices">Valores en Pesos Uruguayos</Label>
             </FormGroup>
 
-            <FormGroup>
-                <Input type="checkbox" name="premium1" id="premium1"/>
-                <Label for="premium1">Premium 1 - $50</Label>
-            </FormGroup>
+            {this.props.parentState.premiumOptions.map((premOpc, key) => {
+                let premText = premOpc.Description + " - $"+premOpc.Price;
+                return (
+                  <FormGroup>
+                    <Input type="checkbox" name={premOpc.Code} id={premOpc.Code} onChange={this.totalToPay}/>
+                    <Label for={premOpc.Code}>{premText}</Label>
+                  </FormGroup>
+                )
+            })}
 
-            <FormGroup>
-                <Input type="checkbox" name="premium2" id="premium2"/>    
-                <Label for="premium2">Premium 2 - $100</Label> 
-            </FormGroup>
-
-            <FormGroup>
-                <Input type="checkbox" name="premium3" id="premium3"/>
-                <Label for="premium3">Premium 3 - $150</Label>
-            </FormGroup>
-
-            <FormGroup>
-                <Input type="checkbox" name="premium4" id="premium4"/>
-                <Label for="premium4">Premium 4 - $200</Label>
-            </FormGroup>
-
-            <Input type="text" name="payTotal" id="payTotal" placeholder="Total a pagar $350" readonly/>
+            <Input type="text" name="payTotal" id="payTotal" placeholder={this.state.totalToPayText} readOnly/>
         </Form>
       )
     }
