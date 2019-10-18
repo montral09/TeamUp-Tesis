@@ -9,11 +9,18 @@ import Modal from 'react-bootstrap/Modal';
 import {Button} from 'react-bootstrap';
 
 const SignedInLinks = (props) =>{
-    const { CheckPublisher, Mail } = props.userData;
-    const { tokenObj } = props;
-    const [show, setShow] = React.useState(false);
     console.log("SignedInLinks - props");
     console.log(props);
+    var CheckPublisher = false;
+    var Mail = false;
+    var tokenObj = false;
+    if(props.userData){
+        var { CheckPublisher, Mail } = props.userData;
+        var { tokenObj } = props;
+    }
+
+    const [show, setShow] = React.useState(false);
+
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 

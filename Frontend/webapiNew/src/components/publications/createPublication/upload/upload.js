@@ -5,6 +5,12 @@ import './drag_arrow.png';
 
 class Upload extends React.Component {
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      spaceImages: []
+    }
+  }
 
   // Upload image functions
   maxSelectFile = (event) => {
@@ -83,6 +89,8 @@ class Upload extends React.Component {
   // End Upload image functions
   onChange = (e) => {
     if (this.maxSelectFile(e) && this.checkMimeType(e) && this.checkFileSize(e)) {
+      console.log(e.target.files);
+      /*
       this.setState({
         spaceImages: e.target.files
       });
@@ -92,8 +100,32 @@ class Upload extends React.Component {
           value: e.target.files
         }
       }
-      this.props.onChange(newE);
+      this.props.onChange(newE);*/
+      const arrFiles = Array.from(e.target.files);
+      let file = arrFiles[0];
+      let fileBase64 = '';
+      this.getBase64(file, (result) => {
+          fileBase64 = result;
+      });
+      /*const files = arrFiles.map((file, index) => {
+            let document = getBase64()
+          }
+        return { file, id: index, document }
+      });*/
+      console.log(fileBase64);
     }
+
+  }
+  getBase64(file, cb) {
+    let reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function () {
+        cb(reader.result)
+    };
+    reader.onerror = function (error) {
+        console.log('Error: ', error);
+    };
+    return document;
   }
   render() {
     return (
