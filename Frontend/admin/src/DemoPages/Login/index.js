@@ -4,7 +4,7 @@ import {
     FormGroup, Label, Input,
     Button
 } from 'reactstrap';
-import {BrowserRouter as Router, Route, Redirect} from 'react-router-dom';
+import {BrowserRouter as Redirect} from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './Login.css';
@@ -58,8 +58,6 @@ class Login extends React.Component {
     }
     submitForm(e) {
         e.preventDefault();
-        console.log(`Email: ${this.state.email}`)
-        console.log(`password: ${this.state.password}`)
         if (this.state.password && this.state.email) {
             this.props.logIn(this.state);
         } else {
@@ -88,7 +86,7 @@ class Login extends React.Component {
                                 <Input
                                     type="email"
                                     name="email"
-                                    id="exampleEmail"
+                                    id="email"
                                     placeholder="Correo"
                                     onChange={(e) => {
                                         this.handleChange(e)
@@ -110,8 +108,8 @@ class Login extends React.Component {
                         </Col>
                         <Button>Login</Button>
                     </Form>
+                    <ToastContainer/>
                 </Container>
-                <ToastContainer/>
             </Fragment>
         );
     }

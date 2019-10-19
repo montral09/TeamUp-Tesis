@@ -52,8 +52,14 @@ class PendienteAprobacion extends Component {
 
     // This function will trigger when the component is mounted, to fill the data from the state
     componentDidMount() {
-        fetch('https://localhost:44372/api/publisher'
-        ).then(response => response.json()).then(data => {
+        fetch('https://localhost:44372/api/publisher', {
+            method: 'POST',
+            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({
+                Mail: this.state.adminMail,
+                AccessToken : this.state.tokenObj.accesToken,
+            })
+        }).then(response => response.json()).then(data => {
             if (data.responseCode == "SUCC_PUBLISHERSOK") {
                 const sanitizedValues = data.voUsers.filter(voUsr =>{
                     return voUsr.PublisherValidated == false
@@ -86,7 +92,6 @@ class PendienteAprobacion extends Component {
 
     // This funciton will call the api to submit the publisher
     submitPublisher(publishersEmails, newArrIfSuccess, tokenObj, adminMail) {
-        console.log("FAbi1" + adminMail)
         fetch('https://localhost:44372/api/publisher', {
             method: 'PUT',
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },

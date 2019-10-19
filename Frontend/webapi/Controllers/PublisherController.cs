@@ -16,7 +16,7 @@ namespace webapi.Controllers
         [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpPost]
         [Route("api/publisher")]
-        public IHttpActionResult Get(VORequestGetPublishers voPublishers)
+        public IHttpActionResult Post(VORequestGetPublishers voPublishers)
         {
             try
             {               

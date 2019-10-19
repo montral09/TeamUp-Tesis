@@ -1,16 +1,19 @@
 import { createStore, combineReducers, compose, applyMiddleware } from 'redux';
 import reducers from '../reducers';
 import thunk from 'redux-thunk';
-
+import { loadState } from '../reducers/auth/cookieStore';
 
 const middlewares = [thunk];
 
-export default function configureStore() {
-  return createStore(
-    combineReducers({
+export function configureStore(initialState) {
+    const createdStore = createStore(combineReducers({
       ...reducers
-    }),
-    {},
-    compose(applyMiddleware(...middlewares))
-  );
-}
+    }), initialState,
+      compose(applyMiddleware(...middlewares)));
+    return createdStore;
+  }
+  
+const store = configureStore(loadState());
+
+export default store;
+

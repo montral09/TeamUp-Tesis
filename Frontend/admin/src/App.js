@@ -7,16 +7,17 @@ import { HashRouter } from 'react-router-dom';
 import './assets/base.css';
 import Home from './DemoPages/Home';
 import configureStore from './config/configureStore';
+import store from './config/configureStore';
 import { Provider } from 'react-redux';
 
 
 
-const store = configureStore();
+const storeInitial = store;
 
 class App extends React.Component {
    render() {
       return (
-        <Provider store={store}>
+        <Provider store={storeInitial}>
             <HashRouter>
             <Home />
             </HashRouter>
