@@ -50,7 +50,7 @@ class ViewPublication extends React.Component {
                 capacidad: "10",
                 disponibilidad: "De lunes a Viernes de 09 a 18hrs",
                 infraestructura: [1, 2, 3, 4],
-                fotos: ['https://picsum.photos/id/971/800/600', 'https://picsum.photos/id/741/800/600', 'https://picsum.photos/1024/768'],
+                fotos: ['https://firebasestorage.googleapis.com/v0/b/teamup-1571186671227.appspot.com/o/cover-65465.jpg?alt=media&token=822b8ea8-34d3-4da8-b719-6a981be338c4', 'https://picsum.photos/id/741/800/600', 'https://picsum.photos/1024/768'],
                 youtubeUrl: 'https://www.youtube.com/watch?v=VPB-scqoNDE',
                 precios: [
                     { code: 1, value: 100 }, { code: 2, value: 150 }, { code: 3, value: 300 }

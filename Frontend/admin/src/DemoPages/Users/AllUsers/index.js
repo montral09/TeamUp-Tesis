@@ -34,15 +34,9 @@ class AllUsers extends Component {
     
     // This function will trigger the save function inside the modal to update the values
     editUser = (key) => {
-        console.log("arr data: ");
-        console.log(this.state.arrData);
         const userData = this.state.arrData.filter(usr => {
             return usr.Mail === key
         });
-
-        //this.modalElement.current.save(userData[0]);
-        console.log("this.modalElement ");
-        console.log(this.modalElement);
 
         this.modalElement.current.toggle(userData[0],this.state.tokenObj,this.state.adminData);
     }
@@ -88,8 +82,6 @@ class AllUsers extends Component {
 
     // This function will trigger when the component is mounted, to fill the data from the state
     componentDidMount() {
-        console.log("component did mount state");
-        console.log(this.state)
         this.updateTable();
     }
 

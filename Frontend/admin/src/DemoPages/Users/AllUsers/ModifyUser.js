@@ -2,8 +2,7 @@ import React from 'react';
 import {Button, Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
 import { Form, FormGroup, Label, Input, FormText } from 'reactstrap';
 import {
-    Col, Card, CardBody,
-    CardTitle,
+    Col
 } from 'reactstrap';
 
 import {toast} from 'react-toastify';
