@@ -15,18 +15,15 @@ namespace webapi.Controllers
         IFacadeWeb fach = new FacadeFactory().CreateFacadeWeb;
 
         [EnableCors(origins: "*", headers: "*", methods: "*")]
-        [HttpPost]
+        [HttpGet]
         [Route("api/facilities")]
-        public IHttpActionResult Post(VORequestGetFacilities voRequestFacilities)
+        public IHttpActionResult Get()
         {
             try
             {
                 VOResponseGetFacilities voResp = new VOResponseGetFacilities();
-                voResp = fach.GetFacilities(voRequestFacilities);
-                if (voResp.responseCode.Equals(EnumMessages.OK.ToString()))
-                {
-                    voResp.responseCode = EnumMessages.SUCC_FACILITIESOK.ToString();
-                }
+                voResp = fach.GetFacilities();
+                voResp.responseCode = EnumMessages.SUCC_FACILITIESOK.ToString();
                 return Ok(voResp);
             }
             catch (GeneralException e)

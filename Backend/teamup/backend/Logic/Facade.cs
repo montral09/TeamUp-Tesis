@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace backend.Logic
 {
-    public class Facade: IFacadeWeb
+    public class Facade : IFacadeWeb
     {
         private IDAOUsers users;
         private IDAOSpaces spaces;
@@ -59,7 +59,7 @@ namespace backend.Logic
                 throw e;
             }
         }
-        public bool IsMailValidated (String mail)
+        public bool IsMailValidated(String mail)
         {
             try
             {
@@ -91,7 +91,7 @@ namespace backend.Logic
                     result = new VOResponseLogin();
                     result.RefreshToken = voTokens.RefreshToken;
                     result.AccessToken = voTokens.AccessToken;
-                    result.voUserLog = new VOUser(usr.Mail, null, usr.Name, usr.LastName, usr.Phone, usr.Rut, usr.RazonSocial, usr.Address, usr.CheckPublisher);                    
+                    result.voUserLog = new VOUser(usr.Mail, null, usr.Name, usr.LastName, usr.Phone, usr.Rut, usr.RazonSocial, usr.Address, usr.CheckPublisher);
                 }
             }
             catch (GeneralException e)
@@ -138,7 +138,7 @@ namespace backend.Logic
         }
 
         /* This function set user as inactive. There is no physical deletion from DB  */
-        public VOResponseUserDelete DeleteUser (VORequestUserDelete voUserDelete)
+        public VOResponseUserDelete DeleteUser(VORequestUserDelete voUserDelete)
         {
             try
             {
@@ -229,7 +229,7 @@ namespace backend.Logic
             {
                 Admin usr = users.GetAdmin(mail, password);
                 PasswordHasher passwordHasher = new PasswordHasher();
-                if (usr != null && passwordHasher.VerifyHashedPassword(usr.Password, password))                    
+                if (usr != null && passwordHasher.VerifyHashedPassword(usr.Password, password))
                 {
                     VOTokens voTokens = users.CreateTokens(mail);
                     result = new VOResponseAdminLogin();
@@ -259,7 +259,7 @@ namespace backend.Logic
                 }
                 response.responseCode = message;
                 return response;
-            }            
+            }
             catch (GeneralException e)
             {
                 throw e;
@@ -312,15 +312,15 @@ namespace backend.Logic
         {
             try
             {
-                   users.UpdatePassword(voPasswordRecovery.Mail);                    
-             
+                users.UpdatePassword(voPasswordRecovery.Mail);
+
             }
             catch (GeneralException e)
             {
                 throw e;
             }
         }
-        
+
         public int ValidateEmail(VORequestValidateEmail voValidateEmail)
         {
             try
@@ -340,7 +340,7 @@ namespace backend.Logic
                 String message = util.ValidAccessToken(voRequestUpdate.AccessToken, voRequestUpdate.AdminMail);
                 if (!voRequestUpdate.OriginalMail.Equals(voRequestUpdate.Mail))
                 {
-                    if (users.Member (voRequestUpdate.Mail))
+                    if (users.Member(voRequestUpdate.Mail))
                     {
                         message = EnumMessages.ERR_MAILALREADYEXIST.ToString();
                     }
@@ -348,7 +348,7 @@ namespace backend.Logic
                 if (EnumMessages.OK.ToString().Equals(message))
                 {
                     users.UpdateUserAdmin(voRequestUpdate);
-                   
+
                 }
                 return message;
             }
@@ -391,10 +391,11 @@ namespace backend.Logic
                 {
                     message = EnumMessages.SUCC_USERSOK.ToString();
                     response.User = new VOUser(usr.Mail, null, usr.Name, usr.LastName, usr.Phone, usr.Rut, usr.RazonSocial, usr.Address, usr.CheckPublisher);
-                } else
+                }
+                else
                 {
                     message = EnumMessages.ERR_INVALIDACCESSTOKEN.ToString();
-                }               
+                }
                 response.responseCode = message;
             }
             catch (GeneralException e)
@@ -444,20 +445,15 @@ namespace backend.Logic
                 throw e;
             }
             return response;
-        } 
-        public VOResponseGetFacilities GetFacilities(VORequestGetFacilities voRequestFacilities)
+        }
+        public VOResponseGetFacilities GetFacilities()
         {
             VOResponseGetFacilities response = new VOResponseGetFacilities();
-            List<VOFacility> facilities = new List<VOFacility>();
+            List<VOFacility> facilities;
             try
             {
-                String message = util.ValidAccessToken(voRequestFacilities.AccessToken, voRequestFacilities.Mail);
-                if (EnumMessages.OK.ToString().Equals(message))
-                {
-                    facilities = spaces.GetFacilities();
-                    response.facilities = facilities;
-                }
-                response.responseCode = message;
+                facilities = spaces.GetFacilities();
+                response.facilities = facilities;
             }
             catch (GeneralException e)
             {
@@ -505,7 +501,86 @@ namespace backend.Logic
             {
                 throw e;
             }
-        }        
-    }
+        }
 
+        public VOResponseGetPublisherSpaces GetPublisherSpaces(VORequestGetPublisherSpaces voRequestGetPublisherSpaces)
+        {
+            VOResponseGetPublisherSpaces response = new VOResponseGetPublisherSpaces();
+            try
+            {
+                String message = util.ValidAccessToken(voRequestGetPublisherSpaces.AccessToken, voRequestGetPublisherSpaces.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    response.Publications = spaces.GetPublisherSpaces(voRequestGetPublisherSpaces.Mail);
+                    message = EnumMessages.SUCC_PUBLICATIONSOK.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+
+        public VOResponseGetSpace GetSpace(int idPublication)
+        {
+            VOResponseGetSpace response = new VOResponseGetSpace();
+            try
+            {
+                VOPublication voPublication = spaces.GetSpace(idPublication);
+
+                if (voPublication != null)
+                {
+                    response.Publication = voPublication;
+                }
+                else
+                {
+                    response.responseCode = EnumMessages.ERR_SPACENOTFOUND.ToString();
+                }
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+
+        public VOResponseUpdateStatePublication UpdateStatePublication(VORequestUpdateStatePublication voUpdateStatePublication)
+        {
+            VOResponseUpdateStatePublication response = new VOResponseUpdateStatePublication();
+            bool isAdmin = false;
+            bool updateValid = true;
+            try
+            {
+                String message = util.ValidAccessToken(voUpdateStatePublication.AccessToken, voUpdateStatePublication.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    if (users.AdminMember(voUpdateStatePublication.Mail))
+                    {
+                        isAdmin = true;
+                    }
+                    Util util = new Util();
+                    int oldCodeState = util.ConvertState(voUpdateStatePublication.OldState);
+                    int newCodeState = util.ConvertState(voUpdateStatePublication.NewState);
+                    updateValid = util.UpdateValid(isAdmin, oldCodeState, newCodeState);
+                    if (updateValid)
+                    {
+                        spaces.UpdateStatePublication(voUpdateStatePublication.IdPublication, newCodeState);
+                        message = EnumMessages.SUCC_PUBLICATIONUPDATED.ToString();
+                    }
+                    else
+                    {
+                        message = EnumMessages.ERR_INVALIDUPDATE.ToString();
+                    }
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+    }
 }

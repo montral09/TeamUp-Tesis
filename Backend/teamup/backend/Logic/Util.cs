@@ -81,5 +81,33 @@ namespace backend.Logic
             }
             return sb.ToString();
         }
+
+        public int ConvertState(string oldState)
+        {
+            switch (oldState)
+            {
+                case "NOT VALIDATED":
+                    return 1;
+                case "ACTIVE":
+                    return 2;
+                case "PAUSED P":
+                    return 3;
+                case "PAUSED A":
+                    return 4;
+                case "FINISHED":
+                    return 5;
+                case "REJECTED":
+                    return 6;
+                default:
+                    return 0;
+            }
+        }
+
+        public bool UpdateValid(bool isAdmin, int oldCodeState, int newCodeState)
+        {
+            // string transition = oldCodeState + "-" + newCodeState;
+            return true;
+            // 1-2
+        }
     }
 }

@@ -1,6 +1,4 @@
 ﻿using backend.Data_Access.VO.Data;
-using Dropbox.Api;
-using Dropbox.Api.Files;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
