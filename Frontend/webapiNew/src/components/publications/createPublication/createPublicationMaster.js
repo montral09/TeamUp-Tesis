@@ -29,11 +29,15 @@ class CreatePublication extends React.Component {
             capacity: "",
             youtubeURL: "",
             facilities: [],
-            facilitiesSelect: "",
+            facilitiesSelect: [],
             spaceImages: [],
             reservationTypes: [],
             premiumOptions: [],
             premiumOptionsSelected: [],
+            HourPrice: 0,
+            DailyPrice: 0,
+            WeeklyPrice: 0,
+            MonthlyPrice: 0,
             maxSteps: 5
         }
         this.submitPublication = this.submitPublication.bind(this);
@@ -45,7 +49,7 @@ class CreatePublication extends React.Component {
     _nextStep() {
         let currentStep = this.state.currentStep;
         // If the current step is 1 or 2, then add one on "next" button click
-        currentStep = currentStep >= (this.state.maxSteps -1) ? this.state.maxSteps : currentStep + 1
+        currentStep = currentStep >= (this.state.maxSteps - 1) ? this.state.maxSteps : currentStep + 1
         this.setState({
             currentStep: currentStep
         })
@@ -108,48 +112,67 @@ class CreatePublication extends React.Component {
         // ...else render nothing
         return null;
     }
-    
+
     componentDidMount() {
         window.scrollTo(0, 0);
         this.loadSpaceTypes();
         this.loadInfraestructure();
-        this.loadReservationTypes();
         this.loadPremiumOptions();
     }
 
     onChange = (e) => {
+        console.log("on Change");
+        console.log(e.target.id);
+        console.log(e.target.value);
+        console.log(this.state[e.target.id])
+        var targetValue = e.target.value;
+        switch(e.target.id){
+            case "facilitiesSelect":
+                var options = e.target.options;
+                var values = [];
+                for (var i = 0, l = options.length; i < l; i++) {
+                    if (options[i].selected) {
+                        values.push(options[i].value);
+                    }
+                }
+                targetValue = values;
+                break;
+        }
         this.setState({
-            [e.target.id]: e.target.value
+            [e.target.id]: targetValue
         });
     }
 
 
     loadSpaceTypes() {
         try {
-
-            // call API
-            var dummyData = {
-                spaceTypes: [
-                    {
-                        "Code": 1,
-                        "Description": "Oficinas y despachos"
-                    },
-                    {
-                        "Code": 2,
-                        "Description": "Coworking"
-                    },
-                    {
-                        "Code": 3,
-                        "Description": "Sala de reuniones"
-                    },
-                    {
-                        "Code": 4,
-                        "Description": "Espacios para eventos"
-                    }
-                ]
-            };
-            this.setState({ spaceTypes: dummyData.spaceTypes });
-
+            fetch('https://localhost:44372/api/spaceTypes'
+            ).then(response => response.json()).then(data => {
+                if (data.responseCode == "SUCC_SPACETYPESOK") {
+                    this.setState({ spaceTypes: data.spaceTypes })
+                } else {
+                    toast.error('Hubo un error', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                }
+            }
+            ).catch(error => {
+                toast.error('Internal error', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
+                console.log(error);
+            }
+            )
         } catch (error) {
             toast.error('Internal error', {
                 position: "top-right",
@@ -217,41 +240,7 @@ class CreatePublication extends React.Component {
         }
     }
 
-    loadReservationTypes(){
-        try {
-            // call API
-            var dummyData = {
-                reservationTypes: [
-                    {
-                        "Code": 1,
-                        "Description": "Por hora"
-                    },
-                    {
-                        "Code": 2,
-                        "Description": "Por día"
-                    },
-                    {
-                        "Code": 3,
-                        "Description": "Por semana"
-                    }
-                ],
-                "responseCode": "SUCC_RESERVATIONTYPESOK"
-             };
-            this.setState({ reservationTypes: dummyData.reservationTypes });
-
-        } catch (error) {
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-        }
-    }
-
-    loadPremiumOptions(){
+    loadPremiumOptions() {
         try {
             // call API
             var dummyData = {
@@ -273,7 +262,7 @@ class CreatePublication extends React.Component {
                     }
                 ],
                 "responseCode": "SUCC_premiumOptionsOK"
-             };
+            };
             this.setState({ premiumOptions: dummyData.premiumOptions });
 
         } catch (error) {
@@ -289,65 +278,8 @@ class CreatePublication extends React.Component {
     }
     // Validate if all the required inputs are inputted, returns true or false
     checkRequiredInputs() {
-        let returnValue = false;
+        let returnValue = true;
         let message = "";
-        if (!this.state.password || !this.state.email || !this.state.firstName
-            || !this.state.lastName || !this.state.phone) {
-            message = 'Por favor ingrese los campos obligatorios (*)';
-            returnValue = true;
-        } else if (!this.state.firstName.match(/^[A-Za-z]+$/)) {
-            returnValue = true;
-            message = "Su nombre debe contener solo letras";
-        } else if (this.state.firstName.length < 2) {
-            returnValue = true;
-            message = "Nombre demasiado corto";
-        } else if (!this.state.lastName.match(/^[A-Za-z]+$/)) {
-            returnValue = true;
-            message = "Su apellido debe contener solo letras";
-        } else if (this.state.lastName.length < 2) {
-            returnValue = true;
-            message = "Apellido demasiado corto";
-        } else if (this.state.password != this.state.passwordConfirm) {
-            returnValue = true;
-            message = "Ambos campos de contraseña deben ser iguales";
-        } else if (this.state.password.length < 6) {
-            message = 'La contraseña debe tener al menos 6 caracteres';
-            returnValue = true;
-        } else if (!this.state.email.match(/\S+@\S+.+/)) {
-            message = 'Formato de email incorrecto';
-            returnValue = true;
-        } else if (!this.state.phone.match(/^[0-9]+$/) && !this.state.phone.match(/^[+]+[0-9]+$/)) {
-            message = 'Telefono debe contener solo números o "+" si corresponde a un número internacional';
-            returnValue = true;
-        } else if (this.state.phone.length < 6) {
-            message = 'Telefono demasiado corto';
-            returnValue = true;
-        } else if (this.state.rut && !this.state.rut.match(/^[0-9]+$/)) {
-            message = 'Rut debe contener solo números';
-            returnValue = true;
-        } else if (this.state.rut && this.state.rut < 12) {
-            message = 'Rut debe tener 12 números';
-            returnValue = true;
-        } else if (this.state.razonSocial && this.state.razonSocial < 3) {
-            console.log('entre a razon social');
-            message = 'Razon social demasiada corta';
-            returnValue = true;
-        } else if (this.state.address && this.state.address < 10) {
-            console.log('entre a address');
-            message = 'Direccion demasiado corta';
-            returnValue = true;
-        }
-
-        if (message) {
-            toast.error(message, {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-        }
 
         return returnValue;
     }
@@ -364,78 +296,48 @@ class CreatePublication extends React.Component {
         */
         console.log("State to send to API:");
         console.log(this.state);
-        toast.success('Su publicación ha sido enviada correctamente, revise su casilla de correo para más informacion. ', {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-        });
-        this.props.history.push('/');
-        /*
-        if (this.state.gestorCheckbox == 'on') {
-            this.state.gestorCheckbox = true;
-        } else {
-            this.state.gestorCheckbox = false;
-        }
-        if (!this.checkRequiredInputs()) {
-            this.setState({ isLoading: true, buttonIsDisable: true });
-            fetch('https://localhost:44372/api/user', {
-                method: 'POST',
-                header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
 
-                body: JSON.stringify({
-                    Password: this.state.password,
-                    Mail: this.state.email,
-                    Name: this.state.firstName,
-                    LastName: this.state.lastName,
-                    Phone: this.state.phone,
-                    CheckPublisher: this.state.gestorCheckbox,
-                    Rut: this.state.rut,
-                    RazonSocial: this.state.razonSocial,
-                    Address: this.state.address,
-                })
-            }).then(response => response.json()).then(data => {
-                this.setState({ isLoading: false, buttonIsDisable: false });
-                console.log("data:" + JSON.stringify(data));
-                if (data.responseCode == "SUCC_USRCREATED") {
-                    toast.success('Usuario creado correctamente, por favor revise su correo para activar la cuenta ', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                    this.props.history.push('/account/login')
-                } else {
-                    if (data.Message) {
-                        toast.error('Hubo un error: ' + data.Message, {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                        });
-                    } else {
-                        toast.error('Ese correo ya esta en uso, por favor elija otro.', {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                        });
+
+        var objToSend = {
+            "AccessToken": this.props.tokenObj.accessToken,
+            "VOPublication": {
+                "Mail": this.props.userData.Mail,
+                "SpaceType": parseInt(this.state.spaceTypeSelect),
+                "Title": this.state.spaceName,
+                "Description": this.state.description,
+                "Location": {
+                    "Latitude": -34.909397,
+                    "Longitude": -56.138561
+                },
+                "Capacity": parseInt(this.state.capacity),
+                "VideoURL": this.state.youtubeURL,
+                "HourPrice": parseFloat(this.state.HourPrice),
+                "DailyPrice": parseFloat(this.state.DailyPrice),
+                "WeeklyPrice": parseFloat(this.state.WeeklyPrice),
+                "MonthlyPrice": parseFloat(this.state.MonthlyPrice),
+                "Availability": this.state.availability,
+                "Facilities": this.state.facilitiesSelect,
+                "Images": [
+                    {
+                        "Base64String": "khjhhbjh",
+                        "Extension": "PNG"
                     }
-
-
-                }
+                ]
             }
-            ).catch(error => {
-                this.setState({ isLoading: false, buttonIsDisable: false });
-                toast.error('Internal error', {
+        }
+        console.log(objToSend);
+        return;
+        this.setState({ isLoading: true, buttonIsDisable: true });
+        fetch('https://localhost:44372/api/user', {
+            method: 'POST',
+            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+
+            body: JSON.stringify(objToSend)
+        }).then(response => response.json()).then(data => {
+            this.setState({ isLoading: false, buttonIsDisable: false });
+            console.log("data:" + JSON.stringify(data));
+            if (data.responseCode == "SUCC_PUBLICATIONCREATED") {
+                toast.success('Su publicación ha sido enviada correctamente, revise su casilla de correo para más informacion. ', {
                     position: "top-right",
                     autoClose: 5000,
                     hideProgressBar: false,
@@ -443,11 +345,44 @@ class CreatePublication extends React.Component {
                     pauseOnHover: true,
                     draggable: true,
                 });
-                console.log(error);
+                this.props.history.push('/')
+            } else {
+                if (data.Message) {
+                    toast.error('Hubo un error: ' + data.Message, {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                } else {
+                    toast.error('Ese correo ya esta en uso, por favor elija otro.', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                }
+
+
             }
-            )
         }
-        */
+        ).catch(error => {
+            this.setState({ isLoading: false, buttonIsDisable: false });
+            toast.error('Internal error', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+            console.log(error);
+        }
+        )
     }
 
     render() {
@@ -478,9 +413,9 @@ class CreatePublication extends React.Component {
                                                     <CreatePublicationStep1 parentState={this.state} onChange={this.onChange} />
                                                     <CreatePublicationStep2 parentState={this.state} onChange={this.onChange} />
                                                     <CreatePublicationStep3 parentState={this.state} onChange={this.onChange} />
-                                                    <CreatePublicationStep4 parentState={this.state} onChange={this.onChange} />    
-                                                    <CreatePublicationStep5 parentState={this.state} onChange={this.onChange} /> 
-                                                                                                   
+                                                    <CreatePublicationStep4 parentState={this.state} onChange={this.onChange} />
+                                                    <CreatePublicationStep5 parentState={this.state} onChange={this.onChange} />
+
                                                     {this.previousButton}
                                                     {this.nextButton}
                                                     {this.endButton}
@@ -501,7 +436,9 @@ class CreatePublication extends React.Component {
 }
 const mapStateToProps = (state) => {
     return {
-        login_status: state.loginData.login_status
+        login_status: state.loginData.login_status,
+        tokenObj: state.loginData.tokenObj,
+        userData: state.loginData.userData,
     }
 }
 

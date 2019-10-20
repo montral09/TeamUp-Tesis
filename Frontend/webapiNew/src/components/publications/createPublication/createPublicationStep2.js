@@ -1,24 +1,32 @@
 import React from 'react';
 import { toast } from 'react-toastify';
-import {Form, FormGroup, Label, Input} from 'reactstrap';
+import {Form, FormGroup, Label, Input, FormFeedback} from 'reactstrap';
 
 import Upload from './upload/upload';
 
 class CreatePublicationStep2 extends React.Component {
-    matchYoutubeUrl(url) {
-        var p = /^(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
+    constructor(props) {
+        super(props);
+        this.state= {
+            matchYoutubeSuccess : false,
+            matchYoutubeError : false,
+        }
+        this.matchYoutubeUrl = this.matchYoutubeUrl.bind(this);
+    }
+    matchYoutubeUrl(input) {
+        let url = input.target.value;
+        console.log(url)
+        var p = /(?:https?:\/\/)?(?:youtu\.be\/|(?:www\.|m\.)?youtube\.com\/(?:watch|v|embed)(?:\.php)?(?:\?.*v=|\/))([a-zA-Z0-9\-_]+)/;
         var matches = String(url).match(p);
-        if(matches){
-            this.props.onChange({target :{value:matches[1],id:"youtubeURL"}});
+        console.log(matches)
+        if (matches && matches[1].length == 11) {
+            this.props.onChange({target :{value:matches[0], id:"youtubeURL"}});
+            this.setState({ matchYoutubeSuccess: true, matchYoutubeError: false });
+
         }else{
-            toast.error("Error: No es una URL de YouTube válida", {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
+            this.props.onChange({target :{value:"", id:"youtubeURL"}});
+            this.setState({ matchYoutubeSuccess: false, matchYoutubeError: true });
+
         }
     }
     render() {
@@ -34,7 +42,8 @@ class CreatePublicationStep2 extends React.Component {
             </FormGroup>
             <FormGroup>
                 <Label for="youtubeURL">Video (Link de YouTube)</Label>
-                <Input type="text" name="youtubeURL" id="youtubeURL" onChange={this.matchYoutubeUrl} maxLength="70"/>
+                <Input {...(this.state.matchYoutubeSuccess ? {valid :true} : {})} {...(this.state.matchYoutubeError ? {invalid :true} : {})} type="text" name="youtubeURL" id="youtubeURL" onChange={this.matchYoutubeUrl} maxLength="70"/>
+                <FormFeedback tooltip>Error: No es una URL de YouTube válida</FormFeedback>
             </FormGroup>
 
             <FormGroup>

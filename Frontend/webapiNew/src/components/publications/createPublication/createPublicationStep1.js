@@ -41,8 +41,8 @@ class CreatePublicationStep1 extends React.Component {
                 <Input type="textarea" name="availability" id="availability" placeholder="ej: Lunes a viernes de 09 a 18hrs" onChange={this.props.onChange} maxLength="200"/>
             </FormGroup>
             <FormGroup>
-                <Label for="facilitiesSelect">Infraestructura</Label>
-                <Input type="select" name="facilitiesSelect" id="facilitiesSelect" multiple>
+                <Label for="facilitiesSelect" >Infraestructura</Label>
+                <Input type="select" name="facilitiesSelect" id="facilitiesSelect" multiple onChange={this.props.onChange}>
                 {this.props.parentState.facilities.map((facility, key) => {
                     return <option key={key} value={facility.Code}>{facility.Description}</option>;
                 })}

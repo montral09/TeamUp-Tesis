@@ -105,8 +105,8 @@ const SignedInLinks = (props) =>{
             <li className="">
                 <a href="#publications" title="Publicaciones" data-hover="dropdown" className="dropdown-toggle" data-toggle="dropdown">Publicaciones <b className="caret"></b></a>
                 <ul className="dropdown-menu dropdown-menu-right">
-                    <li><NavLink to="/publications/createPublication/createPublicationMaster">Crear publicacion</NavLink></li>
-                    <li><NavLink to="/publications/createPublication/createPublicationMaster">Crear publicacion</NavLink></li>
+                    <li><NavLink to="/publications/createPublication/createPublicationMaster">Crear publicación</NavLink></li>
+                    <li><NavLink to="/publications/myPublishedPublications/myPublicationsList">Mis publicaciones</NavLink></li>
                 </ul>
             </li>)}
         </React.Fragment>
