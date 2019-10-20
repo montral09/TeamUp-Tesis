@@ -8,11 +8,11 @@ namespace backend.Data_Access.VO
 {
     public class VOResponsePublicationPendingApproval : VOResponse
     {
-        public List<VOPublication> Publications { get; set; }
+        public List<VOPublicationAdmin> Publications { get; set; }
 
         public VOResponsePublicationPendingApproval() { }
 
-        public VOResponsePublicationPendingApproval(List<VOPublication> publications)
+        public VOResponsePublicationPendingApproval(List<VOPublicationAdmin> publications)
         {
             Publications = publications;
         }

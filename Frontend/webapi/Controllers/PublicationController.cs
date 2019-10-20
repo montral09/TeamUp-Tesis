@@ -5,7 +5,6 @@ using System.Web.Http;
 using System.Web.Http.Cors;
 using backend.Data_Access.VO.Data;
 using backend.Exceptions;
-using Microsoft.AspNetCore.Hosting;
 using System.IO;
 
 namespace webapi.Controllers
@@ -23,6 +22,40 @@ namespace webapi.Controllers
                 VOResponseCreatePublication voResp = new VOResponseCreatePublication();
 
                 voResp = fach.CreatePublication(voCreatePublication);               
+                return Ok(voResp);
+            }
+            catch (GeneralException e)
+            {
+                return InternalServerError(new Exception(e.Codigo));
+            }
+        }
+
+        [EnableCors(origins: "*", headers: "*", methods: "*")]
+        [HttpGet]
+        [Route("api/publication")]
+        public IHttpActionResult Get(int idPublication)
+        {
+            try
+            {
+                VOResponseGetSpace voResp = new VOResponseGetSpace();
+                voResp = fach.GetSpace(idPublication);
+                return Ok(voResp);
+            }
+            catch (GeneralException e)
+            {
+                return InternalServerError(new Exception(e.Codigo));
+            }
+        }
+
+        [EnableCors(origins: "*", headers: "*", methods: "*")]
+        [HttpPut]
+        [Route("api/publication")]
+        public IHttpActionResult Put([FromBody]VORequestUpdateStatePublication voUpdateStatePublication)
+        {
+            try
+            {
+                VOResponseUpdateStatePublication voResp = new VOResponseUpdateStatePublication();
+                voResp = fach.UpdateStatePublication(voUpdateStatePublication);
                 return Ok(voResp);
             }
             catch (GeneralException e)

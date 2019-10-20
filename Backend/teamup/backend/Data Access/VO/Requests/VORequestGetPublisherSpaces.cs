@@ -5,14 +5,16 @@ using System.Text;
 
 namespace backend.Data_Access.VO
 {
-    public class VORequestGetFacilities : VOTokens
+    public class VORequestGetPublisherSpaces : VOTokens
     {
+ 
         public string Mail { get; set; }
-        public VORequestGetFacilities() { }
-        public VORequestGetFacilities(string mail, string accessToken) : base (accessToken)
+
+        public VORequestGetPublisherSpaces() { }
+        public VORequestGetPublisherSpaces(string mail, string accessToken) : base (accessToken)
         {
+            Mail = mail;
             AccessToken = accessToken;
-            Mail = mail; 
         }
     }
 }

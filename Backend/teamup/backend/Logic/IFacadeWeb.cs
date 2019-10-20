@@ -30,8 +30,11 @@ namespace backend.Logic
         VOResponseGetUserData GetUserData(VORequestGetUserData voUserData);
         VOResponseTokensUpdate UpdateTokens(VORequestTokensUpdate voTokensUpdate);
         VOResponseGetReservationTypes GetReservationTypes(VORequestGetReservationTypes voRequestReservationTypes);
-        VOResponseGetFacilities GetFacilities(VORequestGetFacilities voRequestFacilities);
+        VOResponseGetFacilities GetFacilities();
         VOResponseCreatePublication CreatePublication(VORequestCreatePublication voCreatePublication);
         VOResponsePublicationPendingApproval GetPublicationsPendingApproval(VORequestPublicationPendindApproval voPublicationPendingApproval);
+        VOResponseGetPublisherSpaces GetPublisherSpaces(VORequestGetPublisherSpaces voRequestGetPublisherSpaces);
+        VOResponseGetSpace GetSpace(int idPublication);
+        VOResponseUpdateStatePublication UpdateStatePublication(VORequestUpdateStatePublication voUpdateStatePublication);
     }
 }

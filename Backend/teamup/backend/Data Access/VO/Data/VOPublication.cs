@@ -9,9 +9,6 @@ namespace backend.Data_Access.VO.Data
         public int IdPublication { get; set; }
         public Int64 IdUser { get; set; }
         public String Mail { get; set; }
-        public String NamePublisher { get; set; }
-        public String LastNamePublisher { get; set; }
-        public String PhonePublisher { get; set; }
         public int SpaceType { get; set; }
         public DateTime CreationDate { get; set; }
         public String Title { get; set; }
@@ -51,14 +48,11 @@ namespace backend.Data_Access.VO.Data
             Images = images;
         }
 
-        public VOPublication(int idPublication, Int64 idUser, string namePublisher, string lastNamePublisher, string mail, string phonePublisher, int spaceType, DateTime creationDate, string title, string description, VOLocationCordinates location,
+        public VOPublication(int idPublication, Int64 idUser, string mail, int spaceType, DateTime creationDate, string title, string description, VOLocationCordinates location,
             int capacity, string videoURL, int hourPrice, int dailyPrice, int weeklyPrice, int monthlyPrice, string availability, List<int> facilities, List<string> imagesURL)
         {
             IdPublication = idPublication;
             IdUser = idUser;
-            NamePublisher = namePublisher;
-            LastNamePublisher = lastNamePublisher;
-            PhonePublisher = phonePublisher;
             Mail = mail;
             SpaceType = spaceType;
             CreationDate = creationDate;
@@ -74,6 +68,27 @@ namespace backend.Data_Access.VO.Data
             Availability = availability;
             Facilities = facilities;
             ImagesURL = imagesURL;
+        }
+
+        public VOPublication(int idPublication, int spaceType, DateTime creationDate, string title, string description, VOLocationCordinates location,
+             int capacity, string videoURL, int hourPrice, int dailyPrice, int weeklyPrice, int monthlyPrice, string availability, List<int> facilities, List<string> imagesURL, string state)
+        {
+            IdPublication = idPublication;
+            SpaceType = spaceType;
+            CreationDate = creationDate;
+            Title = title;
+            Description = description;
+            Location = location;
+            Capacity = capacity;
+            VideoURL = videoURL;
+            HourPrice = hourPrice;
+            DailyPrice = dailyPrice;
+            WeeklyPrice = weeklyPrice;
+            MonthlyPrice = monthlyPrice;
+            Availability = availability;
+            Facilities = facilities;
+            ImagesURL = imagesURL;
+            State = state;
         }
     }
 }

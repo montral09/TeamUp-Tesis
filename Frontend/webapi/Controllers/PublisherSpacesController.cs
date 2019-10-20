@@ -9,19 +9,18 @@ using System.IO;
 
 namespace webapi.Controllers
 {
-    public class PublicationPendingApprovalController : ApiController
+    public class PublisherSpacesController : ApiController
     {
         IFacadeWeb fach = new FacadeFactory().CreateFacadeWeb;      
         [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpPost]
-        [Route("api/publicationPendingApproval")]
-        public IHttpActionResult Post([FromBody]VORequestPublicationPendindApproval voPublicationPendingApproval)
+        [Route("api/publisherSpaces")]
+        public IHttpActionResult Post([FromBody]VORequestGetPublisherSpaces voRequestGetPublisherSpaces)
         {
             try
             {
-                VOResponsePublicationPendingApproval voResp = new VOResponsePublicationPendingApproval();
-
-                voResp = fach.GetPublicationsPendingApproval(voPublicationPendingApproval);               
+                VOResponseGetPublisherSpaces voResp = new VOResponseGetPublisherSpaces();
+                voResp = fach.GetPublisherSpaces(voRequestGetPublisherSpaces);               
                 return Ok(voResp);
             }
             catch (GeneralException e)

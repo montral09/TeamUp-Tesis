@@ -186,8 +186,7 @@ namespace backend.Data_Access
                         new SqlParameter("@weeklyPrice", SqlDbType.Int) {Value = voCreatePublication.VOPublication.WeeklyPrice},
                         new SqlParameter("@monthlyPrice", SqlDbType.Int) {Value = voCreatePublication.VOPublication.MonthlyPrice},
                         new SqlParameter("@availability", SqlDbType.VarChar) {Value = voCreatePublication.VOPublication.Availability},
-                        new SqlParameter("@facilities", SqlDbType.VarChar) {Value = facilities},
-                        new SqlParameter("@state", SqlDbType.VarChar) {Value = TeamUpConstants.PUBLICATION_CREATED}
+                        new SqlParameter("@facilities", SqlDbType.VarChar) {Value = facilities}
                     };
                 insertCommand.Parameters.AddRange(prm.ToArray());                
                 insertCommand.Transaction = objTrans;
@@ -221,10 +220,10 @@ namespace backend.Data_Access
             }
         }
 
-        public List<VOPublication> GetPublicationsPendingApproval(VORequestPublicationPendindApproval voPublicationPendingApproval)
+        public List<VOPublicationAdmin> GetPublicationsPendingApproval(VORequestPublicationPendindApproval voPublicationPendingApproval)
         {
             SqlConnection con = null;
-            List<VOPublication> publications = new List<VOPublication>();
+            List<VOPublicationAdmin> publications = new List<VOPublicationAdmin>();
             try
             {
                 con = new SqlConnection(GetConnectionString());
@@ -232,7 +231,7 @@ namespace backend.Data_Access
                 String query = cns.GetPublicationsPendingApproval();
                 SqlCommand selectCommand = new SqlCommand(query, con);
                 SqlDataReader dr = selectCommand.ExecuteReader();
-                VOPublication voPublication;
+                VOPublicationAdmin voPublication;
                 while (dr.Read())
                 {
                     List<String> images = new List<string>();
@@ -245,10 +244,10 @@ namespace backend.Data_Access
                     Util util = new Util();
                     List<int> facilities = util.ConvertFacilities(facilitiesString);
                     VOLocationCordinates voLocation = new VOLocationCordinates(Convert.ToDecimal(dr["locationLat"]), Convert.ToDecimal(dr["locationLong"]));
-                    voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), Convert.ToInt64(dr["idUser"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["mail"]),
-                        Convert.ToString(dr["phone"]), Convert.ToInt32(dr["spaceType"]), Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]), Convert.ToString(dr["description"]),
+                    voPublication = new VOPublicationAdmin(Convert.ToInt32(dr["idPublication"]), Convert.ToInt64(dr["idUser"]), Convert.ToString(dr["mail"]),
+                         Convert.ToInt32(dr["spaceType"]), Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]), Convert.ToString(dr["description"]),
                         voLocation, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
-                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images);
+                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]));
                     publications.Add(voPublication);
                 }
                 dr.Close();
@@ -265,6 +264,134 @@ namespace backend.Data_Access
                 }
             }
             return publications;
+        }
+
+        public List<VOPublication> GetPublisherSpaces(string mail)
+        {
+            SqlConnection con = null;
+            List<VOPublication> publications = new List<VOPublication>();
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.GetPublisherSpaces();
+                SqlCommand selectCommand = new SqlCommand(query, con);              
+                SqlParameter parametroMail = new SqlParameter()
+                {
+                    ParameterName = "@mail",
+                    Value = mail,
+                    SqlDbType = SqlDbType.VarChar
+                };
+                selectCommand.Parameters.Add(parametroMail);
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                VOPublication voPublication;
+                while (dr.Read())
+                {
+                    List<String> images = new List<string>();
+                    images.Add("https://s3-eu-west-1.amazonaws.com/worktel.files/aaee923a-3c7a-4c1a-9db9-5bbc15c903b4.jpeg");
+                    images.Add("https://s3-eu-west-1.amazonaws.com/worktel.files/a162187c-07b2-4c51-b77f-f12d00230474.jpg");
+                    images.Add("https://s3-eu-west-1.amazonaws.com/worktel.files/1fd01252-22c5-4e25-8133-2998c524cf8e.JPG");
+                    String facilitiesString = Convert.ToString(dr["facilities"]);
+                    Util util = new Util();
+                    List<int> facilities = util.ConvertFacilities(facilitiesString);                   
+                    VOLocationCordinates voLocation = new VOLocationCordinates(Convert.ToDecimal(dr["locationLat"]), Convert.ToDecimal(dr["locationLong"]));
+                    voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), Convert.ToInt32(dr["spaceType"]), Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]), Convert.ToString(dr["description"]),
+                        voLocation, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
+                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, Convert.ToString(dr["state"]));
+                    publications.Add(voPublication);                   
+                }
+                dr.Close();
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+            return publications;
+        }
+
+       public VOPublication GetSpace(int idSpace)
+        {
+            VOPublication voPublication = null;
+            SqlConnection con = null;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.GetSpace();
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                SqlParameter parametro = new SqlParameter()
+                {
+                    ParameterName = "@idPublication",
+                    Value = idSpace,
+                    SqlDbType = SqlDbType.Int
+                };
+                selectCommand.Parameters.Add(parametro);
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                while (dr.Read())
+                {
+                    List<String> images = new List<string>();
+                    images.Add("https://s3-eu-west-1.amazonaws.com/worktel.files/aaee923a-3c7a-4c1a-9db9-5bbc15c903b4.jpeg");
+                    images.Add("https://s3-eu-west-1.amazonaws.com/worktel.files/a162187c-07b2-4c51-b77f-f12d00230474.jpg");
+                    images.Add("https://s3-eu-west-1.amazonaws.com/worktel.files/1fd01252-22c5-4e25-8133-2998c524cf8e.JPG");
+                    String facilitiesString = Convert.ToString(dr["facilities"]);
+                    Util util = new Util();
+                    List<int> facilities = util.ConvertFacilities(facilitiesString);
+                    VOLocationCordinates voLocation = new VOLocationCordinates(Convert.ToDecimal(dr["locationLat"]), Convert.ToDecimal(dr["locationLong"]));
+                    voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), Convert.ToInt32(dr["spaceType"]), Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]), Convert.ToString(dr["description"]),
+                        voLocation, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
+                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, null);                    
+                }
+                dr.Close();
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+            return voPublication;
+        }
+
+        public void UpdateStatePublication(int idPublication, int newCodeState)
+        {
+            SqlConnection con = null;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.UdpdateStatePublication();
+                SqlCommand updateCommand = new SqlCommand(query, con);
+                List<SqlParameter> prm = new List<SqlParameter>()
+                {
+                        new SqlParameter("@idPublication", SqlDbType.Int) {Value = idPublication},
+                        new SqlParameter("@state", SqlDbType.Int) {Value = newCodeState}
+                };
+                updateCommand.Parameters.AddRange(prm.ToArray());
+                updateCommand.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
         }
     }
 }
