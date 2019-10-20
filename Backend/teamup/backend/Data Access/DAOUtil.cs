@@ -151,7 +151,7 @@ namespace backend.Data_Access
                 }
                 return result;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }

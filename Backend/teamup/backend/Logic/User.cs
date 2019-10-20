@@ -21,6 +21,23 @@ namespace backend.Logic
 
         public User() { }
 
+        public User(Int64 idUser, string mail, string password, string name, string lastName, string phone, bool checkPublisher, string rut, string razonSocial, string address, bool mailValidated, bool publisherValidated, bool active)
+        {
+            IdUser = idUser;
+            Mail = mail;
+            Password = password;
+            Name = name;
+            LastName = lastName;
+            Phone = phone;
+            CheckPublisher = checkPublisher;
+            Rut = rut;
+            RazonSocial = razonSocial;
+            Address = address;
+            MailValidated = mailValidated;
+            PublisherValidated = publisherValidated;
+            Active = active;
+        }
+
         public User(string mail, string password, string name, string lastName, string phone, bool checkPublisher, string rut, string razonSocial, string address, bool mailValidated, bool publisherValidated, bool active)
         {
             Mail = mail;

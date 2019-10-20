@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
+using System.Threading.Tasks;
 using backend.Data_Access.VO;
 using backend.Data_Access.VO.Data;
 using backend.Exceptions;
@@ -83,7 +84,7 @@ namespace backend.Data_Access.Query
                 SqlDataReader dr = selectCommand.ExecuteReader();
                 while (dr.Read())
                 {
-                    user = new User(Convert.ToString(dr["mail"]), Convert.ToString(dr["password"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToBoolean(dr["checkPublisher"]), Convert.ToString(dr["rut"]), Convert.ToString(dr["razonSocial"]), Convert.ToString(dr["address"]), Convert.ToBoolean(dr["mailValidated"]), Convert.ToBoolean(dr["publisherValidated"]), Convert.ToBoolean(dr["active"]));
+                    user = new User(Convert.ToInt64(dr["idUser"]), Convert.ToString(dr["mail"]), Convert.ToString(dr["password"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToBoolean(dr["checkPublisher"]), Convert.ToString(dr["rut"]), Convert.ToString(dr["razonSocial"]), Convert.ToString(dr["address"]), Convert.ToBoolean(dr["mailValidated"]), Convert.ToBoolean(dr["publisherValidated"]), Convert.ToBoolean(dr["active"]));
                 }
                 dr.Close();
             }
@@ -101,7 +102,7 @@ namespace backend.Data_Access.Query
             return user;
         }
 
-        public void InsertUser(User user)
+        public async Task InsertUser(User user)
         {
             SqlConnection con = null;
             SqlTransaction objTrans = null;
@@ -152,7 +153,7 @@ namespace backend.Data_Access.Query
                 body += "<br /><a href = '" + activationLink + "'>Click here to activate your account.</a>";
                 body += "<br /><br />Thanks";
                 Util util = new Util();
-                util.SendEmail(user.Mail, body, subject);
+                await util.SendEmailAsync(user.Mail, body, subject);
                 objTrans.Commit();
             }
             catch (Exception)
@@ -169,7 +170,7 @@ namespace backend.Data_Access.Query
             }
         }
 
-        public void UpdateUser(User user, String newMail)
+        public async Task UpdateUser(User user, String newMail)
         {
             SqlConnection con = null;
             try
@@ -197,7 +198,7 @@ namespace backend.Data_Access.Query
                     body += "<br /><a href = '" + activationLink + "'>Click here to activate your account.</a>";
                     body += "<br /><br />Thanks";
                     Util util = new Util();
-                    util.SendEmail(newMail, body, subject);
+                    await util.SendEmailAsync(newMail, body, subject);
                 }
                 if (user.Password != "")
                 {
@@ -556,7 +557,7 @@ namespace backend.Data_Access.Query
             return true;
         }
 
-        public void UpdatePassword(String mail)
+        public async Task UpdatePassword(String mail)
         {
             SqlConnection con = null;
             SqlTransaction objTrans = null;
@@ -592,7 +593,7 @@ namespace backend.Data_Access.Query
                 string activationLink = URL;
                 body += "<br /><a href = '" + activationLink + "'>You can log in from here.</a>";
                 body += "<br /><br />Thanks";
-                util.SendEmail(mail, body, subject);
+                await util.SendEmailAsync(mail, body, subject);
                 objTrans.Commit();
             }
             catch (Exception)
@@ -789,7 +790,7 @@ namespace backend.Data_Access.Query
                 SqlDataReader dr = selectCommand.ExecuteReader();
                 while (dr.Read())
                 {
-                    user = new User(Convert.ToString(dr["mail"]), Convert.ToString(dr["password"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToBoolean(dr["checkPublisher"]), Convert.ToString(dr["rut"]), Convert.ToString(dr["razonSocial"]), Convert.ToString(dr["address"]), Convert.ToBoolean(dr["mailValidated"]), Convert.ToBoolean(dr["publisherValidated"]), Convert.ToBoolean(dr["active"]));
+                    user = new User(Convert.ToInt64(dr["idUser"]), Convert.ToString(dr["mail"]), Convert.ToString(dr["password"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToBoolean(dr["checkPublisher"]), Convert.ToString(dr["rut"]), Convert.ToString(dr["razonSocial"]), Convert.ToString(dr["address"]), Convert.ToBoolean(dr["mailValidated"]), Convert.ToBoolean(dr["publisherValidated"]), Convert.ToBoolean(dr["active"]));
                 }
                 dr.Close();
             }

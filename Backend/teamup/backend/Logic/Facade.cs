@@ -2,6 +2,7 @@
 using backend.Data_Access.Query;
 using backend.Data_Access.VO;
 using backend.Data_Access.VO.Data;
+using backend.Data_Access.VO.Responses;
 using backend.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -424,5 +425,87 @@ namespace backend.Logic
             }
             return response;
         }
+        public VOResponseGetReservationTypes GetReservationTypes(VORequestGetReservationTypes voRequestReservationTypes)
+        {
+            VOResponseGetReservationTypes response = new VOResponseGetReservationTypes();
+            List<VOReservationType> reservationTypes = new List<VOReservationType>();
+            try
+            {
+                String message = util.ValidAccessToken(voRequestReservationTypes.AccessToken, voRequestReservationTypes.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    reservationTypes = spaces.GetReservationTypes();
+                    response.reservationTypes = reservationTypes;
+                }
+                response.responseCode = message;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+            return response;
+        } 
+        public VOResponseGetFacilities GetFacilities(VORequestGetFacilities voRequestFacilities)
+        {
+            VOResponseGetFacilities response = new VOResponseGetFacilities();
+            List<VOFacility> facilities = new List<VOFacility>();
+            try
+            {
+                String message = util.ValidAccessToken(voRequestFacilities.AccessToken, voRequestFacilities.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    facilities = spaces.GetFacilities();
+                    response.facilities = facilities;
+                }
+                response.responseCode = message;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+            return response;
+        }
+
+        public VOResponseCreatePublication CreatePublication(VORequestCreatePublication voCreatePublication)
+        {
+            VOResponseCreatePublication response = new VOResponseCreatePublication();
+            try
+            {
+                String message = util.ValidAccessToken(voCreatePublication.AccessToken, voCreatePublication.VOPublication.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    User user = users.Find(voCreatePublication.VOPublication.Mail);
+                    spaces.CreatePublication(voCreatePublication, user);
+                    message = EnumMessages.SUCC_PUBLICATIONCREATED.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+
+        public VOResponsePublicationPendingApproval GetPublicationsPendingApproval(VORequestPublicationPendindApproval voPublicationPendingApproval)
+        {
+            VOResponsePublicationPendingApproval response = new VOResponsePublicationPendingApproval();
+            try
+            {
+                String message = util.ValidAccessToken(voPublicationPendingApproval.AccessToken, voPublicationPendingApproval.AdminMail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    response.Publications = spaces.GetPublicationsPendingApproval(voPublicationPendingApproval);
+                    message = EnumMessages.SUCC_PUBLICATIONSOK.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }        
     }
+
 }

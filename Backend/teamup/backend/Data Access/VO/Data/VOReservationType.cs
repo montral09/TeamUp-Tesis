@@ -4,13 +4,13 @@ using System.Text;
 
 namespace backend.Data_Access.VO.Data
 {
-    public class VOSpaceType
+    public class VOReservationType
     {
         public int Code { get; set; }
         public string Description { get; set; }
 
-        public VOSpaceType() { }
-        public VOSpaceType (int code, string description)
+        public VOReservationType() { }
+        public VOReservationType(int code, string description)
         {
             Code = code;
             Description = description;

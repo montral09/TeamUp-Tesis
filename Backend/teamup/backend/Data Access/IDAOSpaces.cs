@@ -1,13 +1,18 @@
-﻿using backend.Data_Access.VO.Data;
-using System;
+﻿using backend.Data_Access.VO;
+using backend.Data_Access.VO.Data;
+using backend.Logic;
 using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
 
 namespace backend.Data_Access
 {
-    public interface IDAOSpaces
+    interface IDAOSpaces
     {
         List<VOSpaceType> GetSpaceTypes();
         List<VOLocation> GetLocations();
+        List<VOReservationType> GetReservationTypes();
+        List<VOFacility> GetFacilities();
+        Task CreatePublication(VORequestCreatePublication voCreatePublication, User user);
+        List<VOPublication> GetPublicationsPendingApproval(VORequestPublicationPendindApproval voPublicationPendingApproval);
     }
 }

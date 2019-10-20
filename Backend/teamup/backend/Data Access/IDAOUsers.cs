@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using backend.Data_Access.VO;
 using backend.Data_Access.VO.Data;
 using backend.Logic;
@@ -12,8 +13,8 @@ namespace backend.Data_Access.Query
         bool AdminMember(String user);
         bool IsMailValidated(String mail);
         User Find(string mail);
-        void InsertUser(User user);
-        void UpdateUser(User user, String newMail);
+        Task InsertUser(User user);
+        Task UpdateUser(User user, String newMail);
         bool ValidateDeletion(String mail);
         void DeleteUser(String mail);
         List<VOPublisher> GetPublishers();
@@ -23,7 +24,7 @@ namespace backend.Data_Access.Query
         void RequestPublisher(String mail);
         VOTokens CreateTokens(String mail);
         bool ValidAccessToken(String mail, String accessToken);
-        void UpdatePassword(String mail);
+        Task UpdatePassword(String mail);
         int ValidateEmail(String activationCode);
         void UpdateUserAdmin(VORequestUpdateUserAdmin voRequest);
         List<VOUserAdmin> GetUsers();
