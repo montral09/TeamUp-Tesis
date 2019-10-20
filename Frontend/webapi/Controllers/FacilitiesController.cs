@@ -3,26 +3,30 @@ using backend.Data_Access.VO;
 using System;
 using System.Web.Http;
 using System.Web.Http.Cors;
-using System.Collections.Generic;
 using backend.Data_Access.VO.Data;
 using backend.Exceptions;
+using System.Collections.Generic;
+using backend.Data_Access.VO.Responses;
 
 namespace webapi.Controllers
 {
-
-    public class UserDataController : ApiController
+    public class FacilitiesController : ApiController
     {
         IFacadeWeb fach = new FacadeFactory().CreateFacadeWeb;
 
         [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpPost]
-        [Route("api/userData")]
-        public IHttpActionResult Post(VORequestGetUserData voUserData)
+        [Route("api/facilities")]
+        public IHttpActionResult Post(VORequestGetFacilities voRequestFacilities)
         {
             try
             {
-                VOResponseGetUserData voResp = new VOResponseGetUserData();
-                voResp = fach.GetUserData(voUserData);
+                VOResponseGetFacilities voResp = new VOResponseGetFacilities();
+                voResp = fach.GetFacilities(voRequestFacilities);
+                if (voResp.responseCode.Equals(EnumMessages.OK.ToString()))
+                {
+                    voResp.responseCode = EnumMessages.SUCC_FACILITIESOK.ToString();
+                }
                 return Ok(voResp);
             }
             catch (GeneralException e)

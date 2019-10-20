@@ -31,6 +31,14 @@ namespace backend.Logic
         SUCC_SPACETYPESOK,
         //Locations
         SUCC_LOCATIONSOK,
+        //ReservationTypes
+        SUCC_RESERVATIONTYPESOK,
+        //Facilities
+        SUCC_FACILITIESOK,
+        //Publications
+        SUCC_PUBLICATIONCREATED,
+        SUCC_PUBLICATIONAPPROVED,
+        SUCC_PUBLICATIONSOK,
         //Tokens
         ERR_ACCESSTOKENEXPIRED,
         ERR_INVALIDACCESSTOKEN,

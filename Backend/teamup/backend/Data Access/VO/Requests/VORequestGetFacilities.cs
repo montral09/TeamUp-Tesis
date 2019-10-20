@@ -1,0 +1,19 @@
+﻿using backend.Data_Access.VO.Data;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace backend.Data_Access.VO
+{
+    public class VORequestGetFacilities : VOTokens
+    {
+        public string Mail { get; set; }
+        public VORequestGetFacilities() { }
+        public VORequestGetFacilities(string mail, string accessToken) : base (accessToken)
+        {
+            AccessToken = accessToken;
+            Mail = mail; 
+        }
+    }
+}
+

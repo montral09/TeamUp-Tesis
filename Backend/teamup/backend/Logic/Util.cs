@@ -1,15 +1,22 @@
-﻿using backend.Exceptions;
+﻿using backend.Data_Access.VO.Data;
+using System;
+using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace backend.Logic
 {
     public class Util
     {
-        const string SENDER_MAIL = "teamupude@gmail.com";
-        const string SENDER_PASSWORD = "teamupudeude";
-        public void SendEmail(string to, string body, string subject)
+        string SENDER_MAIL = ConfigurationManager.AppSettings["EMAIL_ADMIN"];
+        string SENDER_PASSWORD = ConfigurationManager.AppSettings["EMAIL_PASS"];
+
+        public async Task SendEmailAsync(string to, string body, string subject)
         {
             MailMessage mm = new MailMessage(SENDER_MAIL, to);            
  
@@ -31,6 +38,48 @@ namespace backend.Logic
             string path = Path.GetRandomFileName();
             path = path.Replace(".", "");
             return path;
+        }
+
+        public static string CreateFacilitiesString(List<int> facilities)
+        {
+            return String.Join<int>(",", facilities);
+        }
+
+        public static string CreateBodyEmailNewPublicationToPublisher(String name)
+        {
+            string body = "Hello, " + name;
+            body += "<br /><br />Your publication request has been submitted and will be available within 24 hours.";
+            body += "<br /><br />Thanks";
+            return body;
+        }
+
+        public static string CreateBodyEmailNewPublicationToAdmin(string publisherMail)
+        {
+            string body = "Hello,";
+            body += "<br /><br />A new publication request has been submitted. Please check " + publisherMail + " publications.";
+            body += "<br /><br />Thanks";
+            return body;
+        }
+
+        public List<int> ConvertFacilities (String facilitiesString)
+        {
+            List<int> facilities = facilitiesString.Split(',').Select(int.Parse).ToList();
+
+            return facilities;
+        }
+
+
+        public static string CreateStringImages(List<VOImage> images)
+        {
+            var sb = new StringBuilder();
+            string separator = String.Empty;
+            string delimiter = ",";
+            for (int i = 0; i < images.Count; i++)
+            {
+                sb.Append(separator).Append((i+1) + "." + images[i].Extension);
+                separator = delimiter;
+            }
+            return sb.ToString();
         }
     }
 }

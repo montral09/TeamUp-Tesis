@@ -1,5 +1,6 @@
 ﻿using backend.Data_Access.VO;
 using backend.Data_Access.VO.Data;
+using backend.Data_Access.VO.Responses;
 using System;
 using System.Collections.Generic;
 
@@ -28,5 +29,9 @@ namespace backend.Logic
         VOResponseGetUsers GetUsers(VORequestGetUsers voRequestGetUsers);
         VOResponseGetUserData GetUserData(VORequestGetUserData voUserData);
         VOResponseTokensUpdate UpdateTokens(VORequestTokensUpdate voTokensUpdate);
+        VOResponseGetReservationTypes GetReservationTypes(VORequestGetReservationTypes voRequestReservationTypes);
+        VOResponseGetFacilities GetFacilities(VORequestGetFacilities voRequestFacilities);
+        VOResponseCreatePublication CreatePublication(VORequestCreatePublication voCreatePublication);
+        VOResponsePublicationPendingApproval GetPublicationsPendingApproval(VORequestPublicationPendindApproval voPublicationPendingApproval);
     }
 }
