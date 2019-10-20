@@ -17,17 +17,15 @@ class CreatePublicationStep3 extends React.Component {
                 <Label for="prices">Precios (Pesos Uruguayos)</Label>
             </FormGroup>
             <FormGroup>
-                {this.props.parentState.reservationTypes.map((resType, key) => {
-                    let tempID = "resType_"+resType.Code;
-                    return (
-                        <>
-                        <Label key={"pubStep3Label_"+key} for={tempID}>{resType.Description}</Label>
-                        <Input key={"pubStep3Input_"+key} type="text" name={tempID} id={tempID} maxLength="4"/>
-                        </>
-                    )
-                })}
+              <Label for='HourPrice'>Precio por hora</Label>
+              <Input type="text" name='HourPrice' id='HourPrice' maxLength="4" onChange={this.props.onChange}/>
+              <Label for='DailyPrice'>Precio por día</Label>
+              <Input type="text" name='DailyPrice' id='DailyPrice' maxLength="4" onChange={this.props.onChange}/>
+              <Label for='WeeklyPrice'>Precio por semana</Label>
+              <Input type="text" name='WeeklyPrice' id='WeeklyPrice' maxLength="4" onChange={this.props.onChange}/>
+              <Label for='MonthlyPrice'>Precio por mes</Label>
+              <Input type="text" name='MonthlyPrice' id='MonthlyPrice' maxLength="4" onChange={this.props.onChange}/>
             </FormGroup>
-
         </Form>
       )
     }
