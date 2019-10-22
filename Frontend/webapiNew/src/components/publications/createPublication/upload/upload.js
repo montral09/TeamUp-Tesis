@@ -46,7 +46,7 @@ class Upload extends React.Component {
       }
     };
 
-    if (err !== '') { // if message not same old that mean has error 
+    if (err !== '') { // if message not empty that mean has error 
       event.target.value = null // discard selected file
       toast.error(err, {
         position: "top-right",
@@ -112,6 +112,7 @@ class Upload extends React.Component {
           }
         return { file, id: index, document }
       });*/
+      console.log("fileBase64");
       console.log(fileBase64);
     }
 

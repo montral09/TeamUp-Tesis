@@ -42,7 +42,8 @@ class CreatePublicationStep2 extends React.Component {
             </FormGroup>
             <FormGroup>
                 <Label for="youtubeURL">Video (Link de YouTube)</Label>
-                <Input {...(this.state.matchYoutubeSuccess ? {valid :true} : {})} {...(this.state.matchYoutubeError ? {invalid :true} : {})} type="text" name="youtubeURL" id="youtubeURL" onChange={this.matchYoutubeUrl} maxLength="70"/>
+                <Input {...(this.state.matchYoutubeSuccess ? {valid :true} : {})} {...(this.state.matchYoutubeError ? {invalid :true} : {})} 
+                    type="text" name="youtubeURL" id="youtubeURL" onChange={this.matchYoutubeUrl} maxLength="70" value={this.props.parentState.youtubeURL}/>
                 <FormFeedback tooltip>Error: No es una URL de YouTube válida</FormFeedback>
             </FormGroup>
 

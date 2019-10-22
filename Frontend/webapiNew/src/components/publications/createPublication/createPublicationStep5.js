@@ -16,8 +16,6 @@ class CreatePublicationStep5 extends React.Component {
             La publicacion será enviada al administrador para su aprobación.
             Además, si seleccionó alguna opcion de pago, quedará pendiente la publicacion hasta que el mismo sea realizado.
             Se enviará un correo con toda la información.
-            DEBUG STATE:
-            {JSON.stringify(this.props.parentState)}
 
         </Form>
       )

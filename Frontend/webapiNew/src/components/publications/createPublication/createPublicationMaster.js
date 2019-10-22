@@ -21,7 +21,7 @@ class CreatePublication extends React.Component {
             spaceTypes: [],
             isLoading: false,
             buttonIsDisable: false,
-            spaceTypeSelect: "",
+            spaceTypeSelect: "1",
             spaceName: "",
             description: "",
             geoU: "",
@@ -42,17 +42,48 @@ class CreatePublication extends React.Component {
         }
         this.submitPublication = this.submitPublication.bind(this);
         this.onChange = this.onChange.bind(this);
-        this._nextStep = this._nextStep.bind(this)
-        this._previousStep = this._previousStep.bind(this)
+        this.validateStep = this.validateStep.bind(this);
+        this._nextStep = this._nextStep.bind(this);
+        this._previousStep = this._previousStep.bind(this);
+        
+    }
+
+    validateStep(){
+        var isValid = false;
+        try{
+            switch(this.state.currentStep){
+                case 1:
+                    isValid = true;
+                break;
+                case 2:
+                    isValid = true;
+                break;
+                case 3:
+                    isValid = true;
+                break;
+                case 4:
+                    isValid = true;
+                break;
+                case 5:
+                    isValid = true;
+                break;              
+            }
+        }catch(error){
+            console.log("error: "+error);
+        }
+        return isValid;
     }
 
     _nextStep() {
-        let currentStep = this.state.currentStep;
-        // If the current step is 1 or 2, then add one on "next" button click
-        currentStep = currentStep >= (this.state.maxSteps - 1) ? this.state.maxSteps : currentStep + 1
-        this.setState({
-            currentStep: currentStep
-        })
+        if(this.validateStep() == true){
+            let currentStep = this.state.currentStep;
+            // If the current step is not the last one, then add one on "next" button click
+            currentStep = currentStep >= (this.state.maxSteps - 1) ? this.state.maxSteps : currentStep + 1
+            this.setState({
+                currentStep: currentStep
+            })
+        }
+
     }
 
     _previousStep() {
