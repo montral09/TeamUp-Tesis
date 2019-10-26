@@ -3,6 +3,7 @@ using backend.Data_Access.VO.Data;
 using backend.Data_Access.VO.Responses;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace backend.Logic
 {
@@ -31,10 +32,11 @@ namespace backend.Logic
         VOResponseTokensUpdate UpdateTokens(VORequestTokensUpdate voTokensUpdate);
         VOResponseGetReservationTypes GetReservationTypes(VORequestGetReservationTypes voRequestReservationTypes);
         VOResponseGetFacilities GetFacilities();
-        VOResponseCreatePublication CreatePublication(VORequestCreatePublication voCreatePublication);
+        Task<VOResponseCreatePublication> CreatePublication(VORequestCreatePublication voCreatePublication);
         VOResponsePublicationPendingApproval GetPublicationsPendingApproval(VORequestPublicationPendindApproval voPublicationPendingApproval);
         VOResponseGetPublisherSpaces GetPublisherSpaces(VORequestGetPublisherSpaces voRequestGetPublisherSpaces);
         VOResponseGetSpace GetSpace(int idPublication);
         VOResponseUpdateStatePublication UpdateStatePublication(VORequestUpdateStatePublication voUpdateStatePublication);
+        VOResponseGetPublicationsWithFilters GetPublicationsWithFilters(VORequestGetPublicationsWithFilters voGetPublicationsFilter);
     }
 }

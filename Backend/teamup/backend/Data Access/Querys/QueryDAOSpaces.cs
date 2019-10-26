@@ -1,4 +1,6 @@
-﻿using System;
+﻿using backend.Data_Access.VO;
+using System;
+using System.Text;
 
 namespace backend.Data_Access.Query
 {
@@ -67,6 +69,65 @@ namespace backend.Data_Access.Query
             return query;
         }
 
+        public String InsertImage()
+        {
+            String query = "insert into publication_images (idPublication, accessURL) values (@idPublication, @accessURL)";
+            return query;
+        }
+
+        public String GetImages()
+        {
+            String query = "select accessURL from PUBLICATION_IMAGES where idPublication=@idPublication";
+            return query;
+        }
+
+        public String GetQuantityPublicationsWithFilter(VORequestGetPublicationsWithFilters voGetPublicationsFilter)
+        {
+            StringBuilder query = new StringBuilder();
+            query = query.Append("select count(p.idPublication) as quantity from PUBLICATIONS p where p.state = 2 ");
+            if (voGetPublicationsFilter.SpaceType != 0)
+            {
+                query.Append("and p.spaceType = @spaceType ");
+            }
+            if (voGetPublicationsFilter.Capacity != 0)
+            {
+                query.Append("and p.capacity >= @capacity ");
+            }
+            if (voGetPublicationsFilter.Facilities != null && voGetPublicationsFilter.Facilities.Count != 0)
+            {
+                foreach (var facility in voGetPublicationsFilter.Facilities)
+                {
+                    query.Append("and CHARINDEX(CAST(").Append(facility).Append(" AS VARCHAR)").Append(", p.facilities) > 0 ");
+                }
+
+            }            
+            return query.ToString();
+        }
+        
+        public String GetPublicationsWithFilter(VORequestGetPublicationsWithFilters voGetPublicationsFilter, int maxPublicationsPage)
+        {
+            StringBuilder query = new StringBuilder();
+            query = query.Append("select p.idPublication, p.spaceType, p.creationDate, p.title, p.description, p.locationLat, p.locationLong, p.capacity, p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities from PUBLICATIONS p where p.state = 2 ");
+            if(voGetPublicationsFilter.SpaceType != 0)
+            {
+                query.Append("and p.spaceType = @spaceType ");
+            }
+            if (voGetPublicationsFilter.Capacity != 0)
+            {
+                query.Append("and p.capacity >= @capacity ");
+            }
+            if (voGetPublicationsFilter.Facilities != null && voGetPublicationsFilter.Facilities.Count != 0)
+            {
+                foreach(var facility in voGetPublicationsFilter.Facilities)
+                {
+                    query.Append("and CHARINDEX(CAST(").Append(facility).Append(" AS VARCHAR)").Append(", p.facilities) > 0 ");   
+                }
+                
+            }
+            query.Append("order by p.idPublication offset ").Append((voGetPublicationsFilter.PageNumber - 1) * maxPublicationsPage).Append(" rows fetch next 10 rows only ");
+            return query.ToString();
+        }
+            
     }
      
 }

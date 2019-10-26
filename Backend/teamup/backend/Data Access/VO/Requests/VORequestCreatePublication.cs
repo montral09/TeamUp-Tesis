@@ -9,10 +9,13 @@ namespace backend.Data_Access.VO
     {
         public VOPublication VOPublication { get; set; }
 
-        public VORequestCreatePublication(VOPublication voPublication, string accessToken) : base (accessToken)
+        public List<VOImage> Images { get; set; }
+
+        public VORequestCreatePublication(VOPublication voPublication, string accessToken, List<VOImage> images) : base (accessToken)
         {
             VOPublication = voPublication;
             AccessToken = accessToken;
+            Images = images;
         }
     }
 }

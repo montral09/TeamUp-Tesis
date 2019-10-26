@@ -157,7 +157,7 @@ namespace backend.Data_Access
             return facilities;
         }
 
-        public async Task CreatePublication(VORequestCreatePublication voCreatePublication, User user)
+        public async Task CreatePublicationAsync(VORequestCreatePublication voCreatePublication, User user)
         {
             SqlConnection con = null;
             SqlTransaction objTrans = null;
@@ -169,7 +169,6 @@ namespace backend.Data_Access
                 String query = cns.CreatePublication();
                 String mail = voCreatePublication.VOPublication.Mail;
                 String facilities = Util.CreateFacilitiesString(voCreatePublication.VOPublication.Facilities);
-                //String images = Util.CreateStringImages(voCreatePublication.VOPublication.Images);
                 SqlCommand insertCommand = new SqlCommand(query, con);
                 List<SqlParameter> prm = new List<SqlParameter>()
                     {
@@ -193,17 +192,17 @@ namespace backend.Data_Access
                 int idPublication = Convert.ToInt32(insertCommand.ExecuteScalar());
                 // Store images
                 StorageUtil storageUtil = new StorageUtil();
-                storageUtil.StoreImage(voCreatePublication.VOPublication.Images, user.IdUser, idPublication);
+                List<string> urls = await storageUtil.StoreImageAsync(voCreatePublication.Images, user.IdUser, idPublication);
+                InsertImages(con, objTrans, idPublication, urls);
                 // Send email to publisher
                 string subject = "Publication created";
                 string body = Util.CreateBodyEmailNewPublicationToPublisher(user.Name);
                 Util util = new Util();
-                await util.SendEmailAsync(mail, body, subject);
+                util.SendEmailAsync(mail, body, subject);
                 // Send email to admin
                 string adminEmail = ConfigurationManager.AppSettings["EMAIL_ADMIN"];
                 string bodyAdmin = Util.CreateBodyEmailNewPublicationToAdmin(mail);
-                await util.SendEmailAsync(adminEmail, bodyAdmin, subject);
-                
+                util.SendEmailAsync(adminEmail, bodyAdmin, subject);                
                 objTrans.Commit();
             }
             catch (Exception e)
@@ -217,6 +216,24 @@ namespace backend.Data_Access
                 {
                     con.Close();
                 }
+            }
+        }
+
+        private void InsertImages(SqlConnection con, SqlTransaction objTrans, int idPublication, List<string> urls)
+        {
+            String query = cns.InsertImage();
+            SqlCommand insertCommand = new SqlCommand(query, con);
+            foreach (var item in urls)
+            {
+                List<SqlParameter> prm = new List<SqlParameter>()
+                {
+                    new SqlParameter("@idPublication", SqlDbType.Int) { Value = idPublication },
+                    new SqlParameter("@accessURL", SqlDbType.VarChar) { Value = item },
+                };
+                insertCommand.Parameters.AddRange(prm.ToArray());
+                insertCommand.Transaction = objTrans;
+                insertCommand.ExecuteNonQuery();
+                insertCommand.Parameters.Clear();
             }
         }
 
@@ -234,21 +251,33 @@ namespace backend.Data_Access
                 VOPublicationAdmin voPublication;
                 while (dr.Read())
                 {
-                    List<String> images = new List<string>();
-                    images.Add("https://s3-eu-west-1.amazonaws.com/worktel.files/aaee923a-3c7a-4c1a-9db9-5bbc15c903b4.jpeg");
-                    images.Add("https://s3-eu-west-1.amazonaws.com/worktel.files/a162187c-07b2-4c51-b77f-f12d00230474.jpg");
-                    images.Add("https://s3-eu-west-1.amazonaws.com/worktel.files/1fd01252-22c5-4e25-8133-2998c524cf8e.JPG");
-                    StorageUtil storageUtil = new StorageUtil();
-                    //images = storageUtil.GetImagesPublication(Convert.ToInt64(dr["idUser"]), Convert.ToInt32(dr["idPublication"]), Convert.ToString(dr["images"]));                    
+ 
+                    List<String> images = new List<string>();                 
                     String facilitiesString = Convert.ToString(dr["facilities"]);
                     Util util = new Util();
                     List<int> facilities = util.ConvertFacilities(facilitiesString);
+                    int idPublication = Convert.ToInt32(dr["idPublication"]);
+                    String queryImages = cns.GetImages();
+                    SqlCommand selectCommandImages = new SqlCommand(queryImages, con);
+                    SqlParameter parametro = new SqlParameter()
+                    {
+                        ParameterName = "@idPublication",
+                        Value = idPublication,
+                        SqlDbType = SqlDbType.Int
+                    };
+                    selectCommandImages.Parameters.Add(parametro);
+                    SqlDataReader drImages = selectCommandImages.ExecuteReader();
+                    while (drImages.Read()) {
+                        string accessURL = Convert.ToString(drImages["accessURL"]);
+                        images.Add(accessURL);
+                    }
+                    drImages.Close();
                     VOLocationCordinates voLocation = new VOLocationCordinates(Convert.ToDecimal(dr["locationLat"]), Convert.ToDecimal(dr["locationLong"]));
                     voPublication = new VOPublicationAdmin(Convert.ToInt32(dr["idPublication"]), Convert.ToInt64(dr["idUser"]), Convert.ToString(dr["mail"]),
                          Convert.ToInt32(dr["spaceType"]), Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]), Convert.ToString(dr["description"]),
                         voLocation, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
                         Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]));
-                    publications.Add(voPublication);
+                    publications.Add(voPublication);                    
                 }
                 dr.Close();
             }
@@ -288,12 +317,26 @@ namespace backend.Data_Access
                 while (dr.Read())
                 {
                     List<String> images = new List<string>();
-                    images.Add("https://s3-eu-west-1.amazonaws.com/worktel.files/aaee923a-3c7a-4c1a-9db9-5bbc15c903b4.jpeg");
-                    images.Add("https://s3-eu-west-1.amazonaws.com/worktel.files/a162187c-07b2-4c51-b77f-f12d00230474.jpg");
-                    images.Add("https://s3-eu-west-1.amazonaws.com/worktel.files/1fd01252-22c5-4e25-8133-2998c524cf8e.JPG");
                     String facilitiesString = Convert.ToString(dr["facilities"]);
                     Util util = new Util();
-                    List<int> facilities = util.ConvertFacilities(facilitiesString);                   
+                    List<int> facilities = util.ConvertFacilities(facilitiesString);
+                    int idPublication = Convert.ToInt32(dr["idPublication"]);
+                    String queryImages = cns.GetImages();
+                    SqlCommand selectCommandImages = new SqlCommand(queryImages, con);
+                    SqlParameter parametro = new SqlParameter()
+                    {
+                        ParameterName = "@idPublication",
+                        Value = idPublication,
+                        SqlDbType = SqlDbType.Int
+                    };
+                    selectCommandImages.Parameters.Add(parametro);
+                    SqlDataReader drImages = selectCommandImages.ExecuteReader();
+                    while (drImages.Read())
+                    {
+                        string accessURL = Convert.ToString(drImages["accessURL"]);
+                        images.Add(accessURL);
+                    }
+                    drImages.Close();
                     VOLocationCordinates voLocation = new VOLocationCordinates(Convert.ToDecimal(dr["locationLat"]), Convert.ToDecimal(dr["locationLong"]));
                     voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), Convert.ToInt32(dr["spaceType"]), Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]), Convert.ToString(dr["description"]),
                         voLocation, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
@@ -337,12 +380,26 @@ namespace backend.Data_Access
                 while (dr.Read())
                 {
                     List<String> images = new List<string>();
-                    images.Add("https://s3-eu-west-1.amazonaws.com/worktel.files/aaee923a-3c7a-4c1a-9db9-5bbc15c903b4.jpeg");
-                    images.Add("https://s3-eu-west-1.amazonaws.com/worktel.files/a162187c-07b2-4c51-b77f-f12d00230474.jpg");
-                    images.Add("https://s3-eu-west-1.amazonaws.com/worktel.files/1fd01252-22c5-4e25-8133-2998c524cf8e.JPG");
                     String facilitiesString = Convert.ToString(dr["facilities"]);
                     Util util = new Util();
                     List<int> facilities = util.ConvertFacilities(facilitiesString);
+                    int idPublication = Convert.ToInt32(dr["idPublication"]);
+                    String queryImages = cns.GetImages();
+                    SqlCommand selectCommandImages = new SqlCommand(queryImages, con);
+                    SqlParameter parametroImages = new SqlParameter()
+                    {
+                        ParameterName = "@idPublication",
+                        Value = idSpace,
+                        SqlDbType = SqlDbType.Int
+                    };
+                    selectCommandImages.Parameters.Add(parametroImages);
+                    SqlDataReader drImages = selectCommandImages.ExecuteReader();
+                    while (drImages.Read())
+                    {
+                        string accessURL = Convert.ToString(drImages["accessURL"]);
+                        images.Add(accessURL);
+                    }
+                    drImages.Close();
                     VOLocationCordinates voLocation = new VOLocationCordinates(Convert.ToDecimal(dr["locationLat"]), Convert.ToDecimal(dr["locationLong"]));
                     voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), Convert.ToInt32(dr["spaceType"]), Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]), Convert.ToString(dr["description"]),
                         voLocation, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
@@ -392,6 +449,99 @@ namespace backend.Data_Access
                     con.Close();
                 }
             }
+        }
+
+        public VOResponseGetPublicationsWithFilters GetPublicationsWithFilters(VORequestGetPublicationsWithFilters voGetPublicationsFilter)
+        {
+            VOResponseGetPublicationsWithFilters response = new VOResponseGetPublicationsWithFilters();
+            List<VOPublication> publications = new List<VOPublication>();
+            VOPublication voPublication = null;
+            SqlConnection con = null;
+            int MAX_PUBLICATIONS_PAGE = Convert.ToInt32(ConfigurationManager.AppSettings["MAX_PUBLICATIONS_PAGE"]);
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                if (voGetPublicationsFilter.PageNumber == 1)
+                {                    
+                    int qty = 0;
+                    String queryQuantity = cns.GetQuantityPublicationsWithFilter(voGetPublicationsFilter);
+                    SqlCommand selectCommandQuantity = new SqlCommand(queryQuantity, con);
+                    List<SqlParameter> prmQty = new List<SqlParameter>()
+                    {
+                        new SqlParameter("@spaceType", SqlDbType.Int) { Value = voGetPublicationsFilter.SpaceType},
+                        new SqlParameter("@capacity", SqlDbType.Int) {Value = voGetPublicationsFilter.Capacity},
+                    };
+                    selectCommandQuantity.Parameters.AddRange(prmQty.ToArray());
+                    SqlDataReader drQty = selectCommandQuantity.ExecuteReader();
+                    while (drQty.Read())
+                    {
+                        qty = Convert.ToInt32(drQty["quantity"]);
+                    }
+                    drQty.Close();
+                    if (qty < MAX_PUBLICATIONS_PAGE)
+                    {
+                        response.MaxPage = 1;
+                    } else {
+                        response.MaxPage = (int)Math.Floor((Double)qty / MAX_PUBLICATIONS_PAGE);
+                    }
+                    
+                }
+               
+               String query = cns.GetPublicationsWithFilter(voGetPublicationsFilter, MAX_PUBLICATIONS_PAGE);
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                List<SqlParameter> prm = new List<SqlParameter>()
+                 {
+                    new SqlParameter("@spaceType", SqlDbType.Int) { Value = voGetPublicationsFilter.SpaceType},
+                    new SqlParameter("@capacity", SqlDbType.Int) {Value = voGetPublicationsFilter.Capacity},
+                };
+                selectCommand.Parameters.AddRange(prm.ToArray());                
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                while (dr.Read())
+                {
+                    List<String> images = new List<string>();
+                    String facilitiesString = Convert.ToString(dr["facilities"]);
+                    Util util = new Util();
+                    List<int> facilities = util.ConvertFacilities(facilitiesString);
+                    int idPublication = Convert.ToInt32(dr["idPublication"]);
+                    String queryImages = cns.GetImages();
+                    SqlCommand selectCommandImages = new SqlCommand(queryImages, con);
+                    SqlParameter parametroImages = new SqlParameter()
+                    {
+                        ParameterName = "@idPublication",
+                        Value = idPublication,
+                        SqlDbType = SqlDbType.Int
+                    };
+                    selectCommandImages.Parameters.Add(parametroImages);
+                    SqlDataReader drImages = selectCommandImages.ExecuteReader();
+                    while (drImages.Read())
+                    {
+                        string accessURL = Convert.ToString(drImages["accessURL"]);
+                        images.Add(accessURL);
+                    }
+                    drImages.Close();
+                    VOLocationCordinates voLocation = new VOLocationCordinates(Convert.ToDecimal(dr["locationLat"]), Convert.ToDecimal(dr["locationLong"]));
+                    voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), Convert.ToInt32(dr["spaceType"]), Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]), Convert.ToString(dr["description"]),
+                        voLocation, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
+                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, null);
+                    publications.Add(voPublication);
+                }                
+                dr.Close();
+                response.Publications = publications;
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+            return response;
+
         }
     }
 }

@@ -6,6 +6,7 @@ using backend.Data_Access.VO.Responses;
 using backend.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace backend.Logic
 {
@@ -462,7 +463,7 @@ namespace backend.Logic
             return response;
         }
 
-        public VOResponseCreatePublication CreatePublication(VORequestCreatePublication voCreatePublication)
+        public async Task<VOResponseCreatePublication> CreatePublication(VORequestCreatePublication voCreatePublication)
         {
             VOResponseCreatePublication response = new VOResponseCreatePublication();
             try
@@ -471,7 +472,7 @@ namespace backend.Logic
                 if (EnumMessages.OK.ToString().Equals(message))
                 {
                     User user = users.Find(voCreatePublication.VOPublication.Mail);
-                    spaces.CreatePublication(voCreatePublication, user);
+                    await spaces.CreatePublicationAsync(voCreatePublication, user);
                     message = EnumMessages.SUCC_PUBLICATIONCREATED.ToString();
                 }
                 response.responseCode = message;
@@ -538,6 +539,7 @@ namespace backend.Logic
                 {
                     response.responseCode = EnumMessages.ERR_SPACENOTFOUND.ToString();
                 }
+                response.responseCode = EnumMessages.SUCC_PUBLICATIONSOK.ToString();
                 return response;
             }
             catch (GeneralException e)
@@ -582,5 +584,24 @@ namespace backend.Logic
                 throw e;
             }
         }
+
+        public VOResponseGetPublicationsWithFilters GetPublicationsWithFilters(VORequestGetPublicationsWithFilters voGetPublicationsFilter)
+        {
+            {
+                VOResponseGetPublicationsWithFilters response = new VOResponseGetPublicationsWithFilters();
+                try
+                {
+                    response = spaces.GetPublicationsWithFilters(voGetPublicationsFilter);
+                }
+                catch (GeneralException e)
+                {
+                    throw e;
+                }
+                response.responseCode = EnumMessages.SUCC_PUBLICATIONSOK.ToString();
+                return response;
+
+            }
+
+            }
     }
 }
