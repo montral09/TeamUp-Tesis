@@ -138,7 +138,7 @@ class Upload extends React.Component {
     return (
       <Fragment>
         <div className="form-group files">
-          <label>Sube tus fotos (Máximo 7) </label>
+          <label>Sube tus fotos (Mínimo 1 - Máximo 7) </label>
           <input type="file" name="file" className="form-control" multiple onChange={this.onChange} />
         </div>
       </Fragment>

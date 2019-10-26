@@ -15,6 +15,11 @@ class CreatePublicationStep3 extends React.Component {
             <p className="h4 mb-4 text-center">Datos de tu espacio - Paso 3</p>
             <FormGroup>
                 <Label for="prices">Precios (Pesos Uruguayos)</Label>
+                {
+                  this.props.parentState.spaceTypeSelect == 2 &&
+                    <small id="pricesHelper" className="form-text text-muted mb-2">El precio es por persona</small>
+                }
+
             </FormGroup>
             <FormGroup>
               <Label for='HourPrice'>Precio por hora</Label>

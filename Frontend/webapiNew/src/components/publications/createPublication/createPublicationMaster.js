@@ -25,8 +25,8 @@ class CreatePublication extends React.Component {
             spaceName: "",
             description: "",
             locationText: "",
-            geoLat: "",
-            geoLng: "",
+            geoLat: 0,
+            geoLng: 0,
             availability: "",
             capacity: "",
             youtubeURL: "",
@@ -55,14 +55,20 @@ class CreatePublication extends React.Component {
         try{
             switch(this.state.currentStep){
                 case 1:
-
-                    isValid = true;
+                    if(this.state.spaceName && this.state.capacity && this.state.availability){
+                        isValid = true;
+                    }
                 break;
                 case 2:
-                    isValid = true;
+                    if(this.state.spaceImages.length != 0 && this.state.geoLat != 0){
+                        isValid = true;
+                    }
                 break;
                 case 3:
-                    isValid = true;
+                    if(this.state.HourPrice != 0 || this.state.DailyPrice != 0 || 
+                        this.state.WeeklyPrice != 0 || this.state.MonthlyPrice != 0){
+                        isValid = true;
+                    }
                 break;
                 case 4:
                     isValid = true;
@@ -85,6 +91,15 @@ class CreatePublication extends React.Component {
             this.setState({
                 currentStep: currentStep
             })
+        }else{
+            toast.error('Por favor complete los campos obligatorios ', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
         }
 
     }
@@ -138,8 +153,11 @@ class CreatePublication extends React.Component {
             return (
                 <button
                     className="btn btn-primary float-right"
-                    type="button" onClick={this.submitPublication}>
-                    Finalizar
+                    type="button" onClick={this.submitPublication} disabled= {this.state.buttonIsDisable}>
+                    Finalizar&nbsp;&nbsp;
+                    { this.state.isLoading &&  
+                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    }
                 </button>
             )
         }
@@ -155,10 +173,6 @@ class CreatePublication extends React.Component {
     }
 
     onChange = (e) => {
-        console.log("on Change");
-        console.log(e.target.id);
-        console.log(e.target.value);
-        console.log(this.state[e.target.id])
         var targetValue = e.target.value;
         switch(e.target.id){
             case "facilitiesSelect":
@@ -321,7 +335,7 @@ class CreatePublication extends React.Component {
     submitPublication() {
 
         var objToSend = {
-            "AccessToken": this.props.tokenObj.accessToken,
+            "AccessToken": this.props.tokenObj.accesToken,
             "VOPublication": {
                 "Mail": this.props.userData.Mail,
                 "SpaceType": parseInt(this.state.spaceTypeSelect),
@@ -345,7 +359,7 @@ class CreatePublication extends React.Component {
         console.log(objToSend);
 
         this.setState({ isLoading: true, buttonIsDisable: true });
-        fetch('https://localhost:44372/api/user', {
+        fetch('https://localhost:44372/api/publication', {
             method: 'POST',
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
 

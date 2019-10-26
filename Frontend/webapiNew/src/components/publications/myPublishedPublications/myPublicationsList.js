@@ -67,6 +67,51 @@ class MyPublicationsList extends React.Component {
     }
     loadMyPublications(){
         try{
+            try {
+                fetch('https://localhost:44372/api/publisherSpaces', {
+                    method: 'POST',
+                    header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({
+                        "AccessToken": this.props.tokenObj.accesToken,
+                        "AdminMail": this.props.userData.Mail                   
+                    })
+                }).then(response => response.json()).then(data => {
+                    if (data.responseCode == "SUCC_PUBLICATIONSOK") {
+                        this.setState({ publications: data.Publications, loadingPubs: false })
+                    } else {
+                        toast.error('Hubo un error', {
+                            position: "top-right",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                        });
+                    }
+                }
+                ).catch(error => {
+                    toast.error('Internal error', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                    console.log(error);
+                }
+                )
+            } catch (error) {
+                toast.error('Internal error', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
+            }
+            return;
             let dummyData = {
                 "Publications": [
                     {
@@ -165,7 +210,9 @@ class MyPublicationsList extends React.Component {
 }
 const mapStateToProps = (state) => {
     return {
-        login_status: state.loginData.login_status
+        login_status: state.loginData.login_status,
+        tokenObj: state.loginData.tokenObj,
+        userData: state.loginData.userData,
     }
 }
 
