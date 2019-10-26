@@ -8,8 +8,10 @@ class Upload extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      spaceImages: []
+      spaceImages: [],
+      tempFiles : []
     }
+    this.getBase64 = this.getBase64.bind(this);
   }
 
   // Upload image functions
@@ -36,7 +38,7 @@ class Upload extends React.Component {
     //define message container
     let err = ''
     // list allow mime type
-    const types = ['image/png', 'image/jpeg', 'image/gif']
+    const types = ['image/png', 'image/jpeg']
     // loop access array
     for (var x = 0; x < files.length; x++) {
       // compare file type find doesn't matach
@@ -86,47 +88,51 @@ class Upload extends React.Component {
     return true;
 
   }
-  // End Upload image functions
-  onChange = (e) => {
-    if (this.maxSelectFile(e) && this.checkMimeType(e) && this.checkFileSize(e)) {
-      console.log(e.target.files);
-      /*
-      this.setState({
-        spaceImages: e.target.files
-      });
-      let newE = {
-        target : {
-          id: "spaceImages",
-          value: e.target.files
-        }
-      }
-      this.props.onChange(newE);*/
-      const arrFiles = Array.from(e.target.files);
-      let file = arrFiles[0];
-      let fileBase64 = '';
-      this.getBase64(file, (result) => {
-          fileBase64 = result;
-      });
-      /*const files = arrFiles.map((file, index) => {
-            let document = getBase64()
-          }
-        return { file, id: index, document }
-      });*/
-      console.log("fileBase64");
-      console.log(fileBase64);
-    }
 
+  // End Upload image functions
+  onChange = (evt) => {
+    if (this.maxSelectFile(evt) && this.checkMimeType(evt) && this.checkFileSize(evt)) {
+      console.log(evt.target.files);
+      this.setState({ spaceImages: [], tempFiles: evt.target.files}, () => {
+        for(var i=0;i<this.state.tempFiles.length;i++){
+          var file = this.state.tempFiles[i]; // FileList object
+          this.getBase64(file);
+        }
+      });
+      
+    }
   }
-  getBase64(file, cb) {
-    let reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = function () {
-        cb(reader.result)
-    };
-    reader.onerror = function (error) {
-        console.log('Error: ', error);
-    };
-    return document;
+
+  getBase64(file) {
+    var f = file; // FileList object
+    var reader = new FileReader();
+    // Closure to capture the file information.
+    const scope = this;
+    reader.onload = (function(theFile) {
+      return function(e) {
+        var binaryData = e.target.result;
+        //Converting Binary Data to base 64
+        var base64String = window.btoa(binaryData);
+        //showing file converted to base64
+        const fileTypeArr = file.type.split('/');
+        var fileObj = {
+          Extension: fileTypeArr[1],
+          Base64String: base64String
+        };
+        var newSpaceImages = [];
+        if(scope.state){
+          newSpaceImages = scope.state.spaceImages || [];
+        }
+        newSpaceImages.push(fileObj);
+        scope.setState({spaceImages:newSpaceImages}, () => {
+          scope.props.onChange({
+            target : {id: "spaceImages", value: scope.state.spaceImages},
+          });
+        });
+      };
+    })(f);
+    // Read in the image file as a data URL.
+    reader.readAsBinaryString(f);
   }
   render() {
     return (

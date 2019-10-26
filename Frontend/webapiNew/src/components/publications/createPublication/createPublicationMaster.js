@@ -24,7 +24,9 @@ class CreatePublication extends React.Component {
             spaceTypeSelect: "1",
             spaceName: "",
             description: "",
-            geoU: "",
+            locationText: "",
+            geoLat: "",
+            geoLng: "",
             availability: "",
             capacity: "",
             youtubeURL: "",
@@ -53,6 +55,7 @@ class CreatePublication extends React.Component {
         try{
             switch(this.state.currentStep){
                 case 1:
+
                     isValid = true;
                 break;
                 case 2:
@@ -137,7 +140,7 @@ class CreatePublication extends React.Component {
                     className="btn btn-primary float-right"
                     type="button" onClick={this.submitPublication}>
                     Finalizar
-            </button>
+                </button>
             )
         }
         // ...else render nothing
@@ -317,18 +320,6 @@ class CreatePublication extends React.Component {
 
     submitPublication() {
 
-
-        /*
-        work with files
-        const data = new FormData()
-        for(var x = 0; x<this.state.spaceImages.length; x++) {
-            data.append('file', this.state.spaceImages[x])
-        }
-        */
-        console.log("State to send to API:");
-        console.log(this.state);
-
-
         var objToSend = {
             "AccessToken": this.props.tokenObj.accessToken,
             "VOPublication": {
@@ -337,8 +328,8 @@ class CreatePublication extends React.Component {
                 "Title": this.state.spaceName,
                 "Description": this.state.description,
                 "Location": {
-                    "Latitude": -34.909397,
-                    "Longitude": -56.138561
+                    "Latitude": this.state.geoLat,
+                    "Longitude": this.state.geoLng
                 },
                 "Capacity": parseInt(this.state.capacity),
                 "VideoURL": this.state.youtubeURL,
@@ -348,16 +339,11 @@ class CreatePublication extends React.Component {
                 "MonthlyPrice": parseFloat(this.state.MonthlyPrice),
                 "Availability": this.state.availability,
                 "Facilities": this.state.facilitiesSelect,
-                "Images": [
-                    {
-                        "Base64String": "khjhhbjh",
-                        "Extension": "PNG"
-                    }
-                ]
-            }
+            },
+            "Images": this.state.spaceImages
         }
         console.log(objToSend);
-        return;
+
         this.setState({ isLoading: true, buttonIsDisable: true });
         fetch('https://localhost:44372/api/user', {
             method: 'POST',
@@ -388,7 +374,7 @@ class CreatePublication extends React.Component {
                         draggable: true,
                     });
                 } else {
-                    toast.error('Ese correo ya esta en uso, por favor elija otro.', {
+                    toast.error('Internal error', {
                         position: "top-right",
                         autoClose: 5000,
                         hideProgressBar: false,
@@ -397,8 +383,6 @@ class CreatePublication extends React.Component {
                         draggable: true,
                     });
                 }
-
-
             }
         }
         ).catch(error => {

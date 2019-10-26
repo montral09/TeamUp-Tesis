@@ -31,11 +31,6 @@ class CreatePublicationStep1 extends React.Component {
                     value ={this.props.parentState.description}/>
             </FormGroup>
             <FormGroup>
-                <Label for="geoU">Ubicación (*)</Label>
-                <Input type="text" name="geoU" placeholder="ej: Pocitos" id="geoU"
-                    value ={this.props.parentState.geoU}/>
-            </FormGroup>
-            <FormGroup>
                 <Label for="capacity">Capacidad (*)</Label>
                 <Input type="text" name="capacity" placeholder="ej: 10 " id="capacity" onChange={this.props.onChange} maxLength="3"
                     value ={this.props.parentState.capacity}/>
