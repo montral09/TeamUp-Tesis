@@ -61,12 +61,14 @@ namespace backend.Logic
             return body;
         }
 
-        public List<int> ConvertFacilities (String facilitiesString)
+        public List<int> ConvertFacilities(String facilitiesString)
         {
-            List<int> facilities = facilitiesString.Split(',').Select(int.Parse).ToList();
-
+            List<int> facilities = new List<int>();
+            if (!String.IsNullOrEmpty(facilitiesString)) {
+                facilities = facilitiesString.Split(',').Select(int.Parse).ToList();
+            }
             return facilities;
-        }
+        }                    
 
 
         public static string CreateStringImages(List<VOImage> images)

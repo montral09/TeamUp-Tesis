@@ -1,9 +1,9 @@
 ﻿
 namespace backend.Logic
 {
-    public class TeamUpConstants
+    public static class TeamUpConstants
     {
-        //Constants for space states
+        public const string NOT_VALIDATED = "NOT VALIDATED";
   
     }
 }

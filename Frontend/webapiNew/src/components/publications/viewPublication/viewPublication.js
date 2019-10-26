@@ -1,14 +1,15 @@
 import React from 'react';
 import Header from "../../header/header";
-import { Link, Redirect } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { connect } from 'react-redux';
 
 import OwlCarousel from 'react-owl-carousel2';
-import { InlineShareButtons } from 'sharethis-reactjs';
-import InnerImageZoom from 'react-inner-image-zoom'
+import InnerImageZoom from 'react-inner-image-zoom';
+import DatePicker from  './datePicker';
+import RelatedPublications from './relatedPublications'
+
 
 
 class ViewPublication extends React.Component {
@@ -20,7 +21,9 @@ class ViewPublication extends React.Component {
         this.state = {
             pubID: pubID,
             pubObj: pubObj,
-            activeImage: { index: 0, src: pubObj.fotos[0] }
+            activeImage: { index: 0, src: pubObj.fotos[0]},
+            date: null,
+            quantity: 1 
         }
 
     }
@@ -37,7 +40,37 @@ class ViewPublication extends React.Component {
         });
     }
 
+    handleSelect = (e) => {
+        console.log("fabi");
+        console.log(e);
+        this.setState({
+            date: e
+        });
+    }
 
+    handleChange = (e) => {
+        console.log("fabi");
+        console.log(e);
+        this.setState({
+            date: e
+        }); 
+    }
+
+    increaseQuantity() {
+		this.setState({ quantity: parseInt(this.state.quantity)+1});
+	}
+	decreaseQuantity() {
+		if(parseInt(this.state.quantity) > 1) {
+			this.setState({ quantity: parseInt(this.state.quantity)-1});
+		}
+    }
+    
+    changeQuantity(value) {
+		if(parseInt(value) > 0) {
+			this.setState({ quantity: parseInt(value)});
+		}
+    }
+    
     loadDummyPublication(pubID) {
         try {
 
@@ -49,14 +82,14 @@ class ViewPublication extends React.Component {
                 ubicacion: "Pocitos",
                 capacidad: "10",
                 disponibilidad: "De lunes a Viernes de 09 a 18hrs",
-                infraestructura: [1, 2, 3, 4],
-                fotos: ['https://firebasestorage.googleapis.com/v0/b/teamup-1571186671227.appspot.com/o/cover-65465.jpg?alt=media&token=822b8ea8-34d3-4da8-b719-6a981be338c4', 'https://picsum.photos/id/741/800/600', 'https://picsum.photos/1024/768'],
+                infraestructura: ["Wifi", "Proyector", "Cafetera", "Patio", "Aire Acondicionado"],
+                fotos: ['https://picsum.photos/id/741/800/600', 'https://picsum.photos/1024/768'],
                 youtubeUrl: 'https://www.youtube.com/watch?v=VPB-scqoNDE',
                 precios: [
                     { code: 1, value: 100 }, { code: 2, value: 150 }, { code: 3, value: 300 }
                 ],
                 puntuacion: 3,
-                cantidadReviews: 25
+                cantidadReviews: 25                
             }
 
         } catch (error) {
@@ -144,43 +177,52 @@ class ViewPublication extends React.Component {
                                                                                     <div className="description">
                                                                                         <span>Capacidad: </span><b>{this.state.pubObj.capacidad} personas</b> <br />
                                                                                     </div>
-                                                                                    <div className="price">
-                                                                                        <span className="price-new">Por Hora : $300 <br/>Por Semana : $3500<br/> </span>
+                                                                                    <div>
+                                                                                        <span>Precios<br/></span>
                                                                                     </div>
-                                                                                    <div id="product">
+                                                                                    <div className="price">
+                                                                                        <span className="col-md-9 center-column">Por Hora : $300 <br/>Por Semana : $3500<br/> </span>
+                                                                                    </div>
+                                                                                    <div>
+                                                                                        <span>Disponibilidad<br/></span>
+                                                                                    </div>
+                                                                                    <div >
+                                                                                        <span>{this.state.pubObj.disponibilidad}<br/></span>
+                                                                                    </div>
+                                                                                    <div className = "title-page">
+                                                                                        <span>Haga su reserva ahora!<br/></span>
+                                                                                    </div>
+                                                                                    
+                                                                                    <div className="box box-with-categories">
+                                                                                        <DatePicker placeholderText="Desde..."
+                                                                                            dateFormat="dd/MM/yyyy"
+                                                                                            selected={this.state.date}
+                                                                                            onSelect={this.handleSelect} //when day is clicked
+                                                                                            onChange={this.handleChange} //only when value has changed
+                                                                                        />
                                                                                         <div className="cart">
-                                                                                            <div className="add-to-cart d-flex">
+                                                                                        <div className="add-to-cart d-flex">
+                                                                                            <div className="quantity">
+                                                                                                <input type="text" name="quantity" id="quantity_wanted" size="2" value={this.state.quantity} onChange={(event) => this.changeQuantity(event.target.value)} />
+                                                                                                <a href="#quantity_up" id="q_up" onClick={() => this.increaseQuantity()}><i className="fa fa-plus"></i></a>
+                                                                                                <a href="#quantity_down" id="q_down" onClick={() => this.decreaseQuantity()}><i className="fa fa-minus"></i></a>
+                                                                                            </div>																				
+                                                                                        </div>
+                                                                                        </div>
+                                                                                        <div className="description add-to-cart d-flex">
                                                                                                 <input type="button" value="Reservar" onClick={() => alert("Iniciar tramite reserva si esta logueado")} className="button" /> 
-                                                                                                ____
+                                                                                            </div>																			
+																		                </div>
+                                                                                    <div id="product">
+                                                                                        <div className="description">
+                                                                                            <div className="add-to-cart d-flex">                                                                                                                                                                                            
                                                                                                 <input type="button" value="Solicitar Información" onClick={() => alert("Mandar 'mensaje' si esta logueado?")} className="button" />
                                                                                             </div>
                                                                                             <div className="links clearfix">
                                                                                                 <a href="#add_to_wishlist" onClick={() => alert("Agregar a favoritos si esta logueado")}><span><i className="fas fa-heart"></i></span>Agregar a favoritos</a>                                                                                            </div>
                                                                                         </div>
                                                                                     </div>
-                                                                                    <div className="share">
-                                                                                        <InlineShareButtons
-                                                                                            config={{
-                                                                                                alignment: 'left',  // alignment of buttons (left, center, right)
-                                                                                                color: 'social',      // set the color of buttons (social, white)
-                                                                                                enabled: true,        // show/hide buttons (true, false)
-                                                                                                font_size: 14,        // font size for the buttons
-                                                                                                labels: 'null',        // button labels (cta, counts, null)
-                                                                                                language: 'en',       // which language to use (see LANGUAGES)
-                                                                                                networks: [           // which networks to include (see SHARING NETWORKS)
-                                                                                                    'whatsapp',
-                                                                                                    'linkedin',
-                                                                                                    'messenger',
-                                                                                                    'facebook',
-                                                                                                    'twitter'
-                                                                                                ],
-                                                                                                padding: 10,          // padding within buttons (INTEGER)
-                                                                                                radius: 0,            // the corner radius on each button (INTEGER)
-                                                                                                show_total: false,
-                                                                                                size: 34,             // the size of each button (INTEGER)
-                                                                                            }}
-                                                                                        />
-                                                                                    </div>
+                         
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -195,7 +237,17 @@ class ViewPublication extends React.Component {
                                                                 <div id="tab-description" className="tab-content" style={{ display: 'block' }}>
                                                                     <div dangerouslySetInnerHTML={{ __html: this.state.pubObj.pubDesc }} />
                                                                 </div>
-
+                                                                <div className="services">
+                                                                    <span>Servicios<br/></span>
+                                                                </div>
+                                                                <div className="description">
+                                                                    <span>{this.state.pubObj.infraestructura.map((inf, index) => {
+                                                                        return (
+                                                                            <div className="owl-item" key={index}><p>{inf}</p></div>
+                                                                        );
+                                                                        })}<br/></span>
+                                                                </div>
+                                                                <RelatedPublications />
                                                                 <div id="tab-review" className="tab-content">
                                                                     {/*<TabReview product_id={item.id} />*/}
                                                                 </div>
