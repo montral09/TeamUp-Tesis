@@ -1,52 +1,60 @@
 ﻿using backend.Data_Access.VO.Data;
+using Firebase.Storage;
+using Microsoft.AspNetCore.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using Firebase.Auth;
+using System.Text;
 
 namespace backend.Logic
 {
     public class StorageUtil
     {
-        private static string ApiKey = "AIzaSyD-JbeaI9vpBf-22Dqqvjd9gPZpoyu0Pqs";
-        private static string Bucket = "teamup-1571186671227.appspot.com";
-        private static string AuthEmail = "teamupude@gmail.com";
-        private static string AuthPassword = "teamupudeude";
+        private static string ApiKey = ConfigurationManager.AppSettings["API_KEY"];
+        private static string Bucket = ConfigurationManager.AppSettings["BUCKET"];                    
+        private static string AuthEmail = ConfigurationManager.AppSettings["AUTH_EMAIL"];
+        private static string AuthPassword = ConfigurationManager.AppSettings["AUTH_PASSWORD"];
 
-        public void StoreImage(List<VOImage> filesToUpload, Int64 idUser, int idPublication)
+        public StorageUtil() { }
+
+        public async Task<List<string>> StoreImageAsync(List<VOImage> images, Int64 idUser, int idPublication)
         {
-           /* try
+            List<string> urls = new List<string>();
+            try
             {
-                for (int i = 0; i < filesToUpload.Count; i++)
+                var auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey));
+                var a = await auth.SignInWithEmailAndPasswordAsync(AuthEmail, AuthPassword);
+                MemoryStream ms;
+                StringBuilder fullPath = new StringBuilder();
+                for (int i = 0; i < images.Count; i++)
                 {
-                    byte[] byteArray = Convert.FromBase64String(filesToUpload[i].Base64String);
-                    var mem = new MemoryStream(byteArray);
-                    var updated = dbx.Files.UploadAsync(
-                       (path + "/" + idPublication + "/" + (i+1) + "." + filesToUpload[i].Extension), WriteMode.Overwrite.Instance, body: mem);
+                    byte[] byteArray = Convert.FromBase64String(images[i].Base64String);
+                    ms = new MemoryStream(byteArray);
+                    fullPath = fullPath.Append("Images/").Append(idUser).Append("/").Append(idPublication).Append("/").Append(i).Append(".").Append(images[i].Extension);
+                    var cancellation = new CancellationTokenSource();
+                    var task = new FirebaseStorage(Bucket, new FirebaseStorageOptions
+                    {
+                        AuthTokenAsyncFactory = () => Task.FromResult(a.FirebaseToken),
+                        ThrowOnCancel = true // when you cancel the upload, exception is thrown. By default no exception is thrown
+                    });
+                    var e = await Task.Factory.StartNew(async () => await task.Child(fullPath.ToString()).PutAsync(ms, cancellation.Token));
+                    e.Wait();
+                    var u = await task.Child(fullPath.ToString()).GetDownloadUrlAsync();
+                    fullPath.Clear();
+                    urls.Add(u);
                 }
             }
+            
             catch (Exception err)
             {
-
-            }*/
-        }
-
-        public List<String> GetImagesPublication(Int64 idUser, int idPublication, string images)
-        {
-            string ROOT = ConfigurationManager.AppSettings["ROOT_DROPBOX"];
-            string pathFolder = ROOT + idUser + "/" + idPublication;
-            List<String> imagesUrl = new List<String>();
-            List<String> imagesList = images.Split(',').ToList();
-            string imageURL = "";
-            for (int i = 0; i < imagesList.Count; i++) {
-                imageURL = pathFolder + "?preview=" + imagesList[i];
-                imagesUrl.Add(imageURL);
+                throw err;
             }
-            return imagesUrl;
-
+            return urls;
         }
     }
 }

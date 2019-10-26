@@ -6,6 +6,7 @@ using System.Web.Http.Cors;
 using backend.Data_Access.VO.Data;
 using backend.Exceptions;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace webapi.Controllers
 {
@@ -15,13 +16,13 @@ namespace webapi.Controllers
         [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpPost]
         [Route("api/publication")]
-        public IHttpActionResult Post([FromBody]VORequestCreatePublication voCreatePublication)
+        public async Task<IHttpActionResult> Post([FromBody]VORequestCreatePublication voCreatePublication)
         {
             try
             {
                 VOResponseCreatePublication voResp = new VOResponseCreatePublication();
 
-                voResp = fach.CreatePublication(voCreatePublication);               
+                voResp = await fach.CreatePublication(voCreatePublication);               
                 return Ok(voResp);
             }
             catch (GeneralException e)

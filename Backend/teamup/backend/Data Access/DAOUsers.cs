@@ -153,7 +153,7 @@ namespace backend.Data_Access.Query
                 body += "<br /><a href = '" + activationLink + "'>Click here to activate your account.</a>";
                 body += "<br /><br />Thanks";
                 Util util = new Util();
-                await util.SendEmailAsync(user.Mail, body, subject);
+                util.SendEmailAsync(user.Mail, body, subject);
                 objTrans.Commit();
             }
             catch (Exception)
@@ -198,7 +198,7 @@ namespace backend.Data_Access.Query
                     body += "<br /><a href = '" + activationLink + "'>Click here to activate your account.</a>";
                     body += "<br /><br />Thanks";
                     Util util = new Util();
-                    await util.SendEmailAsync(newMail, body, subject);
+                    util.SendEmailAsync(newMail, body, subject);
                 }
                 if (user.Password != "")
                 {
@@ -593,7 +593,7 @@ namespace backend.Data_Access.Query
                 string activationLink = URL;
                 body += "<br /><a href = '" + activationLink + "'>You can log in from here.</a>";
                 body += "<br /><br />Thanks";
-                await util.SendEmailAsync(mail, body, subject);
+                util.SendEmailAsync(mail, body, subject);
                 objTrans.Commit();
             }
             catch (Exception)

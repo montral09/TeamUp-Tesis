@@ -16,7 +16,7 @@ namespace backend.Logic
         string SENDER_MAIL = ConfigurationManager.AppSettings["EMAIL_ADMIN"];
         string SENDER_PASSWORD = ConfigurationManager.AppSettings["EMAIL_PASS"];
 
-        public async Task SendEmailAsync(string to, string body, string subject)
+        public void SendEmailAsync(string to, string body, string subject)
         {
             MailMessage mm = new MailMessage(SENDER_MAIL, to);            
  
