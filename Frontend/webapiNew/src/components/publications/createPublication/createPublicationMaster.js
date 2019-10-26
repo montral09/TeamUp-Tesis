@@ -21,10 +21,12 @@ class CreatePublication extends React.Component {
             spaceTypes: [],
             isLoading: false,
             buttonIsDisable: false,
-            spaceTypeSelect: "",
+            spaceTypeSelect: "1",
             spaceName: "",
             description: "",
-            geoU: "",
+            locationText: "",
+            geoLat: 0,
+            geoLng: 0,
             availability: "",
             capacity: "",
             youtubeURL: "",
@@ -42,17 +44,64 @@ class CreatePublication extends React.Component {
         }
         this.submitPublication = this.submitPublication.bind(this);
         this.onChange = this.onChange.bind(this);
-        this._nextStep = this._nextStep.bind(this)
-        this._previousStep = this._previousStep.bind(this)
+        this.validateStep = this.validateStep.bind(this);
+        this._nextStep = this._nextStep.bind(this);
+        this._previousStep = this._previousStep.bind(this);
+        
+    }
+
+    validateStep(){
+        var isValid = false;
+        try{
+            switch(this.state.currentStep){
+                case 1:
+                    if(this.state.spaceName && this.state.capacity && this.state.availability){
+                        isValid = true;
+                    }
+                break;
+                case 2:
+                    if(this.state.spaceImages.length != 0 && this.state.geoLat != 0){
+                        isValid = true;
+                    }
+                break;
+                case 3:
+                    if(this.state.HourPrice != 0 || this.state.DailyPrice != 0 || 
+                        this.state.WeeklyPrice != 0 || this.state.MonthlyPrice != 0){
+                        isValid = true;
+                    }
+                break;
+                case 4:
+                    isValid = true;
+                break;
+                case 5:
+                    isValid = true;
+                break;              
+            }
+        }catch(error){
+            console.log("error: "+error);
+        }
+        return isValid;
     }
 
     _nextStep() {
-        let currentStep = this.state.currentStep;
-        // If the current step is 1 or 2, then add one on "next" button click
-        currentStep = currentStep >= (this.state.maxSteps - 1) ? this.state.maxSteps : currentStep + 1
-        this.setState({
-            currentStep: currentStep
-        })
+        if(this.validateStep() == true){
+            let currentStep = this.state.currentStep;
+            // If the current step is not the last one, then add one on "next" button click
+            currentStep = currentStep >= (this.state.maxSteps - 1) ? this.state.maxSteps : currentStep + 1
+            this.setState({
+                currentStep: currentStep
+            })
+        }else{
+            toast.error('Por favor complete los campos obligatorios ', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+        }
+
     }
 
     _previousStep() {
@@ -104,9 +153,12 @@ class CreatePublication extends React.Component {
             return (
                 <button
                     className="btn btn-primary float-right"
-                    type="button" onClick={this.submitPublication}>
-                    Finalizar
-            </button>
+                    type="button" onClick={this.submitPublication} disabled= {this.state.buttonIsDisable}>
+                    Finalizar&nbsp;&nbsp;
+                    { this.state.isLoading &&  
+                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    }
+                </button>
             )
         }
         // ...else render nothing
@@ -121,10 +173,6 @@ class CreatePublication extends React.Component {
     }
 
     onChange = (e) => {
-        console.log("on Change");
-        console.log(e.target.id);
-        console.log(e.target.value);
-        console.log(this.state[e.target.id])
         var targetValue = e.target.value;
         switch(e.target.id){
             case "facilitiesSelect":
@@ -286,28 +334,16 @@ class CreatePublication extends React.Component {
 
     submitPublication() {
 
-
-        /*
-        work with files
-        const data = new FormData()
-        for(var x = 0; x<this.state.spaceImages.length; x++) {
-            data.append('file', this.state.spaceImages[x])
-        }
-        */
-        console.log("State to send to API:");
-        console.log(this.state);
-
-
         var objToSend = {
-            "AccessToken": this.props.tokenObj.accessToken,
+            "AccessToken": this.props.tokenObj.accesToken,
             "VOPublication": {
                 "Mail": this.props.userData.Mail,
                 "SpaceType": parseInt(this.state.spaceTypeSelect),
                 "Title": this.state.spaceName,
                 "Description": this.state.description,
                 "Location": {
-                    "Latitude": -34.909397,
-                    "Longitude": -56.138561
+                    "Latitude": this.state.geoLat,
+                    "Longitude": this.state.geoLng
                 },
                 "Capacity": parseInt(this.state.capacity),
                 "VideoURL": this.state.youtubeURL,
@@ -317,18 +353,13 @@ class CreatePublication extends React.Component {
                 "MonthlyPrice": parseFloat(this.state.MonthlyPrice),
                 "Availability": this.state.availability,
                 "Facilities": this.state.facilitiesSelect,
-                "Images": [
-                    {
-                        "Base64String": "khjhhbjh",
-                        "Extension": "PNG"
-                    }
-                ]
-            }
+            },
+            "Images": this.state.spaceImages
         }
         console.log(objToSend);
-        return;
+
         this.setState({ isLoading: true, buttonIsDisable: true });
-        fetch('https://localhost:44372/api/user', {
+        fetch('https://localhost:44372/api/publication', {
             method: 'POST',
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
 
@@ -357,7 +388,7 @@ class CreatePublication extends React.Component {
                         draggable: true,
                     });
                 } else {
-                    toast.error('Ese correo ya esta en uso, por favor elija otro.', {
+                    toast.error('Internal error', {
                         position: "top-right",
                         autoClose: 5000,
                         hideProgressBar: false,
@@ -366,8 +397,6 @@ class CreatePublication extends React.Component {
                         draggable: true,
                     });
                 }
-
-
             }
         }
         ).catch(error => {

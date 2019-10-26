@@ -89,55 +89,18 @@ class PublPendApprov extends Component {
     }
 
     updateTable(){
-        let dummyObj = {
-            "Publications": [
-                {
-                    "IdPublication": 3,
-                    "IdUser": 5,
-                    "Mail": "fabiana.iturrarte@gmail.com",
-                    "NamePublisher": "Fabiana",
-                    "LastNamePublisher": "Iturrarte",
-                    "PhonePublisher": "265460",
-                    "SpaceType": 4,
-                    "CreationDate": "2019-10-18T21:32:00",
-                    "Title": "Salon de eventos espectacular",
-                    "Description": "Con vista al mar, incluye mozos, vajilla y luces",
-                    "Location": {
-                        "Latitude": -34.909397000,
-                        "Longitude": -56.138561000
-                    },
-                    "Capacity": 200,
-                    "VideoURL": "https://www.youtube.com/watch?v=CJ2FWYCJWGo",
-                    "HourPrice": 200,
-                    "DailyPrice": 2000,
-                    "WeeklyPrice": 10000,
-                    "Availability": "Todos los dias",
-                    "Facilities": [
-                        1,
-                        3,
-                        6,
-                        7
-                    ],
-                    "State": null,
-                    "Images": [
-                        "https://s3-eu-west-1.amazonaws.com/worktel.files/aaee923a-3c7a-4c1a-9db9-5bbc15c903b4.jpeg",
-                        "https://s3-eu-west-1.amazonaws.com/worktel.files/a162187c-07b2-4c51-b77f-f12d00230474.jpg",
-                        "https://s3-eu-west-1.amazonaws.com/worktel.files/1fd01252-22c5-4e25-8133-2998c524cf8e.JPG"
-                    ]
-                }
-            ],
-            "responseCode": "SUCC_PUBLICATIONSOK"
-         };
-        this.setState({ 'publPendApp': dummyObj.Publications
-          })
-        return;
-        fetch('https://localhost:44372/api/publisher'
-        ).then(response => response.json()).then(data => {
-            if (data.responseCode == "SUCC_PUBLISHERSOK") {
-                const sanitizedValues = data.voUsers.filter(voUsr =>{
-                    return voUsr.PublisherValidated == false
-                })
-                this.setState({ 'publPendApp': sanitizedValues })
+
+        fetch('https://localhost:44372/api/publicationPendingApproval', {
+            method: 'POST',
+            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({
+                "AccessToken": this.props.tokenObj.accesToken,
+                "AdminMail": this.props.adminData.Mail                   
+            })
+        }).then(response => response.json()).then(data => {
+            if (data.responseCode == "SUCC_PUBLICATIONSOK") {
+                console.log(data.Publications);
+                this.setState({ 'publPendApp': data.Publications })
             } else {
                 toast.error('Hubo un error', {
                     position: "top-right",

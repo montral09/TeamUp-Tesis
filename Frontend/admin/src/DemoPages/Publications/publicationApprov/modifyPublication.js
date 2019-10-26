@@ -174,19 +174,21 @@ class ModifyPublicationModal extends React.Component {
                         <FormGroup row>
                             <Label for="Description" sm={2}>Description</Label>
                             <Col sm={10}>
-                                <Input type="text" name="Description" id="Description"
+                                <Input type="textarea" name="Description" id="Description"
                                         value={this.state.publDataChanged.Description || ""} onChange={this.onChange}/>
                             </Col>
                         </FormGroup>
                         <FormGroup row>
                             <Label for="Location" sm={2}>Location</Label>
                             <Col sm={5}>
-                                <Input type="text" name="Location" id="Location"
-                                        value={this.state.publDataChanged.Location.Latitude || ""} onChange={this.onChange}/>
+                                <Input type="text" name="Latitude" id="Latitude"
+                                    {...(this.state.publDataChanged.Location ? {value :this.state.publDataChanged.Location.Latitude} : {})}
+                                    onChange={this.onChange}/>
                             </Col>
                             <Col sm={5}>
-                                <Input type="text" name="Location" id="Location"
-                                        value={this.state.publDataChanged.Location.Longitude || ""} onChange={this.onChange}/>
+                                <Input type="text" name="Longitude" id="Longitude"
+                                {...(this.state.publDataChanged.Location ? {value :this.state.publDataChanged.Location.Longitude} : {})}
+                                 onChange={this.onChange}/>
                             </Col>
                         </FormGroup>
                         <FormGroup row>
@@ -208,39 +210,43 @@ class ModifyPublicationModal extends React.Component {
                             <Label for="Price" sm={2}>Hora</Label>
                             <Col sm={3}>
                                 <Input type="text" name="HourPrice" id="HourPrice"
-                                        value={this.state.publDataChanged.HourPrice || ""} onChange={this.onChange}/>
+                                        value={this.state.publDataChanged.HourPrice || 0} onChange={this.onChange}/>
                             </Col>
                             <Label for="Price" sm={2}>Día</Label>
                             <Col sm={3}>
                                 <Input type="text" name="DailyPrice" id="DailyPrice"
-                                        value={this.state.publDataChanged.DailyPrice || ""} onChange={this.onChange}/>
+                                        value={this.state.publDataChanged.DailyPrice || 0} onChange={this.onChange}/>
                             </Col>
                             <Label for="Price" sm={2}></Label>
                             <Label for="Price" sm={2}>Semana</Label>
                             <Col sm={3}>
                                 <Input type="text" name="WeeklyPrice" id="WeeklyPrice"
-                                        value={this.state.publDataChanged.WeeklyPrice || ""} onChange={this.onChange}/>
+                                        value={this.state.publDataChanged.WeeklyPrice || 0} onChange={this.onChange}/>
                             </Col>
                             <Label for="Price" sm={2}>Mes</Label>
                             <Col sm={3}>
-                                <Input type="text" name="WeeklyPrice" id="WeeklyPrice"
-                                        value={this.state.publDataChanged.WeeklyPrice || ""} onChange={this.onChange}/>
+                                <Input type="text" name="MonthlyPrice" id="MonthlyPrice"
+                                        value={this.state.publDataChanged.MonthlyPrice || 0} onChange={this.onChange}/>
                             </Col>
                         </FormGroup>
                         <FormGroup row>
                             <Label for="Availability" sm={2}>Availability</Label>
                             <Col sm={10}>
-                                <Input type="text" name="Availability" id="Availability"
+                                <Input type="textarea" name="Availability" id="Availability"
                                         value={this.state.publDataChanged.Availability || ""} onChange={this.onChange}/>
                             </Col>
                         </FormGroup>
-                        <FormGroup row>
-                            <Label for="Availability" sm={2}>Availability</Label>
-                            <Col sm={10}>
-                                <Input type="text" name="Availability" id="Availability"
-                                        value={this.state.publDataChanged.Availability || ""} onChange={this.onChange}/>
-                            </Col>
-                        </FormGroup>
+                        {this.state.publDataChanged.ImagesURL && this.state.publDataChanged.ImagesURL.map(function(obj,index) {
+                            return(
+                            <FormGroup row>
+                                <Label key={index+"_imageurl"} for="imageurl" sm={2}>Image URL {index}</Label>
+                                <Col sm={10}>
+                                    <a href={obj} target="_blank">ImageURL{index}</a>
+                                </Col>
+                            </FormGroup>
+                            )
+                        })}
+
                     </Form>
                     </ModalBody>
                     <ModalFooter>
