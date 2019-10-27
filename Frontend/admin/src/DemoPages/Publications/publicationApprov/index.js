@@ -34,8 +34,10 @@ class PublPendApprov extends Component {
             spaceTypes: []
         }
         this.modalElement = React.createRef(); // esto hace unas magias para cambiar el estado de un componente hijo
-        this.approvePublication  = this.approvePublication .bind(this);
+        this.approvePublication  = this.approvePublication.bind(this);
+        this.rejectPublication = this.rejectPublication.bind(this);
     }
+
     loadSpaceTypes() {
         try {
 
@@ -73,10 +75,74 @@ class PublPendApprov extends Component {
             });
         }
     }
-    // This function will try to approve an specific publisher
-    approvePublication = (key) => {
-        alert("approvePublication");
+
+    changePubTransition ( newTransition, idPub ){
+        try{
+            console.log("changePubTransition")
+
+            fetch('https://localhost:44372/api/publication', {
+                method: 'PUT',
+                header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({
+                    AccessToken : this.props.tokenObj.accesToken,
+                    Mail: this.props.adminData.Mail,
+                    IdPublication: idPub,
+                    OldState: "NOT VALIDATED",
+                    NewState: newTransition
+                })
+            }).then(response => response.json()).then(data => {
+                console.log("data:" + JSON.stringify(data));
+                if (data.responseCode == "SUCC_PUBLICATIONUPDATED") {
+                    let text = "Solicitud ejecutada correctamente";
+                    this.updateTable();
+                    toast.success(text, {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                } else {
+                    toast.error('Hubo un error', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                }
+            }
+            ).catch(error => {
+                toast.error('Internal error', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
+                console.log(error);
+            }
+            )
+        }catch(error){
+            console.log(error)
+        }
     }
+    // This function will try to approve an specific publication
+    approvePublication (key) {
+        console.log("approvePublication");
+        this.changePubTransition('ACTIVE', key);
+    }
+
+    rejectPublication (key) {
+        console.log("rejectPublication");
+
+        this.changePubTransition('REJECTED', key);
+    }
+
+
 
     approveAllPublications = () => {
         const publPendAppNew = [];
@@ -209,7 +275,7 @@ class PublPendApprov extends Component {
                             <Card className="main-card mb-3">
                                 <CardBody>
                                     <CardTitle>Pendientes de aprobación</CardTitle>
-                                    <PublicationApprovTable publPendApp={this.state.publPendApp} approvePublication={this.approvePublication} editPublication={this.editPublication} spaceTypes={this.state.spaceTypes} />
+                                    <PublicationApprovTable publPendApp={this.state.publPendApp} rejectPublication={this.rejectPublication} approvePublication={this.approvePublication} editPublication={this.editPublication} spaceTypes={this.state.spaceTypes} />
                                 </CardBody>
                             </Card>
                         </Col>
