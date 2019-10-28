@@ -8,7 +8,9 @@ import { connect } from 'react-redux';
 import OwlCarousel from 'react-owl-carousel2';
 import InnerImageZoom from 'react-inner-image-zoom';
 import DatePicker from  './datePicker';
-import RelatedPublications from './relatedPublications'
+import RelatedPublications from './relatedPublications';
+import TabReview from './tabReview';
+import Footer from "../../footer/footer";
 
 
 
@@ -152,11 +154,11 @@ class ViewPublication extends React.Component {
                                                                     <div className="row">
                                                                         <div className="col-md-12">
                                                                             <div className="row" id="quickview_product">
-                                                                                <div className="col-md-5 popup-gallery">
+                                                                                <div className="col-md-7 popup-gallery">
                                                                                     <div className="product-image cloud-zoom">
                                                                                         {true === true &&
                                                                                             <div className="sale">Recomendado!</div>
-                                                                                        }
+                                                                                        }                                                                                        
                                                                                         {<InnerImageZoom src={this.state.activeImage.src} />}
                                                                                     </div>
                                                                                     <div className="overflow-thumbnails-carousel">
@@ -169,31 +171,36 @@ class ViewPublication extends React.Component {
                                                                                         </OwlCarousel>
                                                                                     </div>
                                                                                 </div>
-                                                                                <div className="col-md-7 product-center clearfix">
-                                                                                    <h1 className="product-name">{this.state.pubObj.pubName}</h1>
+                                                                                <div className="col-md-5 product-center clearfix">
+                                                                                    <h1 className="product-name">{this.state.pubObj.pubName}</h1>                                                                                    
+                                                                                                <a href="#add_to_wishlist" onClick={() => alert("Agregar a favoritos si esta logueado")}><span><i className="fas fa-heart"></i></span>Agregar a favoritos</a>                                                                            
+                                                                                            <div className="description">3 veces alquilado</div>
+                                                                                        
                                                                                     <div className="review">
-                                                                                        <div className="rating"><i className={this.state.pubObj.puntuacion > 0 ? 'fa fa-star active' : 'fa fa-star'}></i><i className={this.state.pubObj.puntuacion > 1 ? 'fa fa-star active' : 'fa fa-star'}></i><i className={this.state.pubObj.puntuacion > 2 ? 'fa fa-star active' : 'fa fa-star'}></i><i className={this.state.pubObj.puntuacion > 3 ? 'fa fa-star active' : 'fa fa-star'}></i><i className={this.state.pubObj.puntuacion > 4 ? 'fa fa-star active' : 'fa fa-star'}></i>&nbsp;&nbsp;&nbsp;<a href="#reviews">{this.state.pubObj.cantidadReviews} reviews </a></div>
+                                                                                        <div className="rating"><i className={this.state.pubObj.puntuacion > 0 ? 'fa fa-star active' : 'fa fa-star'}></i><i className={this.state.pubObj.puntuacion > 1 ? 'fa fa-star active' : 'fa fa-star'}></i><i className={this.state.pubObj.puntuacion > 2 ? 'fa fa-star active' : 'fa fa-star'}></i><i className={this.state.pubObj.puntuacion > 3 ? 'fa fa-star active' : 'fa fa-star'}></i><i className={this.state.pubObj.puntuacion > 4 ? 'fa fa-star active' : 'fa fa-star'}></i>&nbsp;&nbsp;&nbsp;</div>
                                                                                     </div>
-                                                                                    <div className="description">
-                                                                                        <span>Capacidad: </span><b>{this.state.pubObj.capacidad} personas</b> <br />
+                                                                                    <div className="review">
+                                                                                        <span> <b>Capacidad: </b></span>{this.state.pubObj.capacidad} personas <br />
                                                                                     </div>
-                                                                                    <div>
-                                                                                        <span>Precios<br/></span>
+                                                                                    <div className="review">
+                                                                                        <span><b>Precios</b><br/></span>
                                                                                     </div>
                                                                                     <div className="price">
                                                                                         <span className="col-md-9 center-column">Por Hora : $300 <br/>Por Semana : $3500<br/> </span>
                                                                                     </div>
-                                                                                    <div>
-                                                                                        <span>Disponibilidad<br/></span>
+                                                                                    <div className="review">
+                                                                                        <div className="title-page" > 
+                                                                                            <span><b>Disponibilidad</b></span>
+                                                                                        </div>
+                                                                                        <div >
+                                                                                            <span>{this.state.pubObj.disponibilidad}<br/></span>
+                                                                                        </div>
                                                                                     </div>
-                                                                                    <div >
-                                                                                        <span>{this.state.pubObj.disponibilidad}<br/></span>
-                                                                                    </div>
+                                                                                    <div className="review">
                                                                                     <div className = "title-page">
-                                                                                        <span>Haga su reserva ahora!<br/></span>
+                                                                                        <span><b>Haga su reserva ahora!</b></span>
                                                                                     </div>
-                                                                                    
-                                                                                    <div className="box box-with-categories">
+                                                                                    <div className="col-md-9 box box-with-categories">
                                                                                         <DatePicker placeholderText="Desde..."
                                                                                             dateFormat="dd/MM/yyyy"
                                                                                             selected={this.state.date}
@@ -213,13 +220,12 @@ class ViewPublication extends React.Component {
                                                                                                 <input type="button" value="Reservar" onClick={() => alert("Iniciar tramite reserva si esta logueado")} className="button" /> 
                                                                                             </div>																			
 																		                </div>
+                                                                                        </div>
                                                                                     <div id="product">
                                                                                         <div className="description">
                                                                                             <div className="add-to-cart d-flex">                                                                                                                                                                                            
                                                                                                 <input type="button" value="Solicitar Información" onClick={() => alert("Mandar 'mensaje' si esta logueado?")} className="button" />
-                                                                                            </div>
-                                                                                            <div className="links clearfix">
-                                                                                                <a href="#add_to_wishlist" onClick={() => alert("Agregar a favoritos si esta logueado")}><span><i className="fas fa-heart"></i></span>Agregar a favoritos</a>                                                                                            </div>
+                                                                                            </div>                                                                                                                                                                                           
                                                                                         </div>
                                                                                     </div>
                          
@@ -234,25 +240,25 @@ class ViewPublication extends React.Component {
                                                                     <a href="#tab-review">Reviews ({this.state.pubObj.cantidadReviews})</a>
                                                                 </div>
 
-                                                                <div id="tab-description" className="tab-content" style={{ display: 'block' }}>
+                                                                <div id="tab-description" className="tab-content review" style={{ display: 'block' }}>
                                                                     <div dangerouslySetInnerHTML={{ __html: this.state.pubObj.pubDesc }} />
                                                                 </div>
-                                                                <div className="services">
+                                                                <div className="title-page">
+                                                                
                                                                     <span>Servicios<br/></span>
-                                                                </div>
-                                                                <div className="description">
+                                                                
+                                                                <div className="review">
                                                                     <span>{this.state.pubObj.infraestructura.map((inf, index) => {
                                                                         return (
                                                                             <div className="owl-item" key={index}><p>{inf}</p></div>
                                                                         );
                                                                         })}<br/></span>
                                                                 </div>
-                                                                <RelatedPublications />
-                                                                <div id="tab-review" className="tab-content">
-                                                                    {/*<TabReview product_id={item.id} />*/}
                                                                 </div>
-
-                                                                    {/*<RelatedProducts product_id={item.id} />*/}
+                                                                <RelatedPublications product_id={this.state.pubObj.pubID} />
+                                                                <div id="tab-review" className="tab-content">
+                                                                    {<TabReview />}
+                                                                </div>                                                                    
                                                             </div>
                                                         </div>
                                                     </div>
@@ -265,6 +271,7 @@ class ViewPublication extends React.Component {
                         </div>
                     </div>
                 </div>
+                <Footer />
 
             </>
         );
