@@ -1,7 +1,7 @@
 import React from "react";
 import DatePicker from "react-datepicker";
 
-class Example extends React.Component {
+class Calendar extends React.Component {
     state = {
       startDate: new Date()
     };
@@ -21,5 +21,6 @@ class Example extends React.Component {
       );
     }
   }
+
 
   export default DatePicker;

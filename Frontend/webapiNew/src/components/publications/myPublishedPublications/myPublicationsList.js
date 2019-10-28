@@ -73,7 +73,7 @@ class MyPublicationsList extends React.Component {
                     header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                     body: JSON.stringify({
                         "AccessToken": this.props.tokenObj.accesToken,
-                        "AdminMail": this.props.userData.Mail                   
+                        "Mail": this.props.userData.Mail                   
                     })
                 }).then(response => response.json()).then(data => {
                     if (data.responseCode == "SUCC_PUBLICATIONSOK") {

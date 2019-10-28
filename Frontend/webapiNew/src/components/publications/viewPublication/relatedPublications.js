@@ -65,9 +65,41 @@ class RelatedPublications extends React.Component {
     }
 
  	render() {
- 		let products = [];
- 			products = this.loadDummiesRelatedPublications;
- 		const { translate } = this.props;
+ 		let products = [ 
+                
+			{
+				id: 123,
+				pubName: "Oficina en pocitos",
+				pubDesc: "Oficina en pocitos la mejor",
+				ubicacion: "Pocitos",
+				capacidad: "10",
+				disponibilidad: "De lunes a Viernes de 09 a 18hrs",
+				infraestructura: ["Wifi", "Proyector", "Cafetera", "Patio", "Aire Acondicionado"],
+				fotos: ['https://picsum.photos/id/741/800/600', 'https://picsum.photos/1024/768'],
+				youtubeUrl: 'https://www.youtube.com/watch?v=VPB-scqoNDE',
+				precios: [
+					{ code: 1, value: 100 }, { code: 2, value: 150 }, { code: 3, value: 300 }
+				],
+				puntuacion: 3,
+				cantidadReviews: 25 
+			},
+			{
+				id: 456,
+				pubName: "Oficina en pocitos",
+				pubDesc: "Oficina en pocitos la mejor",
+				ubicacion: "Pocitos",
+				capacidad: "10",
+				disponibilidad: "De lunes a Viernes de 09 a 18hrs",
+				infraestructura: ["Wifi", "Proyector", "Cafetera", "Patio", "Aire Acondicionado"],
+				fotos: ['https://picsum.photos/id/741/800/600', 'https://picsum.photos/1024/768'],
+				youtubeUrl: 'https://www.youtube.com/watch?v=VPB-scqoNDE',
+				precios: [
+					{ code: 1, value: 100 }, { code: 2, value: 150 }, { code: 3, value: 300 }
+				],
+				puntuacion: 3,
+				cantidadReviews: 25  
+			}
+		] ;
 		const options = {
 	    	slideSpeed: 500,
 	    	margin: 30,
@@ -101,10 +133,10 @@ class RelatedPublications extends React.Component {
 										return (
 					        				<div className="item" key={product.id}>
 					        					<div className="product-grid">
-													{/*<RelatedPublicationPreview
+													{<RelatedPublicationPreview
 														key={product.id}
 														{...product}
-													/>*/}
+													/>}
 												</div>
 											</div>
 										);
