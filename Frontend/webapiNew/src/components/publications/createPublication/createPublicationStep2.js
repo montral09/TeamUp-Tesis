@@ -3,9 +3,9 @@ import { toast } from 'react-toastify';
 import {Form, FormGroup, Label, Input, FormFeedback,
     Row,Col,Button } from 'reactstrap';
 import Geocode from "react-geocode";
-import credentials from './map/credentials';
+import credentials from '../map/credentials';
 import Upload from './upload/upload';
-import Map from './map/Map';
+import Map from '../map/Map';
 
 class CreatePublicationStep2 extends React.Component {
     constructor(props) {
