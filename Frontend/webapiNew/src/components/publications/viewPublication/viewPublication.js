@@ -6,11 +6,13 @@ import 'react-toastify/dist/ReactToastify.css';
 import { connect } from 'react-redux';
 
 import OwlCarousel from 'react-owl-carousel2';
+import 'react-owl-carousel2/src/owl.carousel.css';
 import InnerImageZoom from 'react-inner-image-zoom';
 import DatePicker from  './datePicker';
 import RelatedPublications from './relatedPublications';
 import TabReview from './tabReview';
 import Footer from "../../footer/footer";
+import Map from '../map/Map';
 
 
 
@@ -23,17 +25,16 @@ class ViewPublication extends React.Component {
         this.state = {
             pubID: pubID,
             pubObj: pubObj,
-            activeImage: { index: 0, src: pubObj.fotos[0]},
+            activeImage: { index: 0, src: pubObj.Images[0]},
             date: null,
-            quantity: 1 
+            quantity: 1,
+            tabDisplayed: 1,
+            relatedPublications: this.loadDummyRelatedPublications(pubID)
         }
-
     }
-
 
     componentDidMount() {
         window.scrollTo(0, 0);
-
     }
 
     onChange = (e) => {
@@ -43,7 +44,7 @@ class ViewPublication extends React.Component {
     }
 
     handleSelect = (e) => {
-        console.log("fabi");
+        console.log("handleSelect");
         console.log(e);
         this.setState({
             date: e
@@ -51,7 +52,7 @@ class ViewPublication extends React.Component {
     }
 
     handleChange = (e) => {
-        console.log("fabi");
+        console.log("handleChange");
         console.log(e);
         this.setState({
             date: e
@@ -60,7 +61,8 @@ class ViewPublication extends React.Component {
 
     increaseQuantity() {
 		this.setState({ quantity: parseInt(this.state.quantity)+1});
-	}
+    }
+    
 	decreaseQuantity() {
 		if(parseInt(this.state.quantity) > 1) {
 			this.setState({ quantity: parseInt(this.state.quantity)-1});
@@ -78,22 +80,81 @@ class ViewPublication extends React.Component {
 
             // call API
             return {
-                pubID: 123,
-                pubName: "Oficina en pocitos",
-                pubDesc: "Oficina en pocitos la mejor",
-                ubicacion: "Pocitos",
-                capacidad: "10",
-                disponibilidad: "De lunes a Viernes de 09 a 18hrs",
-                infraestructura: ["Wifi", "Proyector", "Cafetera", "Patio", "Aire Acondicionado"],
-                fotos: ['https://picsum.photos/id/741/800/600', 'https://picsum.photos/1024/768'],
-                youtubeUrl: 'https://www.youtube.com/watch?v=VPB-scqoNDE',
-                precios: [
-                    { code: 1, value: 100 }, { code: 2, value: 150 }, { code: 3, value: 300 }
-                ],
-                puntuacion: 3,
-                cantidadReviews: 25                
+                "VOPublication": {
+                    "PubID" : 123, // FABI TIENE QUE AGREGAR ESTO
+                    "Mail": "",
+                    "SpaceType": 2,
+                    "Title": "Oficina en pocitos",
+                    "Description": "Oficina en pocitos la mejor",
+                    "Location": {
+                        "Latitude": -34.8360054,
+                        "Longitude": -55.9870476, 
+                    },
+                    "Capacity": 10,
+                    "VideoURL": 'https://www.youtube.com/watch?v=VPB-scqoNDE',
+                    "HourPrice": 150,
+                    "DailyPrice": 800,
+                    "WeeklyPrice": 0,
+                    "MonthlyPrice": 0,
+                    "Availability": "De lunes a Viernes de 09 a 18hrs",
+                    "Facilities": [1,4,5],
+                    "Ranking" : 3, // FABI TIENE QUE AGREGAR ESTO
+                    "QuantityReviews" : 4,// FABI TIENE QUE AGREGAR ESTO
+                    "QuantityRented" : 3 // FABI TIENE QUE AGREGAR ESTO
+                },
+                "Favorite" : true,
+                "Images": ['https://picsum.photos/id/741/800/600', 'https://picsum.photos/1024/768'],
+                "Reviews" : [ // FABI TIENE QUE AGREGAR ESTO
+                    {
+                        id: 1,
+                        product: 1,
+                        rating: 4,
+                        author: 'Artur',
+                        date: '12/12/2019',
+                        review: 'Excelente todo, lo volvere a usar'
+                    },
+                    {
+                        id: 2,
+                        product: 2,
+                        rating: 5,
+                        author: 'Jose',
+                        date: '12/12/2019',
+                        review: 'Esta es una review super larga para probar que no se rompa si tengo muchos caracteres porque no queremos que eso pase nocierto? Seguimos escribiendo? si, seguimos escribiendo, al final no va a ser tan largo porque ya no se que mas poner',
+                    },
+                    {
+                        id: 3,
+                        product: 3,
+                        rating: 5,
+                        author: 'Artur',
+                        date: '12/12/2019',
+                        review: 'Esta es una review super larga para probar que no se rompa si tengo muchos caracteres porque no queremos que eso pase nocierto? Seguimos escribiendo? si, seguimos escribiendo, al final no va a ser tan largo porque ya no se que mas poner',
+                    },
+                    {
+                        id: 4,
+                        product: 4,
+                        rating: 4,
+                        author: 'Santiago',
+                        date: '12/12/2019',
+                        review: 'Bien',
+                    },
+                    {
+                        id: 5,
+                        product: 5,
+                        rating: 5,
+                        author: 'Maria Julia',
+                        date: '12/12/2019',
+                        review: ''
+                    },
+                    {
+                        id: 6,
+                        product: 6,
+                        rating: 1,
+                        author: 'Artur',
+                        date: '12/12/2019',
+                        review: 'Nunca mas'
+                    },
+                ] // FABI agregar esto
             }
-
         } catch (error) {
             toast.error('Internal error', {
                 position: "top-right",
@@ -106,10 +167,55 @@ class ViewPublication extends React.Component {
         }
         return null;
     }
+
+    loadDummyRelatedPublications(pubID) {
+        // load api
+        let related = [ 
+                
+			{
+				id: 123,
+				pubName: "Oficina en pocitos",
+				pubDesc: "Oficina en pocitos la mejor",
+				ubicacion: "Pocitos",
+				capacidad: "10",
+				disponibilidad: "De lunes a Viernes de 09 a 18hrs",
+				infraestructura: ["Wifi", "Proyector", "Cafetera", "Patio", "Aire Acondicionado"],
+				fotos: ['https://picsum.photos/id/741/800/600', 'https://picsum.photos/1024/768'],
+				youtubeUrl: 'https://www.youtube.com/watch?v=VPB-scqoNDE',
+				precios: [
+					{ code: 1, value: 100 }, { code: 2, value: 150 }, { code: 3, value: 300 }
+				],
+				puntuacion: 3,
+				cantidadReviews: 25 
+			},
+			{
+				id: 456,
+				pubName: "Oficina en pocitos",
+				pubDesc: "Oficina en pocitos la mejor",
+				ubicacion: "Pocitos",
+				capacidad: "10",
+				disponibilidad: "De lunes a Viernes de 09 a 18hrs",
+				infraestructura: ["Wifi", "Proyector", "Cafetera", "Patio", "Aire Acondicionado"],
+				fotos: ['https://picsum.photos/id/741/800/600', 'https://picsum.photos/1024/768'],
+				youtubeUrl: 'https://www.youtube.com/watch?v=VPB-scqoNDE',
+				precios: [
+					{ code: 1, value: 100 }, { code: 2, value: 150 }, { code: 3, value: 300 }
+				],
+				puntuacion: 3,
+				cantidadReviews: 25  
+			}
+        ] ;
+        return related;
+    }
 	changeImage(image, index) {
 		this.setState({ activeImage: { index: index, src: image } })
-	}
+    }
+
+    goToTab(tab){
+        this.setState({ tabDisplayed: tab })
+    }
     render() {
+
         const options = {
 	    	slideSpeed: 500,
 	    	margin: 10,
@@ -131,8 +237,8 @@ class ViewPublication extends React.Component {
             <>
                 {/*SEO Support*/}
                 <Helmet>
-                    <title>TeamUp | {this.state.pubObj.pubName}</title>
-                    <meta name="description" content={this.state.pubObj.pubName} />
+                    <title>TeamUp | {this.state.pubObj.VOPublication.Title}</title>
+                    <meta name="description" content={this.state.pubObj.VOPublication.Title} />
                 </Helmet>
                 {/*SEO Support End */}
                 <Header />
@@ -163,37 +269,47 @@ class ViewPublication extends React.Component {
                                                                                     </div>
                                                                                     <div className="overflow-thumbnails-carousel">
                                                                                         <OwlCarousel options={options} className="thumbnails-carousel owl-carousel">
-                                                                                            {this.state.pubObj.fotos.map((image, index) => {
+                                                                                            {this.state.pubObj.Images.map((image, index) => {
                                                                                                 return (
-                                                                                                    <div className="owl-item" key={index}><p><a href="#product_image" className={this.state.activeImage.index === index ? 'popup-image active' : 'popup-image'} onClick={() => this.changeImage(image, index)}><img src={image} title={this.state.pubObj.pubName} alt={this.state.pubObj.pubName} /></a></p></div>
+                                                                                                    <div className="owl-item" key={index}><p><a href="#product_image" className={this.state.activeImage.index === index ? 'popup-image active' : 'popup-image'} onClick={() => this.changeImage(image, index)}><img src={image} title={this.state.pubObj.VOPublication.Title} alt={this.state.pubObj.VOPublication.Title} /></a></p></div>
                                                                                                 );
                                                                                             })}
                                                                                         </OwlCarousel>
                                                                                     </div>
                                                                                 </div>
                                                                                 <div className="col-md-5 product-center clearfix">
-                                                                                    <h1 className="product-name">{this.state.pubObj.pubName}</h1>                                                                                    
-                                                                                                <a href="#add_to_wishlist" onClick={() => alert("Agregar a favoritos si esta logueado")}><span><i className="fas fa-heart"></i></span>Agregar a favoritos</a>                                                                            
-                                                                                            <div className="description">3 veces alquilado</div>
+                                                                                    <h1 className="product-name">{this.state.pubObj.VOPublication.Title}</h1>      
+                                                                                    {this.state.pubObj.VOPublication.Favorite === true ? (
+                                                                                        <a href="#add_to_wishlist" onClick={() => alert("Agregar a favoritos si esta logueado")}><span><i className="fas fa-heart"></i></span>Agregar a favoritos</a>
+                                                                                    ) : (
+                                                                                        <a href="#remove_from_wishlist" onClick={() => alert("Quitar a favoritos si esta logueado")}><span><i className="fas fa-heart"></i></span>Quitar de favoritos</a>
+                                                                                    )}                                                                              
+                                                                                    <div className="description">{this.state.pubObj.VOPublication.QuantityRented} veces alquilado</div>
                                                                                         
                                                                                     <div className="review">
-                                                                                        <div className="rating"><i className={this.state.pubObj.puntuacion > 0 ? 'fa fa-star active' : 'fa fa-star'}></i><i className={this.state.pubObj.puntuacion > 1 ? 'fa fa-star active' : 'fa fa-star'}></i><i className={this.state.pubObj.puntuacion > 2 ? 'fa fa-star active' : 'fa fa-star'}></i><i className={this.state.pubObj.puntuacion > 3 ? 'fa fa-star active' : 'fa fa-star'}></i><i className={this.state.pubObj.puntuacion > 4 ? 'fa fa-star active' : 'fa fa-star'}></i>&nbsp;&nbsp;&nbsp;</div>
+                                                                                        <div className="rating"><i className={this.state.pubObj.VOPublication.Ranking > 0 ? 'fa fa-star active' : 'fa fa-star'}></i><i className={this.state.pubObj.VOPublication.Ranking > 1 ? 'fa fa-star active' : 'fa fa-star'}></i><i className={this.state.pubObj.VOPublication.Ranking > 2 ? 'fa fa-star active' : 'fa fa-star'}></i><i className={this.state.pubObj.VOPublication.Ranking > 3 ? 'fa fa-star active' : 'fa fa-star'}></i><i className={this.state.pubObj.VOPublication.Ranking > 4 ? 'fa fa-star active' : 'fa fa-star'}></i>&nbsp;&nbsp;&nbsp;</div>
                                                                                     </div>
                                                                                     <div className="review">
-                                                                                        <span> <b>Capacidad: </b></span>{this.state.pubObj.capacidad} personas <br />
+                                                                                        <span> <b>Capacidad: </b></span>{this.state.pubObj.VOPublication.Capacity} personas <br />
                                                                                     </div>
                                                                                     <div className="review">
                                                                                         <span><b>Precios</b><br/></span>
                                                                                     </div>
                                                                                     <div className="price">
-                                                                                        <span className="col-md-9 center-column">Por Hora : $300 <br/>Por Semana : $3500<br/> </span>
+                                                                                        <span className="col-md-9 center-column">
+                                                                                        {this.state.pubObj.VOPublication.HourPrice > 0 && "Por Hora : $"+ this.state.pubObj.VOPublication.HourPrice + " - " }
+                                                                                        {this.state.pubObj.VOPublication.DailyPrice > 0 && "Por Día : $"+ this.state.pubObj.VOPublication.DailyPrice + " - "}
+                                                                                        {this.state.pubObj.VOPublication.WeeklyPrice > 0 && "Por Semana : $"+ this.state.pubObj.VOPublication.WeeklyPrice + " - "}
+                                                                                        {this.state.pubObj.VOPublication.MonthlyPrice > 0 && "Por Mes : $"+ this.state.pubObj.VOPublication.MonthlyPrice}
+
+                                                                                        </span>
                                                                                     </div>
                                                                                     <div className="review">
                                                                                         <div className="title-page" > 
                                                                                             <span><b>Disponibilidad</b></span>
                                                                                         </div>
                                                                                         <div >
-                                                                                            <span>{this.state.pubObj.disponibilidad}<br/></span>
+                                                                                            <span>{this.state.pubObj.VOPublication.Availability}<br/></span>
                                                                                         </div>
                                                                                     </div>
                                                                                     <div className="review">
@@ -201,7 +317,7 @@ class ViewPublication extends React.Component {
                                                                                         <span><b>Haga su reserva ahora!</b></span>
                                                                                     </div>
                                                                                     <div className="col-md-9 box box-with-categories">
-                                                                                        <DatePicker placeholderText="Desde..."
+                                                                                        <DatePicker placeholderText="Fecha"
                                                                                             dateFormat="dd/MM/yyyy"
                                                                                             selected={this.state.date}
                                                                                             onSelect={this.handleSelect} //when day is clicked
@@ -236,29 +352,38 @@ class ViewPublication extends React.Component {
                                                                 </div>
 
                                                                 <div id="tabs" className="htabs">
-                                                                    <a href="#tab-description" className="selected">Descripción</a>
-                                                                    <a href="#tab-review">Reviews ({this.state.pubObj.cantidadReviews})</a>
+                                                                    <a href="#tab-description" onClick={() => this.goToTab(1)} {...(this.state.tabDisplayed == 1 ? {className :"selected"} : {})} >Descripción</a>
+                                                                    <a href="#tab-review" onClick={() => this.goToTab(2)} {...(this.state.tabDisplayed == 2 ? {className :"selected"} : {})} >Reviews ({this.state.pubObj.VOPublication.QuantityReviews})</a>
                                                                 </div>
+                                                                { this.state.tabDisplayed === 1 ? (
+                                                                    <>
+                                                                    <div id="tab-description" className="tab-content" style={{ display: 'block' }}>
+                                                                        <div dangerouslySetInnerHTML={{ __html: this.state.pubObj.VOPublication.Description }} /><br/>
+                                                                        <p>Servicios<br/></p>
+                                                                    
+                                                                        <div className="review">
+                                                                            <span>{this.state.pubObj.VOPublication.Facilities.map((inf, index) => {
+                                                                                return (
+                                                                                    <div className="owl-item" key={index}><p>{inf}</p></div>
+                                                                                );
+                                                                                })}<br/></span>
+                                                                        </div>
+                                                                    </div>
+                                                                    </>
+                                                                ) : (null)}
+                                                                { this.state.tabDisplayed === 2 ? (
+                                                                    <div id="tab-review" className="tab-content">
+                                                                        <TabReview reviews = {this.state.pubObj.Reviews}/>
+                                                                    </div>
+                                                                ) : (null)}
+                                                                <span><b>Ubicación</b><br/></span>
+                                                                {
+                                                                    this.state.pubObj.VOPublication &&
+                                                                    <Map objGoogleMaps = {{zoom : 17, latitude: this.state.pubObj.VOPublication.Location.Latitude, longitude: this.state.pubObj.VOPublication.Location.Longitude}}/>
+                                                                }
 
-                                                                <div id="tab-description" className="tab-content review" style={{ display: 'block' }}>
-                                                                    <div dangerouslySetInnerHTML={{ __html: this.state.pubObj.pubDesc }} />
-                                                                </div>
-                                                                <div className="title-page">
-                                                                
-                                                                    <span>Servicios<br/></span>
-                                                                
-                                                                <div className="review">
-                                                                    <span>{this.state.pubObj.infraestructura.map((inf, index) => {
-                                                                        return (
-                                                                            <div className="owl-item" key={index}><p>{inf}</p></div>
-                                                                        );
-                                                                        })}<br/></span>
-                                                                </div>
-                                                                </div>
-                                                                <RelatedPublications product_id={this.state.pubObj.pubID} />
-                                                                <div id="tab-review" className="tab-content">
-                                                                    {<TabReview />}
-                                                                </div>                                                                    
+                                                               <RelatedPublications relatedPublications={this.state.relatedPublications} />
+
                                                             </div>
                                                         </div>
                                                     </div>

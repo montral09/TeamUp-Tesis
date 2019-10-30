@@ -66,31 +66,19 @@ class MyPublicationsList extends React.Component {
         }
     }
     loadMyPublications(){
-        try{
-            try {
-                fetch('https://localhost:44372/api/publisherSpaces', {
-                    method: 'POST',
-                    header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({
-                        "AccessToken": this.props.tokenObj.accesToken,
-                        "Mail": this.props.userData.Mail                   
-                    })
-                }).then(response => response.json()).then(data => {
-                    if (data.responseCode == "SUCC_PUBLICATIONSOK") {
-                        this.setState({ publications: data.Publications, loadingPubs: false })
-                    } else {
-                        toast.error('Hubo un error', {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                        });
-                    }
-                }
-                ).catch(error => {
-                    toast.error('Internal error', {
+        try {
+            fetch('https://localhost:44372/api/publisherSpaces', {
+                method: 'POST',
+                header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({
+                    "AccessToken": this.props.tokenObj.accesToken,
+                    "Mail": this.props.userData.Mail                   
+                })
+            }).then(response => response.json()).then(data => {
+                if (data.responseCode == "SUCC_PUBLICATIONSOK") {
+                    this.setState({ publications: data.Publications, loadingPubs: false })
+                } else {
+                    toast.error('Hubo un error', {
                         position: "top-right",
                         autoClose: 5000,
                         hideProgressBar: false,
@@ -98,10 +86,9 @@ class MyPublicationsList extends React.Component {
                         pauseOnHover: true,
                         draggable: true,
                     });
-                    console.log(error);
                 }
-                )
-            } catch (error) {
+            }
+            ).catch(error => {
                 toast.error('Internal error', {
                     position: "top-right",
                     autoClose: 5000,
@@ -110,48 +97,9 @@ class MyPublicationsList extends React.Component {
                     pauseOnHover: true,
                     draggable: true,
                 });
+                console.log(error);
             }
-            return;
-            let dummyData = {
-                "Publications": [
-                    {
-                        "IdPublication": 1,
-                        "IdUser": 0,
-                        "Mail": null,
-                        "SpaceType": 4,
-                        "CreationDate": "2019-10-20T11:23:00",
-                        "Title": "Salon de eventos espectacular",
-                        "Description": "Con vista al mar, incluye mozos, vajilla y luces",
-                        "Location": {
-                            "Latitude": -34.909397000,
-                            "Longitude": -56.138561000
-                        },
-                        "Capacity": 200,
-                        "VideoURL": "https://www.youtube.com/watch?v=CJ2FWYCJWGo",
-                        "HourPrice": 200,
-                        "DailyPrice": 2000,
-                        "WeeklyPrice": 10000,
-                        "MonthlyPrice": 50000,
-                        "Availability": "El salon se puede alquilar todos los dias de la semana, desde las 08:00 hasta las 05:00",
-                        "Facilities": [
-                            1,
-                            3,
-                            6,
-                            7
-                        ],
-                        "State": "NOT VALIDATED",
-                        "Images": null,
-                        "ImagesURL": [
-                            "https://s3-eu-west-1.amazonaws.com/worktel.files/aaee923a-3c7a-4c1a-9db9-5bbc15c903b4.jpeg",
-                            "https://s3-eu-west-1.amazonaws.com/worktel.files/a162187c-07b2-4c51-b77f-f12d00230474.jpg",
-                            "https://s3-eu-west-1.amazonaws.com/worktel.files/1fd01252-22c5-4e25-8133-2998c524cf8e.JPG"
-                        ]
-                    }
-                ],
-                "responseCode": "SUCC_PUBLICATIONSOK"
-             }
-             this.setState({ publications: dummyData.Publications, loadingPubs:false });
-
+        )
         }catch(error){
             toast.error('Internal error', {
                 position: "top-right",
@@ -161,6 +109,7 @@ class MyPublicationsList extends React.Component {
                 pauseOnHover: true,
                 draggable: true,
             });
+            console.log(error);
         }
     }
 

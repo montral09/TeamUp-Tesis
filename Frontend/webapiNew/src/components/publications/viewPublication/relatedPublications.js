@@ -23,83 +23,10 @@ class RelatedPublications extends React.Component {
 	    });
     }
     
-    loadDummiesRelatedPublications() {
-            return {
-                "Related" :
-                [ 
-                
-                    {
-                        id: 123,
-                        pubName: "Oficina en pocitos",
-                        pubDesc: "Oficina en pocitos la mejor",
-                        ubicacion: "Pocitos",
-                        capacidad: "10",
-                        disponibilidad: "De lunes a Viernes de 09 a 18hrs",
-                        infraestructura: ["Wifi", "Proyector", "Cafetera", "Patio", "Aire Acondicionado"],
-                        fotos: ['https://picsum.photos/id/741/800/600', 'https://picsum.photos/1024/768'],
-                        youtubeUrl: 'https://www.youtube.com/watch?v=VPB-scqoNDE',
-                        precios: [
-                            { code: 1, value: 100 }, { code: 2, value: 150 }, { code: 3, value: 300 }
-                        ],
-                        puntuacion: 3,
-                        cantidadReviews: 25 
-                    },
-                    {
-                        id: 456,
-                        pubName: "Oficina en pocitos",
-                        pubDesc: "Oficina en pocitos la mejor",
-                        ubicacion: "Pocitos",
-                        capacidad: "10",
-                        disponibilidad: "De lunes a Viernes de 09 a 18hrs",
-                        infraestructura: ["Wifi", "Proyector", "Cafetera", "Patio", "Aire Acondicionado"],
-                        fotos: ['https://picsum.photos/id/741/800/600', 'https://picsum.photos/1024/768'],
-                        youtubeUrl: 'https://www.youtube.com/watch?v=VPB-scqoNDE',
-                        precios: [
-                            { code: 1, value: 100 }, { code: 2, value: 150 }, { code: 3, value: 300 }
-                        ],
-                        puntuacion: 3,
-                        cantidadReviews: 25  
-                    }
-                ]                   
-            } 
-    }
-
  	render() {
- 		let products = [ 
-                
-			{
-				id: 123,
-				pubName: "Oficina en pocitos",
-				pubDesc: "Oficina en pocitos la mejor",
-				ubicacion: "Pocitos",
-				capacidad: "10",
-				disponibilidad: "De lunes a Viernes de 09 a 18hrs",
-				infraestructura: ["Wifi", "Proyector", "Cafetera", "Patio", "Aire Acondicionado"],
-				fotos: ['https://picsum.photos/id/741/800/600', 'https://picsum.photos/1024/768'],
-				youtubeUrl: 'https://www.youtube.com/watch?v=VPB-scqoNDE',
-				precios: [
-					{ code: 1, value: 100 }, { code: 2, value: 150 }, { code: 3, value: 300 }
-				],
-				puntuacion: 3,
-				cantidadReviews: 25 
-			},
-			{
-				id: 456,
-				pubName: "Oficina en pocitos",
-				pubDesc: "Oficina en pocitos la mejor",
-				ubicacion: "Pocitos",
-				capacidad: "10",
-				disponibilidad: "De lunes a Viernes de 09 a 18hrs",
-				infraestructura: ["Wifi", "Proyector", "Cafetera", "Patio", "Aire Acondicionado"],
-				fotos: ['https://picsum.photos/id/741/800/600', 'https://picsum.photos/1024/768'],
-				youtubeUrl: 'https://www.youtube.com/watch?v=VPB-scqoNDE',
-				precios: [
-					{ code: 1, value: 100 }, { code: 2, value: 150 }, { code: 3, value: 300 }
-				],
-				puntuacion: 3,
-				cantidadReviews: 25  
-			}
-		] ;
+
+		const {relatedPublications} = this.props;
+
 		const options = {
 	    	slideSpeed: 500,
 	    	margin: 30,
@@ -119,7 +46,7 @@ class RelatedPublications extends React.Component {
 		};
 		return (
 			<React.Fragment>
-				{products.length > 0 ?
+				{relatedPublications.length > 0 ?
 					<div className="box clearfix box-with-products with-scroll box-no-advanced">
 						<div className="box-heading">Publicaciones relacionadas</div>
 						<p className="next" onClick={() => this.refs.carousel.next()}><span></span></p>
@@ -129,13 +56,13 @@ class RelatedPublications extends React.Component {
 						<div className="box-content">
 				        	<div className="box-product">
 			        			<OwlCarousel ref="carousel" options={options}>
-									{products.map(product => {
+									{relatedPublications.map(relPub => {
 										return (
-					        				<div className="item" key={product.id}>
+					        				<div className="item" key={relPub.id}>
 					        					<div className="product-grid">
 													{<RelatedPublicationPreview
-														key={product.id}
-														{...product}
+														key={relPub.id}
+														{...relPub}
 													/>}
 												</div>
 											</div>
