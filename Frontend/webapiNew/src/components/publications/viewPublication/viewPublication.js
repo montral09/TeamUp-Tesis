@@ -12,6 +12,7 @@ import DatePicker from  './datePicker';
 import RelatedPublications from './relatedPublications';
 import TabReview from './tabReview';
 import Footer from "../../footer/footer";
+import Map from '../map/Map';
 
 
 
@@ -26,7 +27,9 @@ class ViewPublication extends React.Component {
             pubObj: pubObj,
             activeImage: { index: 0, src: pubObj.Images[0]},
             date: null,
-            quantity: 1 
+            quantity: 1,
+            tabDisplayed: 1,
+            relatedPublications: this.loadDummyRelatedPublications(pubID)
         }
     }
 
@@ -84,8 +87,8 @@ class ViewPublication extends React.Component {
                     "Title": "Oficina en pocitos",
                     "Description": "Oficina en pocitos la mejor",
                     "Location": {
-                        "Latitude": -34.618801,
-                        "Longitude": -55.817819, 
+                        "Latitude": -34.8360054,
+                        "Longitude": -55.9870476, 
                     },
                     "Capacity": 10,
                     "VideoURL": 'https://www.youtube.com/watch?v=VPB-scqoNDE',
@@ -99,8 +102,9 @@ class ViewPublication extends React.Component {
                     "QuantityReviews" : 4,// FABI TIENE QUE AGREGAR ESTO
                     "QuantityRented" : 3 // FABI TIENE QUE AGREGAR ESTO
                 },
+                "Favorite" : true,
                 "Images": ['https://picsum.photos/id/741/800/600', 'https://picsum.photos/1024/768'],
-                "Reviews" : [
+                "Reviews" : [ // FABI TIENE QUE AGREGAR ESTO
                     {
                         id: 1,
                         product: 1,
@@ -163,10 +167,55 @@ class ViewPublication extends React.Component {
         }
         return null;
     }
+
+    loadDummyRelatedPublications(pubID) {
+        // load api
+        let related = [ 
+                
+			{
+				id: 123,
+				pubName: "Oficina en pocitos",
+				pubDesc: "Oficina en pocitos la mejor",
+				ubicacion: "Pocitos",
+				capacidad: "10",
+				disponibilidad: "De lunes a Viernes de 09 a 18hrs",
+				infraestructura: ["Wifi", "Proyector", "Cafetera", "Patio", "Aire Acondicionado"],
+				fotos: ['https://picsum.photos/id/741/800/600', 'https://picsum.photos/1024/768'],
+				youtubeUrl: 'https://www.youtube.com/watch?v=VPB-scqoNDE',
+				precios: [
+					{ code: 1, value: 100 }, { code: 2, value: 150 }, { code: 3, value: 300 }
+				],
+				puntuacion: 3,
+				cantidadReviews: 25 
+			},
+			{
+				id: 456,
+				pubName: "Oficina en pocitos",
+				pubDesc: "Oficina en pocitos la mejor",
+				ubicacion: "Pocitos",
+				capacidad: "10",
+				disponibilidad: "De lunes a Viernes de 09 a 18hrs",
+				infraestructura: ["Wifi", "Proyector", "Cafetera", "Patio", "Aire Acondicionado"],
+				fotos: ['https://picsum.photos/id/741/800/600', 'https://picsum.photos/1024/768'],
+				youtubeUrl: 'https://www.youtube.com/watch?v=VPB-scqoNDE',
+				precios: [
+					{ code: 1, value: 100 }, { code: 2, value: 150 }, { code: 3, value: 300 }
+				],
+				puntuacion: 3,
+				cantidadReviews: 25  
+			}
+        ] ;
+        return related;
+    }
 	changeImage(image, index) {
 		this.setState({ activeImage: { index: index, src: image } })
-	}
+    }
+
+    goToTab(tab){
+        this.setState({ tabDisplayed: tab })
+    }
     render() {
+
         const options = {
 	    	slideSpeed: 500,
 	    	margin: 10,
@@ -229,9 +278,13 @@ class ViewPublication extends React.Component {
                                                                                     </div>
                                                                                 </div>
                                                                                 <div className="col-md-5 product-center clearfix">
-                                                                                    <h1 className="product-name">{this.state.pubObj.VOPublication.Title}</h1>                                                                                    
-                                                                                                <a href="#add_to_wishlist" onClick={() => alert("Agregar a favoritos si esta logueado")}><span><i className="fas fa-heart"></i></span>Agregar a favoritos</a>                                                                            
-                                                                                            <div className="description">{this.state.pubObj.VOPublication.QuantityRented} veces alquilado</div>
+                                                                                    <h1 className="product-name">{this.state.pubObj.VOPublication.Title}</h1>      
+                                                                                    {this.state.pubObj.VOPublication.Favorite === true ? (
+                                                                                        <a href="#add_to_wishlist" onClick={() => alert("Agregar a favoritos si esta logueado")}><span><i className="fas fa-heart"></i></span>Agregar a favoritos</a>
+                                                                                    ) : (
+                                                                                        <a href="#remove_from_wishlist" onClick={() => alert("Quitar a favoritos si esta logueado")}><span><i className="fas fa-heart"></i></span>Quitar de favoritos</a>
+                                                                                    )}                                                                              
+                                                                                    <div className="description">{this.state.pubObj.VOPublication.QuantityRented} veces alquilado</div>
                                                                                         
                                                                                     <div className="review">
                                                                                         <div className="rating"><i className={this.state.pubObj.VOPublication.Ranking > 0 ? 'fa fa-star active' : 'fa fa-star'}></i><i className={this.state.pubObj.VOPublication.Ranking > 1 ? 'fa fa-star active' : 'fa fa-star'}></i><i className={this.state.pubObj.VOPublication.Ranking > 2 ? 'fa fa-star active' : 'fa fa-star'}></i><i className={this.state.pubObj.VOPublication.Ranking > 3 ? 'fa fa-star active' : 'fa fa-star'}></i><i className={this.state.pubObj.VOPublication.Ranking > 4 ? 'fa fa-star active' : 'fa fa-star'}></i>&nbsp;&nbsp;&nbsp;</div>
@@ -299,29 +352,38 @@ class ViewPublication extends React.Component {
                                                                 </div>
 
                                                                 <div id="tabs" className="htabs">
-                                                                    <a href="#tab-description" className="selected">Descripción</a>
-                                                                    <a href="#tab-review">Reviews ({this.state.pubObj.VOPublication.QuantityReviews})</a>
+                                                                    <a href="#tab-description" onClick={() => this.goToTab(1)} {...(this.state.tabDisplayed == 1 ? {className :"selected"} : {})} >Descripción</a>
+                                                                    <a href="#tab-review" onClick={() => this.goToTab(2)} {...(this.state.tabDisplayed == 2 ? {className :"selected"} : {})} >Reviews ({this.state.pubObj.VOPublication.QuantityReviews})</a>
                                                                 </div>
+                                                                { this.state.tabDisplayed === 1 ? (
+                                                                    <>
+                                                                    <div id="tab-description" className="tab-content" style={{ display: 'block' }}>
+                                                                        <div dangerouslySetInnerHTML={{ __html: this.state.pubObj.VOPublication.Description }} /><br/>
+                                                                        <p>Servicios<br/></p>
+                                                                    
+                                                                        <div className="review">
+                                                                            <span>{this.state.pubObj.VOPublication.Facilities.map((inf, index) => {
+                                                                                return (
+                                                                                    <div className="owl-item" key={index}><p>{inf}</p></div>
+                                                                                );
+                                                                                })}<br/></span>
+                                                                        </div>
+                                                                    </div>
+                                                                    </>
+                                                                ) : (null)}
+                                                                { this.state.tabDisplayed === 2 ? (
+                                                                    <div id="tab-review" className="tab-content">
+                                                                        <TabReview reviews = {this.state.pubObj.Reviews}/>
+                                                                    </div>
+                                                                ) : (null)}
+                                                                <span><b>Ubicación</b><br/></span>
+                                                                {
+                                                                    this.state.pubObj.VOPublication &&
+                                                                    <Map objGoogleMaps = {{zoom : 17, latitude: this.state.pubObj.VOPublication.Location.Latitude, longitude: this.state.pubObj.VOPublication.Location.Longitude}}/>
+                                                                }
 
-                                                                <div id="tab-description" className="tab-content" style={{ display: 'block' }}>
-                                                                    <div dangerouslySetInnerHTML={{ __html: this.state.pubObj.VOPublication.Description }} />
-                                                                </div>
-                                                                <div className="title-page">
-                                                                
-                                                                    <span>Servicios<br/></span>
-                                                                
-                                                                <div className="review">
-                                                                    <span>{this.state.pubObj.VOPublication.Facilities.map((inf, index) => {
-                                                                        return (
-                                                                            <div className="owl-item" key={index}><p>{inf}</p></div>
-                                                                        );
-                                                                        })}<br/></span>
-                                                                </div>
-                                                                </div>
-                                                                <RelatedPublications product_id={this.state.pubObj.VOPublication.PubID} />
-                                                                <div id="tab-review" className="tab-content">
-                                                                    <TabReview reviews = {this.state.pubObj.Reviews}/>
-                                                                </div>                                                                    
+                                                               <RelatedPublications relatedPublications={this.state.relatedPublications} />
+
                                                             </div>
                                                         </div>
                                                     </div>
