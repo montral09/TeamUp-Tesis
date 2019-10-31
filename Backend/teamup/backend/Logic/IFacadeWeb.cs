@@ -35,7 +35,7 @@ namespace backend.Logic
         Task<VOResponseCreatePublication> CreatePublication(VORequestCreatePublication voCreatePublication);
         VOResponsePublicationPendingApproval GetPublicationsPendingApproval(VORequestPublicationPendindApproval voPublicationPendingApproval);
         VOResponseGetPublisherSpaces GetPublisherSpaces(VORequestGetPublisherSpaces voRequestGetPublisherSpaces);
-        VOResponseGetSpace GetSpace(int idPublication);
+        VOResponseGetSpace GetSpace(int idPublication, string mail);
         VOResponseUpdateStatePublication UpdateStatePublication(VORequestUpdateStatePublication voUpdateStatePublication);
         VOResponseGetPublicationsWithFilters GetPublicationsWithFilters(VORequestGetPublicationsWithFilters voGetPublicationsFilter);
     }
