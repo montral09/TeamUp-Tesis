@@ -34,12 +34,12 @@ namespace webapi.Controllers
         [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpGet]
         [Route("api/publication")]
-        public IHttpActionResult Get(int idPublication)
+        public IHttpActionResult Get(int idPublication, string mail)
         {
             try
             {
                 VOResponseGetSpace voResp = new VOResponseGetSpace();
-                voResp = fach.GetSpace(idPublication);
+                voResp = fach.GetSpace(idPublication, mail);
                 return Ok(voResp);
             }
             catch (GeneralException e)

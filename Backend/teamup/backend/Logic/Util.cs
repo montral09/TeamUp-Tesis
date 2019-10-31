@@ -111,5 +111,17 @@ namespace backend.Logic
             return true;
             // 1-2
         }
+
+        public int GetRanking(List<VOReview> reviews)
+        {
+            int ranking = 0;
+            int totalRankings = 0;
+            foreach (var item in reviews)
+            {
+                totalRankings += item.Rating;
+            }
+            ranking = (int)Math.Ceiling((decimal)totalRankings / reviews.Count);
+            return ranking;
+        }
     }
 }

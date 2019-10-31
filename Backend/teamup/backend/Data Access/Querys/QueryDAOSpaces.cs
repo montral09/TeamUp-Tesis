@@ -127,7 +127,19 @@ namespace backend.Data_Access.Query
             query.Append("order by p.idPublication offset ").Append((voGetPublicationsFilter.PageNumber - 1) * maxPublicationsPage).Append(" rows fetch next 10 rows only ");
             return query.ToString();
         }
-            
+
+        public String GetFavourite()
+        {
+            String query = "select idPublication from FAVOURITE_SPACES where idPublication=@idPublication and idUser = @idUser";
+            return query;
+        }
+
+
+        public String GetReviews()
+        {
+            String query = "select p.idUser, u.name, p.rating, p.review from PUBLICATION_REVIEWS p, USERS u  where idPublication = @idPublication and u.idUser = p.idUser";
+            return query;
+        }
     }
      
 }

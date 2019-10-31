@@ -524,16 +524,23 @@ namespace backend.Logic
             }
         }
 
-        public VOResponseGetSpace GetSpace(int idPublication)
+        public VOResponseGetSpace GetSpace(int idPublication, string mail)
         {
             VOResponseGetSpace response = new VOResponseGetSpace();
+            bool isFavorite = false;
             try
             {
                 VOPublication voPublication = spaces.GetSpace(idPublication);
 
                 if (voPublication != null)
                 {
-                    response.Publication = voPublication;
+                    if (mail != null)
+                    {
+                        User user = users.Find(mail);
+                        isFavorite = spaces.IsFavourite(idPublication, user.IdUser);
+                    }                    
+                    response.Publication = voPublication;                    
+                    response.Favorite = isFavorite;
                 }
                 else
                 {

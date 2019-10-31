@@ -299,6 +299,7 @@ namespace backend.Data_Access
         {
             SqlConnection con = null;
             List<VOPublication> publications = new List<VOPublication>();
+            Util util = new Util();
             try
             {
                 con = new SqlConnection(GetConnectionString());
@@ -318,7 +319,6 @@ namespace backend.Data_Access
                 {
                     List<String> images = new List<string>();
                     String facilitiesString = Convert.ToString(dr["facilities"]);
-                    Util util = new Util();
                     List<int> facilities = util.ConvertFacilities(facilitiesString);
                     int idPublication = Convert.ToInt32(dr["idPublication"]);
                     String queryImages = cns.GetImages();
@@ -338,9 +338,11 @@ namespace backend.Data_Access
                     }
                     drImages.Close();
                     VOLocationCordinates voLocation = new VOLocationCordinates(Convert.ToDecimal(dr["locationLat"]), Convert.ToDecimal(dr["locationLong"]));
+                    List<VOReview> reviews = GetReviews(idPublication, con);
+                    int ranking = util.GetRanking(reviews);
                     voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), Convert.ToInt32(dr["spaceType"]), Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]), Convert.ToString(dr["description"]),
                         voLocation, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
-                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, Convert.ToString(dr["state"]));
+                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, Convert.ToString(dr["state"]), 4, reviews, ranking);
                     publications.Add(voPublication);                   
                 }
                 dr.Close();
@@ -365,6 +367,7 @@ namespace backend.Data_Access
             SqlConnection con = null;
             try
             {
+                Util util = new Util();
                 con = new SqlConnection(GetConnectionString());
                 con.Open();
                 String query = cns.GetSpace();
@@ -381,7 +384,6 @@ namespace backend.Data_Access
                 {
                     List<String> images = new List<string>();
                     String facilitiesString = Convert.ToString(dr["facilities"]);
-                    Util util = new Util();
                     List<int> facilities = util.ConvertFacilities(facilitiesString);
                     int idPublication = Convert.ToInt32(dr["idPublication"]);
                     String queryImages = cns.GetImages();
@@ -401,9 +403,11 @@ namespace backend.Data_Access
                     }
                     drImages.Close();
                     VOLocationCordinates voLocation = new VOLocationCordinates(Convert.ToDecimal(dr["locationLat"]), Convert.ToDecimal(dr["locationLong"]));
+                    List<VOReview> reviews = GetReviews(idPublication, con);
+                    int ranking = util.GetRanking(reviews);
                     voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), Convert.ToInt32(dr["spaceType"]), Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]), Convert.ToString(dr["description"]),
                         voLocation, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
-                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, null);                    
+                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, null, 4, reviews, ranking);                    
                 }
                 dr.Close();
             }
@@ -457,6 +461,7 @@ namespace backend.Data_Access
             List<VOPublication> publications = new List<VOPublication>();
             VOPublication voPublication = null;
             SqlConnection con = null;
+            Util util = new Util();
             int MAX_PUBLICATIONS_PAGE = Convert.ToInt32(ConfigurationManager.AppSettings["MAX_PUBLICATIONS_PAGE"]);
             try
             {
@@ -501,7 +506,6 @@ namespace backend.Data_Access
                 {
                     List<String> images = new List<string>();
                     String facilitiesString = Convert.ToString(dr["facilities"]);
-                    Util util = new Util();
                     List<int> facilities = util.ConvertFacilities(facilitiesString);
                     int idPublication = Convert.ToInt32(dr["idPublication"]);
                     String queryImages = cns.GetImages();
@@ -521,9 +525,11 @@ namespace backend.Data_Access
                     }
                     drImages.Close();
                     VOLocationCordinates voLocation = new VOLocationCordinates(Convert.ToDecimal(dr["locationLat"]), Convert.ToDecimal(dr["locationLong"]));
+                    List<VOReview> reviews = GetReviews(idPublication, con);
+                    int ranking = util.GetRanking(reviews);
                     voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), Convert.ToInt32(dr["spaceType"]), Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]), Convert.ToString(dr["description"]),
                         voLocation, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
-                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, null);
+                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, null, 4, reviews, ranking);
                     publications.Add(voPublication);
                 }                
                 dr.Close();
@@ -542,6 +548,73 @@ namespace backend.Data_Access
             }
             return response;
 
+        }
+
+        public bool IsFavourite(int idPublication, long idUser)
+        {
+            SqlConnection con = null;
+            try
+            {
+                bool isFavourite = false;
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.GetFavourite();
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                List<SqlParameter> prm = new List<SqlParameter>()
+                {
+                        new SqlParameter("@idPublication", SqlDbType.Int) {Value = idPublication},
+                        new SqlParameter("@idUser", SqlDbType.Int) {Value = idUser}
+                };
+                selectCommand.Parameters.AddRange(prm.ToArray());
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                while (dr.Read())
+                {
+                    isFavourite = true;
+                }
+                dr.Close();
+                return isFavourite;
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        public List<VOReview> GetReviews (int idPublication, SqlConnection con)
+        {
+            List<VOReview> reviews = new List<VOReview>();
+            try
+            {
+                String query = cns.GetReviews();
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                SqlParameter param = new SqlParameter()
+                {
+                    ParameterName = "@idPublication",
+                    Value = idPublication,
+                    SqlDbType = SqlDbType.Int
+                };
+                selectCommand.Parameters.Add(param);
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                VOReview voReview;
+                while (dr.Read())
+                {
+                    voReview = new VOReview(Convert.ToInt32(dr["idUser"]), Convert.ToString(dr["name"]), Convert.ToInt32(dr["rating"]), Convert.ToString(dr["review"]));                   
+                    reviews.Add(voReview);
+                }
+                dr.Close();
+            }
+            catch (Exception)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }            
+            return reviews;
         }
     }
 }
