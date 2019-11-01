@@ -59,7 +59,7 @@ const loginReducer = (state = initState, action) =>{
             newStateObj = {
                 ...state,
                 login_status: 'NOT_LOGGED_IN',
-                userData: [],
+                userData: {},
                 tokenObj: {}
             }
             saveState(newStateObj);
