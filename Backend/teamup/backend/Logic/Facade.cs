@@ -538,9 +538,11 @@ namespace backend.Logic
                     {
                         User user = users.Find(mail);
                         isFavorite = spaces.IsFavourite(idPublication, user.IdUser);
-                    }                    
+                    }
+                    List<VOPublication> related = spaces.GetRelatedSpaces(idPublication, voPublication.Capacity, voPublication.SpaceType);
                     response.Publication = voPublication;                    
                     response.Favorite = isFavorite;
+                    response.RelatedPublications = related;
                 }
                 else
                 {

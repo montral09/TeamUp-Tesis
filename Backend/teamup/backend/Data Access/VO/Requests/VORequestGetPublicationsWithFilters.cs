@@ -11,15 +11,17 @@ namespace backend.Data_Access.VO
         public int Capacity { get; set; }
         public List<int> Facilities { get; set; }
         public int PageNumber { get; set; }
-
+        public string State { get; set; }
+ 
         public VORequestGetPublicationsWithFilters() { }
 
-        public VORequestGetPublicationsWithFilters(int spaceType, int capacity, List<int> facilities, int pageNumber)
+        public VORequestGetPublicationsWithFilters(int spaceType, int capacity, List<int> facilities, int pageNumber, string state)
         {
             SpaceType = spaceType;
             Capacity = capacity;
             Facilities = facilities;
             PageNumber = pageNumber;
+            State = state;
         }
     }
 }

@@ -8,7 +8,7 @@ namespace backend.Data_Access.Query
     {
         public String GetSpacesTypes()
         {
-            String query = "select idSpaceType, description from SPACE_TYPES";
+            String query = "select idSpaceType, description, individualRent from SPACE_TYPES";
             return query;
         }
 
@@ -32,16 +32,16 @@ namespace backend.Data_Access.Query
 
         public String CreatePublication()
         {
-            String query = "insert into PUBLICATIONS (idUser, spaceType, creationDate, title, description, locationLat, locationLong, capacity," +
+            String query = "insert into PUBLICATIONS (idUser, spaceType, creationDate, title, description, address, locationLat, locationLong, capacity," +
                 " videoURL, hourPrice, dailyPrice, weeklyPrice, monthlyPrice, availability, facilities, state)" +
-                " output INSERTED.idPublication VALUES(@idUser, @spaceType, getdate(), @title, @description, @locationLat, @locationLong, @capacity, " +
+                " output INSERTED.idPublication VALUES(@idUser, @spaceType, getdate(), @title, @description, @address, @locationLat, @locationLong, @capacity, " +
                 " @videoURL, @hourPrice, @dailyPrice, @weeklyPrice, @monthlyPrice, @availability, @facilities, 1)";
             return query;
         }
 
         public String GetPublicationsPendingApproval()
         {
-            String query = "select p.idPublication, p.idUser, u.name, u.lastName, u.mail, u.phone, p.spaceType, p.creationDate, p.title, p.description, p.locationLat, p.locationLong, p.capacity, " +
+            String query = "select p.idPublication, p.idUser, u.name, u.lastName, u.mail, u.phone, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, " +
                 "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities from PUBLICATIONS p, USERS u where " +
                 "p.idUser = u.idUser and p.state = 1";
             return query;
@@ -49,7 +49,7 @@ namespace backend.Data_Access.Query
 
         public String GetPublisherSpaces()
         {
-            String query = "select p.idPublication, p.spaceType, p.creationDate, p.title, p.description, p.locationLat, p.locationLong, p.capacity, " +
+            String query = "select p.idPublication, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, " +
                 "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities, e.description as state from PUBLICATIONS p, USERS u, SPACE_STATES e where " +
                 "p.idUser = u.idUser and u.mail= @mail and p.state = e.idSpaceState";
             return query;
@@ -57,7 +57,7 @@ namespace backend.Data_Access.Query
 
         public String GetSpace()
         {
-            String query = "select p.idPublication, p.spaceType, p.creationDate, p.title, p.description, p.locationLat, p.locationLong, p.capacity, " +
+            String query = "select p.idPublication, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, " +
                 "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities from PUBLICATIONS p where " +
                 " p.idPublication = @idPublication and p.state = 2";
             return query;
@@ -81,10 +81,14 @@ namespace backend.Data_Access.Query
             return query;
         }
 
-        public String GetQuantityPublicationsWithFilter(VORequestGetPublicationsWithFilters voGetPublicationsFilter)
+        public String GetQuantityPublicationsWithFilter(VORequestGetPublicationsWithFilters voGetPublicationsFilter, int state)
         {
             StringBuilder query = new StringBuilder();
-            query = query.Append("select count(p.idPublication) as quantity from PUBLICATIONS p where p.state = 2 ");
+            query = query.Append("select count(p.idPublication) as quantity from PUBLICATIONS p where p.creationDate is not null ");
+            if (state != 0)
+            {
+                query.Append("and p.state = @state ");
+            }
             if (voGetPublicationsFilter.SpaceType != 0)
             {
                 query.Append("and p.spaceType = @spaceType ");
@@ -104,11 +108,15 @@ namespace backend.Data_Access.Query
             return query.ToString();
         }
         
-        public String GetPublicationsWithFilter(VORequestGetPublicationsWithFilters voGetPublicationsFilter, int maxPublicationsPage)
+        public String GetPublicationsWithFilter(VORequestGetPublicationsWithFilters voGetPublicationsFilter, int maxPublicationsPage, int state)
         {
             StringBuilder query = new StringBuilder();
-            query = query.Append("select p.idPublication, p.spaceType, p.creationDate, p.title, p.description, p.locationLat, p.locationLong, p.capacity, p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities from PUBLICATIONS p where p.state = 2 ");
-            if(voGetPublicationsFilter.SpaceType != 0)
+            query = query.Append("select p.idPublication, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities from PUBLICATIONS p where p.creationDate is not null ");
+            if (state != 0)
+            {
+                query.Append("and p.state = @state ");
+            }
+            if (voGetPublicationsFilter.SpaceType != 0)
             {
                 query.Append("and p.spaceType = @spaceType ");
             }
@@ -134,10 +142,17 @@ namespace backend.Data_Access.Query
             return query;
         }
 
-
         public String GetReviews()
         {
             String query = "select p.idUser, u.name, p.rating, p.review from PUBLICATION_REVIEWS p, USERS u  where idPublication = @idPublication and u.idUser = p.idUser";
+            return query;
+        }
+
+        public String GetRelatedSpaces ()
+        {
+            String query = "select p.idPublication, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, " +
+                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities from PUBLICATIONS p where " +
+                " p.idPublication <> @idPublication and p.state = 2 and p.capacity >= @capacity and p.spaceType = @spaceType";
             return query;
         }
     }

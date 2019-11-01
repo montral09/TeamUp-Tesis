@@ -116,11 +116,14 @@ namespace backend.Logic
         {
             int ranking = 0;
             int totalRankings = 0;
-            foreach (var item in reviews)
+            if (reviews.Count != 0)
             {
-                totalRankings += item.Rating;
-            }
-            ranking = (int)Math.Ceiling((decimal)totalRankings / reviews.Count);
+                foreach (var item in reviews)
+                {
+                    totalRankings += item.Rating;
+                }
+                ranking = (int)Math.Ceiling((decimal)totalRankings / reviews.Count);
+            }           
             return ranking;
         }
     }
