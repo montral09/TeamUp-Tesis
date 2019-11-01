@@ -120,7 +120,12 @@ namespace backend.Logic
             {
                 totalRankings += item.Rating;
             }
-            ranking = (int)Math.Ceiling((decimal)totalRankings / reviews.Count);
+            int revCount = reviews.Count;
+            if (revCount == 0)
+            {
+                revCount = 1;
+            }
+            ranking = (int)Math.Ceiling((decimal)totalRankings / revCount);
             return ranking;
         }
     }
