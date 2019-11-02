@@ -9,6 +9,7 @@ import PageTitle from '../../../Layout/AppMain/PageTitle';
 
 import PublicationApprovTable from './publicationApprovTable';
 import ModifyPublicationModal from './modifyPublication';
+import ApproveRejectPublicationModal from './approveRejectPublication';
 
 import { connect } from 'react-redux';
 
@@ -34,6 +35,7 @@ class PublPendApprov extends Component {
             spaceTypes: []
         }
         this.modalElement = React.createRef(); // esto hace unas magias para cambiar el estado de un componente hijo
+        this.modalElementAppRej = React.createRef();
         this.approvePublication  = this.approvePublication.bind(this);
         this.rejectPublication = this.rejectPublication.bind(this);
     }
@@ -133,13 +135,14 @@ class PublPendApprov extends Component {
     // This function will try to approve an specific publication
     approvePublication (key) {
         console.log("approvePublication");
-        this.changePubTransition('ACTIVE', key);
+        //this.changePubTransition('ACTIVE', key);
+        this.modalElementAppRej.current.toggleAppRej(this.state.tokenObj, 1, this.state.adminData, key);        
     }
 
     rejectPublication (key) {
-        console.log("rejectPublication");
+        //console.log("rejectPublication");
 
-        this.changePubTransition('REJECTED', key);
+        //this.changePubTransition('REJECTED', key);
     }
 
 
@@ -271,6 +274,7 @@ class PublPendApprov extends Component {
                     transitionLeave={false}>
                     <Row>
                         <ModifyPublicationModal ref = {this.modalElement} updateTable={this.updateTable}/>
+                        <ApproveRejectPublicationModal ref = {this.modalElementAppRej} updateTable={this.updateTable}/>
                         <Col lg="12">
                             <Card className="main-card mb-3">
                                 <CardBody>

@@ -406,6 +406,7 @@ namespace backend.Data_Access
                     VOLocationCordinates voLocation = new VOLocationCordinates(Convert.ToDecimal(dr["locationLat"]), Convert.ToDecimal(dr["locationLong"]));
                     List<VOReview> reviews = GetReviews(idPublication, con);
                     int ranking = util.GetRanking(reviews);
+
                     voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), Convert.ToInt32(dr["spaceType"]), Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]), Convert.ToString(dr["description"]), Convert.ToString(dr["address"]),
                         voLocation, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
                         Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, null, 4, reviews, ranking);                    
@@ -711,6 +712,44 @@ namespace backend.Data_Access
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             return related;
+        }
+        public void UpdateFavorite(VORequestUpdateFavorite voUpdateFavorite, long idUser)
+        {
+            SqlConnection con = null;            
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                string query = "";
+                if (voUpdateFavorite.Code == 1)
+                {
+                    //Insert
+                    query = cns.AddFavorite();
+
+                } else
+                {
+                    query = cns.DeleteFavorite();
+                }
+                SqlCommand updateCommand = new SqlCommand(query, con);
+                List<SqlParameter> prm = new List<SqlParameter>()
+                {
+                        new SqlParameter("@idPublication", SqlDbType.Int) {Value = voUpdateFavorite.IdPublication},
+                        new SqlParameter("@idUser", SqlDbType.Int) {Value = idUser}
+                };
+                updateCommand.Parameters.AddRange(prm.ToArray());
+                updateCommand.ExecuteNonQuery();
+            }
+            catch (Exception)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
         }
     }
 }

@@ -20,5 +20,6 @@ namespace backend.Data_Access
         VOResponseGetPublicationsWithFilters GetPublicationsWithFilters(VORequestGetPublicationsWithFilters voGetPublicationsFilter);
         bool IsFavourite(int idPublication, long idUser);
         List<VOPublication> GetRelatedSpaces(int idPublication, int capacity, int spaceType);
+        void UpdateFavorite(VORequestUpdateFavorite voUpdateFavorite, long idUser);
     }
 }

@@ -38,5 +38,6 @@ namespace backend.Logic
         VOResponseGetSpace GetSpace(int idPublication, string mail);
         VOResponseUpdateStatePublication UpdateStatePublication(VORequestUpdateStatePublication voUpdateStatePublication);
         VOResponseGetPublicationsWithFilters GetPublicationsWithFilters(VORequestGetPublicationsWithFilters voGetPublicationsFilter);
+        VOResponseUpdateFavorite UpdateFavorite(VORequestUpdateFavorite voUpdateFavorite);
     }
 }
