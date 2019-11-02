@@ -213,7 +213,7 @@ class Register extends React.Component {
                                                         <input type="text" id="lastName" className="form-control mb-3" placeholder="Apellido (*)" maxLength="50" onChange={this.onChange}></input>
                                                         <small id="emailHelper" className="form-text text-muted mb-2">Este va a ser su usuario</small>
                                                         <input type="email" id="email" className="form-control mb-4" placeholder="Correo (*)" maxLength="50" onChange={this.onChange}></input>                                                        
-                                                        <input type="text" id="phone" className="form-control mb-4" placeholder="Numero telefónico (*)" aria-describedby="phone" maxLength="30" onChange={this.onChange}></input>
+                                                        <input type="text" id="phone" className="form-control mb-4" placeholder="Numero telefónico (*)" aria-describedby="phone" maxLength="15" onChange={this.onChange}></input>
                                                         <small id="passwordHelper" className="form-text text-muted mb-2">La contraseña debe contener al menos 6 caracteres</small>
                                                         <input type="password" name="password" id="password" className="form-control mb-4" placeholder="Contraseña (*)" maxLength="100" onChange={this.onChange}></input>
                                                         <input type="password" name="passwordConfirm" id="passwordConfirm" className="form-control mb-4" placeholder="Repetir contraseña (*)" maxLength="100" onChange={this.onChange}></input>

@@ -99,7 +99,14 @@ class Upload extends React.Component {
           this.getBase64(file);
         }
       });
-      
+      toast.success('Imagenes cargadas correctamente. ', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+    });
     }
   }
 

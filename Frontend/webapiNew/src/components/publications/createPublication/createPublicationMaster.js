@@ -235,47 +235,33 @@ class CreatePublication extends React.Component {
 
     loadInfraestructure() {
         try {
-            // call API
-            var dummyData = {
-                facilities: [
-                    {
-                        "Code": 1,
-                        "Description": "WiFi"
-                    },
-                    {
-                        "Code": 2,
-                        "Description": "Proyector"
-                    },
-                    {
-                        "Code": 3,
-                        "Description": "Televisión"
-                    },
-                    {
-                        "Code": 4,
-                        "Description": "Teléfono"
-                    },
-                    {
-                        "Code": 5,
-                        "Description": "Cafetera"
-                    },
-                    {
-                        "Code": 6,
-                        "Description": "Bicicetero"
-                    },
-                    {
-                        "Code": 7,
-                        "Description": "Pizarrón"
-                    },
-                    {
-                        "Code": 8,
-                        "Description": "Lockers"
-                    }
-                ],
-                "responseCode": "SUCC_FACILITIESOK"
+            fetch('https://localhost:44372/api/facilities').then(response => response.json()).then(data => {
+                console.log("data:" + JSON.stringify(data));
+                if (data.responseCode == "SUCC_FACILITIESOK") {
+                    this.setState({ facilities: data.facilities });
+                } else {
+                    toast.error('Internal error', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                }
             }
-                ;
-            this.setState({ facilities: dummyData.facilities });
-
+            ).catch(error => {
+                toast.error('Internal error', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
+                console.log(error);
+            }
+            )
         } catch (error) {
             toast.error('Internal error', {
                 position: "top-right",
