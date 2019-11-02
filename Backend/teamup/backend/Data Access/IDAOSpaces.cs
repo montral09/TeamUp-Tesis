@@ -19,5 +19,6 @@ namespace backend.Data_Access
         void UpdateStatePublication(int idPublication, int newCodeState);
         VOResponseGetPublicationsWithFilters GetPublicationsWithFilters(VORequestGetPublicationsWithFilters voGetPublicationsFilter);
         bool IsFavourite(int idPublication, long idUser);
+        List<VOPublication> GetRelatedSpaces(int idPublication, int capacity, int spaceType);
     }
 }

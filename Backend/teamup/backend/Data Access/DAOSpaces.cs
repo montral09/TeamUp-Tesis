@@ -72,7 +72,7 @@ namespace backend.Data_Access
                 VOSpaceType voSpaceType;
                 while (dr.Read())
                 {
-                    voSpaceType = new VOSpaceType(Convert.ToInt32(dr["idSpaceType"]), Convert.ToString(dr["description"]));
+                    voSpaceType = new VOSpaceType(Convert.ToInt32(dr["idSpaceType"]), Convert.ToString(dr["description"]), Convert.ToBoolean(dr["individualRent"]));
                     spaceTypes.Add(voSpaceType);
                 }
                 dr.Close();
@@ -176,6 +176,7 @@ namespace backend.Data_Access
                         new SqlParameter("@spaceType", SqlDbType.Int) {Value = voCreatePublication.VOPublication.SpaceType},
                         new SqlParameter("@title", SqlDbType.VarChar) {Value = voCreatePublication.VOPublication.Title},
                         new SqlParameter("@description", SqlDbType.VarChar) {Value = voCreatePublication.VOPublication.Description},
+                        new SqlParameter("@address", SqlDbType.VarChar) {Value = voCreatePublication.VOPublication.Address},
                         new SqlParameter("@locationLat", SqlDbType.Decimal) {Value = voCreatePublication.VOPublication.Location.Latitude},
                         new SqlParameter("@locationLong", SqlDbType.Decimal) {Value = voCreatePublication.VOPublication.Location.Longitude},
                         new SqlParameter("@capacity", SqlDbType.Int) {Value = voCreatePublication.VOPublication.Capacity},
@@ -274,7 +275,7 @@ namespace backend.Data_Access
                     drImages.Close();
                     VOLocationCordinates voLocation = new VOLocationCordinates(Convert.ToDecimal(dr["locationLat"]), Convert.ToDecimal(dr["locationLong"]));
                     voPublication = new VOPublicationAdmin(Convert.ToInt32(dr["idPublication"]), Convert.ToInt64(dr["idUser"]), Convert.ToString(dr["mail"]),
-                         Convert.ToInt32(dr["spaceType"]), Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]), Convert.ToString(dr["description"]),
+                         Convert.ToInt32(dr["spaceType"]), Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]), Convert.ToString(dr["description"]), Convert.ToString(dr["address"]),
                         voLocation, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
                         Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, TeamUpConstants.NOT_VALIDATED, Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]));
                     publications.Add(voPublication);                    
@@ -340,7 +341,7 @@ namespace backend.Data_Access
                     VOLocationCordinates voLocation = new VOLocationCordinates(Convert.ToDecimal(dr["locationLat"]), Convert.ToDecimal(dr["locationLong"]));
                     List<VOReview> reviews = GetReviews(idPublication, con);
                     int ranking = util.GetRanking(reviews);
-                    voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), Convert.ToInt32(dr["spaceType"]), Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]), Convert.ToString(dr["description"]),
+                    voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), Convert.ToInt32(dr["spaceType"]), Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]), Convert.ToString(dr["description"]), Convert.ToString(dr["address"]),
                         voLocation, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
                         Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, Convert.ToString(dr["state"]), 4, reviews, ranking);
                     publications.Add(voPublication);                   
@@ -405,7 +406,7 @@ namespace backend.Data_Access
                     VOLocationCordinates voLocation = new VOLocationCordinates(Convert.ToDecimal(dr["locationLat"]), Convert.ToDecimal(dr["locationLong"]));
                     List<VOReview> reviews = GetReviews(idPublication, con);
                     int ranking = util.GetRanking(reviews);
-                    voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), Convert.ToInt32(dr["spaceType"]), Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]), Convert.ToString(dr["description"]),
+                    voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), Convert.ToInt32(dr["spaceType"]), Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]), Convert.ToString(dr["description"]), Convert.ToString(dr["address"]),
                         voLocation, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
                         Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, null, 4, reviews, ranking);                    
                 }
@@ -462,20 +463,26 @@ namespace backend.Data_Access
             VOPublication voPublication = null;
             SqlConnection con = null;
             Util util = new Util();
+            int state = 0;
             int MAX_PUBLICATIONS_PAGE = Convert.ToInt32(ConfigurationManager.AppSettings["MAX_PUBLICATIONS_PAGE"]);
             try
             {
                 con = new SqlConnection(GetConnectionString());
                 con.Open();
+                if (voGetPublicationsFilter.State != null)
+                {
+                    state = util.ConvertState(voGetPublicationsFilter.State);
+                }
                 if (voGetPublicationsFilter.PageNumber == 1)
                 {                    
                     int qty = 0;
-                    String queryQuantity = cns.GetQuantityPublicationsWithFilter(voGetPublicationsFilter);
+                    String queryQuantity = cns.GetQuantityPublicationsWithFilter(voGetPublicationsFilter, state);
                     SqlCommand selectCommandQuantity = new SqlCommand(queryQuantity, con);
                     List<SqlParameter> prmQty = new List<SqlParameter>()
                     {
                         new SqlParameter("@spaceType", SqlDbType.Int) { Value = voGetPublicationsFilter.SpaceType},
                         new SqlParameter("@capacity", SqlDbType.Int) {Value = voGetPublicationsFilter.Capacity},
+                        new SqlParameter("@state", SqlDbType.Int) {Value = state},
                     };
                     selectCommandQuantity.Parameters.AddRange(prmQty.ToArray());
                     SqlDataReader drQty = selectCommandQuantity.ExecuteReader();
@@ -493,12 +500,13 @@ namespace backend.Data_Access
                     
                 }
                
-               String query = cns.GetPublicationsWithFilter(voGetPublicationsFilter, MAX_PUBLICATIONS_PAGE);
+                String query = cns.GetPublicationsWithFilter(voGetPublicationsFilter, MAX_PUBLICATIONS_PAGE, state);
                 SqlCommand selectCommand = new SqlCommand(query, con);
                 List<SqlParameter> prm = new List<SqlParameter>()
                  {
                     new SqlParameter("@spaceType", SqlDbType.Int) { Value = voGetPublicationsFilter.SpaceType},
                     new SqlParameter("@capacity", SqlDbType.Int) {Value = voGetPublicationsFilter.Capacity},
+                    new SqlParameter("@state", SqlDbType.Int) {Value = state},
                 };
                 selectCommand.Parameters.AddRange(prm.ToArray());                
                 SqlDataReader dr = selectCommand.ExecuteReader();
@@ -527,7 +535,7 @@ namespace backend.Data_Access
                     VOLocationCordinates voLocation = new VOLocationCordinates(Convert.ToDecimal(dr["locationLat"]), Convert.ToDecimal(dr["locationLong"]));
                     List<VOReview> reviews = GetReviews(idPublication, con);
                     int ranking = util.GetRanking(reviews);
-                    voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), Convert.ToInt32(dr["spaceType"]), Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]), Convert.ToString(dr["description"]),
+                    voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), Convert.ToInt32(dr["spaceType"]), Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]), Convert.ToString(dr["description"]), Convert.ToString(dr["address"]),
                         voLocation, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
                         Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, null, 4, reviews, ranking);
                     publications.Add(voPublication);
@@ -615,6 +623,64 @@ namespace backend.Data_Access
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }            
             return reviews;
+        }
+
+        public List<VOPublication> GetRelatedSpaces(int idPublication, int capacity, int spaceType)
+        {
+            List<VOPublication> related = new List<VOPublication>();
+            SqlConnection con = null;
+            Util util = new Util();
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.GetRelatedSpaces();
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                List<SqlParameter> prm = new List<SqlParameter>()
+                {
+                        new SqlParameter("@idPublication", SqlDbType.Int) {Value = idPublication},
+                        new SqlParameter("@capacity", SqlDbType.Int) {Value = capacity},
+                        new SqlParameter("@spaceType", SqlDbType.Int) {Value = spaceType},
+                };
+                selectCommand.Parameters.AddRange(prm.ToArray());
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                VOPublication voPublication;
+                while (dr.Read())
+                {
+                    List<String> images = new List<string>();
+                    String facilitiesString = Convert.ToString(dr["facilities"]);
+                    List<int> facilities = util.ConvertFacilities(facilitiesString);
+                    String queryImages = cns.GetImages();
+                    SqlCommand selectCommandImages = new SqlCommand(queryImages, con);
+                    SqlParameter parametroImages = new SqlParameter()
+                    {
+                        ParameterName = "@idPublication",
+                        Value = idPublication,
+                        SqlDbType = SqlDbType.Int
+                    };
+                    selectCommandImages.Parameters.Add(parametroImages);
+                    SqlDataReader drImages = selectCommandImages.ExecuteReader();
+                    while (drImages.Read())
+                    {
+                        string accessURL = Convert.ToString(drImages["accessURL"]);
+                        images.Add(accessURL);
+                    }
+                    drImages.Close();
+                    VOLocationCordinates voLocation = new VOLocationCordinates(Convert.ToDecimal(dr["locationLat"]), Convert.ToDecimal(dr["locationLong"]));
+                    List<VOReview> reviews = GetReviews(idPublication, con);
+                    int ranking = util.GetRanking(reviews);
+                    voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), Convert.ToInt32(dr["spaceType"]), Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]), Convert.ToString(dr["description"]), Convert.ToString(dr["address"]),
+                        voLocation, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
+                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, null, 4, reviews, ranking);
+                    related.Add(voPublication);
+                }
+                dr.Close();
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            return related;
         }
     }
 }

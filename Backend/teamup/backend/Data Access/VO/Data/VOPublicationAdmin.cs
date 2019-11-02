@@ -13,9 +13,9 @@ namespace backend.Data_Access.VO.Data
         public VOPublicationAdmin() { }
 
         
-        public VOPublicationAdmin(int idPublication, Int64 idUser, string mail, int spaceType, DateTime creationDate, string title, string description, VOLocationCordinates location,
+        public VOPublicationAdmin(int idPublication, Int64 idUser, string mail, int spaceType, DateTime creationDate, string title, string description, string address, VOLocationCordinates location,
             int capacity, string videoURL, int hourPrice, int dailyPrice, int weeklyPrice, int monthlyPrice, string availability, List<int> facilities, List<string> imagesURL, string state, string namePublisher, string lastNamePublisher, string phonePublisher)
-            : base (idPublication, idUser, mail, spaceType, creationDate, title, description, location,
+            : base (idPublication, idUser, mail, spaceType, creationDate, title, description, address, location,
              capacity, videoURL,  hourPrice, dailyPrice, weeklyPrice, monthlyPrice, availability, facilities, imagesURL, state)
         {
             IdPublication = idPublication;

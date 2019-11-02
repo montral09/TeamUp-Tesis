@@ -13,6 +13,7 @@ namespace backend.Data_Access.VO.Data
         public DateTime CreationDate { get; set; }
         public String Title { get; set; }
         public String Description { get; set; }
+        public String Address { get; set; }
         public VOLocationCordinates Location { get; set; }
         public int Capacity { get; set; }
         public String VideoURL { get; set; }
@@ -30,13 +31,14 @@ namespace backend.Data_Access.VO.Data
 
         public VOPublication() { }
 
-        public VOPublication(String mail, int spaceType, String title, String description, VOLocationCordinates location,
+        public VOPublication(String mail, int spaceType, String title, String description, String address, VOLocationCordinates location,
             int capacity, string videoURL, int hourPrice, int dailyPrice, int weeklyPrice, int monthlyPrice, string availability, List<int> facilities, string state)
         {
             Mail = mail;
             SpaceType = spaceType;
             Title = title;
             Description = description;
+            Address = address;
             Location = location;
             Capacity = capacity;
             VideoURL = videoURL;
@@ -49,7 +51,7 @@ namespace backend.Data_Access.VO.Data
             State = state;
         }
 
-        public VOPublication(int idPublication, Int64 idUser, string mail, int spaceType, DateTime creationDate, string title, string description, VOLocationCordinates location,
+        public VOPublication(int idPublication, Int64 idUser, string mail, int spaceType, DateTime creationDate, string title, string description, string address, VOLocationCordinates location,
             int capacity, string videoURL, int hourPrice, int dailyPrice, int weeklyPrice, int monthlyPrice, string availability, List<int> facilities, List<string> imagesURL, string state)
         {
             IdPublication = idPublication;
@@ -59,6 +61,7 @@ namespace backend.Data_Access.VO.Data
             CreationDate = creationDate;
             Title = title;
             Description = description;
+            Address = address;
             Location = location;
             Capacity = capacity;
             VideoURL = videoURL;
@@ -72,7 +75,7 @@ namespace backend.Data_Access.VO.Data
             State = state;
         }
 
-        public VOPublication(int idPublication, int spaceType, DateTime creationDate, string title, string description, VOLocationCordinates location,
+        public VOPublication(int idPublication, int spaceType, DateTime creationDate, string title, string description, string address, VOLocationCordinates location,
              int capacity, string videoURL, int hourPrice, int dailyPrice, int weeklyPrice, int monthlyPrice, string availability,
              List<int> facilities, List<string> imagesURL, string state, int quantityRented, List<VOReview> reviews, int ranking)
         {
@@ -81,6 +84,7 @@ namespace backend.Data_Access.VO.Data
             CreationDate = creationDate;
             Title = title;
             Description = description;
+            Address = address;
             Location = location;
             Capacity = capacity;
             VideoURL = videoURL;
