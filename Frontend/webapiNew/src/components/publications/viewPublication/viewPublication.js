@@ -32,13 +32,16 @@ class ViewPublication extends React.Component {
             quantity: 1,
             tabDisplayed: 1,
             relatedPublications: this.loadDummyRelatedPublications(pubID),
-            isLoading : true
+            facilities: [],
+            pubIsLoading : true,
+            infIsLoading : true,
         }
         this.loadPublication = this.loadPublication.bind(this);
         this.loadPublication(pubID);
     }
 
     componentDidMount() {
+        this.loadInfraestructure();
         window.scrollTo(0, 0);
     }
 
@@ -75,7 +78,51 @@ class ViewPublication extends React.Component {
 			this.setState({ quantity: parseInt(value)});
 		}
     }
-    
+
+    loadInfraestructure() {
+        try {
+            fetch('https://localhost:44372/api/facilities').then(response => response.json()).then(data => {
+                console.log("data:" + JSON.stringify(data));
+                if (data.responseCode == "SUCC_FACILITIESOK") {
+                    this.setState({ facilities: data.facilities, infIsLoading: false });
+                } else {
+                    this.setState({ infIsLoading: false});
+
+                    toast.error('Internal error', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                }
+            }
+            ).catch(error => {
+                this.setState({ infIsLoading: false});
+                toast.error('Internal error', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
+                console.log(error);
+            }
+            )
+        } catch (error) {
+            this.setState({ infIsLoading: false});
+            toast.error('Internal error', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+        }
+    }
     loadPublication(pubID){
         try{
             var email ="";
@@ -84,7 +131,7 @@ class ViewPublication extends React.Component {
             }
             console.log("pubID:"+pubID);
             console.log("email:"+email);
-            this.setState({ isLoading: true});
+            this.setState({ pubIsLoading: true});
             fetch('https://localhost:44372/api/publication?idPublication='+pubID+'&mail=').then(response => response.json()).then(data => {
                 console.log("data:" + JSON.stringify(data));
                 if (data.responseCode == "SUCC_PUBLICATIONSOK") {
@@ -93,9 +140,9 @@ class ViewPublication extends React.Component {
                     console.log("pubObj:");
                     console.log(pubObj);
 
-                    this.setState({ isLoading: false, pubObj: pubObj, activeImage: { index: 0, src: pubObj.ImagesURL[0]}});
+                    this.setState({ pubIsLoading: false, pubObj: pubObj, activeImage: { index: 0, src: pubObj.ImagesURL[0]}});
                 } else {
-                    this.setState({ isLoading: false});
+                    this.setState({ pubIsLoading: false});
                     if(data.responseCode == 'ERR_SPACENOTFOUND'){
                         console.log("espacio no encontrado");
                     }
@@ -121,7 +168,7 @@ class ViewPublication extends React.Component {
                 }
             }
             ).catch(error => {
-                this.setState({ isLoading: false, buttonIsDisable: false });
+                this.setState({ pubIsLoading: false, buttonIsDisable: false });
                 toast.error('Internal error', {
                     position: "top-right",
                     autoClose: 5000,
@@ -184,6 +231,7 @@ class ViewPublication extends React.Component {
         ] ;
         return related;
     }
+
 	changeImage(image, index) {
 		this.setState({ activeImage: { index: index, src: image } })
     }
@@ -213,7 +261,7 @@ class ViewPublication extends React.Component {
         return (
             <>
                 <LoadingOverlay
-                    active={this.state.isLoading}
+                    active={ this.state.pubIsLoading || this.state.infIsLoading ? true : false}
                     spinner
                     text='Cargando...'
                     >
@@ -263,10 +311,10 @@ class ViewPublication extends React.Component {
                                                                                             </div>
                                                                                             <div className="col-md-5 product-center clearfix">
                                                                                                 <h1 className="product-name">{this.state.pubObj.Title}</h1>      
-                                                                                                {this.state.pubObj.Favorite === true ? (
-                                                                                                    <a href="#add_to_wishlist" onClick={() => alert("Agregar a favoritos si esta logueado")}><span><i className="fas fa-heart"></i></span>Agregar a favoritos</a>
+                                                                                                {this.state.pubObj.Favorite === false ? (
+                                                                                                    <a href="#add_to_wishlist" onClick={() => alert("Agregar a favoritos si esta logueado")}><span><i className="fas fa-heart"></i></span> Agregar a favoritos</a>
                                                                                                 ) : (
-                                                                                                    <a href="#remove_from_wishlist" onClick={() => alert("Quitar a favoritos si esta logueado")}><span><i className="fas fa-heart"></i></span>Quitar de favoritos</a>
+                                                                                                    <a href="#remove_from_wishlist" onClick={() => alert("Quitar a favoritos si esta logueado")}><span><i className="fas fa-heart"></i></span> Quitar de favoritos</a>
                                                                                                 )}                                                                              
                                                                                                 <div className="description">{this.state.pubObj.QuantityRented} veces alquilado</div>
                                                                                                     
@@ -337,18 +385,21 @@ class ViewPublication extends React.Component {
 
                                                                             <div id="tabs" className="htabs">
                                                                                 <a href="#tab-description" onClick={() => this.goToTab(1)} {...(this.state.tabDisplayed == 1 ? {className :"selected"} : {})} >Descripción</a>
-                                                                                <a href="#tab-review" onClick={() => this.goToTab(2)} {...(this.state.tabDisplayed == 2 ? {className :"selected"} : {})} >Reviews ({this.state.pubObj.QuantityReviews})</a>
+                                                                                <a href="#tab-review" onClick={() => this.goToTab(2)} {...(this.state.tabDisplayed == 2 ? {className :"selected"} : {})} >Reviews ({this.state.pubObj.Reviews.length})</a>
                                                                             </div>
                                                                             { this.state.tabDisplayed === 1 ? (
                                                                                 <>
                                                                                 <div id="tab-description" className="tab-content" style={{ display: 'block' }}>
                                                                                     <div dangerouslySetInnerHTML={{ __html: this.state.pubObj.Description }} /><br/>
-                                                                                    <p>Servicios<br/></p>
+                                                                                    <h5>Servicios<br/></h5>
                                                                                 
                                                                                     <div className="review">
                                                                                         <span>{this.state.pubObj.Facilities.map((inf, index) => {
+                                                                                            let infText = this.state.facilities.filter( function(fac){
+                                                                                                return parseInt(fac.Code) == parseInt(inf)
+                                                                                            });
                                                                                             return (
-                                                                                                <div className="owl-item" key={index}><p>{inf}</p></div>
+                                                                                                <div className="owl-item" key={index}><p>{infText[0].Description}</p></div>
                                                                                             );
                                                                                             })}<br/></span>
                                                                                     </div>
@@ -360,7 +411,7 @@ class ViewPublication extends React.Component {
                                                                                     <TabReview reviews = {this.state.pubObj.Reviews}/>
                                                                                 </div>
                                                                             ) : (null)}
-                                                                            <span><b>Ubicación</b><br/></span>
+                                                                            <span><h5>Ubicación</h5><br/></span>
                                                                             {
                                                                                 this.state.pubObj &&
                                                                                 <Map objGoogleMaps = {{zoom : 17, latitude: this.state.pubObj.Location.Latitude, longitude: this.state.pubObj.Location.Longitude}}/>
