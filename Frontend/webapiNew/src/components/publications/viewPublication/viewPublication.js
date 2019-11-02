@@ -31,7 +31,7 @@ class ViewPublication extends React.Component {
             date: null,
             quantity: 1,
             tabDisplayed: 1,
-            relatedPublications: this.loadDummyRelatedPublications(pubID),
+            relatedPublications: [],
             facilities: [],
             pubIsLoading : true,
             infIsLoading : true,
@@ -133,14 +133,15 @@ class ViewPublication extends React.Component {
             console.log("email:"+email);
             this.setState({ pubIsLoading: true});
             fetch('https://localhost:44372/api/publication?idPublication='+pubID+'&mail=').then(response => response.json()).then(data => {
-                console.log("data:" + JSON.stringify(data));
+                console.log("data:");
+                console.log(data);
                 if (data.responseCode == "SUCC_PUBLICATIONSOK") {
                     var pubObj = data.Publication;
                     pubObj.Favorite = data.Favorite;
                     console.log("pubObj:");
                     console.log(pubObj);
 
-                    this.setState({ pubIsLoading: false, pubObj: pubObj, activeImage: { index: 0, src: pubObj.ImagesURL[0]}});
+                    this.setState({ pubIsLoading: false, pubObj: pubObj, activeImage: { index: 0, src: pubObj.ImagesURL[0]}, relatedPublications : data.RelatedPublications});
                 } else {
                     this.setState({ pubIsLoading: false});
                     if(data.responseCode == 'ERR_SPACENOTFOUND'){
@@ -192,46 +193,6 @@ class ViewPublication extends React.Component {
         }
     }
 
-    loadDummyRelatedPublications(pubID) {
-        // load api
-        let related = [ 
-                
-			{
-				id: 123,
-				pubName: "Oficina en pocitos",
-				pubDesc: "Oficina en pocitos la mejor",
-				ubicacion: "Pocitos",
-				capacidad: "10",
-				disponibilidad: "De lunes a Viernes de 09 a 18hrs",
-				infraestructura: ["Wifi", "Proyector", "Cafetera", "Patio", "Aire Acondicionado"],
-				fotos: ['https://picsum.photos/id/741/800/600', 'https://picsum.photos/1024/768'],
-				youtubeUrl: 'https://www.youtube.com/watch?v=VPB-scqoNDE',
-				precios: [
-					{ code: 1, value: 100 }, { code: 2, value: 150 }, { code: 3, value: 300 }
-				],
-				puntuacion: 3,
-				cantidadReviews: 25 
-			},
-			{
-				id: 456,
-				pubName: "Oficina en pocitos",
-				pubDesc: "Oficina en pocitos la mejor",
-				ubicacion: "Pocitos",
-				capacidad: "10",
-				disponibilidad: "De lunes a Viernes de 09 a 18hrs",
-				infraestructura: ["Wifi", "Proyector", "Cafetera", "Patio", "Aire Acondicionado"],
-				fotos: ['https://picsum.photos/id/741/800/600', 'https://picsum.photos/1024/768'],
-				youtubeUrl: 'https://www.youtube.com/watch?v=VPB-scqoNDE',
-				precios: [
-					{ code: 1, value: 100 }, { code: 2, value: 150 }, { code: 3, value: 300 }
-				],
-				puntuacion: 3,
-				cantidadReviews: 25  
-			}
-        ] ;
-        return related;
-    }
-
 	changeImage(image, index) {
 		this.setState({ activeImage: { index: index, src: image } })
     }
@@ -257,15 +218,16 @@ class ViewPublication extends React.Component {
 		            items:5,
 		        }
 		    }
-		};
+        };
+        var loadStatus = !this.state.pubIsLoading && !this.state.infIsLoading ? false : true;
         return (
             <>
                 <LoadingOverlay
-                    active={ this.state.pubIsLoading || this.state.infIsLoading ? true : false}
+                    active={loadStatus}
                     spinner
                     text='Cargando...'
                     >
-                    {this.state.pubObj != null ? (
+                    {this.state.pubIsLoading == false && this.state.infIsLoading == false ? (
                         <>
                             {/*SEO Support*/}
                             <Helmet>
@@ -390,7 +352,10 @@ class ViewPublication extends React.Component {
                                                                             { this.state.tabDisplayed === 1 ? (
                                                                                 <>
                                                                                 <div id="tab-description" className="tab-content" style={{ display: 'block' }}>
+                                                                                
                                                                                     <div dangerouslySetInnerHTML={{ __html: this.state.pubObj.Description }} /><br/>
+                                                                                    
+                                                                                    <h5>Dirección</h5>{this.state.pubObj.Address}<br/>
                                                                                     <h5>Servicios<br/></h5>
                                                                                 
                                                                                     <div className="review">
