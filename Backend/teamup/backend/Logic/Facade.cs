@@ -577,8 +577,12 @@ namespace backend.Logic
                     updateValid = util.UpdateValid(isAdmin, oldCodeState, newCodeState);
                     if (updateValid)
                     {
-                        spaces.UpdateStatePublication(voUpdateStatePublication.IdPublication, newCodeState);
+                        VOPublicationAdmin publisherData = spaces.UpdateStatePublication(voUpdateStatePublication.IdPublication, voUpdateStatePublication.RejectedReason, newCodeState, isAdmin);
                         message = EnumMessages.SUCC_PUBLICATIONUPDATED.ToString();
+                        if (newCodeState == 2 || newCodeState == 6)
+                        {
+                            util.SendEmailPublicationStatus(publisherData.Mail, publisherData.NamePublisher, publisherData.Title, voUpdateStatePublication.RejectedReason,newCodeState);
+                        }
                     }
                     else
                     {

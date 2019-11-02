@@ -63,10 +63,16 @@ namespace backend.Data_Access.Query
             return query;
         }
 
-        public String UdpdateStatePublication()
+        public String UdpdateStatePublication(string rejectedReason)
         {
-            String query = "update PUBLICATIONS set state = @state where idPublication = @idPublication";
-            return query;
+            StringBuilder query = new StringBuilder();
+            query = query.Append("update PUBLICATIONS set state = @state");
+            if (rejectedReason != null)
+            {
+                query.Append(",rejectedReason = @rejectedReason");
+            }
+            query.Append(" where idPublication = @idPublication");
+            return query.ToString();
         }
 
         public String InsertImage()
@@ -153,6 +159,12 @@ namespace backend.Data_Access.Query
             String query = "select p.idPublication, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, " +
                 "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities from PUBLICATIONS p where " +
                 " p.idPublication <> @idPublication and p.state = 2 and p.capacity >= @capacity and p.spaceType = @spaceType";
+            return query;
+        }
+
+        public String GetPublisherMailFromPublication()
+        {
+            String query = "select u.mail, p.title, u.idUser, p.creationDate, u.name from USERS u, PUBLICATIONS p where p.idPublication = @idPublication and u.idUser = p.idUser";
             return query;
         }
     }
