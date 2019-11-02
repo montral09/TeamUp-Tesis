@@ -426,22 +426,51 @@ namespace backend.Data_Access
             return voPublication;
         }
 
-        public void UpdateStatePublication(int idPublication, int newCodeState)
+        public VOPublicationAdmin UpdateStatePublication(int idPublication, string rejectedReason, int newCodeState, bool isAdmin)
         {
+            VOPublicationAdmin voPublication = null;
             SqlConnection con = null;
+            string rejectedReasonAux = "";
+            if (rejectedReason != null)
+            {
+                rejectedReasonAux = rejectedReason;
+            }            
             try
             {
                 con = new SqlConnection(GetConnectionString());
                 con.Open();
-                String query = cns.UdpdateStatePublication();
+                String query = cns.UdpdateStatePublication(rejectedReason);
                 SqlCommand updateCommand = new SqlCommand(query, con);
                 List<SqlParameter> prm = new List<SqlParameter>()
                 {
                         new SqlParameter("@idPublication", SqlDbType.Int) {Value = idPublication},
-                        new SqlParameter("@state", SqlDbType.Int) {Value = newCodeState}
+                        new SqlParameter("@state", SqlDbType.Int) {Value = newCodeState},
+                        new SqlParameter("@rejectedReason", SqlDbType.VarChar) {Value = rejectedReasonAux},
+
                 };
                 updateCommand.Parameters.AddRange(prm.ToArray());
                 updateCommand.ExecuteNonQuery();
+                if (isAdmin && (newCodeState == 2 || newCodeState == 6))
+                {
+                    String queryGetPublisher = cns.GetPublisherMailFromPublication();
+                    SqlCommand selectCommand = new SqlCommand(queryGetPublisher, con);
+                    SqlParameter param = new SqlParameter()
+                    {
+                        ParameterName = "@idPublication",
+                        Value = idPublication,
+                        SqlDbType = SqlDbType.Int
+                    };
+                    selectCommand.Parameters.Add(param);
+                    SqlDataReader dr = selectCommand.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        voPublication = new VOPublicationAdmin(idPublication, Convert.ToInt64(dr["idUser"]), Convert.ToString(dr["mail"]),
+                         0, Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]),null, null,
+                        null, 0, null, 0,
+                        0, 0, 0, null, null, null, null, Convert.ToString(dr["name"]), null,null);
+                    }
+                    dr.Close();
+                }                
             }
             catch (Exception e)
             {
@@ -454,6 +483,7 @@ namespace backend.Data_Access
                     con.Close();
                 }
             }
+            return voPublication;
         }
 
         public VOResponseGetPublicationsWithFilters GetPublicationsWithFilters(VORequestGetPublicationsWithFilters voGetPublicationsFilter)

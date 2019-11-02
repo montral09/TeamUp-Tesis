@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace backend.Logic
 {
@@ -107,9 +108,8 @@ namespace backend.Logic
 
         public bool UpdateValid(bool isAdmin, int oldCodeState, int newCodeState)
         {
-            // string transition = oldCodeState + "-" + newCodeState;
-            return true;
-            // 1-2
+  
+            return true; 
         }
 
         public int GetRanking(List<VOReview> reviews)
@@ -125,6 +125,35 @@ namespace backend.Logic
                 ranking = (int)Math.Ceiling((decimal)totalRankings / reviews.Count);
             }           
             return ranking;
+        }
+
+        public void SendEmailPublicationStatus(string to, string name, string title, string rejectedReason, int statusCode)
+        {
+            MailMessage mm = new MailMessage(SENDER_MAIL, to);
+            string body = "Hello " + name + ",";
+            string subject = "";
+            if (statusCode == 2)
+            //Active
+            {                
+                body += "<br /><br />Your publication " + title + "has been approved. This means other users will see it and rented. Congratulations!.";
+                subject = "Publication approved";
+            } else
+            //Rejected
+            {
+                body += "<br /><br />Your publication " + title + "has been rejected. Reason: " + rejectedReason + " You can contact our team for further information";
+                subject = "Publication rejected";
+            }
+            mm.Body = body;
+            mm.Subject = subject;
+            mm.IsBodyHtml = true;
+            SmtpClient smtp = new SmtpClient();
+            smtp.Host = "smtp.gmail.com";
+            smtp.EnableSsl = true;
+            NetworkCredential NetworkCred = new NetworkCredential(SENDER_MAIL, SENDER_PASSWORD);
+            smtp.UseDefaultCredentials = true;
+            smtp.Credentials = NetworkCred;
+            smtp.Port = 587;
+            smtp.Send(mm);
         }
     }
 }

@@ -327,6 +327,7 @@ class CreatePublication extends React.Component {
                 "SpaceType": parseInt(this.state.spaceTypeSelect),
                 "Title": this.state.spaceName,
                 "Description": this.state.description,
+                "Address": this.state.locationText,
                 "Location": {
                     "Latitude": this.state.geoLat,
                     "Longitude": this.state.geoLng

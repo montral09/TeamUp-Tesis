@@ -16,7 +16,7 @@ namespace backend.Data_Access
         List<VOPublicationAdmin> GetPublicationsPendingApproval(VORequestPublicationPendindApproval voPublicationPendingApproval);
         List<VOPublication> GetPublisherSpaces(string mail);
         VOPublication GetSpace(int idSpace);
-        void UpdateStatePublication(int idPublication, int newCodeState);
+        VOPublicationAdmin UpdateStatePublication(int idPublication, string rejectedreason, int newCodeState, bool isAdmin);
         VOResponseGetPublicationsWithFilters GetPublicationsWithFilters(VORequestGetPublicationsWithFilters voGetPublicationsFilter);
         bool IsFavourite(int idPublication, long idUser);
         List<VOPublication> GetRelatedSpaces(int idPublication, int capacity, int spaceType);
