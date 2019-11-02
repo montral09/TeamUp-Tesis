@@ -167,6 +167,19 @@ namespace backend.Data_Access.Query
             String query = "select u.mail, p.title, u.idUser, p.creationDate, u.name from USERS u, PUBLICATIONS p where p.idPublication = @idPublication and u.idUser = p.idUser";
             return query;
         }
+
+        public String AddFavorite()
+        {
+            String query = "insert into FAVOURITE_SPACES(idPublication, idUser) values (@idPublication, @idUser)";
+            return query;
+        }
+
+        public String DeleteFavorite()
+        {
+            String query = "delete from FAVOURITE_SPACES where idPublication = @idPublication and idUser =  @idUser";
+            return query;
+        }
+
     }
      
 }

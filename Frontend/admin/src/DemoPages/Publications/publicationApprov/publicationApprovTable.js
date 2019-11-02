@@ -21,8 +21,8 @@ const PublicationApprovTable = ({publPendApp, approvePublication, editPublicatio
                 <td>{obj.Title}</td>
                 <td>{obj.Capacity}</td>
                 <td><a onClick={() => { editPublication(obj.IdPublication) }}><i className="lnr lnr-magnifier"></i></a></td>
-                <td><a onClick={() => { rejectPublication(obj.IdPublication) }}><i className="lnr lnr-thumbs-up"></i></a></td>
-                <td><a onClick={() => { approvePublication(obj.IdPublication) }}><i className="lnr lnr-thumbs-down"></i></a></td>
+                <td><a onClick={() => { approvePublication(obj.IdPublication) }}><i className="lnr lnr-thumbs-up"></i></a></td>
+                <td><a onClick={() => { rejectPublication(obj.IdPublication) }}><i className="lnr lnr-thumbs-down"></i></a></td>
             </tr>
             )
         })

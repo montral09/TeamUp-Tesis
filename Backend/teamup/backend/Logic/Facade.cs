@@ -540,15 +540,15 @@ namespace backend.Logic
                         isFavorite = spaces.IsFavourite(idPublication, user.IdUser);
                     }
                     List<VOPublication> related = spaces.GetRelatedSpaces(idPublication, voPublication.Capacity, voPublication.SpaceType);
-                    response.Publication = voPublication;                    
+                    response.Publication = voPublication;
                     response.Favorite = isFavorite;
                     response.RelatedPublications = related;
+                    response.responseCode = EnumMessages.SUCC_PUBLICATIONSOK.ToString();
                 }
                 else
                 {
                     response.responseCode = EnumMessages.ERR_SPACENOTFOUND.ToString();
-                }
-                response.responseCode = EnumMessages.SUCC_PUBLICATIONSOK.ToString();
+                }                
                 return response;
             }
             catch (GeneralException e)
@@ -581,7 +581,7 @@ namespace backend.Logic
                         message = EnumMessages.SUCC_PUBLICATIONUPDATED.ToString();
                         if (newCodeState == 2 || newCodeState == 6)
                         {
-                            util.SendEmailPublicationStatus(publisherData.Mail, publisherData.NamePublisher, publisherData.Title, voUpdateStatePublication.RejectedReason,newCodeState);
+                            util.SendEmailPublicationStatus(publisherData.Mail, publisherData.NamePublisher, publisherData.Title, voUpdateStatePublication.RejectedReason, newCodeState);
                         }
                     }
                     else
@@ -615,6 +615,26 @@ namespace backend.Logic
 
             }
 
+        }
+        public VOResponseUpdateFavorite UpdateFavorite(VORequestUpdateFavorite voUpdateFavorite)
+        {
+            try
+            {
+                VOResponseUpdateFavorite response = new VOResponseUpdateFavorite();
+                String message = util.ValidAccessToken(voUpdateFavorite.AccessToken, voUpdateFavorite.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    User user = users.Find(voUpdateFavorite.Mail);
+                    spaces.UpdateFavorite(voUpdateFavorite, user.IdUser);
+                    message = EnumMessages.SUCC_FAVORITEUPDATED.ToString();
+                }
+                response.responseCode = message;
+                return response;
             }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
     }
 }
