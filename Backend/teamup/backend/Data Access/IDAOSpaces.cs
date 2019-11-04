@@ -19,7 +19,7 @@ namespace backend.Data_Access
         VOPublicationAdmin UpdateStatePublication(int idPublication, string rejectedreason, int newCodeState, bool isAdmin);
         VOResponseGetPublicationsWithFilters GetPublicationsWithFilters(VORequestGetPublicationsWithFilters voGetPublicationsFilter);
         bool IsFavourite(int idPublication, long idUser);
-        List<VOPublication> GetRelatedSpaces(int idPublication, int capacity, int spaceType);
+        List<VOPublication> GetRelatedSpaces(int idPublication, int capacity, int spaceType, string city);
         void UpdateFavorite(VORequestUpdateFavorite voUpdateFavorite, long idUser);
     }
 }

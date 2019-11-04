@@ -33,9 +33,9 @@ namespace backend.Data_Access.Query
         public String CreatePublication()
         {
             String query = "insert into PUBLICATIONS (idUser, spaceType, creationDate, title, description, address, locationLat, locationLong, capacity," +
-                " videoURL, hourPrice, dailyPrice, weeklyPrice, monthlyPrice, availability, facilities, state)" +
+                " videoURL, hourPrice, dailyPrice, weeklyPrice, monthlyPrice, availability, facilities, state, city)" +
                 " output INSERTED.idPublication VALUES(@idUser, @spaceType, getdate(), @title, @description, @address, @locationLat, @locationLong, @capacity, " +
-                " @videoURL, @hourPrice, @dailyPrice, @weeklyPrice, @monthlyPrice, @availability, @facilities, 1)";
+                " @videoURL, @hourPrice, @dailyPrice, @weeklyPrice, @monthlyPrice, @availability, @facilities, 1, @city)";
             return query;
         }
 
@@ -50,7 +50,7 @@ namespace backend.Data_Access.Query
         public String GetPublisherSpaces()
         {
             String query = "select p.idPublication, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, " +
-                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities, e.description as state from PUBLICATIONS p, USERS u, SPACE_STATES e where " +
+                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities, p.city, e.description as state from PUBLICATIONS p, USERS u, SPACE_STATES e where " +
                 "p.idUser = u.idUser and u.mail= @mail and p.state = e.idSpaceState";
             return query;
         }
@@ -58,7 +58,7 @@ namespace backend.Data_Access.Query
         public String GetSpace()
         {
             String query = "select p.idPublication, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, " +
-                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities from PUBLICATIONS p where " +
+                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities, p.city from PUBLICATIONS p where " +
                 " p.idPublication = @idPublication and p.state = 2";
             return query;
         }
@@ -103,6 +103,10 @@ namespace backend.Data_Access.Query
             {
                 query.Append("and p.capacity >= @capacity ");
             }
+            if (voGetPublicationsFilter.City != null)
+            {
+                query.Append("and p.city = @city ");
+            }
             if (voGetPublicationsFilter.Facilities != null && voGetPublicationsFilter.Facilities.Count != 0)
             {
                 foreach (var facility in voGetPublicationsFilter.Facilities)
@@ -117,7 +121,7 @@ namespace backend.Data_Access.Query
         public String GetPublicationsWithFilter(VORequestGetPublicationsWithFilters voGetPublicationsFilter, int maxPublicationsPage, int state)
         {
             StringBuilder query = new StringBuilder();
-            query = query.Append("select p.idPublication, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities from PUBLICATIONS p where p.creationDate is not null ");
+            query = query.Append("select p.idPublication, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities, p.city from PUBLICATIONS p where p.creationDate is not null ");
             if (state != 0)
             {
                 query.Append("and p.state = @state ");
@@ -129,6 +133,10 @@ namespace backend.Data_Access.Query
             if (voGetPublicationsFilter.Capacity != 0)
             {
                 query.Append("and p.capacity >= @capacity ");
+            }
+            if (voGetPublicationsFilter.City != null)
+            {
+                query.Append("and p.city = @city ");
             }
             if (voGetPublicationsFilter.Facilities != null && voGetPublicationsFilter.Facilities.Count != 0)
             {
@@ -158,7 +166,7 @@ namespace backend.Data_Access.Query
         {
             String query = "select p.idPublication, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, " +
                 "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities from PUBLICATIONS p where " +
-                " p.idPublication <> @idPublication and p.state = 2 and p.capacity >= @capacity and p.spaceType = @spaceType";
+                " p.idPublication <> @idPublication and p.state = 2 and p.capacity >= @capacity and p.spaceType = @spaceType and p.city = @city";
             return query;
         }
 
