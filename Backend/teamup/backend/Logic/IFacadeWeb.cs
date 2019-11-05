@@ -39,5 +39,6 @@ namespace backend.Logic
         VOResponseUpdateStatePublication UpdateStatePublication(VORequestUpdateStatePublication voUpdateStatePublication);
         VOResponseGetPublicationsWithFilters GetPublicationsWithFilters(VORequestGetPublicationsWithFilters voGetPublicationsFilter);
         VOResponseUpdateFavorite UpdateFavorite(VORequestUpdateFavorite voUpdateFavorite);
+        Task<VOResponseUpdatePublication> UpdatePublication(VORequestUpdatePublication voUpdatePublication);
     }
 }

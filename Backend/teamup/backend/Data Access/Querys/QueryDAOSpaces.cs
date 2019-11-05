@@ -187,6 +187,21 @@ namespace backend.Data_Access.Query
             String query = "delete from FAVOURITE_SPACES where idPublication = @idPublication and idUser =  @idUser";
             return query;
         }
+        public String DeleteImages()
+        {
+            String query = "delete from PUBLICATION_IMAGES where idPublication = @idPublication";
+            return query;
+        }
+
+        public String UpdatePublication()
+        {
+            String query = "update PUBLICATIONS set spaceType = @spaceType, title = @title, description = @description, " +
+                "address = @address, locationLat = @locationLat, locationLong = @locationLong, capacity = @capacity, " +
+                "videoURL = @videoURL, hourPrice = @hourPrice, dailyPrice = @dailyPrice, weeklyPrice = @weeklyPrice, " +
+                "monthlyPrice = @monthlyPrice, availability = @availability, facilities = @facilities, city = @city where idPublication = @idPublication";
+            return query;            
+        }
+        
 
     }
      

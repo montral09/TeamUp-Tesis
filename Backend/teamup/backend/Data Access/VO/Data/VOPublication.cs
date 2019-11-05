@@ -28,7 +28,7 @@ namespace backend.Data_Access.VO.Data
         public List<string> ImagesURL { get; set; }
         public int QuantityRented { get; set; } //TODO : harcoded, fix
         public List<VOReview> Reviews { get; set; }
-        public int Ranking { get; set; }
+        public int Ranking { get; set; }        
 
         public VOPublication() { }
 

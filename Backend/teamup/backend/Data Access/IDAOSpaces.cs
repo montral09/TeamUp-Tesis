@@ -21,5 +21,6 @@ namespace backend.Data_Access
         bool IsFavourite(int idPublication, long idUser);
         List<VOPublication> GetRelatedSpaces(int idPublication, int capacity, int spaceType, string city);
         void UpdateFavorite(VORequestUpdateFavorite voUpdateFavorite, long idUser);
+        Task UpdatePublication(VORequestUpdatePublication voUpdatePublication, User user);
     }
 }
