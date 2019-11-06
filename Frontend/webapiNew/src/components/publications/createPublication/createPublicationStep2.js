@@ -1,7 +1,7 @@
 import React from 'react';
 import { toast } from 'react-toastify';
 import {Form, FormGroup, Label, Input, FormFeedback,
-    Row,Col,Button } from 'reactstrap';
+    Row,Col,Button, InputGroupAddon,InputGroup } from 'reactstrap';
 import Geocode from "react-geocode";
 import credentials from '../map/credentials';
 import Upload from './upload/upload';
@@ -137,25 +137,20 @@ class CreatePublicationStep2 extends React.Component {
                 <Col md={8}>
                     <FormGroup>
                     <Label for="locationText">Localidad (*)</Label>
-                    <LocationSearchInput />
+                    <LocationSearchInput onChange={this.props.onChange}/>
                     </FormGroup>
                 </Col>
                 <Col md={8}>
                     <FormGroup>
                         <Label for="locationText">Ubicación (*)</Label>
-                        <Input  {...(this.state.locationTextSuccess ? {valid :true} : {})} {...(this.state.locationTextError ? {invalid :true} : {})} 
-                            type="text" name="locationText" placeholder="ej: 18 de julio 2233" id="locationText"
-                            value ={this.state.locationText} onChange={this.functionLoadLocation}  />
-                    </FormGroup>
-                </Col>
-
-                <Col md={4}>
-                    <FormGroup>
-                        <Button
-                            className="btn btn-primary float-right" id="locationTexButton"
-                            type="button" onClick={this.validateLocation} disabled={this.state.locationTextLoading}>
-                            Validar
-                        </Button>
+                        <InputGroup>
+                            <InputGroupAddon addonType="prepend">
+                                <Button id="locationTexButton" onClick={this.validateLocation} disabled={this.state.locationTextLoading}>Validar</Button>
+                            </InputGroupAddon>
+                            <Input {...(this.state.locationTextSuccess ? {valid :true} : {})} {...(this.state.locationTextError ? {invalid :true} : {})} 
+                                    type="text" name="locationText" placeholder="ej: 18 de julio 2233" id="locationText"
+                                    value ={this.state.locationText} onChange={this.functionLoadLocation}/>
+                        </InputGroup>
                     </FormGroup>
                 </Col>
             </Row>
