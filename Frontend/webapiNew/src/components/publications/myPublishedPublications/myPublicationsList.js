@@ -127,32 +127,14 @@ class MyPublicationsList extends React.Component {
                 <Header />
                 <div className="main-content  full-width  home">
                     <div className="pattern" >
-                        <div>
-                            <div className="row">
-                                <div className="col-md-12 ">
-                                    <div className="row">
-                                        <div className="col-md-9 center-column" id="content">
-                                            <div className="row">
-                                                <div className="col-md-3">
-                                                    <div className="well">
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-12">
-                                                {(!this.state.loadingPubs && !this.state.loadingSpaceTypes) ?
-                                                    (<MyPublicationTable  publications={this.state.publications} spaceTypes={this.state.spaceTypes} />)
-                                                    : ( <p>LOADING</p>)
-                                                }
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        <div className="col-md-12 center-column">
+                            {(!this.state.loadingPubs && !this.state.loadingSpaceTypes) ?
+                            (<MyPublicationTable  publications={this.state.publications} spaceTypes={this.state.spaceTypes} />)
+                            : ( <p>LOADING</p>)
+                            }
                         </div>
                     </div>
                 </div>
-
             </>
         );
     }
