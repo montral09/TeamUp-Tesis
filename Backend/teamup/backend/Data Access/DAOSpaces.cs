@@ -186,7 +186,8 @@ namespace backend.Data_Access
                         new SqlParameter("@weeklyPrice", SqlDbType.Int) {Value = voCreatePublication.VOPublication.WeeklyPrice},
                         new SqlParameter("@monthlyPrice", SqlDbType.Int) {Value = voCreatePublication.VOPublication.MonthlyPrice},
                         new SqlParameter("@availability", SqlDbType.VarChar) {Value = voCreatePublication.VOPublication.Availability},
-                        new SqlParameter("@facilities", SqlDbType.VarChar) {Value = facilities}
+                        new SqlParameter("@facilities", SqlDbType.VarChar) {Value = facilities},
+                        new SqlParameter("@city", SqlDbType.VarChar) {Value = voCreatePublication.VOPublication.City}
                     };
                 insertCommand.Parameters.AddRange(prm.ToArray());                
                 insertCommand.Transaction = objTrans;
@@ -341,7 +342,7 @@ namespace backend.Data_Access
                     VOLocationCordinates voLocation = new VOLocationCordinates(Convert.ToDecimal(dr["locationLat"]), Convert.ToDecimal(dr["locationLong"]));
                     List<VOReview> reviews = GetReviews(idPublication, con);
                     int ranking = util.GetRanking(reviews);
-                    voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), Convert.ToInt32(dr["spaceType"]), Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]), Convert.ToString(dr["description"]), Convert.ToString(dr["address"]),
+                    voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), Convert.ToInt32(dr["spaceType"]), Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]), Convert.ToString(dr["description"]), Convert.ToString(dr["address"]), Convert.ToString(dr["city"]),
                         voLocation, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
                         Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, Convert.ToString(dr["state"]), 4, reviews, ranking);
                     publications.Add(voPublication);                   
@@ -407,7 +408,7 @@ namespace backend.Data_Access
                     List<VOReview> reviews = GetReviews(idPublication, con);
                     int ranking = util.GetRanking(reviews);
 
-                    voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), Convert.ToInt32(dr["spaceType"]), Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]), Convert.ToString(dr["description"]), Convert.ToString(dr["address"]),
+                    voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), Convert.ToInt32(dr["spaceType"]), Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]), Convert.ToString(dr["description"]), Convert.ToString(dr["address"]), Convert.ToString(dr["city"]), 
                         voLocation, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
                         Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, null, 4, reviews, ranking);                    
                 }
@@ -514,6 +515,7 @@ namespace backend.Data_Access
                         new SqlParameter("@spaceType", SqlDbType.Int) { Value = voGetPublicationsFilter.SpaceType},
                         new SqlParameter("@capacity", SqlDbType.Int) {Value = voGetPublicationsFilter.Capacity},
                         new SqlParameter("@state", SqlDbType.Int) {Value = state},
+                        new SqlParameter("@city", SqlDbType.VarChar) {Value = voGetPublicationsFilter.City},
                     };
                     selectCommandQuantity.Parameters.AddRange(prmQty.ToArray());
                     SqlDataReader drQty = selectCommandQuantity.ExecuteReader();
@@ -538,6 +540,7 @@ namespace backend.Data_Access
                     new SqlParameter("@spaceType", SqlDbType.Int) { Value = voGetPublicationsFilter.SpaceType},
                     new SqlParameter("@capacity", SqlDbType.Int) {Value = voGetPublicationsFilter.Capacity},
                     new SqlParameter("@state", SqlDbType.Int) {Value = state},
+                    new SqlParameter("@city", SqlDbType.VarChar) {Value = voGetPublicationsFilter.City},
                 };
                 selectCommand.Parameters.AddRange(prm.ToArray());                
                 SqlDataReader dr = selectCommand.ExecuteReader();
@@ -566,7 +569,7 @@ namespace backend.Data_Access
                     VOLocationCordinates voLocation = new VOLocationCordinates(Convert.ToDecimal(dr["locationLat"]), Convert.ToDecimal(dr["locationLong"]));
                     List<VOReview> reviews = GetReviews(idPublication, con);
                     int ranking = util.GetRanking(reviews);
-                    voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), Convert.ToInt32(dr["spaceType"]), Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]), Convert.ToString(dr["description"]), Convert.ToString(dr["address"]),
+                    voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), Convert.ToInt32(dr["spaceType"]), Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]), Convert.ToString(dr["description"]), Convert.ToString(dr["address"]), Convert.ToString(dr["city"]),
                         voLocation, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
                         Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, null, 4, reviews, ranking);
                     publications.Add(voPublication);
@@ -656,7 +659,7 @@ namespace backend.Data_Access
             return reviews;
         }
 
-        public List<VOPublication> GetRelatedSpaces(int idPublication, int capacity, int spaceType)
+        public List<VOPublication> GetRelatedSpaces(int idPublication, int capacity, int spaceType, string city)
         {
             List<VOPublication> related = new List<VOPublication>();
             SqlConnection con = null;
@@ -672,6 +675,7 @@ namespace backend.Data_Access
                         new SqlParameter("@idPublication", SqlDbType.Int) {Value = idPublication},
                         new SqlParameter("@capacity", SqlDbType.Int) {Value = capacity},
                         new SqlParameter("@spaceType", SqlDbType.Int) {Value = spaceType},
+                        new SqlParameter("@city", SqlDbType.VarChar) {Value = city},
                 };
                 selectCommand.Parameters.AddRange(prm.ToArray());
                 SqlDataReader dr = selectCommand.ExecuteReader();
@@ -700,7 +704,7 @@ namespace backend.Data_Access
                     VOLocationCordinates voLocation = new VOLocationCordinates(Convert.ToDecimal(dr["locationLat"]), Convert.ToDecimal(dr["locationLong"]));
                     List<VOReview> reviews = GetReviews(idPublication, con);
                     int ranking = util.GetRanking(reviews);
-                    voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), Convert.ToInt32(dr["spaceType"]), Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]), Convert.ToString(dr["description"]), Convert.ToString(dr["address"]),
+                    voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), Convert.ToInt32(dr["spaceType"]), Convert.ToDateTime(dr["creationDate"]), Convert.ToString(dr["title"]), Convert.ToString(dr["description"]), Convert.ToString(dr["address"]), Convert.ToString(dr["city"]),
                         voLocation, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
                         Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, null, 4, reviews, ranking);
                     related.Add(voPublication);
@@ -748,6 +752,75 @@ namespace backend.Data_Access
                 if (con != null)
                 {
                     con.Close();
+                }
+            }
+        }
+
+        public async Task UpdatePublication(VORequestUpdatePublication voUpdatePublication, User user)
+        {
+            SqlConnection con = null;
+            SqlTransaction objTrans = null;
+            int idPublication = voUpdatePublication.Publication.IdPublication;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                objTrans = con.BeginTransaction();
+                //Step 1: delete images to insert new ones
+                string queryImages = cns.DeleteImages();
+                SqlParameter paramImages = new SqlParameter()
+                {
+                    ParameterName = "@idPublication",
+                    Value = idPublication,
+                    SqlDbType = SqlDbType.Int
+                };
+                SqlCommand deleteCommand = new SqlCommand(queryImages, con);
+                deleteCommand.Parameters.Add(paramImages);
+                deleteCommand.Transaction = objTrans;
+                deleteCommand.ExecuteNonQuery();
+                //Step 2: insert images
+                StorageUtil storageUtil = new StorageUtil();
+                List<string> urls = await storageUtil.StoreImageAsync(voUpdatePublication.Images, user.IdUser, idPublication);
+                InsertImages(con, objTrans, idPublication, urls);
+                //Step 3: update publication
+                string query = cns.UpdatePublication();
+                String facilities = Util.CreateFacilitiesString(voUpdatePublication.Publication.Facilities);
+                SqlCommand updateCommand = new SqlCommand(query, con);
+                List<SqlParameter> prm = new List<SqlParameter>()
+                    {
+                        new SqlParameter("@idPublication", SqlDbType.Int) {Value = idPublication},
+                        new SqlParameter("@spaceType", SqlDbType.Int) {Value = voUpdatePublication.Publication.SpaceType},
+                        new SqlParameter("@title", SqlDbType.VarChar) {Value = voUpdatePublication.Publication.Title},
+                        new SqlParameter("@description", SqlDbType.VarChar) {Value = voUpdatePublication.Publication.Description},
+                        new SqlParameter("@address", SqlDbType.VarChar) {Value = voUpdatePublication.Publication.Address},
+                        new SqlParameter("@locationLat", SqlDbType.Decimal) {Value = voUpdatePublication.Publication.Location.Latitude},
+                        new SqlParameter("@locationLong", SqlDbType.Decimal) {Value = voUpdatePublication.Publication.Location.Longitude},
+                        new SqlParameter("@capacity", SqlDbType.Int) {Value = voUpdatePublication.Publication.Capacity},
+                        new SqlParameter("@videoURL", SqlDbType.VarChar) {Value = voUpdatePublication.Publication.VideoURL},
+                        new SqlParameter("@hourPrice", SqlDbType.Int) {Value = voUpdatePublication.Publication.HourPrice},
+                        new SqlParameter("@dailyPrice", SqlDbType.Int) {Value = voUpdatePublication.Publication.DailyPrice},
+                        new SqlParameter("@weeklyPrice", SqlDbType.Int) {Value = voUpdatePublication.Publication.WeeklyPrice},
+                        new SqlParameter("@monthlyPrice", SqlDbType.Int) {Value = voUpdatePublication.Publication.MonthlyPrice},
+                        new SqlParameter("@availability", SqlDbType.VarChar) {Value = voUpdatePublication.Publication.Availability},
+                        new SqlParameter("@facilities", SqlDbType.VarChar) {Value = facilities},
+                        new SqlParameter("@city", SqlDbType.VarChar) {Value = voUpdatePublication.Publication.City}
+                    };
+                updateCommand.Parameters.AddRange(prm.ToArray());
+                updateCommand.Transaction = objTrans;
+                updateCommand.ExecuteNonQuery();
+                objTrans.Commit();
+            }
+            catch (Exception e)
+            {
+                objTrans.Rollback();
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                    objTrans.Dispose();
                 }
             }
         }

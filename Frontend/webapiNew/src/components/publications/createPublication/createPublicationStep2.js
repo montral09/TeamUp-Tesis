@@ -6,6 +6,7 @@ import Geocode from "react-geocode";
 import credentials from '../map/credentials';
 import Upload from './upload/upload';
 import Map from '../map/Map';
+import LocationSearchInput from './LocationSearchInput';
 
 class CreatePublicationStep2 extends React.Component {
     constructor(props) {
@@ -135,12 +136,19 @@ class CreatePublicationStep2 extends React.Component {
             <Row form>
                 <Col md={8}>
                     <FormGroup>
+                    <Label for="locationText">Localidad (*)</Label>
+                    <LocationSearchInput />
+                    </FormGroup>
+                </Col>
+                <Col md={8}>
+                    <FormGroup>
                         <Label for="locationText">Ubicación (*)</Label>
                         <Input  {...(this.state.locationTextSuccess ? {valid :true} : {})} {...(this.state.locationTextError ? {invalid :true} : {})} 
                             type="text" name="locationText" placeholder="ej: 18 de julio 2233" id="locationText"
                             value ={this.state.locationText} onChange={this.functionLoadLocation}  />
                     </FormGroup>
                 </Col>
+
                 <Col md={4}>
                     <FormGroup>
                         <Button

@@ -14,6 +14,7 @@ namespace backend.Data_Access.VO.Data
         public String Title { get; set; }
         public String Description { get; set; }
         public String Address { get; set; }
+        public String City { get; set; }
         public VOLocationCordinates Location { get; set; }
         public int Capacity { get; set; }
         public String VideoURL { get; set; }
@@ -27,7 +28,7 @@ namespace backend.Data_Access.VO.Data
         public List<string> ImagesURL { get; set; }
         public int QuantityRented { get; set; } //TODO : harcoded, fix
         public List<VOReview> Reviews { get; set; }
-        public int Ranking { get; set; }
+        public int Ranking { get; set; }        
 
         public VOPublication() { }
 
@@ -75,7 +76,7 @@ namespace backend.Data_Access.VO.Data
             State = state;
         }
 
-        public VOPublication(int idPublication, int spaceType, DateTime creationDate, string title, string description, string address, VOLocationCordinates location,
+        public VOPublication(int idPublication, int spaceType, DateTime creationDate, string title, string description, string address, string city, VOLocationCordinates location,
              int capacity, string videoURL, int hourPrice, int dailyPrice, int weeklyPrice, int monthlyPrice, string availability,
              List<int> facilities, List<string> imagesURL, string state, int quantityRented, List<VOReview> reviews, int ranking)
         {
@@ -99,6 +100,7 @@ namespace backend.Data_Access.VO.Data
             QuantityRented = quantityRented;
             Reviews = reviews;
             Ranking = ranking;
+            City = city;
         }
     }
 }

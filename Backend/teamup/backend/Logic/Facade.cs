@@ -539,7 +539,7 @@ namespace backend.Logic
                         User user = users.Find(mail);
                         isFavorite = spaces.IsFavourite(idPublication, user.IdUser);
                     }
-                    List<VOPublication> related = spaces.GetRelatedSpaces(idPublication, voPublication.Capacity, voPublication.SpaceType);
+                    List<VOPublication> related = spaces.GetRelatedSpaces(idPublication, voPublication.Capacity, voPublication.SpaceType, voPublication.City);
                     response.Publication = voPublication;
                     response.Favorite = isFavorite;
                     response.RelatedPublications = related;
@@ -627,6 +627,27 @@ namespace backend.Logic
                     User user = users.Find(voUpdateFavorite.Mail);
                     spaces.UpdateFavorite(voUpdateFavorite, user.IdUser);
                     message = EnumMessages.SUCC_FAVORITEUPDATED.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+
+        public async Task<VOResponseUpdatePublication> UpdatePublication(VORequestUpdatePublication voUpdatePublication)
+        {
+            try
+            {
+                VOResponseUpdatePublication response = new VOResponseUpdatePublication();
+                String message = util.ValidAccessToken(voUpdatePublication.AccessToken, voUpdatePublication.Publication.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    User user = users.Find(voUpdatePublication.Publication.Mail);
+                    await spaces.UpdatePublication(voUpdatePublication, user);
+                    message = EnumMessages.SUCC_PUBLICATIONUPDATED.ToString();
                 }
                 response.responseCode = message;
                 return response;
