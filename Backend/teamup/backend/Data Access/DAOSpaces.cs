@@ -761,27 +761,40 @@ namespace backend.Data_Access
             SqlConnection con = null;
             SqlTransaction objTrans = null;
             int idPublication = voUpdatePublication.Publication.IdPublication;
+            StorageUtil storageUtil = new StorageUtil();
+            string currentImagesURL = "";
             try
             {
                 con = new SqlConnection(GetConnectionString());
                 con.Open();
                 objTrans = con.BeginTransaction();
-                //Step 1: delete images to insert new ones
-                string queryImages = cns.DeleteImages();
-                SqlParameter paramImages = new SqlParameter()
+                string queryImages = "";
+                //Step 1: delete images
+                if (voUpdatePublication.ImagesURL == null)
                 {
-                    ParameterName = "@idPublication",
-                    Value = idPublication,
-                    SqlDbType = SqlDbType.Int
+                    // If there is no URL, it means that all images were deleted
+                    queryImages = cns.DeleteAllImages();
+                } else
+                {
+                    currentImagesURL = StorageUtil.CreateImagesURLString(voUpdatePublication.ImagesURL);
+                    // Some or none image were deleted
+                    queryImages = cns.DeleteImages();
+                }               
+                List<SqlParameter> paramImages = new List<SqlParameter>()
+                {
+                     new SqlParameter("@idPublication", SqlDbType.Int) {Value = idPublication},
+                     new SqlParameter("@currentImagesURL", SqlDbType.VarChar) {Value = currentImagesURL},
                 };
                 SqlCommand deleteCommand = new SqlCommand(queryImages, con);
-                deleteCommand.Parameters.Add(paramImages);
+                deleteCommand.Parameters.AddRange(paramImages.ToArray());
                 deleteCommand.Transaction = objTrans;
                 deleteCommand.ExecuteNonQuery();
                 //Step 2: insert images
-                StorageUtil storageUtil = new StorageUtil();
-                List<string> urls = await storageUtil.StoreImageAsync(voUpdatePublication.Images, user.IdUser, idPublication);
-                InsertImages(con, objTrans, idPublication, urls);
+                if (voUpdatePublication.Base64Images != null)
+                {
+                    List<string> urls = await storageUtil.StoreImageAsync(voUpdatePublication.Base64Images, user.IdUser, idPublication);
+                    InsertImages(con, objTrans, idPublication, urls);
+                }               
                 //Step 3: update publication
                 string query = cns.UpdatePublication();
                 String facilities = Util.CreateFacilitiesString(voUpdatePublication.Publication.Facilities);

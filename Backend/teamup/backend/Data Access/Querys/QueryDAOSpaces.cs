@@ -165,7 +165,7 @@ namespace backend.Data_Access.Query
         public String GetRelatedSpaces ()
         {
             String query = "select p.idPublication, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, " +
-                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities from PUBLICATIONS p where " +
+                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities, p.city from PUBLICATIONS p where " +
                 " p.idPublication <> @idPublication and p.state = 2 and p.capacity >= @capacity and p.spaceType = @spaceType and p.city = @city";
             return query;
         }
@@ -187,7 +187,7 @@ namespace backend.Data_Access.Query
             String query = "delete from FAVOURITE_SPACES where idPublication = @idPublication and idUser =  @idUser";
             return query;
         }
-        public String DeleteImages()
+        public String DeleteAllImages()
         {
             String query = "delete from PUBLICATION_IMAGES where idPublication = @idPublication";
             return query;
@@ -200,6 +200,12 @@ namespace backend.Data_Access.Query
                 "videoURL = @videoURL, hourPrice = @hourPrice, dailyPrice = @dailyPrice, weeklyPrice = @weeklyPrice, " +
                 "monthlyPrice = @monthlyPrice, availability = @availability, facilities = @facilities, city = @city where idPublication = @idPublication";
             return query;            
+        }
+
+        public String DeleteImages()
+        {
+            String query = "delete from PUBLICATION_IMAGES where idPublication = @idPublication and accessURL not in (@currentImagesURL)";
+            return query;
         }
         
 

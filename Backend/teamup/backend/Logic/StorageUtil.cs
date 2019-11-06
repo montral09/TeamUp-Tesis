@@ -54,5 +54,10 @@ namespace backend.Logic
             }
             return urls;
         }
+
+        public static string CreateImagesURLString(List<string> imagesURL)
+        {
+            return String.Join(",", imagesURL);
+        }
     }
 }
