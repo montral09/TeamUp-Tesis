@@ -13,7 +13,7 @@ import { loadState, saveState } from './cookieStore';
 const initState = {
     login_status : 'NOT_LOGGED_IN',
     adminData : {},
-    tokenObj : {},
+    admTokenObj : {},
     messageObj: {},
 }
 
@@ -24,12 +24,12 @@ const loginReducer = (state = initState, action) =>{
     switch(action.type){
         case LOG_IN : 
             console.log("This is the token obj:");
-            console.log(action.tokenObj)
+            console.log(action.admTokenObj)
             newStateObj = {
                 ...state,
                 login_status: 'LOGGED_IN',
                 adminData: action.adminData,
-                tokenObj: action.tokenObj,
+                admTokenObj: action.admTokenObj,
             }
             toast.success(action.messageObj.successMessage, {
                 position: "top-right",
@@ -60,7 +60,7 @@ const loginReducer = (state = initState, action) =>{
                 ...state,
                 login_status: 'NOT_LOGGED_IN',
                 adminData: [],
-                tokenObj: {}
+                admTokenObj: {}
             }
             saveState(newStateObj);
         break;

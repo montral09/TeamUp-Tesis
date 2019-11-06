@@ -26,11 +26,11 @@ export const logIn = (adminData) =>{
                 let originalDate = new Date();
                 let quinceMinDateTime = new Date(originalDate.getTime() + 15*60000);
                 let cincoDiasDateTime = new Date(originalDate.getTime() + 7200*60000);
-                let tokenObj = {
+                let admTokenObj = {
                     accesToken : data.AccessToken,
                     refreshToken : data.RefreshToken
                 }
-                dispatch({ type: LOG_IN, adminData: data.voAdmin, tokenObj: tokenObj, messageObj: { responseCode: "SUCC_USRLOGSUCCESS", successMessage: "Bienvenid@,  "+data.voAdmin.Name}});
+                dispatch({ type: LOG_IN, adminData: data.voAdmin, admTokenObj: admTokenObj, messageObj: { responseCode: "SUCC_USRLOGSUCCESS", successMessage: "Bienvenid@,  "+data.voAdmin.Name}});
             } else {
                 dispatch({ type: LOG_IN_ERROR, messageObj: { responseCode: "ERR_USRWRONGPASS", errorMessage: "Datos incorrectos"}});
             }
@@ -57,15 +57,15 @@ export const logIn = (adminData) =>{
                 let originalDate = new Date();
                 let quinceMinDateTime = new Date(originalDate.getTime() + 15*60000);
                 let cincoDiasDateTime = new Date(originalDate.getTime() + 7200*60000);
-                let tokenObj = {
+                let admTokenObj = {
                     accesToken : data.AccessToken,
                     accesTokenExp : quinceMinDateTime,
                     refreshToken : data.RefreshToken,
                     refreshTokenExp: cincoDiasDateTime
                 }
-                //this.props.logIn(data.voUserLog, tokenObj); // this is calling the reducer to store the data on redux Store
+                //this.props.logIn(data.voUserLog, admTokenObj); // this is calling the reducer to store the data on redux Store
                 //this.props.history.push('/');
-                dispatch({ type: LOG_IN, userData: data.voUserLog, tokenObj: tokenObj, messageObj: { responseCode: "SUCC_USRLOGSUCCESS", successMessage: "Bienvenid@,  "+data.voUserLog.Name}});
+                dispatch({ type: LOG_IN, userData: data.voUserLog, admTokenObj: admTokenObj, messageObj: { responseCode: "SUCC_USRLOGSUCCESS", successMessage: "Bienvenid@,  "+data.voUserLog.Name}});
             } else if(data.responseCode ==  "ERR_MAILNOTVALIDATED"){
                 dispatch({ type: LOG_IN_ERROR, messageObj: { responseCode: "ERR_MAILNOTVALIDATED", errorMessage: "Correo pendiente de validar "}});
             }else{

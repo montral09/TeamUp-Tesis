@@ -16,7 +16,7 @@ class ModifyUserModal extends React.Component {
             modal: false,
             userData: {},
             userDataChanged: {},
-            tokenObj: {},
+            admTokenObj: {},
             adminData: {}
         };
 
@@ -24,12 +24,12 @@ class ModifyUserModal extends React.Component {
         this.save = this.save.bind(this);
     }
 
-    toggle(userData,tokenObj,adminData) {
+    toggle(userData,admTokenObj,adminData) {
         this.setState({
             modal: !this.state.modal,
             userData: userData,
             userDataChanged: userData,
-            tokenObj: tokenObj,
+            admTokenObj: admTokenObj,
             adminData: adminData
         });
     }
@@ -50,7 +50,7 @@ class ModifyUserModal extends React.Component {
             CheckPublisher: CheckPublisher,
             PublisherValidated: PublisherValidated,
             MailValidated: MailValidated,
-            AccessToken: this.state.tokenObj.accesToken,
+            AccessToken: this.state.admTokenObj.accesToken,
             AdminMail: this.state.adminData.Mail,
             Active: Active
         }

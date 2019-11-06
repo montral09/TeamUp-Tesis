@@ -7,7 +7,7 @@ import PlacesAutocomplete, {
 class LocationSearchInput extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { city: '' };
+      this.state = { city: '' };
   }
  
   handleChange = address => {
@@ -16,9 +16,11 @@ class LocationSearchInput extends React.Component {
  
   handleSelect = address => {
     let city = address.split(",")[0];
+    this.props.onChange({target :{value:0,id:"city"}});
     this.setState({
       city: city
   })
+  
   console.log ("City from address: " + city)};
  
   render() {

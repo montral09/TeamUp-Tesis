@@ -5,6 +5,7 @@ import { Helmet } from 'react-helmet';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { connect } from 'react-redux';
+import Footer from "../../footer/footer";
 import CreatePublicationStep1 from './createPublicationStep1';
 import CreatePublicationStep2 from './createPublicationStep2';
 import CreatePublicationStep3 from './createPublicationStep3';
@@ -25,6 +26,7 @@ class CreatePublication extends React.Component {
             spaceName: "",
             description: "",
             locationText: "",
+            city: "",
             geoLat: 0,
             geoLng: 0,
             availability: "",
@@ -328,6 +330,7 @@ class CreatePublication extends React.Component {
                 "Title": this.state.spaceName,
                 "Description": this.state.description,
                 "Address": this.state.locationText,
+                "City" : this.state.city,
                 "Location": {
                     "Latitude": this.state.geoLat,
                     "Longitude": this.state.geoLng
@@ -413,12 +416,6 @@ class CreatePublication extends React.Component {
                 </Helmet>
                 {/*SEO Support End */}
                 <Header />
-                <div className="main-content  full-width  home">
-                    <div className="pattern" >
-                        <div>
-                            <div className="row">
-                                <div className="col-md-12 ">
-                                    <div className="row">
                                         <div className="col-md-9 center-column" id="content">
                                             <div className="row">
                                                 <div className="col-md-3">
@@ -439,13 +436,7 @@ class CreatePublication extends React.Component {
 
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+                <Footer />
             </>
         );
     }

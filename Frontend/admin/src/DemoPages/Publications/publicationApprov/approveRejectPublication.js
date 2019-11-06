@@ -14,44 +14,56 @@ class ApproveRejectPublicationModal extends React.Component {
 
         this.state = {
             modal: false,
-            newState: "ACTIVE", 
-            rejectReason : null,
-            oldState: "NOT VALIDATED",
-            action : 1, //1: approve, 2: reject
-            tokenObj: {},
+            RejectReason : "",
+            admTokenObj: {},
             adminData: {},
-            pubData : ""
+            pubData : {type : ""},
+            isLoading : false,
+            buttonIsDisabled: false
         };
         this.toggleAppRej = this.toggleAppRej.bind(this);
         this.saveAppRej = this.saveAppRej.bind(this);
     }
 
-    toggleAppRej(tokenObj, action, adminData, pubData) {
-        console.log ("toggleAppRej " + pubData)
-        this.setState({
-            modal: !this.state.modal,
-            tokenObj: tokenObj,
-            adminData: adminData,
-            action: action,
-            pubData: pubData
-        });
+    toggleAppRej(admTokenObj, adminData, pubData) {
+        if(pubData){
+            console.log ("toggleAppRej " + pubData)
+            this.setState({
+                modal: !this.state.modal,
+                admTokenObj: admTokenObj,
+                adminData: adminData,
+                pubData: pubData
+            });
+        }else{
+            this.setState({
+                modal: !this.state.modal
+            });
+        }
     }
 
     saveAppRej() {
         console.log("save - this.state: ");
         console.log(this.state);
-        return;
-        let {Mail, RejectedReason, OldState, NewState, Rut, AccessToken, IdPublication} = this.state;
+        this.setState({
+            isLoading: !this.state.isLoading, buttonIsDisabled: !this.state.buttonIsDisabled
+        });
+        var newState = "";
+        if(this.state.pubData.type == "REJECTED"){
+            newState = 'REJECTED';
+        }else if (this.state.pubData.type == "APPROVE"){
+            newState = 'ACTIVE';
+        }
+        // Old state => NOT VALIDATED
+        let {RejectedReason} = this.state;
+        let {Mail} = this.state.adminData;
         let objPub = {
             Mail: Mail,
-            RejectedReason : this.state.rejectReason,
-            OldState: this.state.oldState,
-            NewState: this.state.newState,
-            AccessToken: this.state.tokenObj.accesToken,
-            IdPublication: 4
+            RejectedReason : RejectedReason,
+            OldState: 'NOT VALIDATED',
+            NewState: newState,
+            AccessToken: this.state.admTokenObj.accesToken,
+            IdPublication: this.state.pubData.id
         }
-    
-
         fetch('https://localhost:44372/api/publication', {
             method: 'PUT',
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
@@ -68,25 +80,25 @@ class ApproveRejectPublicationModal extends React.Component {
                     draggable: true,
                 });
                 this.setState({
-                    modal: !this.state.modal,
-                    userData: this.state.userData,
-                    userDataChanged: this.state.userData
+                    modal: !this.state.modal,isLoading: !this.state.isLoading, buttonIsDisabled: !this.state.buttonIsDisabled
                 });
                 this.props.updateTable();
-            } else
-                 if (data.Message) {
-                    toast.error('Hubo un error', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                }
+            } else{
+                toast.error('Hubo un error', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
+                this.setState({
+                    isLoading: !this.state.isLoading, buttonIsDisabled: !this.state.buttonIsDisabled
+                });
+            }
         }
         ).catch(error => {
-            toast.error('Internal error', {
+            toast.error('Internal error:'+error, {
                 position: "top-right",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -94,7 +106,9 @@ class ApproveRejectPublicationModal extends React.Component {
                 pauseOnHover: true,
                 draggable: true,
             });
-            console.log(error);
+            this.setState({
+                isLoading: !this.state.isLoading, buttonIsDisabled: !this.state.buttonIsDisabled
+            });
         }
         )
             
@@ -103,7 +117,7 @@ class ApproveRejectPublicationModal extends React.Component {
     }
     onChange = (e) => {
         this.setState({
-            RejectedReason: e.target.value
+            RejectReason: e.target.value
           })
     }
     render() {
@@ -113,18 +127,27 @@ class ApproveRejectPublicationModal extends React.Component {
                     <ModalHeader toggle={this.toggleAppRej}>Cambiar publicacion</ModalHeader>
                     <ModalBody>
                     <Form>                        
-                        <FormGroup row>
-                            <Label for="RejectReason" sm={2}>Reject reason</Label>
-                            <Col sm={10}>
-                                <Input type="textarea" name="RejectReason" id="RejectReason"
-                                        value={this.state.rejectReason || ""} onChange={this.onChange}/>
-                            </Col>
-                        </FormGroup>
+                        <p> {this.state.pubData.type == 'APPROVE' ? "¿Esta seguro de aprobar esta publicación?" : "Por favor introduzca motivo de rechazo:"} </p>
+                        {this.state.pubData.type == 'REJECT' ? 
+                        (
+                            <FormGroup row>
+                                <Label for="RejectReason" sm={2}>Razon de rechazo</Label>
+                                <Col sm={10}>
+                                    <Input type="textarea" name="RejectReason" id="RejectReason"
+                                            value={this.state.RejectReason || ""} onChange={this.onChange}/>
+                                </Col>
+                            </FormGroup>
+                        ) : (null)}
                     </Form>
                     </ModalBody>
                     <ModalFooter>
-                        <Button color="link" onClick={this.toggleAppRej}>Cancel</Button>
-                        <Button color="primary" onClick={this.saveAppRej}>Confirmar</Button>{' '}
+                        <Button color="link" onClick={this.toggleAppRej}>Cancelar</Button>
+                        <Button color="primary" onClick={this.saveAppRej} disabled= {this.state.buttonIsDisabled}>{this.state.pubData.type == 'APPROVE' ? "Confirmar" : "Rechazar"}
+                            &nbsp;&nbsp;
+                            {this.state.isLoading &&  
+                                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            }
+                        </Button>
                     </ModalFooter>
                 </Modal>
             </span>

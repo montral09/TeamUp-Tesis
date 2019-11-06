@@ -26,11 +26,11 @@ class PublPendApprov extends Component {
         super(props);
         console.log("PublPendApprov - props:")
         console.log(props);
-        const tokenObj = props.tokenObj;
+        const admTokenObj = props.admTokenObj;
         const adminMail = props.adminData.Mail
         this.state = {
             publPendApp: [],
-            tokenObj: tokenObj,
+            admTokenObj: admTokenObj,
             adminMail: adminMail,
             spaceTypes: []
         }
@@ -86,7 +86,7 @@ class PublPendApprov extends Component {
                 method: 'PUT',
                 header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                 body: JSON.stringify({
-                    AccessToken : this.props.tokenObj.accesToken,
+                    AccessToken : this.props.admTokenObj.accesToken,
                     Mail: this.props.adminData.Mail,
                     IdPublication: idPub,
                     OldState: "NOT VALIDATED",
@@ -134,22 +134,26 @@ class PublPendApprov extends Component {
     }
     // This function will try to approve an specific publication
     approvePublication (key) {
-        console.log("approvePublication");
-        //this.changePubTransition('ACTIVE', key);
-        this.modalElementAppRej.current.toggleAppRej(this.state.tokenObj, 1, this.state.adminData, key);        
+        var pubData = {
+            id: key,
+            type: "APPROVE"
+        };
+        this.modalElementAppRej.current.toggleAppRej(this.props.admTokenObj, this.props.adminData, pubData);        
     }
 
     rejectPublication (key) {
-        //console.log("rejectPublication");
-
-        //this.changePubTransition('REJECTED', key);
+        var pubData = {
+            id: key,
+            type: "REJECT"
+        };
+        this.modalElementAppRej.current.toggleAppRej(this.props.admTokenObj, this.props.adminData, pubData);  
     }
 
 
 
     approveAllPublications = () => {
         const publPendAppNew = [];
-        this.submitPublication(this.state.publToApprove.map(publicationObj =>{return publicationObj.Mail}), publPendAppNew, this.state.tokenObj, this.state.adminMail);
+        this.submitPublication(this.state.publToApprove.map(publicationObj =>{return publicationObj.Mail}), publPendAppNew, this.props.admTokenObj, this.state.adminMail);
     }
 
     // This function will trigger when the component is mounted, to fill the data from the state
@@ -163,7 +167,7 @@ class PublPendApprov extends Component {
             method: 'POST',
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify({
-                "AccessToken": this.props.tokenObj.accesToken,
+                "AccessToken": this.props.admTokenObj.accesToken,
                 "AdminMail": this.props.adminData.Mail                   
             })
         }).then(response => response.json()).then(data => {
@@ -201,18 +205,18 @@ class PublPendApprov extends Component {
             return publ.IdPublication === key
         });
 
-        this.modalElement.current.toggle(publData[0],this.state.tokenObj,this.state.adminData, this.state.spaceTypes);
+        this.modalElement.current.toggle(publData[0],this.state.admTokenObj,this.state.adminData, this.state.spaceTypes);
     }
 
     // This funciton will call the api to submit the publisher
-    submitPublisher(publishersEmails, newArrIfSuccess, tokenObj, adminMail) {
+    submitPublisher(publishersEmails, newArrIfSuccess, admTokenObj, adminMail) {
         console.log("FAbi1" + adminMail)
         fetch('https://localhost:44372/api/publisher', {
             method: 'PUT',
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify({
                 Mails: publishersEmails,
-                AccessToken : tokenObj.accesToken,
+                AccessToken : admTokenObj.accesToken,
                 AdminMail : adminMail
             })
         }).then(response => response.json()).then(data => {
@@ -292,7 +296,7 @@ class PublPendApprov extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        tokenObj: state.loginData.tokenObj,
+        admTokenObj: state.loginData.admTokenObj,
         adminData : state.loginData.adminData
     }
 }
