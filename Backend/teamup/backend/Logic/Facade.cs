@@ -417,6 +417,8 @@ namespace backend.Logic
                     VOTokens voTokens = users.CreateTokens(voTokensUpdate.Mail);
                     response.RefreshToken = voTokens.RefreshToken;
                     response.AccessToken = voTokens.AccessToken;
+                    response.User = users.Find(voTokensUpdate.Mail);
+                    response.User.Password = null;
                     message = EnumMessages.SUCC_TOKENSUPDATED.ToString();
                 }
                 response.responseCode = message;
