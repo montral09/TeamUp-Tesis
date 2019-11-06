@@ -18,19 +18,19 @@ class ModifyPublicationModal extends React.Component {
             publDataChanged: {
                 Location: ''
             },
-            tokenObj: {},
+            admTokenObj: {},
             adminData: {}
         };
         this.toggle = this.toggle.bind(this);
         this.save = this.save.bind(this);
     }
 
-    toggle(publData, tokenObj, adminData, spaceTypes) {
+    toggle(publData, admTokenObj, adminData, spaceTypes) {
         this.setState({
             modal: !this.state.modal,
             publData: publData,
             publDataChanged: publData,
-            tokenObj: tokenObj,
+            admTokenObj: admTokenObj,
             adminData: adminData,
             spaceTypes: spaceTypes
         });
@@ -53,7 +53,7 @@ class ModifyPublicationModal extends React.Component {
             CheckPublisher: CheckPublisher,
             PublisherValidated: PublisherValidated,
             MailValidated: MailValidated,
-            AccessToken: this.state.tokenObj.accesToken,
+            AccessToken: this.state.admTokenObj.accesToken,
             AdminMail: this.state.adminData.Mail,
             Active: Active
         }

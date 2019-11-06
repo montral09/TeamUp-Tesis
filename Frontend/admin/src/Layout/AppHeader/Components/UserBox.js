@@ -84,7 +84,7 @@ class UserBox extends React.Component {
 const mapStateToProps = (state) => {
     return {
         adminData: state.loginData.adminData,
-        tokenObj: state.loginData.tokenObj,
+        admTokenObj: state.loginData.admTokenObj,
     }
 }
 

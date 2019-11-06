@@ -23,11 +23,11 @@ class AllPublishers extends Component {
         super(props);
         console.log("AllPublishers - props:")
         console.log(props);
-        const tokenObj = props.tokenObj;
+        const admTokenObj = props.admTokenObj;
         const adminMail = props.adminData.Mail
         this.state = {
             gestPendApr: [],
-            tokenObj: tokenObj,
+            admTokenObj: admTokenObj,
             adminMail : adminMail
         }
     }
@@ -42,12 +42,12 @@ class AllPublishers extends Component {
             return gest.Mail !== key
         });
 
-        this.submitPublisher([gestToApprove[0].Mail], gestPendAprNew, this.state.tokenObj, this.state.adminEmail);
+        this.submitPublisher([gestToApprove[0].Mail], gestPendAprNew, this.state.admTokenObj, this.state.adminEmail);
     }
 
     approveAllPublishers = () => {
         const gestPendAprNew = [];
-        this.submitPublisher(this.state.gestPendApr.map(publisherObj =>{return publisherObj.Mail}), gestPendAprNew, this.state.tokenObj, this.state.adminEmail);
+        this.submitPublisher(this.state.gestPendApr.map(publisherObj =>{return publisherObj.Mail}), gestPendAprNew, this.state.admTokenObj, this.state.adminEmail);
     }
 
     // This function will trigger when the component is mounted, to fill the data from the state
@@ -85,16 +85,16 @@ class AllPublishers extends Component {
     }
 
     // This funciton will call the api to submit the publisher
-    submitPublisher(publishersEmails, newArrIfSuccess, tokenObj, adminMail) {
+    submitPublisher(publishersEmails, newArrIfSuccess, admTokenObj, adminMail) {
         console.log ("entre al submit con mails y access token");
         console.log(publishersEmails);
-        console.log(tokenObj);
+        console.log(admTokenObj);
         fetch('https://localhost:44372/api/publisher', {
             method: 'PUT',
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify({
                 Mails: publishersEmails,
-                AccessToken : tokenObj.accesToken,
+                AccessToken : admTokenObj.accesToken,
                 AdminMail : adminMail
             })
         }).then(response => response.json()).then(data => {
@@ -172,7 +172,7 @@ class AllPublishers extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        tokenObj: state.loginData.tokenObj,
+        admTokenObj: state.loginData.admTokenObj,
         adminData : state.loginData.adminData
     }
 }

@@ -25,7 +25,7 @@ class AllUsers extends Component {
         super(props);
         this.state = {
             arrData: [],
-            tokenObj: this.props.tokenObj,
+            admTokenObj: this.props.admTokenObj,
             adminData: this.props.adminData
         }
         this.modalElement = React.createRef(); // esto hace unas magias para cambiar el estado de un componente hijo
@@ -38,7 +38,7 @@ class AllUsers extends Component {
             return usr.Mail === key
         });
 
-        this.modalElement.current.toggle(userData[0],this.state.tokenObj,this.state.adminData);
+        this.modalElement.current.toggle(userData[0],this.state.admTokenObj,this.state.adminData);
     }
 
 
@@ -48,7 +48,7 @@ class AllUsers extends Component {
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify({
                 Mail: this.state.adminData.Mail,
-                AccessToken: this.state.tokenObj.accesToken
+                AccessToken: this.state.admTokenObj.accesToken
             })
         }).then(response => response.json()).then(data => {
             if (data.responseCode == "SUCC_USERSOK") {
@@ -121,7 +121,7 @@ const mapStateToProps = (state) => {
     return {
         login_status: state.loginData.login_status,
         adminData: state.loginData.adminData,
-        tokenObj: state.loginData.tokenObj,
+        admTokenObj: state.loginData.admTokenObj,
     }
 }
 
