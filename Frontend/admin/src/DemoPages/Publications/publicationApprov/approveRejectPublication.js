@@ -48,22 +48,23 @@ class ApproveRejectPublicationModal extends React.Component {
             isLoading: !this.state.isLoading, buttonIsDisabled: !this.state.buttonIsDisabled
         });
         var newState = "";
-        if(this.state.pubData.type == "REJECTED"){
+        if(this.state.pubData.type == "REJECT"){
             newState = 'REJECTED';
         }else if (this.state.pubData.type == "APPROVE"){
             newState = 'ACTIVE';
         }
         // Old state => NOT VALIDATED
-        let {RejectedReason} = this.state;
         let {Mail} = this.state.adminData;
         let objPub = {
             Mail: Mail,
-            RejectedReason : RejectedReason,
+            RejectedReason : this.state.RejectReason,
             OldState: 'NOT VALIDATED',
             NewState: newState,
             AccessToken: this.state.admTokenObj.accesToken,
             IdPublication: this.state.pubData.id
         }
+        console.log("fabi");
+        console.log(objPub);
         fetch('https://localhost:44372/api/publication', {
             method: 'PUT',
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
