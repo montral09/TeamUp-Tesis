@@ -6,7 +6,6 @@ class RelatedPublicationPreview extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = { redirect: false }
-		this.redirectToPub = this.redirectToPub.bind(this);
 	}
 	loadQuickview(id) {
 		this.props.changeQuickview(id);
@@ -14,15 +13,10 @@ class RelatedPublicationPreview extends React.Component {
 			$('#modalProduct-' + id).modal('show')
 		}, 100);
 	}
-	redirectToPub() {
-		// do some check before setting redirect to true
-		this.setState({ redirect: true });
-	}
  	render() {
 		 const { Capacity, Description, IdPublication, ImagesURL} = this.props;
 		 console.log("rel pub prev: ");
 		 console.log(this.props);
-		 if (this.state.redirect) return <Link to={"/publications/viewPublication/viewPublication/"+IdPublication} />;
 		return (
 			<React.Fragment>
 				<div className="product clearfix product-hover">
@@ -38,7 +32,7 @@ class RelatedPublicationPreview extends React.Component {
 							<div>{Capacity} personas</div>
 				        </div>
 				        <div className="only-hover">
-				        	<a className="button" onClick={() => this.redirectToPub()}>Ver</a>
+				        	<a className="button" onClick={() => this.props.redirectToPub(IdPublication)}>Ver</a>
 				        </div>
 				    </div>
 				</div>

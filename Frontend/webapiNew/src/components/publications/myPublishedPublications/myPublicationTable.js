@@ -32,7 +32,7 @@ const MyPublicationTable = (props) =>{
                     <div>
                     {obj.State === 'ACTIVE' ? (
                         <div>
-                            <a href="" className = "col-md-12" onClick={() => alert("Agregar editar publicacion")}> <span><i className="col-md-1 fa fa-pencil-alt"></i></span>EDITAR</a>
+                            <a className = "col-md-12" onClick={() => props.editPublication(obj.IdPublication)}> <span><i className="col-md-1 fa fa-pencil-alt"></i></span>EDITAR</a>
                             <a href="" onClick={() => alert("Agregar pausar publicacion")}><span><i className="col-md-1 fa fa-pause"></i></span>PAUSAR</a>
                         </div>
                     ) : (

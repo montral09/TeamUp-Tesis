@@ -5,7 +5,7 @@ import { Helmet } from 'react-helmet';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { connect } from 'react-redux';
-
+import CreatePublication from './../createPublication/createPublicationMaster';
 import MyPublicationTable from './myPublicationTable';
 
 class MyPublicationsList extends React.Component {
@@ -15,16 +15,20 @@ class MyPublicationsList extends React.Component {
         this.state = {
             loadingPubs : true,
             loadingSpaceTypes : true,
+            pubId : null,
             publications : [],
             spaceTypes : []
         }
         this.loadMyPublications = this.loadMyPublications.bind(this);
+        this.editPublication = this.editPublication.bind(this);
+
     }
     componentDidMount() {
         window.scrollTo(0, 0);
         this.loadSpaceTypes();
         this.loadMyPublications();
     }
+
     loadSpaceTypes() {
         try {
             fetch('https://localhost:44372/api/spaceTypes'
@@ -65,6 +69,7 @@ class MyPublicationsList extends React.Component {
             });
         }
     }
+
     loadMyPublications(){
         try {
             fetch('https://localhost:44372/api/publisherSpaces', {
@@ -113,11 +118,17 @@ class MyPublicationsList extends React.Component {
         }
     }
 
+    editPublication(pubId){
+        this.setState({ pubId: pubId })
+    }
+
     render() {
         const { login_status } = this.props;
         if (login_status != 'LOGGED_IN') return <Redirect to='/' />
         return (
             <>
+            {this.state.pubId == null ? (
+                <>
                 {/*SEO Support*/}
                 <Helmet>
                     <title>TeamUp | Mis Publicaciones</title>
@@ -129,12 +140,17 @@ class MyPublicationsList extends React.Component {
                     <div className="pattern" >
                         <div className="col-md-12 center-column">
                             {(!this.state.loadingPubs && !this.state.loadingSpaceTypes) ?
-                            (<MyPublicationTable  publications={this.state.publications} spaceTypes={this.state.spaceTypes} />)
+                            (<MyPublicationTable  editPublication={this.editPublication}  publications={this.state.publications} spaceTypes={this.state.spaceTypes} />)
                             : ( <p>LOADING</p>)
                             }
                         </div>
                     </div>
                 </div>
+                </>
+            ) : (
+                <CreatePublication publicationID={this.state.pubId} />
+            )}
+                
             </>
         );
     }

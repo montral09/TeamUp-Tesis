@@ -11,13 +11,21 @@ import CreatePublicationStep2 from './createPublicationStep2';
 import CreatePublicationStep3 from './createPublicationStep3';
 import CreatePublicationStep4 from './createPublicationStep4';
 import CreatePublicationStep5 from './createPublicationStep5';
+import LoadingOverlay from 'react-loading-overlay';
 
 
 class CreatePublication extends React.Component {
 
     constructor(props) {
         super(props);
+        var pubIsLoading = false;
+        if(props.publicationID){
+            pubIsLoading = true;
+        }
         this.state = {
+            publicationID: props.publicationID,
+            pubIsLoading : pubIsLoading,
+            imagesURL : [],
             currentStep: 1,
             spaceTypes: [],
             isLoading: false,
@@ -51,6 +59,75 @@ class CreatePublication extends React.Component {
         this._previousStep = this._previousStep.bind(this);
         
     }
+    loadPublication(pubID){
+        try{
+            this.setState({ pubIsLoading: true});
+            fetch('https://localhost:44372/api/publication?idPublication='+pubID+'&mail=').then(response => response.json()).then(data => {
+                console.log("loadPublication data:");
+                console.log(data);
+                if (data.responseCode == "SUCC_PUBLICATIONSOK") {
+                    var pubObj = data.Publication;
+                    this.setState({ pubIsLoading: false, spaceName:pubObj.Title, description:pubObj.Description,locationText:pubObj.Address,
+                                    DailyPrice:pubObj.DailyPrice,HourPrice:pubObj.HourPrice,WeeklyPrice:pubObj.WeeklyPrice,MonthlyPrice:pubObj.MonthlyPrice,
+                                    city:pubObj.City,geoLat:pubObj.Location.Latitude, geoLng:pubObj.Location.Longitude,facilitiesSelect:pubObj.Facilities,
+                                    imagesURL:pubObj.ImagesURL,capacity:pubObj.Capacity,availability:pubObj.Availability,youtubeURL:pubObj.VideoURL});
+                } else {
+                    this.setState({ pubIsLoading: false});
+                    if(data.responseCode == 'ERR_SPACENOTFOUND'){
+                        toast.error('espacio no encontrado', {
+                            position: "top-right",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                        });
+                    }
+                    if (data.Message) {
+                        toast.error('Hubo un error: ' + data.Message, {
+                            position: "top-right",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                        });
+                    } else {
+                        toast.error('Internal error', {
+                            position: "top-right",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                        });
+                    }
+                }
+            }
+            ).catch(error => {
+                this.setState({ pubIsLoading: false, buttonIsDisable: false });
+                toast.error('Internal error', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
+                console.log(error);
+            }
+            )
+        }catch(error){
+            toast.error('Internal error', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+        }
+    }
 
     validateStep(){
         var isValid = false;
@@ -62,7 +139,7 @@ class CreatePublication extends React.Component {
                     }
                 break;
                 case 2:
-                    if(this.state.spaceImages.length != 0 && this.state.geoLat != 0){
+                    if((this.state.imagesURL.length != 0 || this.state.spaceImages.length != 0  )&& this.state.geoLat != 0){
                         isValid = true;
                     }
                 break;
@@ -172,6 +249,9 @@ class CreatePublication extends React.Component {
         this.loadSpaceTypes();
         this.loadInfraestructure();
         this.loadPremiumOptions();
+        if(this.state.publicationID){
+            this.loadPublication(this.state.publicationID);
+        }
     }
 
     onChange = (e) => {
@@ -321,43 +401,80 @@ class CreatePublication extends React.Component {
     }
 
     submitPublication() {
+        var objToSend = {}
+        var fetchUrl = '';
+        var method = "";
 
-        var objToSend = {
-            "AccessToken": this.props.tokenObj.accesToken,
-            "VOPublication": {
-                "Mail": this.props.userData.Mail,
-                "SpaceType": parseInt(this.state.spaceTypeSelect),
-                "Title": this.state.spaceName,
-                "Description": this.state.description,
-                "Address": this.state.locationText,
-                "City" : this.state.city,
-                "Location": {
-                    "Latitude": this.state.geoLat,
-                    "Longitude": this.state.geoLng
+        if(this.state.publicationID){
+            // this is an edit
+            var objToSend = {
+                "AccessToken": this.props.tokenObj.accesToken,
+                "Publication": {
+                    "IdPublication": this.state.publicationID,
+                    "Mail": this.props.userData.Mail,
+                    "SpaceType": parseInt(this.state.spaceTypeSelect),
+                    "Title": this.state.spaceName,
+                    "Description": this.state.description,
+                    "Address": this.state.locationText,
+                    "City": this.state.city,
+                    "Location": {
+                        "Latitude": this.state.geoLat,
+                        "Longitude": this.state.geoLng
+                    },
+                    "Capacity": parseInt(this.state.capacity),
+                    "VideoURL": this.state.youtubeURL,
+                    "HourPrice": parseFloat(this.state.HourPrice),
+                    "DailyPrice": parseFloat(this.state.DailyPrice),
+                    "WeeklyPrice": parseFloat(this.state.WeeklyPrice),
+                    "MonthlyPrice": parseFloat(this.state.MonthlyPrice),
+                    "Availability": this.state.availability,
+                    "Facilities": this.state.facilitiesSelect,
                 },
-                "Capacity": parseInt(this.state.capacity),
-                "VideoURL": this.state.youtubeURL,
-                "HourPrice": parseFloat(this.state.HourPrice),
-                "DailyPrice": parseFloat(this.state.DailyPrice),
-                "WeeklyPrice": parseFloat(this.state.WeeklyPrice),
-                "MonthlyPrice": parseFloat(this.state.MonthlyPrice),
-                "Availability": this.state.availability,
-                "Facilities": this.state.facilitiesSelect,
-            },
-            "Images": this.state.spaceImages
+                "Base64Images": this.state.spaceImages,
+                "ImagesURL" : this.state.imagesURL
+            }
+            fetchUrl = "https://localhost:44372/api/publications";
+            method = "PUT";
+        }else{
+            fetchUrl = 'https://localhost:44372/api/publication';
+            method = "POST";
+            var objToSend = {
+                "AccessToken": this.props.tokenObj.accesToken,
+                "VOPublication": {
+                    "Mail": this.props.userData.Mail,
+                    "SpaceType": parseInt(this.state.spaceTypeSelect),
+                    "Title": this.state.spaceName,
+                    "Description": this.state.description,
+                    "Address": this.state.locationText,
+                    "City" : this.state.city,
+                    "Location": {
+                        "Latitude": this.state.geoLat,
+                        "Longitude": this.state.geoLng
+                    },
+                    "Capacity": parseInt(this.state.capacity),
+                    "VideoURL": this.state.youtubeURL,
+                    "HourPrice": parseFloat(this.state.HourPrice),
+                    "DailyPrice": parseFloat(this.state.DailyPrice),
+                    "WeeklyPrice": parseFloat(this.state.WeeklyPrice),
+                    "MonthlyPrice": parseFloat(this.state.MonthlyPrice),
+                    "Availability": this.state.availability,
+                    "Facilities": this.state.facilitiesSelect,
+                },
+                "Images": this.state.spaceImages
+            }
         }
+
         console.log(objToSend);
 
         this.setState({ isLoading: true, buttonIsDisable: true });
-        fetch('https://localhost:44372/api/publication', {
-            method: 'POST',
+        fetch(fetchUrl, {
+            method: method,
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-
             body: JSON.stringify(objToSend)
         }).then(response => response.json()).then(data => {
             this.setState({ isLoading: false, buttonIsDisable: false });
             console.log("data:" + JSON.stringify(data));
-            if (data.responseCode == "SUCC_PUBLICATIONCREATED") {
+            if (data.responseCode == "SUCC_PUBLICATIONCREATED" || data.responseCode == "SUCC_PUBLICATIONUPDATED" ) {
                 toast.success('Su publicación ha sido enviada correctamente, revise su casilla de correo para más informacion. ', {
                     position: "top-right",
                     autoClose: 5000,
@@ -366,7 +483,7 @@ class CreatePublication extends React.Component {
                     pauseOnHover: true,
                     draggable: true,
                 });
-                this.props.history.push('/')
+                this.props.history.push('/');
             } else {
                 if (data.Message) {
                     toast.error('Hubo un error: ' + data.Message, {
@@ -409,34 +526,46 @@ class CreatePublication extends React.Component {
         if (login_status != 'LOGGED_IN') return <Redirect to='/' />
         return (
             <>
-                {/*SEO Support*/}
-                <Helmet>
-                    <title>TeamUp | Crear Espacio</title>
-                    <meta name="description" content="---" />
-                </Helmet>
-                {/*SEO Support End */}
-                <Header />
-                                        <div className="col-md-9 center-column" id="content">
-                                            <div className="row">
-                                                <div className="col-md-3">
-                                                    <div className="well">
-                                                    </div>
-                                                </div>
-                                                <div className="col-md-9">
-                                                    <CreatePublicationStep1 parentState={this.state} onChange={this.onChange} />
-                                                    <CreatePublicationStep2 parentState={this.state} onChange={this.onChange} />
-                                                    <CreatePublicationStep3 parentState={this.state} onChange={this.onChange} />
-                                                    <CreatePublicationStep4 parentState={this.state} onChange={this.onChange} />
-                                                    <CreatePublicationStep5 parentState={this.state} onChange={this.onChange} />
+                {this.state.pubIsLoading == false ? (
+                    <>
+                    {/*SEO Support*/}
+                    <Helmet>
+                        <title>TeamUp | Crear Espacio</title>
+                        <meta name="description" content="---" />
+                    </Helmet>
+                    {/*SEO Support End */}
+                    <Header />
+                        <div className="col-md-9 center-column" id="content">
+                            <div className="row">
+                                <div className="col-md-3">
+                                    <div className="well">
+                                    </div>
+                                </div>
+                                <div className="col-md-9">
+                                    <CreatePublicationStep1 parentState={this.state} onChange={this.onChange} />
+                                    <CreatePublicationStep2 parentState={this.state} onChange={this.onChange} />
+                                    <CreatePublicationStep3 parentState={this.state} onChange={this.onChange} />
+                                    <CreatePublicationStep4 parentState={this.state} onChange={this.onChange} />
+                                    <CreatePublicationStep5 parentState={this.state} onChange={this.onChange} />
 
-                                                    {this.previousButton}
-                                                    {this.nextButton}
-                                                    {this.endButton}
-                                                </div>
+                                    {this.previousButton}
+                                    {this.nextButton}
+                                    {this.endButton}
+                                </div>
 
-                                            </div>
-                                        </div>
-                <Footer />
+                            </div>
+                        </div>
+                    <Footer />
+                    </>
+                ) : (                
+                <LoadingOverlay
+                    active={!this.state.pubIsLoading}
+                    spinner
+                    text='Cargando...'
+                >
+                    <div className="col-md-9 center-column" id="content"></div>
+                </LoadingOverlay>)}
+                
             </>
         );
     }

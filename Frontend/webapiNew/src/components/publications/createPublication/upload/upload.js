@@ -9,7 +9,8 @@ class Upload extends React.Component {
     super(props);
     this.state = {
       spaceImages: [],
-      tempFiles : []
+      tempFiles : [],
+      loadedImages : props.loadedImages || []
     }
     this.getBase64 = this.getBase64.bind(this);
   }
@@ -17,7 +18,7 @@ class Upload extends React.Component {
   // Upload image functions
   maxSelectFile = (event) => {
     let files = event.target.files // create file object
-    if (files.length > 7) {
+    if ((this.state.spaceImages.length + this.state.loadedImages.length + files.length) > 7) {
       event.target.value = null // discard selected file
       toast.error('El maximo de imagenes a subir son 7', {
         position: "top-right",

@@ -37,6 +37,7 @@ class ViewPublication extends React.Component {
             quantityPeople: 1,
         }
         this.loadPublication = this.loadPublication.bind(this);
+        this.redirectToPub = this.redirectToPub.bind(this);
         this.loadPublication(pubID);
     }
 
@@ -144,6 +145,7 @@ class ViewPublication extends React.Component {
             });
         }
     }
+    
     loadPublication(pubID){
         try{
             var email ="";
@@ -153,7 +155,7 @@ class ViewPublication extends React.Component {
             console.log("pubID:"+pubID);
             console.log("email:"+email);
             this.setState({ pubIsLoading: true});
-            fetch('https://localhost:44372/api/publication?idPublication='+pubID+'&mail=').then(response => response.json()).then(data => {
+            fetch('https://localhost:44372/api/publication?idPublication='+pubID+'&mail='+email).then(response => response.json()).then(data => {
                 console.log("data:");
                 console.log(data);
                 if (data.responseCode == "SUCC_PUBLICATIONSOK") {
@@ -212,6 +214,11 @@ class ViewPublication extends React.Component {
                 draggable: true,
             });
         }
+    }
+
+    redirectToPub(id){
+        this.props.history.push('/publications/viewPublication/viewPublication/'+id);
+        window.location.reload();
     }
 
 	changeImage(image, index) {
@@ -430,7 +437,7 @@ class ViewPublication extends React.Component {
                                                                                 <Map objGoogleMaps = {{zoom : 17, latitude: this.state.pubObj.Location.Latitude, longitude: this.state.pubObj.Location.Longitude}}/>
                                                                             }
 
-                                                                        <RelatedPublications relatedPublications={this.state.relatedPublications} />
+                                                                        <RelatedPublications relatedPublications={this.state.relatedPublications} redirectToPub={this.redirectToPub}/>
 
                                                                         </div>
                                                                     </div>
