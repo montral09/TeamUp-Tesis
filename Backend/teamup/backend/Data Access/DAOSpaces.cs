@@ -504,9 +504,7 @@ namespace backend.Data_Access
                 if (voGetPublicationsFilter.State != null)
                 {
                     state = util.ConvertState(voGetPublicationsFilter.State);
-                }
-                if (voGetPublicationsFilter.PageNumber == 1)
-                {                    
+                }                    
                     int qty = 0;
                     String queryQuantity = cns.GetQuantityPublicationsWithFilter(voGetPublicationsFilter, state);
                     SqlCommand selectCommandQuantity = new SqlCommand(queryQuantity, con);
@@ -515,7 +513,7 @@ namespace backend.Data_Access
                         new SqlParameter("@spaceType", SqlDbType.Int) { Value = voGetPublicationsFilter.SpaceType},
                         new SqlParameter("@capacity", SqlDbType.Int) {Value = voGetPublicationsFilter.Capacity},
                         new SqlParameter("@state", SqlDbType.Int) {Value = state},
-                        new SqlParameter("@city", SqlDbType.VarChar) {Value = voGetPublicationsFilter.City},
+                        new SqlParameter("@city", SqlDbType.VarChar) {Value = voGetPublicationsFilter.City ?? ""},
                     };
                     selectCommandQuantity.Parameters.AddRange(prmQty.ToArray());
                     SqlDataReader drQty = selectCommandQuantity.ExecuteReader();
@@ -524,14 +522,7 @@ namespace backend.Data_Access
                         qty = Convert.ToInt32(drQty["quantity"]);
                     }
                     drQty.Close();
-                    if (qty < MAX_PUBLICATIONS_PAGE)
-                    {
-                        response.MaxPage = 1;
-                    } else {
-                        response.MaxPage = (int)Math.Floor((Double)qty / MAX_PUBLICATIONS_PAGE);
-                    }
-                    
-                }
+                    response.TotalPublications = qty;   
                
                 String query = cns.GetPublicationsWithFilter(voGetPublicationsFilter, MAX_PUBLICATIONS_PAGE, state);
                 SqlCommand selectCommand = new SqlCommand(query, con);
@@ -540,7 +531,7 @@ namespace backend.Data_Access
                     new SqlParameter("@spaceType", SqlDbType.Int) { Value = voGetPublicationsFilter.SpaceType},
                     new SqlParameter("@capacity", SqlDbType.Int) {Value = voGetPublicationsFilter.Capacity},
                     new SqlParameter("@state", SqlDbType.Int) {Value = state},
-                    new SqlParameter("@city", SqlDbType.VarChar) {Value = voGetPublicationsFilter.City},
+                    new SqlParameter("@city", SqlDbType.VarChar) {Value = voGetPublicationsFilter.City ?? ""},
                 };
                 selectCommand.Parameters.AddRange(prm.ToArray());                
                 SqlDataReader dr = selectCommand.ExecuteReader();
@@ -778,7 +769,7 @@ namespace backend.Data_Access
                 {
                     currentImagesURL = StorageUtil.CreateImagesURLString(voUpdatePublication.ImagesURL);
                     // Some or none image were deleted
-                    queryImages = cns.DeleteImages();
+                    queryImages = cns.DeleteImages(currentImagesURL);
                 }               
                 List<SqlParameter> paramImages = new List<SqlParameter>()
                 {

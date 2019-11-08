@@ -103,7 +103,7 @@ namespace backend.Data_Access.Query
             {
                 query.Append("and p.capacity >= @capacity ");
             }
-            if (voGetPublicationsFilter.City != null)
+            if (!String.IsNullOrEmpty(voGetPublicationsFilter.City))
             {
                 query.Append("and p.city = @city ");
             }
@@ -134,7 +134,7 @@ namespace backend.Data_Access.Query
             {
                 query.Append("and p.capacity >= @capacity ");
             }
-            if (voGetPublicationsFilter.City != null)
+            if (!String.IsNullOrEmpty(voGetPublicationsFilter.City))
             {
                 query.Append("and p.city = @city ");
             }
@@ -146,7 +146,7 @@ namespace backend.Data_Access.Query
                 }
                 
             }
-            query.Append("order by p.idPublication offset ").Append((voGetPublicationsFilter.PageNumber - 1) * maxPublicationsPage).Append(" rows fetch next 10 rows only ");
+            query.Append("order by p.idPublication offset ").Append((voGetPublicationsFilter.PageNumber) * maxPublicationsPage).Append(" rows fetch next 10 rows only ");
             return query.ToString();
         }
 
@@ -202,10 +202,13 @@ namespace backend.Data_Access.Query
             return query;            
         }
 
-        public String DeleteImages()
+        public String DeleteImages(string currentImagesURL)
         {
-            String query = "delete from PUBLICATION_IMAGES where idPublication = @idPublication and accessURL not in (@currentImagesURL)";
-            return query;
+            StringBuilder query = new StringBuilder();
+            query = query.Append("delete from PUBLICATION_IMAGES where idPublication = @idPublication and accessURL not in('");
+            query.Append(currentImagesURL);
+            query.Append("')");
+            return query.ToString();
         }
         
 

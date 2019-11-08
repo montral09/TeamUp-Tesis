@@ -8,14 +8,14 @@ namespace backend.Data_Access.VO
     public class VOResponseGetPublicationsWithFilters : VOResponse
     {
         public List<VOPublication> Publications;
-        public int MaxPage { get; set; }
+        public int TotalPublications { get; set; }
 
         public VOResponseGetPublicationsWithFilters() { }
 
-        public VOResponseGetPublicationsWithFilters(List<VOPublication> publications, int maxPage)
+        public VOResponseGetPublicationsWithFilters(List<VOPublication> publications, int totalPublications)
         {
             Publications = publications;
-            MaxPage = maxPage;
+            TotalPublications = totalPublications;
         }
     }
 }

@@ -29,11 +29,13 @@ namespace backend.Logic
                 var a = await auth.SignInWithEmailAndPasswordAsync(AuthEmail, AuthPassword);
                 MemoryStream ms;
                 StringBuilder fullPath = new StringBuilder();
+                string fileName;
                 for (int i = 0; i < images.Count; i++)
                 {
+                    fileName = Util.GetRandomString();
                     byte[] byteArray = Convert.FromBase64String(images[i].Base64String);
                     ms = new MemoryStream(byteArray);
-                    fullPath = fullPath.Append("Images/").Append(idUser).Append("/").Append(idPublication).Append("/").Append(i).Append(".").Append(images[i].Extension);
+                    fullPath = fullPath.Append("Images/").Append(idUser).Append("/").Append(idPublication).Append("/").Append(fileName).Append(".").Append(images[i].Extension);
                     var cancellation = new CancellationTokenSource();
                     var task = new FirebaseStorage(Bucket, new FirebaseStorageOptions
                     {
@@ -57,7 +59,7 @@ namespace backend.Logic
 
         public static string CreateImagesURLString(List<string> imagesURL)
         {
-            return String.Join(",", imagesURL);
+            return String.Join("','", imagesURL);
         }
     }
 }
