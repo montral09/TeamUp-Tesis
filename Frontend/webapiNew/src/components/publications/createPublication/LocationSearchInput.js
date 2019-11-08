@@ -6,8 +6,9 @@ import PlacesAutocomplete, {
  
 class LocationSearchInput extends React.Component {
   constructor(props) {
+    console.log("city:"+props.city)
     super(props);
-      this.state = { city: '' };
+      this.state = { city: props.city || "" ,address: props.city || ""};
   }
  
   handleChange = address => {

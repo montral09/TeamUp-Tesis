@@ -58,9 +58,9 @@ class RelatedPublications extends React.Component {
 			        			<OwlCarousel ref="carousel" options={options}>
 									{relatedPublications.map(relPub => {
 										return (
-					        				<div className="item" key={relPub.id}>
-					        					<div className="product-grid">
-													{<RelatedPublicationPreview
+					        				<div className="item" key={relPub.id*2}>
+					        					<div className="product-grid" key={relPub.id}>
+													{<RelatedPublicationPreview redirectToPub={this.props.redirectToPub}
 														key={relPub.id}
 														{...relPub}
 													/>}

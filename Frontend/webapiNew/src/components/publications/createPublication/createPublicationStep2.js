@@ -7,11 +7,13 @@ import credentials from '../map/credentials';
 import Upload from './upload/upload';
 import Map from '../map/Map';
 import LocationSearchInput from './LocationSearchInput';
+import ViewImages from './upload/viewImages';
+
 
 class CreatePublicationStep2 extends React.Component {
     constructor(props) {
         super(props);
-        const locationTextValidatedInitial = false;
+        var locationTextValidatedInitial = false;
         if(this.props.parentState.geoLat != 0){
             locationTextValidatedInitial = true;
         }
@@ -31,24 +33,29 @@ class CreatePublicationStep2 extends React.Component {
         this.matchYoutubeUrl = this.matchYoutubeUrl.bind(this);
         this.validateLocation = this.validateLocation.bind(this);
         this.functionLoadLocation = this.functionLoadLocation.bind(this);
+        this.deleteImage = this.deleteImage.bind(this);
         Geocode.setApiKey(credentials.mapsKey);
         Geocode.setRegion("uy");
         Geocode.enableDebug();
     }
+    
+    deleteImage(id){
+        var tempImgArr = this.props.parentState.imagesURL.filter(function(value, index){
+            return index != id;
+        });
+        this.props.onChange({target :{value:tempImgArr, id:"imagesURL"}});
+    }
+
     matchYoutubeUrl(input) {
         let url = input.target.value;
-        console.log(url)
         var p = /(?:https?:\/\/)?(?:youtu\.be\/|(?:www\.|m\.)?youtube\.com\/(?:watch|v|embed)(?:\.php)?(?:\?.*v=|\/))([a-zA-Z0-9\-_]+)/;
         var matches = String(url).match(p);
-        console.log(matches)
         if (matches && matches[1].length == 11) {
             this.props.onChange({target :{value:matches[0], id:"youtubeURL"}});
             this.setState({ matchYoutubeSuccess: true, matchYoutubeError: false, youtubeURL:input.target.value });
-
         }else{
             this.props.onChange({target :{value:"", id:"youtubeURL"}});
             this.setState({ matchYoutubeSuccess: false, matchYoutubeError: true, youtubeURL:input.target.value });
-
         }
     }
 
@@ -125,7 +132,11 @@ class CreatePublicationStep2 extends React.Component {
         <Form className="border border-light p-6">
             <p className="h4 mb-4 text-center">Datos de tu espacio - Paso 2</p>
             <FormGroup>
-                <Upload onChange={this.props.onChange}/>
+                <Upload onChange={this.props.onChange} loadedImages={this.props.parentState.imagesURL}/>
+                {this.props.parentState.imagesURL.length > 0 ? (
+                    <ViewImages loadedImages={this.props.parentState.imagesURL} deleteImage={this.deleteImage}/>
+                ) : (null)}
+                <Label for="">Cantidad de fotos : {this.props.parentState.imagesURL.length + this.props.parentState.spaceImages.length} , guardadas {this.props.parentState.imagesURL.length} , a subir {this.props.parentState.spaceImages.length}</Label>
             </FormGroup>
             <FormGroup>
                 <Label for="youtubeURL">Video (Link de YouTube)</Label>
@@ -136,8 +147,8 @@ class CreatePublicationStep2 extends React.Component {
             <Row form>
                 <Col md={8}>
                     <FormGroup>
-                    <Label for="locationText">Localidad (*)</Label>
-                    <LocationSearchInput onChange={this.props.onChange}/>
+                    <Label for="locationSearch">Localidad (*)</Label>
+                    <LocationSearchInput onChange={this.props.onChange} city={this.props.parentState.city}/>
                     </FormGroup>
                 </Col>
                 <Col md={8}>
