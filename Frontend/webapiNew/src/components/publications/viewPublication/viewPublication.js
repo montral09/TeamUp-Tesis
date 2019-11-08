@@ -5,8 +5,6 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { connect } from 'react-redux';
 import LoadingOverlay from 'react-loading-overlay';
-
-
 import OwlCarousel from 'react-owl-carousel2';
 import 'react-owl-carousel2/src/owl.carousel.css';
 import InnerImageZoom from 'react-inner-image-zoom';
@@ -29,12 +27,14 @@ class ViewPublication extends React.Component {
             pubObj: null,
             activeImage: null,
             date: null,
-            quantity: 1,
+            quantityPlan: 1,
             tabDisplayed: 1,
             relatedPublications: [],
             facilities: [],
             pubIsLoading : true,
             infIsLoading : true,
+            planChosen : "Hours",
+            quantityPeople: 1,
         }
         this.loadPublication = this.loadPublication.bind(this);
         this.redirectToPub = this.redirectToPub.bind(this);
@@ -52,6 +52,12 @@ class ViewPublication extends React.Component {
         });
     }
 
+    handlePlanSelected = (e) => {
+        this.setState ({
+            planChosen : e.target.value
+        });
+    }
+
     handleSelect = (e) => {
         this.setState({
             date: e
@@ -64,22 +70,37 @@ class ViewPublication extends React.Component {
         }); 
     }
 
-    increaseQuantity() {
-		this.setState({ quantity: parseInt(this.state.quantity)+1});
+    increaseQuantityPlan() {
+		this.setState({ quantityPlan: parseInt(this.state.quantityPlan)+1});
     }
     
-	decreaseQuantity() {
-		if(parseInt(this.state.quantity) > 1) {
-			this.setState({ quantity: parseInt(this.state.quantity)-1});
+	decreaseQuantityPlan() {
+		if(parseInt(this.state.quantityPlan) > 1) {
+			this.setState({ quantityPlan: parseInt(this.state.quantityPlan)-1});
 		}
     }
     
-    changeQuantity(value) {
+    changeQuantityPlan(value) {
 		if(parseInt(value) > 0) {
-			this.setState({ quantity: parseInt(value)});
+			this.setState({ quantityPlan: parseInt(value)});
 		}
     }
 
+    increaseQuantityPeople() {
+		this.setState({ quantityPeople: parseInt(this.state.quantityPeople)+1});
+    }
+    
+	decreaseQuantityPeople() {
+		if(parseInt(this.state.quantityPeople) > 1) {
+			this.setState({ quantityPeople: parseInt(this.state.quantityPeople)-1});
+		}
+    }
+    
+    changeQuantityPeople(value) {
+		if(parseInt(value) > 0) {
+			this.setState({ quantityPeople: parseInt(value)});
+		}
+    }
     loadInfraestructure() {
         try {
             fetch('https://localhost:44372/api/facilities').then(response => response.json()).then(data => {
@@ -313,40 +334,65 @@ class ViewPublication extends React.Component {
                                                                                                         <span>{this.state.pubObj.Availability}<br/></span>
                                                                                                     </div>
                                                                                                 </div>
-                                                                                                <div className="review">
+                                                                                                
+                                                                                            </div>
+                                                                                            <div className="review col-md-4" style= {{marginLeft: '60%'}}>
                                                                                                 <div className = "title-page">
                                                                                                     <span><b>Haga su reserva ahora!</b></span>
                                                                                                 </div>
-                                                                                                <div className="col-md-9 box box-with-categories">
+                                                                                                
+                                                                                                <div className="col-md-12" style= {{border: '1px solid dodgerBlue'}}>
+                                                                                                    <div>
+                                                                                                    <span><b>Plan</b></span>
+                                                                                                    <select style= {{marginLeft: '10%'}} className="browser" id= "planChosen" onChange={this.handlePlanSelected} defaultValue = " -- select an option --">                                                                                                        
+                                                                                                        <option value="Hours">{this.state.pubObj.HourPrice > 0 && "Por Hora : $"+ this.state.pubObj.HourPrice }</option>
+                                                                                                        <option value="Days">{this.state.pubObj.DailyPrice > 0 && "Por Día : $"+ this.state.pubObj.DailyPrice}</option>
+                                                                                                        <option value="Weeks">{this.state.pubObj.WeeklyPrice > 0 && "Por Semana : $"+ this.state.pubObj.WeeklyPrice }</option>
+                                                                                                        <option value="Months">{this.state.pubObj.MonthlyPrice > 0 && "Por Mes : $"+ this.state.pubObj.MonthlyPrice}</option>
+                                                                                                    </select>                                                                                                    
+                                                                                                    <div className="cart">
+                                                                                                    <div className="add-to-cart d-flex">                                                                                                        
+                                                                                                    <span><b>{this.state.planChosen}</b></span>
+                                                                                                        <div className="quantity">
+                                                                                                            <input type="text" name="quantity" id="quantity_wanted" size="2" value={this.state.quantityPlan} onChange={(event) => this.changeQuantityPlan(event.target.value)} />
+                                                                                                            <a href="#quantity_up" id="q_up" onClick={() => this.increaseQuantityPlan()}><i className="fa fa-plus"></i></a>
+                                                                                                            <a href="#quantity_down" id="q_down" onClick={() => this.decreaseQuantityPlan()}><i className="fa fa-minus"></i></a>
+                                                                                                        </div>																				
+                                                                                                    </div>
+                                                                                                    </div>
+                                                                                                    <span><b>Desde</b></span>
                                                                                                     <DatePicker placeholderText="Fecha"
                                                                                                         dateFormat="dd/MM/yyyy"
                                                                                                         selected={this.state.date}
                                                                                                         onSelect={this.handleSelect} //when day is clicked
                                                                                                         onChange={this.handleChange} //only when value has changed
                                                                                                     />
-                                                                                                    <div className="cart">
-                                                                                                    <div className="add-to-cart d-flex">
-                                                                                                        <div className="quantity">
-                                                                                                            <input type="text" name="quantity" id="quantity_wanted" size="2" value={this.state.quantity} onChange={(event) => this.changeQuantity(event.target.value)} />
-                                                                                                            <a href="#quantity_up" id="q_up" onClick={() => this.increaseQuantity()}><i className="fa fa-plus"></i></a>
-                                                                                                            <a href="#quantity_down" id="q_down" onClick={() => this.decreaseQuantity()}><i className="fa fa-minus"></i></a>
-                                                                                                        </div>																				
-                                                                                                    </div>
-                                                                                                    </div>
+                                                                                                    <div className={ this.state.pubObj.state === 3 ? 'hidden' : 'shown'}>
+                                                                                                        <div className="cart">
+                                                                                                            <div className="add-to-cart d-flex">                                                                                                        
+                                                                                                                <span><b>Personas</b></span>
+                                                                                                                <div className="quantity">
+                                                                                                                    <input type="text" name="quantity" id="quantity_wanted" size="2" value={this.state.quantityPeople} onChange={(event) => this.changeQuantityPeople(event.target.value)} />
+                                                                                                                    <a href="#quantity_up" id="q_up" onClick={() => this.increaseQuantityPeople()}><i className="fa fa-plus"></i></a>
+                                                                                                                    <a href="#quantity_down" id="q_down" onClick={() => this.decreaseQuantityPeople()}><i className="fa fa-minus"></i></a>
+                                                                                                                </div>																				
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>                                                                                                    
                                                                                                     <div className="description add-to-cart d-flex">
-                                                                                                            <input type="button" value="Reservar" onClick={() => alert("Iniciar tramite reserva si esta logueado")} className="button" /> 
+                                                                                                            <input type="button" value="Reservar" onClick={() => alert("Ver resumen de la reserva, incluyendo el monto total para pagar y explicando el procedimiento")} className="button" /> 
                                                                                                         </div>																			
                                                                                                     </div>
                                                                                                     </div>
-                                                                                                <div id="product">
+                                                                                                    <div id="product">
                                                                                                     <div className="description">
                                                                                                         <div className="add-to-cart d-flex">                                                                                                                                                                                            
                                                                                                             <input type="button" value="Solicitar Información" onClick={() => alert("Mandar 'mensaje' si esta logueado?")} className="button" />
                                                                                                         </div>                                                                                                                                                                                           
                                                                                                     </div>
+                                                                                                    </div>
                                                                                                 </div>
                                     
-                                                                                            </div>
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
@@ -371,7 +417,9 @@ class ViewPublication extends React.Component {
                                                                                                 return parseInt(fac.Code) == parseInt(inf)
                                                                                             });
                                                                                             return (
-                                                                                                <div className="owl-item" key={index}><p>{infText[0].Description}</p></div>
+                                                                                                <div key={index}>
+                                                                                                    <p><i className="fa fa-circle"></i>{infText[0].Description}</p>
+                                                                                                </div>
                                                                                             );
                                                                                             })}<br/></span>
                                                                                     </div>
