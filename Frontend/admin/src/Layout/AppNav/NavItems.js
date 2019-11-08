@@ -1,3 +1,11 @@
+export const PublNav = [
+    {
+        icon: 'pe-7s-up-arrow',
+        label: 'Pendiente Aprobacion',
+        to: '#/publications/publicationApprov',
+    },
+];  
+
 export const GestNav = [
     {
         icon: 'pe-7s-up-arrow',

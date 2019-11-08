@@ -34,7 +34,7 @@ const PublisherApprovTable = ({pubPendApp, approvePublisher, approveAllPublisher
             <th>RUT</th>
             <th>Razon Social</th>
             <th>Dirección</th>
-            <th>Seleccionar</th>
+            <th>Aprobar</th>
           </tr>
         </thead>
         <tbody>

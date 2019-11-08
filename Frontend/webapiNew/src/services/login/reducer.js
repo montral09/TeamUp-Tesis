@@ -3,14 +3,18 @@ import {
     LOG_IN,
     LOG_OUT,
     CHECK_LOGIN,
-    MODIFY_DATA } 
+    MODIFY_DATA,
+    LOG_IN_ERROR,
+    TOKEN_UPDATED } 
 from "./actionTypes";
+import { toast } from 'react-toastify';
 import { loadState, saveState } from '../auth/cookieStore';
 
 const initState = {
     login_status : 'NOT_LOGGED_IN',
     userData : {},
-    tokenObj : {}
+    tokenObj : {},
+    messageObj: {},
 }
 
 const loginReducer = (state = initState, action) =>{
@@ -25,15 +29,37 @@ const loginReducer = (state = initState, action) =>{
                 ...state,
                 login_status: 'LOGGED_IN',
                 userData: action.userData,
-                tokenObj: action.tokenObj
+                tokenObj: action.tokenObj,
             }
+            toast.success(action.messageObj.successMessage, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            })
             saveState(newStateObj);
         break;
+        case LOG_IN_ERROR :
+            newStateObj = {
+                login_status: 'NOT_LOGGED_IN',
+                ...state,
+            }
+            toast.error(action.messageObj.errorMessage, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+        break; 
         case LOG_OUT : 
             newStateObj = {
                 ...state,
                 login_status: 'NOT_LOGGED_IN',
-                userData: [],
+                userData: {},
                 tokenObj: {}
             }
             saveState(newStateObj);
@@ -43,6 +69,14 @@ const loginReducer = (state = initState, action) =>{
                 ...state,
                 userData: action.userData
             }
+            saveState(newStateObj);
+        break;
+        case TOKEN_UPDATED : 
+            newStateObj = {
+                ...state,
+                tokenObj: action.tokenObj
+            }
+            saveState(newStateObj);
         break;
     }
     console.log("newStateObj: ");console.log(newStateObj);

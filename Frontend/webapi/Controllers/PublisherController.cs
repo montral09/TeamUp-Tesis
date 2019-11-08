@@ -14,22 +14,18 @@ namespace webapi.Controllers
         IFacadeWeb fach = new FacadeFactory().CreateFacadeWeb;
 
         [EnableCors(origins: "*", headers: "*", methods: "*")]
-        [HttpGet]
+        [HttpPost]
         [Route("api/publisher")]
-        public IHttpActionResult Get()
+        public IHttpActionResult Post([FromBody] VORequestGetPublishers voPublishers)
         {
             try
             {               
                 VOResponseGetPublishers voResp = new VOResponseGetPublishers();
-                List<VOPublisher> publishers = fach.GetPublishers();
-                voResp.responseCode = EnumMessages.SUCC_PUBLISHERSOK.ToString();
-                voResp.voUsers = publishers;
-
-
+                voResp = fach.GetPublishers(voPublishers);
                 return Ok(voResp);
             }
-            catch (GeneralException e)
-            {
+            catch (GeneralException e) { 
+            
                 return InternalServerError(new Exception(e.Codigo));
             }
         }
@@ -37,14 +33,12 @@ namespace webapi.Controllers
         [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpPut]
         [Route("api/publisher")]
-        public IHttpActionResult Put([FromBody] VORequestApprovePublishers publishers)
+        public IHttpActionResult Put([FromBody] VORequestApprovePublishers voPublishers)
         {
             try
             {
                 VOResponseApprovePublishers voResp = new VOResponseApprovePublishers();
-                fach.ApprovePublishers(publishers.Mails);
-                voResp.responseCode = EnumMessages.SUCC_PUBLISHERSOK.ToString();
-
+                voResp = fach.ApprovePublishers(voPublishers);
                 return Ok(voResp);
             }
             catch (GeneralException e)

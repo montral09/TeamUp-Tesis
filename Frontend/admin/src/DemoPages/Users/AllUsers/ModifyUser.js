@@ -2,9 +2,12 @@ import React from 'react';
 import {Button, Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
 import { Form, FormGroup, Label, Input, FormText } from 'reactstrap';
 import {
-    Col, Card, CardBody,
-    CardTitle,
+    Col
 } from 'reactstrap';
+
+import {toast} from 'react-toastify';
+
+
 class ModifyUserModal extends React.Component {
     constructor(props) {
         super(props);
@@ -12,30 +15,105 @@ class ModifyUserModal extends React.Component {
         this.state = {
             modal: false,
             userData: {},
-            userDataChanged: {}
+            userDataChanged: {},
+            admTokenObj: {},
+            adminData: {}
         };
 
         this.toggle = this.toggle.bind(this);
         this.save = this.save.bind(this);
     }
 
-    toggle() {
-        this.setState({
-            modal: !this.state.modal,
-        });
-    }
-
-    save(userData) {
-        console.log("userData: ");
-        console.log(userData);
+    toggle(userData,admTokenObj,adminData) {
         this.setState({
             modal: !this.state.modal,
             userData: userData,
-            userDataChanged: userData
+            userDataChanged: userData,
+            admTokenObj: admTokenObj,
+            adminData: adminData
         });
     }
+
+    save() {
+        console.log("save - this.state: ");
+        console.log(this.state);
+        let {Mail, Name, LastName, Phone, Rut, RazonSocial, Address, CheckPublisher, PublisherValidated, MailValidated, Active  } = this.state.userDataChanged;
+        let objUser = {
+            Mail: Mail,
+            OriginalMail : this.state.userData.Mail,
+            Name: Name,
+            LastName: LastName,
+            Phone: Phone,
+            Rut: Rut,
+            RazonSocial: RazonSocial,
+            Address: Address,
+            CheckPublisher: CheckPublisher,
+            PublisherValidated: PublisherValidated,
+            MailValidated: MailValidated,
+            AccessToken: this.state.admTokenObj.accesToken,
+            AdminMail: this.state.adminData.Mail,
+            Active: Active
+        }
+
+        fetch('https://localhost:44372/api/updateUserAdmin', {
+            method: 'PUT',
+            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(objUser)
+        }).then(response => response.json()).then(data => {
+            console.log("data:" + JSON.stringify(data));
+            if (data.responseCode == "SUCC_USRUPDATED") {
+                toast.success('Usuario actualizado correctamente ', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
+                this.setState({
+                    modal: !this.state.modal,
+                    userData: this.state.userData,
+                    userDataChanged: this.state.userData
+                });
+                this.props.updateTable();
+            } else
+                if (data.responseCode == "ERR_MAILALREADYEXIST") {
+                    toast.error('Ese correo ya esta en uso, por favor elija otro.', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                } else if (data.Message) {
+                    toast.error('Hubo un error', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                }
+        }
+        ).catch(error => {
+            toast.error('Internal error', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+            console.log(error);
+        }
+        )
+            
+
+
+    }
     onChange = (e) => {
-        console.log("name: "+e.target.name+",value:"+e.target.value);
         var valueToUpdate = e.target.value;
         if(e.target.value == 'on'){
             // adapt to checkbox behavior

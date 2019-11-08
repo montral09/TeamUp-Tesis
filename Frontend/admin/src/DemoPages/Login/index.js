@@ -4,17 +4,20 @@ import {
     FormGroup, Label, Input,
     Button
 } from 'reactstrap';
-import {BrowserRouter as Router, Route, Redirect} from 'react-router-dom';
+import {BrowserRouter as Redirect} from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './Login.css';
+
+import { connect } from 'react-redux';
+import { logIn } from '../../reducers/auth/actions';
 
 class Login extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            email: 'admin@admin',
-            password: 'admin',
+            email: '',
+            password: '',
             loggedIn: false
         }
         this.handleChange = this.handleChange.bind(this);
@@ -29,57 +32,34 @@ class Login extends React.Component {
         });
     }
 
+    checkRequiredInputs() {
+        let returnValue = false;
+        let message = "";
+        if (!this.state.password || !this.state.email) {
+                message='Por favor ingrese correo y contraseña';
+                returnValue = true;        
+        } else if (!this.state.email.match(/\S+@\S+/)) {
+            message='Formato de email incorrecto';
+            returnValue = true;
+        }
+        
+        if(message){
+            toast.error(message, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+        }
+        
+        return returnValue;
+    }
     submitForm(e) {
         e.preventDefault();
-        console.log(`Email: ${this.state.email}`)
-        console.log(`password: ${this.state.password}`)
         if (this.state.password && this.state.email) {
-            fetch('https://localhost:44372/api/admin', {
-                method: 'POST',
-                header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-
-                body: JSON.stringify({
-                    Password: this.state.password,
-                    Mail: this.state.email
-                })
-            }).then(response => response.json()).then(data => {
-                console.log("data:" + JSON.stringify(data));
-                if (data.responseCode == "SUCC_USRLOGSUCCESS") {
-                    toast.success('Bienvenid@, ' + data.voAdmin.Name, {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                    console.log(data.voAdmin);
-                    this.setState({loggedIn: true});
-                    //his.props.logIn(data.voAdmin); // this is calling the reducer to store the data on redux Store
-                    //this.props.history.push('#/dashboards/basic'); // TBD how to redirect???????????????
-                } else {
-                    toast.error('Datos incorrectos', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                }
-            }
-            ).catch(error => {
-                toast.error('Internal error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                console.log(error);
-            }
-            )
+            this.props.logIn(this.state);
         } else {
             toast.error('Por favor ingrese correo y contraseña', {
                 position: "top-right",
@@ -93,6 +73,8 @@ class Login extends React.Component {
     }
     render() {
         const { email, password } = this.state;
+        let { login_status } = this.props;
+        if(login_status == 'LOGGED_IN') return <Redirect to='/'/>
         return (
             <Fragment>
                 <Container className="LoginForm">
@@ -104,9 +86,8 @@ class Login extends React.Component {
                                 <Input
                                     type="email"
                                     name="email"
-                                    id="exampleEmail"
-                                    placeholder="myemail@email.com"
-                                    value={email}
+                                    id="email"
+                                    placeholder="Correo"
                                     onChange={(e) => {
                                         this.handleChange(e)
                                     }}
@@ -120,22 +101,30 @@ class Login extends React.Component {
                                     type="password"
                                     name="password"
                                     id="adminPassword"
-                                    placeholder="********"
-                                    value={password}
+                                    placeholder="Password"
                                     onChange={(e) => this.handleChange(e)}
                                 />
                             </FormGroup>
                         </Col>
                         <Button>Login</Button>
                     </Form>
+                    <ToastContainer/>
                 </Container>
-                {this.state.loggedIn && 
-                <Redirect to="/dashboards/basic"/>
-                }
-                <ToastContainer/>
             </Fragment>
         );
     }
 }
+const mapStateToProps = (state) =>{
+    return {
+        login_status: state.loginData.login_status,
+        adminData: state.loginData.adminData,
+    }
+}
 
-export default Login;
+const mapDispatchToProps = (dispatch) =>{
+    return{
+        logIn : (adminData) => { dispatch (logIn(adminData))}
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

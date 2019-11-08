@@ -14,6 +14,7 @@ const Charts = lazy(() => import('../../DemoPages/Charts'));
 const Forms = lazy(() => import('../../DemoPages/Forms'));
 const Tables = lazy(() => import('../../DemoPages/Tables'));
 
+const Publications = lazy(() => import('../../DemoPages/Publications'));
 const Publishers = lazy(() => import('../../DemoPages/Publishers'));
 const Users = lazy(() => import('../../DemoPages/Users'));
 
@@ -21,6 +22,21 @@ const AppMain = () => {
 
     return (
         <Fragment>
+            {/* Publications */}
+
+            <Suspense fallback={
+                <div className="loader-container">
+                    <div className="loader-container-inner">
+                        <h6 className="mt-5">
+                            Please wait while we load all the Publications data
+                            <small>Loading...</small>
+                        </h6>
+                    </div>
+                </div>
+            }>
+                <Route path="/publications" component={Publications}/>
+            </Suspense>
+
             {/* Publishers */}
 
             <Suspense fallback={

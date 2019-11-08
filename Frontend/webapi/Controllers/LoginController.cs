@@ -21,11 +21,11 @@ namespace webapi.Controllers
         {
             try
             {
-                bool userMailExists = fach.userExists(voLogin.Mail);
+                bool userMailExists = fach.UserExists(voLogin.Mail);
                 VOResponseLogin voResp = new VOResponseLogin();
                 if (userMailExists == true)
                 {
-                    bool mailValidated = fach.isMailValidated(voLogin.Mail);
+                    bool mailValidated = fach.IsMailValidated(voLogin.Mail);
                     if (mailValidated)
                     {
                         voResp = fach.ValidUserLogin(voLogin.Mail, voLogin.Password);

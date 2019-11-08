@@ -25,15 +25,31 @@ namespace backend.Logic
         SUCC_PASSWORDUPDATED,
         SUCC_EMAILVALIDATED,
         ERR_ACTIVATIONCODENOTEXIST,
+        SUCC_VERIFICATIONMAILSENT,
+        ERR_PENDINGPROCESSES,
         //SpaceTypes
         SUCC_SPACETYPESOK,
         //Locations
         SUCC_LOCATIONSOK,
+        //ReservationTypes
+        SUCC_RESERVATIONTYPESOK,
+        //Facilities
+        SUCC_FACILITIESOK,
+        //Publications
+        SUCC_PUBLICATIONCREATED,
+        SUCC_PUBLICATIONAPPROVED,
+        SUCC_PUBLICATIONSOK,
+        SUCC_PUBLICATIONUPDATED,
+        ERR_INVALIDUPDATE,
+        ERR_SPACENOTFOUND,
+        //Favorites
+        SUCC_FAVORITEUPDATED,
         //Tokens
         ERR_ACCESSTOKENEXPIRED,
         ERR_INVALIDACCESSTOKEN,
         ERR_REFRESHTOKENEXPIRED,
-        ERR_INVALIDREFRESHTOKEN
+        ERR_INVALIDREFRESHTOKEN,
+        SUCC_TOKENSUPDATED
 
 
     }

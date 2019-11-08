@@ -8,6 +8,7 @@ import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import PageTitle from '../../../Layout/AppMain/PageTitle';
 
 import PublisherApprovTable from './PublisherApprovTable';
+import { connect } from 'react-redux';
 
 // Table
 
@@ -18,9 +19,17 @@ import {
 } from 'reactstrap';
 
 class PendienteAprobacion extends Component {
-
-    state = {
-        gestPendApr: []
+    constructor(props) {
+        super(props);
+        console.log("AllPublishers - props:")
+        console.log(props);
+        const admTokenObj = props.admTokenObj;
+        const adminMail = props.adminData.Mail
+        this.state = {
+            gestPendApr: [],
+            admTokenObj: admTokenObj,
+            adminMail: adminMail
+        }
     }
 
     // This function will try to approve an specific publisher
@@ -33,18 +42,24 @@ class PendienteAprobacion extends Component {
             return gest.Mail !== key
         });
 
-        this.submitPublisher([gestToApprove[0].Mail], gestPendAprNew);
+        this.submitPublisher([gestToApprove[0].Mail], gestPendAprNew, this.state.admTokenObj, this.state.adminMail);
     }
 
     approveAllPublishers = () => {
         const gestPendAprNew = [];
-        this.submitPublisher(this.state.gestPendApr.map(publisherObj =>{return publisherObj.Mail}), gestPendAprNew);
+        this.submitPublisher(this.state.gestPendApr.map(publisherObj =>{return publisherObj.Mail}), gestPendAprNew, this.state.admTokenObj, this.state.adminMail);
     }
 
     // This function will trigger when the component is mounted, to fill the data from the state
     componentDidMount() {
-        fetch('https://localhost:44372/api/publisher'
-        ).then(response => response.json()).then(data => {
+        fetch('https://localhost:44372/api/publisher', {
+            method: 'POST',
+            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({
+                Mail: this.state.adminMail,
+                AccessToken : this.state.admTokenObj.accesToken,
+            })
+        }).then(response => response.json()).then(data => {
             if (data.responseCode == "SUCC_PUBLISHERSOK") {
                 const sanitizedValues = data.voUsers.filter(voUsr =>{
                     return voUsr.PublisherValidated == false
@@ -76,12 +91,14 @@ class PendienteAprobacion extends Component {
     }
 
     // This funciton will call the api to submit the publisher
-    submitPublisher(publishersEmails, newArrIfSuccess) {
+    submitPublisher(publishersEmails, newArrIfSuccess, admTokenObj, adminMail) {
         fetch('https://localhost:44372/api/publisher', {
             method: 'PUT',
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify({
-                Mails: publishersEmails
+                Mails: publishersEmails,
+                AccessToken : admTokenObj.accesToken,
+                AdminMail : adminMail
             })
         }).then(response => response.json()).then(data => {
             console.log("data:" + JSON.stringify(data));
@@ -156,4 +173,11 @@ class PendienteAprobacion extends Component {
     }
 }
 
-export default PendienteAprobacion
+const mapStateToProps = (state) => {
+    return {
+        admTokenObj: state.loginData.admTokenObj,
+        adminData : state.loginData.adminData
+    }
+}
+
+export default connect(mapStateToProps)(PendienteAprobacion)

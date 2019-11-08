@@ -5,22 +5,21 @@ import { unregister } from './registerServiceWorker';
 
 import { HashRouter } from 'react-router-dom';
 import './assets/base.css';
-import Main from './DemoPages/Main';
+import Home from './DemoPages/Home';
 import configureStore from './config/configureStore';
+import store from './config/configureStore';
 import { Provider } from 'react-redux';
 
-import Login from './DemoPages/Login';
 
-const store = configureStore();
+
+const storeInitial = store;
 
 class App extends React.Component {
    render() {
-      let userIsLogged = true;
-      let showMainOrLogin = userIsLogged ? <Main /> : <Login />
       return (
-        <Provider store={store}>
+        <Provider store={storeInitial}>
             <HashRouter>
-            {showMainOrLogin}
+            <Home />
             </HashRouter>
         </Provider>        
       );

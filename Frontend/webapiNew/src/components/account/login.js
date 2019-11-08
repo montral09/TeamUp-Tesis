@@ -36,76 +36,19 @@ class Login extends React.Component {
         })
     }
 
-    login() {
-        if (this.state.password && this.state.email) {
-            this.setState({isLoading: true, buttonIsDisable:true});
-            fetch('https://localhost:44372/api/login', {
-                method: 'POST',
-                header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-
-                body: JSON.stringify({
-                    Password: this.state.password,
-                    Mail: this.state.email
-                })
-            }).then(response => response.json()).then(data => {
-                this.setState({isLoading: false, buttonIsDisable:false});
-                console.log("data:" + JSON.stringify(data));
-                if (data.responseCode == "SUCC_USRLOGSUCCESS") {
-                    toast.success('Bienvenid@, ' + data.voUserLog.Name, {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                    console.log(data.voUserLog);
-                    let originalDate = new Date();
-                    var quinceMinDateTime = new Date(originalDate.getTime() + 15*60000);
-                    var cincoDiasDateTime = new Date(originalDate.getTime() + 7200*60000);
-                    let tokenObj = {
-                        accesToken : data.token,
-                        accesTokenExp : quinceMinDateTime,
-                        refreshToken : 'd2343im4odi3m4oidm3oi4d3oi4dmo3i4dmoi34md',
-                        refreshTokenExp:cincoDiasDateTime
-                    }
-                    this.props.logIn(data.voUserLog, tokenObj); // this is calling the reducer to store the data on redux Store
-                    this.props.history.push('/');
-                } else if(data.responseCode ==  "ERR_MAILNOTVALIDATED"){
-                    toast.error("Correo pendiente de validar", {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                }else{
-                    toast.error('Datos incorrectos', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                }
-            }
-            ).catch(error => {
-                this.setState({isLoading: false, buttonIsDisable:false});
-                toast.error('Internal error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                console.log(error);
-            }
-            )
-        } else {
-            toast.error('Por favor ingrese correo y contraseña', {
+    checkRequiredInputs() {
+        let returnValue = false;
+        let message = "";
+        if (!this.state.password || !this.state.email) {
+                message='Por favor ingrese correo y contraseña';
+                returnValue = true;        
+        } else if (!this.state.email.match(/\S+@\S+/)) {
+            message='Formato de email incorrecto';
+            returnValue = true;
+        }
+        
+        if(message){
+            toast.error(message, {
                 position: "top-right",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -114,12 +57,20 @@ class Login extends React.Component {
                 draggable: true,
             });
         }
+        
+        return returnValue;
+    }
 
+    login() {
+        if (!this.checkRequiredInputs()) {
+            this.props.logIn(this.state);
+        } 
     }
 
     render() {
-        const { login_status } = this.props;
+        let { login_status } = this.props;
         if(login_status == 'LOGGED_IN') return <Redirect to='/'/>
+        
 
         return (
             <>
@@ -146,8 +97,8 @@ class Login extends React.Component {
                                                         <div className="well">
                                                         <form className="text-center border border-light p-5" action="#!">
                                                             <p className="h4 mb-4">Iniciar sesión</p>
-                                                            <input type="email" name="email" id="input-email" className="form-control mb-4" placeholder="Correo" onChange={this.onChange}></input>
-                                                            <input type="password" name="password" id="input-password" className="form-control mb-4" placeholder="Password" onChange={this.onChange}></input>
+                                                            <input type="email" name="email" id="input-email" className="form-control mb-4" placeholder="Correo" maxLength="50" onChange={this.onChange}></input>
+                                                            <input type="password" name="password" id="input-password" className="form-control mb-4" placeholder="Password" maxLength="100" onChange={this.onChange}></input>
                                                             <div className="d-flex justify-content-around mb-2">
                                                                 <div>
                                                                     <Link to="/account/forgotPassword">Olvido su contraseña?</Link>
@@ -175,6 +126,7 @@ class Login extends React.Component {
                         </div>
                     </div>
                 </div>
+                
 
             </>
         );
@@ -190,7 +142,7 @@ const mapStateToProps = (state) =>{
 
 const mapDispatchToProps = (dispatch) =>{
     return{
-        logIn : (userData, tokenObj) => { dispatch (logIn(userData, tokenObj))}
+        logIn : (userData) => { dispatch (logIn(userData))}
     }
 }
 
