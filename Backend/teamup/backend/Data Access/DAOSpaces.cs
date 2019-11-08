@@ -769,7 +769,7 @@ namespace backend.Data_Access
                 {
                     currentImagesURL = StorageUtil.CreateImagesURLString(voUpdatePublication.ImagesURL);
                     // Some or none image were deleted
-                    queryImages = cns.DeleteImages();
+                    queryImages = cns.DeleteImages(currentImagesURL);
                 }               
                 List<SqlParameter> paramImages = new List<SqlParameter>()
                 {

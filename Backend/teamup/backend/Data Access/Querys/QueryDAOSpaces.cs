@@ -202,10 +202,13 @@ namespace backend.Data_Access.Query
             return query;            
         }
 
-        public String DeleteImages()
+        public String DeleteImages(string currentImagesURL)
         {
-            String query = "delete from PUBLICATION_IMAGES where idPublication = @idPublication and accessURL not in (@currentImagesURL)";
-            return query;
+            StringBuilder query = new StringBuilder();
+            query = query.Append("delete from PUBLICATION_IMAGES where idPublication = @idPublication and accessURL not in('");
+            query.Append(currentImagesURL);
+            query.Append("')");
+            return query.ToString();
         }
         
 
