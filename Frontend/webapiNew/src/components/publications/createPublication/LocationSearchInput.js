@@ -17,12 +17,10 @@ class LocationSearchInput extends React.Component {
  
   handleSelect = address => {
     let city = address.split(",")[0];
-    this.props.onChange({target :{value:0,id:"city"}});
+    this.props.onChange({target :{value:city,id:"city"}});
     this.setState({
       city: city
-  })
-  
-  console.log ("City from address: " + city)};
+  })};
  
   render() {
     return (

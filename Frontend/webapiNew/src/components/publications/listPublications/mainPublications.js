@@ -1,24 +1,36 @@
 import React from 'react';
 import Header from "../../header/header";
 import Footer from "../../footer/footer";
+import { Helmet } from 'react-helmet';
 //import BlockProducts from '../blocks/blockProducts'
 import Filters from "./filters";
 import './mega_filter.css';
 //import PublicationList from "../publicationList";
 import PublicationGrid from "./publicationGrid";
+import { toast } from 'react-toastify';
+import { withRouter } from "react-router";
 
 
 class MainPublications extends React.Component {
 	constructor(props) {
-		super(props);
-			this.state = { 
-                grid: '', 
-                list: 'active',
-                product_list: 'product-list active', 
-                product_grid: 'product-grid',
-                publications : this.loadDummyPublication()
-            };
-            this.loadDummyPublication = this.loadDummyPublication.bind(this)		
+        super(props);
+        const {spacetype, capacity, city} = props.match.params;
+        console.log("props.match.params");
+        console.log(props.match.params);
+        this.state = { 
+            grid: '', 
+            list: 'active',
+            product_list: 'product-list active', 
+            product_grid: 'product-grid',
+            publications : [],
+            spacetype : spacetype,
+            capacity : capacity,
+            city : city,
+            totalPublications : 1,
+            maxPublicationsPerPage : 10,
+            showPublicationsPerPage : []
+        };
+        this.loadDummyPublication = this.loadDummyPublication.bind(this)		
 	}
 	handleView(view) {
 		if(true) {
@@ -34,9 +46,66 @@ class MainPublications extends React.Component {
                 product_grid: 'product-grid', 
                 product_list: 'product-list active' })
 		}
-	}
+    }
+    
     componentDidMount() {
         window.scrollTo(0, 0);
+        this.loadDummyPublication();
+    }
+
+    startSearch() {
+        var objToSend = {}
+        var fetchUrl = "https://localhost:44372/api/publications";
+        var method = "POST";
+
+        var objToSend = {
+            "SpaceType": this.state.spacetype,
+            "Capacity": this.state.capacity,
+            "State": "ACTIVE",
+            "City": this.state.city,
+        }
+        
+        console.log(objToSend);
+
+        this.setState({ isLoading: true, buttonIsDisable: true });
+        fetch(fetchUrl, {
+            method: method,
+            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(objToSend)
+        }).then(response => response.json()).then(data => {
+            this.setState({ isLoading: false, buttonIsDisable: false });
+            console.log("startSearch:");
+            console.log(data);
+
+            if (data.responseCode == "SUCC_PUBLICATIONSOK") {
+
+            } else {
+                toast.error('Internal error', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
+                this.props.history.push('/publications/listPublications/mainPublications');
+
+            }
+        }
+        ).catch(error => {
+            this.props.history.push('/publications/listPublications/mainPublications');
+            this.setState({ isLoading: false, buttonIsDisable: false });
+            toast.error('Internal error', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+            console.log(error);
+        }
+        )
     }
 
     loadDummyPublication () {
@@ -112,11 +181,26 @@ class MainPublications extends React.Component {
                 "Ranking": 0 
 			}
         ]
-        return publications
+        var maxPPP = parseInt(this.state.totalPublications/this.state.maxPublicationsPerPage);
+        var optionsmaxpp = [10];
+
+        if(this.state.totalPublications>10 ){
+            for(var i=1;i<=maxPPP;i++){
+                optionsmaxpp.push(i*this.state.maxPublicationsPerPage);
+            }
+        }
+
+        this.setState({ showPublicationsPerPage: optionsmaxpp, publications:publications});
     }
     render() {
         return (
             <>
+                {/*SEO Support*/}
+                <Helmet>
+                    <title>TeamUp | Lista de publicaciones</title>
+                    <meta name="description" content="Lista de publicaciones" />
+                </Helmet>
+                {/*SEO Support End */}
                 <Header />
                 <div className="breadcrumb  full-width ">
                     <div className="background-breadcrumb"></div>
@@ -162,9 +246,9 @@ class MainPublications extends React.Component {
 													        <div className="limit">
 													            Mostrar: 	
 																<select >
-																	<option value="16">16</option>
-																	<option value="30">30</option>
-																	<option value="100">100</option>
+                                                                    {this.state.showPublicationsPerPage.map(function(val){
+                                                                       return ( <option value={val}>{val}</option> )
+                                                                    })}
 																</select>
 													        </div>
 													    </div>
@@ -191,7 +275,7 @@ class MainPublications extends React.Component {
 																		
 																	</ul>
 																</div>
-																<div className="col-md-6 text-right">Mostrando 3 publicaciones de 8</div>
+																<div className="col-md-6 text-right">Mostrando {this.state.publications.length} publicaciones de {this.state.totalPublications}</div>
 															</div>
 														</>
 													)}
@@ -210,4 +294,4 @@ class MainPublications extends React.Component {
     }
 }
 
-export default MainPublications;
+export default withRouter(MainPublications);

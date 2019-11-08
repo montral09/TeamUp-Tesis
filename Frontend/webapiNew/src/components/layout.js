@@ -26,6 +26,7 @@ const Page = () => {
         <Route path="/publications/createPublication/createPublicationMaster" component={CreatePublication} />
         <Route path="/publications/viewPublication/viewPublication/:publicationID" component={ViewPublication} />
         <Route path="/publications/myPublishedPublications/myPublicationsList" component={MyPublicationsList} />
+        <Route path="/publications/listPublications/mainPublications/:spacetype/:capacity/:city" component={MainPublications} />
         <Route path="/publications/listPublications/mainPublications" component={MainPublications} />
       </Switch>
     </>

@@ -1,6 +1,7 @@
 import React from 'react';
 import Header from "../../header/header";
 import { Link, Redirect } from 'react-router-dom';
+import { withRouter } from "react-router";
 import { Helmet } from 'react-helmet';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -578,4 +579,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps)(CreatePublication);
+export default withRouter(connect(mapStateToProps)(CreatePublication));
