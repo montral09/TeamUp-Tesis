@@ -8,15 +8,17 @@ namespace backend.Data_Access.VO
     public class VORequestUpdatePublication : VOTokens
     {
         public VOPublication Publication { get; set; }
-        public List<VOImage> Images { get; set; }
+        public List<string> ImagesURL { get; set; }
+        public List<VOImage> Base64Images { get; set; }
 
         public VORequestUpdatePublication() { }
-        public VORequestUpdatePublication(VOPublication publication, List<VOImage> images, string accessToken)
+        public VORequestUpdatePublication(VOPublication publication, List<string> imagesURL, List<VOImage> base64Images, string accessToken)
             : base (accessToken)
 
         {
             Publication = publication;
-            Images = images;
+            ImagesURL = imagesURL;
+            Base64Images = Base64Images;
             AccessToken = accessToken;
         }
     }

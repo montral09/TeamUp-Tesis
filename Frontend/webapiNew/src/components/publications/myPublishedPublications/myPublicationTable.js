@@ -27,8 +27,24 @@ const MyPublicationTable = (props) =>{
                 <td>{obj.CreationDate}</td>
                 <td>{obj.Title}</td>
                 <td>{obj.State}</td>
-                <td><a href={url}>Ver</a> </td>
-                <td>EDITAR / PAUSAR (REANUDAR)</td>
+                <td><a href={url}><span><i className="col-md-3 fa fa-eye"></i></span>Ver</a> </td>
+                <td>
+                    <div>
+                    {obj.State === 'ACTIVE' ? (
+                        <div>
+                            <a href="" className = "col-md-12" onClick={() => alert("Agregar editar publicacion")}> <span><i className="col-md-1 fa fa-pencil-alt"></i></span>EDITAR</a>
+                            <a href="" onClick={() => alert("Agregar pausar publicacion")}><span><i className="col-md-1 fa fa-pause"></i></span>PAUSAR</a>
+                        </div>
+                    ) : (
+                        <div>
+                            {obj.State === 'PAUSED P' ? (
+                            <div>
+                                <a className = "col-md-12" href="" onClick={() => alert("Agregar reanudar publicacion")}><span><i className="col-md-1 fa fa-play"></i></span>REANUDAR</a>                        
+                            </div>
+                            ) :(null) }
+                        </div>)}
+                    </div>
+                    </td>
             </tr>
             )
         })
@@ -36,7 +52,7 @@ const MyPublicationTable = (props) =>{
         <tr><td colSpan={columnsName.length}>"No se encontraron elementos"</td></tr>
         );
     return(
-    <Table hover className="mb-0">
+    <Table hover striped bordered size="lg" responsive className = "center">
         <thead>
           <tr>
             {columnsTable}
