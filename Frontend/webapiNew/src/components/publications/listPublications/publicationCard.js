@@ -1,5 +1,6 @@
 import React from "react";
 import $ from 'jquery';
+import { Link } from 'react-router-dom';
 
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual'
@@ -12,22 +13,31 @@ class PublicationCard extends React.Component {
 		}, 100);
 	}
  	render() {
-        const {Capacity, HourPrice, DailyPrice, WeeklyPrice, MonthlyPrice, Title, ImagesURL, City, Ranking} = this.props;
+        const {IdPublication, Description, Capacity, HourPrice, DailyPrice, WeeklyPrice, MonthlyPrice, Title, ImagesURL, City, Ranking} = this.props;
 		return (
 			<React.Fragment>
 				<div className="product clearfix product-hover">
 				    <div className="left">
-						Recomendados</div>
-						
+						<div className="sale">Recomendados</div>
 				        <div className="image ">
-								<img src={ImagesURL[0]} className="" />				       
-				    </div>
-				    <div className="right">				        
+							<Link to={`/publications/viewPublication/viewPublication/${IdPublication}`}>
+								<img src={ImagesURL[0]} className="" alt={Description} />		
+							</Link>
+				    	</div>
+					</div>
+				    <div className="right">		
+						<div className="name"><Link to={`/publications/viewPublication/viewPublication/${IdPublication}`}></Link></div>
+						<div className="price">
+				            {HourPrice > 0 ? ("Por Hora $"+HourPrice) : (null)}
+							{DailyPrice > 0 ? ("Por Día $"+DailyPrice) : (null)}
+				            {WeeklyPrice > 0 ? ("Por Semana $"+WeeklyPrice) : (null)}
+				            {MonthlyPrice > 0 ? ("Por Mes $"+MonthlyPrice) : (null) }
+				        </div>
 				        <div className="">
 				            {City}
 				        </div>
 				        <div className="only-hover">
-				        	<a href="#add_to_cart" className="button" onClick={ () => alert('Enganchar con ver publicacion')}>Ver</a>				            
+				        	<a href="#redirectToPub" className="button" onClick={ () => this.props.redirectToPub(IdPublication)}>Ver</a>				            
 				        </div>
 				    </div>
 				</div>
