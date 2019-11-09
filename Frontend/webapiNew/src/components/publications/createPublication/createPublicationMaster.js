@@ -278,6 +278,7 @@ class CreatePublication extends React.Component {
             fetch('https://localhost:44372/api/spaceTypes'
             ).then(response => response.json()).then(data => {
                 if (data.responseCode == "SUCC_SPACETYPESOK") {
+                    console.log(data);
                     this.setState({ spaceTypes: data.spaceTypes })
                 } else {
                     toast.error('Hubo un error', {

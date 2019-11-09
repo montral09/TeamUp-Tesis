@@ -33,7 +33,7 @@ class Browser extends React.Component {
             fetch('https://localhost:44372/api/spaceTypes'
             ).then(response => response.json()).then(data => {
                 if (data.responseCode == "SUCC_SPACETYPESOK") {
-                    this.setState({ spaceTypes: data.spaceTypes })
+                    this.setState({ spaceTypes: data.spaceTypes , spaceTypeSelected : data.spaceTypes[0].Code })
                 } else {
                     toast.error('Hubo un error', {
                         position: "top-right",

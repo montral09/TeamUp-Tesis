@@ -14,19 +14,6 @@ class Filters extends React.Component {
 		});
 	}
  	render() { 	
-         let spaceTypes= ['Coworking', 'Oficinas', 'Sala de reuniones'];
-         let services = [
-             { id: 1,
-                description : 'Wifi'
-             },
-             { id: 2,
-                description : 'Cafetera'
-             },
-             { id: 3,
-                description : 'Pizarron'
-             }
-            ];
-
 		return (
 			<>
 				<div className="box box-with-categories" id="mfilter-box-32">
@@ -50,29 +37,15 @@ class Filters extends React.Component {
 												<div className="mfilter-category mfilter-category-tree">
 													<input type="hidden" name="path" value="mp3-players" />
 													<ul className="mfilter-tb" data-top-url="" data-top-path="0">
-														{spaceTypes > 0 ? (
-															<li className="mfilter-to-parent">
-																<a href="#category" onClick={() => alert('Llamar a API con nuevo filtro')}>
-																	{spaceTypes.map(spaceType => {
-                                                                        return (
-																				<span>{spaceType.value}</span>
-																		
-                                                                    )})}
-																</a>
-															</li>
-														) : (
-															<>
-																{spaceTypes.map(spaceType => {
-																	return (
-																		<li className="mfilter-tb-as-tr" >
-																			<div className="mfilter-tb-as-td">
-																				<a href="#category" onClick={() => alert('??')}>{spaceType}</a>
-																			</div>
-																		</li>
-																	);
-																})}
-															</>
-														)}
+														{this.props.spaceTypesList.map(spaceType => {
+															return (
+																<li className="mfilter-tb-as-tr" key={spaceType.Code+spaceType.Description} >
+																	<div className="mfilter-tb-as-td" key={spaceType.Code*3+spaceType.Description}>
+																		<a href="#category" onClick={() => alert('ID:'+spaceType.Code)}>{spaceType.Description}</a>
+																	</div>
+																</li>
+															);
+														})}
 													</ul>
 												</div>
 											</div>
@@ -93,24 +66,21 @@ class Filters extends React.Component {
 											<i className="mfilter-head-icon"></i>
 									</div>
 								</div>
-
 								<div className="mfilter-content-opts">
 									<div className="mfilter-opts-container">
 										<div className="mfilter-content-wrapper mfilter-iscroll scroll-content scroll-wrapper">
 											<div className="mfilter-options">
 												<div className="mfilter-options-container">
 													<div className="mfilter-tb">
-														{services.map(service => {
+														{this.props.facilitiesList.map(facility => {
 															return (
-																<div key={service.id}>
-																	
-																		<div className="mfilter-option mfilter-tb-as-tr mfilter-visible">
-																			<div className='mfilter-tb-as-td mfilter-col-input mfilter-input-active'>
-																				<input id={'mfilter-opts-attribs-32-manufacturers-' + service.id} name="manufacturers" type="checkbox" readOnly={true} checked={true} />
-																			</div>
-																			<label className="mfilter-tb-as-td">{service.description}</label>
+																<div key={facility.Code}>
+																	<div className="mfilter-option mfilter-tb-as-tr mfilter-visible">
+																		<div className='mfilter-tb-as-td mfilter-col-input mfilter-input-active'>
+																			<input id={'mfilter-opts-attribs-32-manufacturers-' + facility.Code} name="facility" type="checkbox" readOnly={true} checked={true} />
 																		</div>
-																	
+																		<label className="mfilter-tb-as-td">{facility.Description}</label>
+																	</div>
 																</div>
 															);
 														})}

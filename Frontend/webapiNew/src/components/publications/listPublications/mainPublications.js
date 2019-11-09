@@ -9,28 +9,34 @@ import './mega_filter.css';
 import PublicationGrid from "./publicationGrid";
 import { toast } from 'react-toastify';
 import { withRouter } from "react-router";
+import LoadingOverlay from 'react-loading-overlay';
 
 
 class MainPublications extends React.Component {
 	constructor(props) {
         super(props);
-        const {spacetype, capacity, city} = props.match.params;
-        console.log("props.match.params");
-        console.log(props.match.params);
+        let {spacetype, capacity, city} = props.match.params;
         this.state = { 
             grid: '', 
             list: 'active',
             product_list: 'product-list active', 
             product_grid: 'product-grid',
             publications : [],
-            spacetype : spacetype,
-            capacity : capacity,
-            city : city,
+            facilities : [],
+            spaceTypes : [],
+            spacetypeSelected : spacetype || "",
+            capacity : capacity || "",
+            city : city || "",
             totalPublications : 1,
-            maxPublicationsPerPage : 10,
-            showPublicationsPerPage : []
+            spaceTypesLoaded : false,
+            publicationsLoaded : false,
         };
-        this.loadDummyPublication = this.loadDummyPublication.bind(this)		
+        this.loadDummyPublication = this.loadDummyPublication.bind(this);
+        this.loadInfraestructure = this.loadInfraestructure.bind(this);		
+        this.loadSpaceTypes = this.loadSpaceTypes.bind(this);
+        this.startSearch = this.startSearch.bind(this);
+        this.redirectToPub = this.redirectToPub.bind(this);
+
 	}
 	handleView(view) {
 		if(true) {
@@ -50,36 +56,36 @@ class MainPublications extends React.Component {
     
     componentDidMount() {
         window.scrollTo(0, 0);
-        this.loadDummyPublication();
+        this.loadInfraestructure();
+        this.loadSpaceTypes();
     }
-
+    redirectToPub(id){
+        this.props.history.push('/publications/viewPublication/viewPublication/'+id);
+    }
     startSearch() {
         var objToSend = {}
         var fetchUrl = "https://localhost:44372/api/publications";
         var method = "POST";
 
         var objToSend = {
-            "SpaceType": this.state.spacetype,
+            "SpaceType": this.state.spacetypeSelected,
             "Capacity": this.state.capacity,
             "State": "ACTIVE",
             "City": this.state.city,
         }
-        
+        console.log("startSearch:");
         console.log(objToSend);
-
-        this.setState({ isLoading: true, buttonIsDisable: true });
+        this.setState({ publicationsLoaded: false });
         fetch(fetchUrl, {
             method: method,
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify(objToSend)
         }).then(response => response.json()).then(data => {
-            this.setState({ isLoading: false, buttonIsDisable: false });
-            console.log("startSearch:");
             console.log(data);
-
             if (data.responseCode == "SUCC_PUBLICATIONSOK") {
-
+                this.setState({ publicationsLoaded: true, publications:data.Publications, totalPublications:data.TotalPublications });
             } else {
+                this.setState({ publicationsLoaded: true });
                 toast.error('Internal error', {
                     position: "top-right",
                     autoClose: 5000,
@@ -88,13 +94,10 @@ class MainPublications extends React.Component {
                     pauseOnHover: true,
                     draggable: true,
                 });
-                this.props.history.push('/publications/listPublications/mainPublications');
-
             }
         }
         ).catch(error => {
-            this.props.history.push('/publications/listPublications/mainPublications');
-            this.setState({ isLoading: false, buttonIsDisable: false });
+            this.setState({ publicationsLoaded: true });
             toast.error('Internal error', {
                 position: "top-right",
                 autoClose: 5000,
@@ -106,6 +109,46 @@ class MainPublications extends React.Component {
             console.log(error);
         }
         )
+    }
+
+    loadInfraestructure() {
+        try {
+            fetch('https://localhost:44372/api/facilities').then(response => response.json()).then(data => {
+                if (data.responseCode == "SUCC_FACILITIESOK") {
+                    this.setState({ facilities: data.facilities });
+                } else {
+                    toast.error('Internal error', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                }
+            }
+            ).catch(error => {
+                toast.error('Internal error', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
+                console.log(error);
+            }
+            )
+        } catch (error) {
+            toast.error('Internal error', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+        }
     }
 
     loadDummyPublication () {
@@ -181,17 +224,58 @@ class MainPublications extends React.Component {
                 "Ranking": 0 
 			}
         ]
-        var maxPPP = parseInt(this.state.totalPublications/this.state.maxPublicationsPerPage);
-        var optionsmaxpp = [10];
 
-        if(this.state.totalPublications>10 ){
-            for(var i=1;i<=maxPPP;i++){
-                optionsmaxpp.push(i*this.state.maxPublicationsPerPage);
-            }
-        }
-
-        this.setState({ showPublicationsPerPage: optionsmaxpp, publications:publications});
+        this.setState({publications:publications});
     }
+
+    loadSpaceTypes() {
+        try {
+            fetch('https://localhost:44372/api/spaceTypes'
+            ).then(response => response.json()).then(data => {
+                if (data.responseCode == "SUCC_SPACETYPESOK") {
+                    if(!this.state.spacetype){
+                        var newSpaceTypeSelected = data.spaceTypes[0].Code;
+                        this.setState({ spaceTypes: data.spaceTypes, spacetypeSelected: newSpaceTypeSelected, spaceTypesLoaded: true },
+                                        () => {this.startSearch();})
+                    }else{
+                        this.setState({ spaceTypes: data.spaceTypes, spaceTypesLoaded: true },
+                            () => {this.startSearch();})
+                    }
+                } else {
+                    toast.error('Hubo un error', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                }
+            }
+            ).catch(error => {
+                toast.error('Internal error', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
+                console.log(error);
+            }
+            )
+        } catch (error) {
+            toast.error('Internal error', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+        }
+    }
+
     render() {
         return (
             <>
@@ -202,22 +286,28 @@ class MainPublications extends React.Component {
                 </Helmet>
                 {/*SEO Support End */}
                 <Header />
-                <div className="breadcrumb  full-width ">
-                    <div className="background-breadcrumb"></div>
-                    <div className="background">
-                        <div className="shadow"></div>
-                        <div className="pattern">
-                            <div className="container">
-                                <div className="clearfix">
-                                    <ul>
-                                        <li>Publicaciones</li>
-                                    </ul>
+                <LoadingOverlay
+                    active={this.state.spaceTypesLoaded === true && this.state.publicationsLoaded === true ? false : true}
+                    spinner
+                    text='Cargando...'
+                    >
+
+                    <div className="breadcrumb  full-width ">
+                        <div className="background-breadcrumb"></div>
+                        <div className="background">
+                            <div className="shadow"></div>
+                            <div className="pattern">
+                                <div className="container">
+                                    <div className="clearfix">
+                                        <ul>
+                                            <li>Listado de publicaciones</li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div className="main-content  full-width">
+                    <div className="main-content  full-width">
                     <div className="background-content"></div>
                     <div className="background">
                         <div className="shadow"></div>
@@ -225,7 +315,7 @@ class MainPublications extends React.Component {
                             <div className="container">
 								<div className="row">
 									<div className="col-md-3 " id="column-left">
-										<Filters />										
+										<Filters facilitiesList = {this.state.facilities} spaceTypesList = {this.state.spaceTypes}/>										
 									</div>
 
 									<div className="col-md-9">
@@ -246,9 +336,9 @@ class MainPublications extends React.Component {
 													        <div className="limit">
 													            Mostrar: 	
 																<select >
-                                                                    {this.state.showPublicationsPerPage.map(function(val){
-                                                                       return ( <option value={val}>{val}</option> )
-                                                                    })}
+                                                                    <option value="10">10</option>
+																	<option value="25">25</option>
+																	<option value="50">50</option>
 																</select>
 													        </div>
 													    </div>
@@ -259,7 +349,7 @@ class MainPublications extends React.Component {
 														<>
 															{this.state.product_list === 'product-list active' &&
 																<div className={this.state.product_list}>
-																	<PublicationGrid publications = {this.state.publications}/>
+																	<PublicationGrid redirectToPub={this.redirectToPub} publications = {this.state.publications}/>
 																</div>
 															}
 
@@ -288,6 +378,8 @@ class MainPublications extends React.Component {
                         </div>
                     </div>
                 </div>
+
+                </LoadingOverlay>
                 <Footer />
             </>
         );
