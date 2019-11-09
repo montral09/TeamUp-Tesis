@@ -23,6 +23,7 @@ class ModifyPublicationModal extends React.Component {
         };
         this.toggle = this.toggle.bind(this);
         this.save = this.save.bind(this);
+        this.deleteImage = this.deleteImage.bind(this);
     }
 
     toggle(publData, admTokenObj, adminData, spaceTypes) {
@@ -36,10 +37,18 @@ class ModifyPublicationModal extends React.Component {
         });
     }
 
+    deleteImage(id){
+        console.log ('delete image');
+
+        var tempImgArr = this.state.publDataChanged.ImagesURL.filter(function(value, index){
+            return index != id;
+        });
+        this.onChange({target :{value:tempImgArr, id:"ImagesURL"}});
+    }
     save() {
         console.log("save - this.state: ");
         console.log(this.state);
-        return;
+        
         let {Mail, Name, LastName, Phone, Rut, RazonSocial, Address, CheckPublisher, PublisherValidated, MailValidated, Active  } = this.state.userDataChanged;
         let objUser = {
             Mail: Mail,
@@ -58,6 +67,7 @@ class ModifyPublicationModal extends React.Component {
             Active: Active
         }
 
+        return;
         fetch('https://localhost:44372/api/updateUserAdmin', {
             method: 'PUT',
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
@@ -123,11 +133,13 @@ class ModifyPublicationModal extends React.Component {
             valueToUpdate = !this.state.userDataChanged[e.target.name];
         }
         this.setState({
-            userDataChanged: {
+            publDataChanged: {
               ...this.state.userDataChanged,
               [e.target.name] : valueToUpdate
             }
           })
+          console.log ('Pub changed')
+          console.log (this.state)
     }
     render() {
         return (
@@ -137,14 +149,14 @@ class ModifyPublicationModal extends React.Component {
                     <ModalBody>
                     <Form>
                         <FormGroup row>
-                            <Label for="IdPublication" sm={2}>IdPublication</Label>
+                            <Label for="IdPublication" sm={2}>Publicación Id</Label>
                             <Col sm={10}>
                                 <Input type="text" name="IdPublication" id="IdPublication"
                                         value={this.state.publDataChanged.IdPublication} readOnly/>
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label for="IdUser" sm={2}>IdUser</Label>
+                            <Label for="IdUser" sm={2}>Usuario Id</Label>
                             <Col sm={10}>
                                 <Input type="text" name="IdUser" id="IdUser"
                                         value={this.state.publDataChanged.IdUser} readOnly/>
@@ -158,28 +170,35 @@ class ModifyPublicationModal extends React.Component {
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label for="SpaceType" sm={2}>SpaceType</Label>
+                            <Label for="SpaceType" sm={2}>Tipo de espacio</Label>
                             <Col sm={10}>
                                 <Input type="text" name="SpaceType" id="SpaceType"
                                         value={this.state.publDataChanged.SpaceType} onChange={this.onChange}/>
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label for="Title" sm={2}>Title</Label>
+                            <Label for="Title" sm={2}>Título</Label>
                             <Col sm={10}>
                                 <Input type="text" name="Title" id="Title"
                                         value={this.state.publDataChanged.Title || ""} onChange={this.onChange}/>
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label for="Description" sm={2}>Description</Label>
+                            <Label for="Description" sm={2}>Descripción</Label>
                             <Col sm={10}>
                                 <Input type="textarea" name="Description" id="Description"
                                         value={this.state.publDataChanged.Description || ""} onChange={this.onChange}/>
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label for="Location" sm={2}>Location</Label>
+                            <Label for="City" sm={2}>Ciudad</Label>
+                            <Col sm={10}>
+                                <Input type="text" name="City" id="City"
+                                        value={this.state.publDataChanged.City || ""} onChange={this.onChange}/>
+                            </Col>
+                        </FormGroup>
+                        <FormGroup row>
+                            <Label for="Location" sm={2}>Coordenadas</Label>
                             <Col sm={5}>
                                 <Input type="text" name="Latitude" id="Latitude"
                                     {...(this.state.publDataChanged.Location ? {value :this.state.publDataChanged.Location.Latitude} : {})}
@@ -192,14 +211,14 @@ class ModifyPublicationModal extends React.Component {
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label for="Capacity" sm={2}>Capacity</Label>
+                            <Label for="Capacity" sm={2}>Capacidad</Label>
                             <Col sm={10}>
                                 <Input type="text" name="Capacity" id="Capacity"
                                         value={this.state.publDataChanged.Capacity || ""} onChange={this.onChange}/>
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label for="VideoURL" sm={2}>VideoURL</Label>
+                            <Label for="VideoURL" sm={2}>URL Video</Label>
                             <Col sm={10}>
                                 <Input type="text" name="VideoURL" id="VideoURL"
                                         value={this.state.publDataChanged.VideoURL || ""} onChange={this.onChange}/>
@@ -230,7 +249,7 @@ class ModifyPublicationModal extends React.Component {
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label for="Availability" sm={2}>Availability</Label>
+                            <Label for="Availability" sm={2}>Disponibilidad</Label>
                             <Col sm={10}>
                                 <Input type="textarea" name="Availability" id="Availability"
                                         value={this.state.publDataChanged.Availability || ""} onChange={this.onChange}/>
@@ -239,9 +258,10 @@ class ModifyPublicationModal extends React.Component {
                         {this.state.publDataChanged.ImagesURL && this.state.publDataChanged.ImagesURL.map(function(obj,index) {
                             return(
                             <FormGroup row>
-                                <Label key={index+"_imageurl"} for="imageurl" sm={2}>Image URL {index}</Label>
+                                <Label key={index+"_imageurl"} for="imageurl" sm={2}>Imagen {index}</Label>
                                 <Col sm={10}>
                                     <a href={obj} target="_blank">ImageURL{index}</a>
+                                    <a href="" onClick={() =>this.deleteImage(index)}><span></span>Eliminar</a>
                                 </Col>
                             </FormGroup>
                             )
@@ -250,7 +270,7 @@ class ModifyPublicationModal extends React.Component {
                     </Form>
                     </ModalBody>
                     <ModalFooter>
-                        <Button color="link" onClick={this.toggle}>Cancel</Button>
+                        <Button color="link" onClick={this.toggle}>Cancelar</Button>
                         <Button color="primary" onClick={this.save}>Guardar</Button>{' '}
                     </ModalFooter>
                 </Modal>

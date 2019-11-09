@@ -209,8 +209,7 @@ class PublPendApprov extends Component {
     }
 
     // This funciton will call the api to submit the publisher
-    submitPublisher(publishersEmails, newArrIfSuccess, admTokenObj, adminMail) {
-        console.log("FAbi1" + adminMail)
+    submitPublisher(publishersEmails, newArrIfSuccess, admTokenObj, adminMail) {        
         fetch('https://localhost:44372/api/publisher', {
             method: 'PUT',
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },

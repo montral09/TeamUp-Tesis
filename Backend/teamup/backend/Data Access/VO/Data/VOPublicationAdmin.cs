@@ -14,9 +14,9 @@ namespace backend.Data_Access.VO.Data
 
         
         public VOPublicationAdmin(int idPublication, Int64 idUser, string mail, int spaceType, DateTime creationDate, string title, string description, string address, VOLocationCordinates location,
-            int capacity, string videoURL, int hourPrice, int dailyPrice, int weeklyPrice, int monthlyPrice, string availability, List<int> facilities, List<string> imagesURL, string state, string namePublisher, string lastNamePublisher, string phonePublisher)
+            int capacity, string videoURL, int hourPrice, int dailyPrice, int weeklyPrice, int monthlyPrice, string availability, List<int> facilities, List<string> imagesURL, string state, string city, string namePublisher, string lastNamePublisher, string phonePublisher)
             : base (idPublication, idUser, mail, spaceType, creationDate, title, description, address, location,
-             capacity, videoURL,  hourPrice, dailyPrice, weeklyPrice, monthlyPrice, availability, facilities, imagesURL, state)
+             capacity, videoURL,  hourPrice, dailyPrice, weeklyPrice, monthlyPrice, availability, facilities, imagesURL, state, city)
         {
             IdPublication = idPublication;
             IdUser = idUser;
@@ -39,6 +39,7 @@ namespace backend.Data_Access.VO.Data
             Facilities = facilities;
             ImagesURL = imagesURL;
             State = state;
+            City = city;
         }
     }
 }
