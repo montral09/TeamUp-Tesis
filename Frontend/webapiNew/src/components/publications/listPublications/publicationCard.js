@@ -27,7 +27,7 @@ class PublicationCard extends React.Component {
 				            {City}
 				        </div>
 				        <div className="only-hover">
-				        	<a href="#add_to_cart" className="button" onClick={alert('Enganchar con ver publicacion')}>Ver</a>				            
+				        	<a href="#add_to_cart" className="button" onClick={ () => alert('Enganchar con ver publicacion')}>Ver</a>				            
 				        </div>
 				    </div>
 				</div>
