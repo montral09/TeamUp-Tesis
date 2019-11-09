@@ -39,6 +39,7 @@ class ViewPublication extends React.Component {
         this.loadPublication = this.loadPublication.bind(this);
         this.redirectToPub = this.redirectToPub.bind(this);
         this.loadPublication(pubID);
+        this.submitFavorite = this.submitFavorite.bind(this);
     }
 
     componentDidMount() {
@@ -152,8 +153,6 @@ class ViewPublication extends React.Component {
             if(this.props.userData){
                 email = this.props.userData.Mail;
             }
-            console.log("pubID:"+pubID);
-            console.log("email:"+email);
             this.setState({ pubIsLoading: true});
             fetch('https://localhost:44372/api/publication?idPublication='+pubID+'&mail='+email).then(response => response.json()).then(data => {
                 console.log("data:");
@@ -161,9 +160,6 @@ class ViewPublication extends React.Component {
                 if (data.responseCode == "SUCC_PUBLICATIONSOK") {
                     var pubObj = data.Publication;
                     pubObj.Favorite = data.Favorite;
-                    console.log("pubObj:");
-                    console.log(pubObj);
-
                     this.setState({ pubIsLoading: false, pubObj: pubObj, activeImage: { index: 0, src: pubObj.ImagesURL[0]}, relatedPublications : data.RelatedPublications});
                 } else {
                     this.setState({ pubIsLoading: false});
@@ -216,6 +212,72 @@ class ViewPublication extends React.Component {
         }
     }
 
+    submitFavorite() {
+        var code = this.state.pubObj.Favorite === false ? 1 : 2;
+        var fetchUrl = '';
+        var method = "";
+
+        var objToSend = {
+            "AccessToken": this.props.tokenObj.accesToken,
+            "Mail": this.props.userData.Mail,
+            "IdPublication": this.state.pubObj.IdPublication,
+            "Code" : code
+        }    
+        fetchUrl = "https://localhost:44372/api/favorite";
+        method = "POST";
+        fetch(fetchUrl, {
+            method: method,
+            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(objToSend)
+        }).then(response => response.json()).then(data => {
+            console.log("data:" + JSON.stringify(data));
+            if (data.responseCode == "SUCC_FAVORITEUPDATED" ) {
+                var newCode = code === 1 ? true: false
+                this.setState({ pubObj: { ...this.state.pubObj, Favorite: newCode}})                
+                toast.success(code === 1 ? 'Agregado a favoritos' : 'Quitado de favoritos', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
+            } else {
+                if (data.Message) {
+                    toast.error('Hubo un error: ' + data.Message, {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                } else {
+                    toast.error('Internal error', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                }
+            }
+        }
+        ).catch(error => {
+            toast.error('Internal error', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+            console.log(error);
+        }
+        )
+    }
+
     redirectToPub(id){
         this.props.history.push('/publications/viewPublication/viewPublication/'+id);
         window.location.reload();
@@ -229,7 +291,7 @@ class ViewPublication extends React.Component {
         this.setState({ tabDisplayed: tab })
     }
     render() {
-
+        const { login_status } = this.props;
         const options = {
 	    	slideSpeed: 500,
 	    	margin: 10,
@@ -300,12 +362,20 @@ class ViewPublication extends React.Component {
                                                                                                 </div>
                                                                                             </div>
                                                                                             <div className="col-md-5 product-center clearfix">
-                                                                                                <h1 className="product-name">{this.state.pubObj.Title}</h1>      
-                                                                                                {this.state.pubObj.Favorite === false ? (
-                                                                                                    <a href="#add_to_wishlist" onClick={() => alert("Agregar a favoritos si esta logueado")}><span><i className="fas fa-heart"></i></span> Agregar a favoritos</a>
+                                                                                                <h1 className="product-name">{this.state.pubObj.Title}</h1>  
+                                                                                                {this.state.pubObj.Favorite === false && login_status == 'LOGGED_IN' ? (
+                                                                                                <div>
+                                                                                                    <a href="#add_to_wishlist" onClick={this.submitFavorite}><span><i className="fas fa-heart"></i></span> Agregar a favoritos</a>
+                                                                                                </div> 
                                                                                                 ) : (
-                                                                                                    <a href="#remove_from_wishlist" onClick={() => alert("Quitar a favoritos si esta logueado")}><span><i className="fas fa-heart"></i></span> Quitar de favoritos</a>
-                                                                                                )}                                                                              
+                                                                                                <div>
+                                                                                                    {this.state.pubObj.Favorite === true ? (
+                                                                                                    <div>
+                                                                                                        <a href="#remove_from_wishlist" onClick={this.submitFavorite}><span><i className="fas fa-heart"></i></span> Quitar de favoritos</a>
+                                                                                                    </div>
+                                                                                                ) : (null) }
+                                                                                                </div>)}
+                                                                                                                                                                 
                                                                                                 <div className="description">{this.state.pubObj.QuantityRented} veces alquilado</div>
                                                                                                     
                                                                                                 <div className="review">
@@ -468,6 +538,7 @@ class ViewPublication extends React.Component {
 const mapStateToProps = (state) => {
     return {
         login_status: state.loginData.login_status,
+        tokenObj: state.loginData.tokenObj,
         userData: state.loginData.userData
     }
 }

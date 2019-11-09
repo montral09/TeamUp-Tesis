@@ -254,17 +254,15 @@ class CreatePublication extends React.Component {
             this.loadPublication(this.state.publicationID);
         }
     }
-
+    
     onChange = (e) => {
         var targetValue = e.target.value;
         switch(e.target.id){
             case "facilitiesSelect":
-                var options = e.target.options;
+                var options = e.target.value;
                 var values = [];
                 for (var i = 0, l = options.length; i < l; i++) {
-                    if (options[i].selected) {
-                        values.push(options[i].value);
-                    }
+                    values.push(options[i].value);
                 }
                 targetValue = values;
                 break;
