@@ -5,7 +5,7 @@ import { Helmet } from 'react-helmet';
 //import BlockProducts from '../blocks/blockProducts'
 import Filters from "./filters";
 import './mega_filter.css';
-//import PublicationList from "../publicationList";
+import PublicationList from "./publicationList";
 import PublicationGrid from "./publicationGrid";
 import { toast } from 'react-toastify';
 import { withRouter } from "react-router";
@@ -16,6 +16,15 @@ class MainPublications extends React.Component {
 	constructor(props) {
         super(props);
         let {spacetype, capacity, city} = props.match.params;
+        console.log("props.match.params")
+
+        console.log(props.match.params)
+        let grid,list,product_list,product_grid = "";
+        if(localStorage.getItem('view') === 'list') {
+			grid= ''; list= 'active'; product_list= 'product-list active'; product_grid= 'product-grid';
+        }else{
+            grid= 'active'; list= ''; product_list= 'product-list'; product_grid= 'product-grid active';
+        }
         this.state = { 
             grid: '', 
             list: 'active',
@@ -24,44 +33,54 @@ class MainPublications extends React.Component {
             publications : [],
             facilities : [],
             spaceTypes : [],
-            spacetypeSelected : spacetype || "",
-            capacity : capacity || "",
-            city : city || "",
+            spacetypeSelected : spacetype == "empty" ? "" : spacetype,
+            spaceTypeSelectedText : "",
+            capacity : capacity == "empty" ? "" :capacity,
+            city : city  == "empty" ? "" : city,
             totalPublications : 1,
             spaceTypesLoaded : false,
             publicationsLoaded : false,
+            grid: grid, 
+            list: list, 
+            product_grid: product_grid, 
+            product_list: product_list,
+            currentPage : 1,
+            totalPages : 1,
+            publicationsPerPage : 10,
+            pagination : [1]
         };
-        this.loadDummyPublication = this.loadDummyPublication.bind(this);
         this.loadInfraestructure = this.loadInfraestructure.bind(this);		
         this.loadSpaceTypes = this.loadSpaceTypes.bind(this);
         this.startSearch = this.startSearch.bind(this);
         this.redirectToPub = this.redirectToPub.bind(this);
+        this.changeFilters = this.changeFilters.bind(this);
 
-	}
-	handleView(view) {
-		if(true) {
-			this.setState({ 
-                grid: 'active', 
-                list: '', 
-                product_grid: 'product-grid active', 
-                product_list: 'product-list' })
-		} else if(view === 'list') {
-			this.setState({ 
-                list: 'active', 
-                grid: '', 
-                product_grid: 'product-grid', 
-                product_list: 'product-list active' })
-		}
     }
+    onChange = (e) => {
+        this.setState({
+            [e.target.id]: e.target.value
+        });
+    }
+
+	handleView(view) {
+		localStorage.setItem("view", view);
+		if(view === 'grid') {
+			this.setState({ grid: 'active', list: '', product_grid: 'product-grid active', product_list: 'product-list' })
+		} else if(view === 'list') {
+			this.setState({ list: 'active', grid: '', product_grid: 'product-grid', product_list: 'product-list active' })
+		}
+	}
     
     componentDidMount() {
         window.scrollTo(0, 0);
         this.loadInfraestructure();
         this.loadSpaceTypes();
     }
+
     redirectToPub(id){
         this.props.history.push('/publications/viewPublication/viewPublication/'+id);
     }
+
     startSearch() {
         var objToSend = {}
         var fetchUrl = "https://localhost:44372/api/publications";
@@ -83,7 +102,13 @@ class MainPublications extends React.Component {
         }).then(response => response.json()).then(data => {
             console.log(data);
             if (data.responseCode == "SUCC_PUBLICATIONSOK") {
-                this.setState({ publicationsLoaded: true, publications:data.Publications, totalPublications:data.TotalPublications });
+                let newTotalPages = parseInt(data.TotalPublications/this.state.publicationsPerPage);
+                let newPagination = [];
+                for(var i=1;i<newTotalPages;i++){
+                    newPagination.push(i);
+                }
+                this.setState({ publicationsLoaded: true, publications:data.Publications, 
+                    totalPublications:data.TotalPublications,totalPages:newTotalPages, pagination:newPagination });
             } else {
                 this.setState({ publicationsLoaded: true });
                 toast.error('Internal error', {
@@ -151,94 +176,29 @@ class MainPublications extends React.Component {
         }
     }
 
-    loadDummyPublication () {
-        var publications = [
-            {
-                "IdPublication": 6,
-                "IdUser": 0,
-                "Mail": null,
-                "SpaceType": 3,
-                "CreationDate": "2019-11-05T16:47:00",
-                "Title": "IBM Uruguay",
-                "Description": "Con vista al mar, incluye mozos, vajilla y luces",
-                "Address": "Av Italia 6000",
-                "City": "Pocitos",
-                "Location": {
-                    "Latitude": -34.909397000,
-                    "Longitude": -56.138561000
-                },
-                "Capacity": 70,
-                "VideoURL": "https://www.youtube.com/watch?v=CJ2FWYCJWGo",
-                "HourPrice": 200,
-                "DailyPrice": 2000,
-                "WeeklyPrice": 10000,
-                "MonthlyPrice": 50000,
-                "Availability": "El salon se puede alquilar todos los dias de la semana, desde las 08:00 hasta las 05:00",
-                "Facilities": [
-                    1,
-                    3,
-                    6,
-                    7
-                ],
-                "State": null,
-                "ImagesURL": [
-                    "https://firebasestorage.googleapis.com/v0/b/teamup-1571186671227.appspot.com/o/Images%2F8%2F6%2F0.PNG?alt=media&token=c6b203fe-4eb8-4193-98d5-fc6b47bd7475"
-                ],
-                "QuantityRented": 4,
-                "Reviews": [],
-                "Ranking": 0
-			},
-			{
-                "IdPublication": 7,
-                "IdUser": 0,
-                "Mail": null,
-                "SpaceType": 3,
-                "CreationDate": "2019-11-05T16:47:00",
-                "Title": "IBM Uruguay",
-                "Description": "Con vista al mar, incluye mozos, vajilla y luces",
-                "Address": "Av Italia 6000",
-                "City": "Pocitos",
-                "Location": {
-                    "Latitude": -34.909397000,
-                    "Longitude": -56.138561000
-                },
-                "Capacity": 70,
-                "VideoURL": "https://www.youtube.com/watch?v=CJ2FWYCJWGo",
-                "HourPrice": 200,
-                "DailyPrice": 2000,
-                "WeeklyPrice": 10000,
-                "MonthlyPrice": 50000,
-                "Availability": "El salon se puede alquilar todos los dias de la semana, desde las 08:00 hasta las 05:00",
-                "Facilities": [
-                    1,
-                    3,
-                    6,
-                    7
-                ],
-                "State": null,
-                "ImagesURL": [
-                    "https://firebasestorage.googleapis.com/v0/b/teamup-1571186671227.appspot.com/o/Images%2F8%2F6%2F0.PNG?alt=media&token=c6b203fe-4eb8-4193-98d5-fc6b47bd7475"
-                ],
-                "QuantityRented": 4,
-                "Reviews": [],
-                "Ranking": 0 
-			}
-        ]
-
-        this.setState({publications:publications});
-    }
-
     loadSpaceTypes() {
         try {
             fetch('https://localhost:44372/api/spaceTypes'
             ).then(response => response.json()).then(data => {
                 if (data.responseCode == "SUCC_SPACETYPESOK") {
-                    if(!this.state.spacetype){
+
+                    if(this.state.spacetypeSelected == ""){
                         var newSpaceTypeSelected = data.spaceTypes[0].Code;
-                        this.setState({ spaceTypes: data.spaceTypes, spacetypeSelected: newSpaceTypeSelected, spaceTypesLoaded: true },
+                        var spaceTypeSelectedText = data.spaceTypes.filter(function(st){
+                            return parseInt(st.Code) === parseInt(newSpaceTypeSelected);
+                        });
+                        this.setState({ spaceTypes: data.spaceTypes, spacetypeSelected: newSpaceTypeSelected, spaceTypesLoaded: true, spaceTypeSelectedText: spaceTypeSelectedText[0].Description },
                                         () => {this.startSearch();})
                     }else{
-                        this.setState({ spaceTypes: data.spaceTypes, spaceTypesLoaded: true },
+                        let sts = this.state.spacetypeSelected;
+                        var spaceTypeSelectedText = data.spaceTypes.filter(function(st){
+                            return parseInt(st.Code) === parseInt(sts);
+                        });
+                        if(!spaceTypeSelectedText){
+                            spaceTypeSelectedText = data.spaceTypes[0].Description;
+                            this.setState({ spacetypeSelected: data.spaceTypes[0].Code})
+                        }
+                        this.setState({ spaceTypes: data.spaceTypes, spaceTypesLoaded: true, spaceTypeSelectedText: spaceTypeSelectedText[0].Description || "" },
                             () => {this.startSearch();})
                     }
                 } else {
@@ -276,6 +236,18 @@ class MainPublications extends React.Component {
         }
     }
 
+    changeFilters(filter,value){
+        console.log("filter:"+filter+",value:"+value)
+        if(filter == "spacetypeSelected"){
+            let sts = this.state.spacetypeSelected;
+            var spaceTypeSelectedText = this.state.spaceTypes.filter(function(st){
+                return parseInt(st.Code) === parseInt(sts);
+            });
+            this.setState({[filter]: value, spaceTypeSelectedText : spaceTypeSelectedText[0].Description }, () => {this.startSearch()});
+        }
+
+    }
+
     render() {
         return (
             <>
@@ -291,7 +263,6 @@ class MainPublications extends React.Component {
                     spinner
                     text='Cargando...'
                     >
-
                     <div className="breadcrumb  full-width ">
                         <div className="background-breadcrumb"></div>
                         <div className="background">
@@ -300,7 +271,7 @@ class MainPublications extends React.Component {
                                 <div className="container">
                                     <div className="clearfix">
                                         <ul>
-                                            <li>Listado de publicaciones</li>
+                                            <li>{this.state.spaceTypeSelectedText}</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -315,15 +286,20 @@ class MainPublications extends React.Component {
                             <div className="container">
 								<div className="row">
 									<div className="col-md-3 " id="column-left">
-										<Filters facilitiesList = {this.state.facilities} spaceTypesList = {this.state.spaceTypes}/>										
+										<Filters facilitiesList = {this.state.facilities} spaceTypesList = {this.state.spaceTypes} changeFilters={this.changeFilters}/>										
 									</div>
-
 									<div className="col-md-9">
 										<div className="row">
 											<div className="col-md-12 center-column" id="content">
-												<h1>Publicaciones</h1>
+												<h1>{this.state.spaceTypeSelectedText}</h1>
 												<div id="mfilter-content-container">
 													<div className="product-filter clearfix">
+                                                        <div className="options">
+                                                            <div className="button-group display" data-toggle="buttons-radio">
+                                                                <button className={this.state.grid} onClick={() => this.handleView('grid')} id="grid" rel="tooltip" title="Grid"><i className="fa fa-th"></i></button> 
+                                                                <button className={this.state.list} onClick={() => this.handleView('list')} id="list" rel="tooltip" title="List"><i className="fa fa-th-list"></i></button>
+                                                            </div>
+                                                        </div>
 													    <div className="list-options">
 													        <div className="sort">
 													            Ordenar por: 
@@ -335,7 +311,7 @@ class MainPublications extends React.Component {
 													        </div>
 													        <div className="limit">
 													            Mostrar: 	
-																<select >
+																<select id="publicationsPerPage" onChange={this.onChange}>
                                                                     <option value="10">10</option>
 																	<option value="25">25</option>
 																	<option value="50">50</option>
@@ -344,12 +320,12 @@ class MainPublications extends React.Component {
 													    </div>
 													</div>
 													{parseInt(this.state.publications.length) === 0 ? (
-														<p>No hay publicaciones</p>
+														<p>No se encontraron publicaciones</p>
 													) : (
 														<>
 															{this.state.product_list === 'product-list active' &&
 																<div className={this.state.product_list}>
-																	<PublicationGrid redirectToPub={this.redirectToPub} publications = {this.state.publications}/>
+																	<PublicationList redirectToPub={this.redirectToPub} publications = {this.state.publications}/>
 																</div>
 															}
 
@@ -362,7 +338,11 @@ class MainPublications extends React.Component {
 															<div className="row pagination-results">
 																<div className="col-md-6 text-left">
 																	<ul className="pagination">
-																		
+                                                                        {this.state.pagination.map(page => {
+																			return (
+																				<li className={this.state.currentPage === page ? 'active' : ''} key={page}><a href="#pagination" onClick={() => alert("pagina "+page)}>{page}</a></li>
+																			);
+																		})}
 																	</ul>
 																</div>
 																<div className="col-md-6 text-right">Mostrando {this.state.publications.length} publicaciones de {this.state.totalPublications}</div>
@@ -378,7 +358,6 @@ class MainPublications extends React.Component {
                         </div>
                     </div>
                 </div>
-
                 </LoadingOverlay>
                 <Footer />
             </>

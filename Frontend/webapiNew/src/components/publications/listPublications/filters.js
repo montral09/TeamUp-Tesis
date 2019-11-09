@@ -1,5 +1,6 @@
 import React from 'react';
 import $ from 'jquery';
+import { withRouter } from "react-router";
 
 class Filters extends React.Component {
 	componentDidMount() {
@@ -41,7 +42,7 @@ class Filters extends React.Component {
 															return (
 																<li className="mfilter-tb-as-tr" key={spaceType.Code+spaceType.Description} >
 																	<div className="mfilter-tb-as-td" key={spaceType.Code*3+spaceType.Description}>
-																		<a href="#category" onClick={() => alert('ID:'+spaceType.Code)}>{spaceType.Description}</a>
+																		<a href="#category" onClick={() => this.props.changeFilters("spacetypeSelected",spaceType.Code)}>{spaceType.Description}</a>
 																	</div>
 																</li>
 															);
@@ -101,4 +102,4 @@ class Filters extends React.Component {
 	}
 }
 
-export default Filters;
+export default withRouter(Filters);
