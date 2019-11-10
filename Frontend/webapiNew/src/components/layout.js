@@ -12,6 +12,7 @@ import CreatePublication from './publications/createPublication/createPublicatio
 import ViewPublication from './publications/viewPublication/viewPublication';
 import MyPublicationsList from './publications/myPublishedPublications/myPublicationsList';
 import MainPublications from './publications/listPublications/mainPublications';
+import NotFoundPage from './pages/404';
 
 const Page = () => {
   return (
@@ -28,6 +29,7 @@ const Page = () => {
         <Route path="/publications/myPublishedPublications/myPublicationsList" component={MyPublicationsList} />
         <Route path="/publications/listPublications/mainPublications/:spacetype/:capacity/:city" component={MainPublications} />
         <Route path="/publications/listPublications/mainPublications" component={MainPublications} />
+        <Route component={NotFoundPage} />
       </Switch>
     </>
   );

@@ -2,6 +2,7 @@ import React from 'react';
 import Header from "../../header/header";
 import Footer from "../../footer/footer";
 import { Helmet } from 'react-helmet';
+import { Redirect } from 'react-router-dom';
 //import BlockProducts from '../blocks/blockProducts'
 import Filters from "./filters";
 import './mega_filter.css';
@@ -10,7 +11,7 @@ import PublicationGrid from "./publicationGrid";
 import { toast } from 'react-toastify';
 import { withRouter } from "react-router";
 import LoadingOverlay from 'react-loading-overlay';
-
+import ErrorBoundary from '../../generic/ErrorBoundary';
 
 class MainPublications extends React.Component {
 	constructor(props) {
@@ -47,14 +48,20 @@ class MainPublications extends React.Component {
             currentPage : 1,
             totalPages : 1,
             publicationsPerPage : 10,
-            pagination : [1]
+            pagination : [1],
+            generalError : false
         };
         this.loadInfraestructure = this.loadInfraestructure.bind(this);		
         this.loadSpaceTypes = this.loadSpaceTypes.bind(this);
         this.startSearch = this.startSearch.bind(this);
         this.redirectToPub = this.redirectToPub.bind(this);
         this.changeFilters = this.changeFilters.bind(this);
-
+        this.handleErrors = this.handleErrors.bind(this);
+    }
+    handleErrors(error){
+        this.setState({ generalError: true });
+        console.log("ERROR:");
+        console.log(error);
     }
     onChange = (e) => {
         this.setState({
@@ -110,28 +117,11 @@ class MainPublications extends React.Component {
                 this.setState({ publicationsLoaded: true, publications:data.Publications, 
                     totalPublications:data.TotalPublications,totalPages:newTotalPages, pagination:newPagination });
             } else {
-                this.setState({ publicationsLoaded: true });
-                toast.error('Internal error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
+                this.handleErrors(data.responseCode || "Generic error");
             }
         }
         ).catch(error => {
-            this.setState({ publicationsLoaded: true });
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-            console.log(error);
+            this.handleErrors(error);
         }
         )
     }
@@ -153,26 +143,11 @@ class MainPublications extends React.Component {
                 }
             }
             ).catch(error => {
-                toast.error('Internal error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                console.log(error);
+                this.handleErrors(error || "Generic error");
             }
             )
         } catch (error) {
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
+            this.handleErrors(error);
         }
     }
 
@@ -202,37 +177,17 @@ class MainPublications extends React.Component {
                             () => {this.startSearch();})
                     }
                 } else {
-                    toast.error('Hubo un error', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
+                    this.handleErrors(data.responseCode || "Generic error");
+
                 }
             }
             ).catch(error => {
-                toast.error('Internal error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                console.log(error);
+                this.handleErrors(error || "Generic error");
+
             }
             )
         } catch (error) {
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
+            this.handleErrors(error || "Generic error");
         }
     }
 
@@ -249,8 +204,9 @@ class MainPublications extends React.Component {
     }
 
     render() {
+        if (this.state.generalError) return <Redirect to='/error' />
         return (
-            <>
+            <ErrorBoundary>
                 {/*SEO Support*/}
                 <Helmet>
                     <title>TeamUp | Lista de publicaciones</title>
@@ -360,7 +316,7 @@ class MainPublications extends React.Component {
                 </div>
                 </LoadingOverlay>
                 <Footer />
-            </>
+            </ErrorBoundary>
         );
     }
 }
