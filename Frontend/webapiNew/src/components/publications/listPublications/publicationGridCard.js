@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual'
 
-class PublicationCard extends React.Component {
+class PublicationGridCard extends React.Component {
 	loadQuickview(id) {
 		this.props.changeQuickview(id);
 		setTimeout(function () {
@@ -18,23 +18,22 @@ class PublicationCard extends React.Component {
 			<React.Fragment>
 				<div className="product clearfix product-hover">
 				    <div className="left">
-						<div className="sale">Recomendados</div>
+						<div className="sale">Recomendado</div>
 				        <div className="image ">
 							<Link to={`/publications/viewPublication/viewPublication/${IdPublication}`}>
-								<img src={ImagesURL[0]} className="" alt={Description} />		
+								<img src={ImagesURL[0]} className="" alt='No image available' />		
 							</Link>
 				    	</div>
 					</div>
 				    <div className="right">		
 						<div className="name"><Link to={`/publications/viewPublication/viewPublication/${IdPublication}`}></Link></div>
 						<div className="price">
-				            {HourPrice > 0 ? ("Por Hora $"+HourPrice) : (null)}
-							{DailyPrice > 0 ? ("Por Día $"+DailyPrice) : (null)}
-				            {WeeklyPrice > 0 ? ("Por Semana $"+WeeklyPrice) : (null)}
-				            {MonthlyPrice > 0 ? ("Por Mes $"+MonthlyPrice) : (null) }
-				        </div>
+							<i className="fa fa-money" aria-hidden="true"></i>{"Hora$"+HourPrice}<br/>
+						</div>
 				        <div className="">
-				            {City}
+							{Title}<br/>
+							<i className="fa fa-home" aria-hidden="true"></i>{" "+City}<br/>
+							<i className="fa fa-users" aria-hidden="true"></i>{" "+Capacity}<br/>
 				        </div>
 				        <div className="only-hover">
 				        	<a href="#redirectToPub" className="button" onClick={ () => this.props.redirectToPub(IdPublication)}>Ver</a>				            
@@ -46,4 +45,4 @@ class PublicationCard extends React.Component {
 	}
 }
 
-export default PublicationCard;
+export default PublicationGridCard;

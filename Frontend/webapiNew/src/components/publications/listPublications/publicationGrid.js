@@ -1,5 +1,5 @@
 import React from 'react';
-import PublicationCard from "./publicationCard";
+import PublicationGridCard from "./publicationGridCard";
 
 
 class PublicationGrid extends React.Component {
@@ -11,7 +11,7 @@ class PublicationGrid extends React.Component {
 					{this.props.publications.map(publication => {
 						return (
 	        				<div className="col-6 col-md-4 col-lg-3" key={publication.IdPublication+'_pub_grid_id'}>
-								<PublicationCard redirectToPub={this.props.redirectToPub}
+								<PublicationGridCard redirectToPub={this.props.redirectToPub}
 									key={publication.IdPublication}
 									{...publication}
 								/>
