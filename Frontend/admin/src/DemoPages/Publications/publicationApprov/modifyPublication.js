@@ -6,12 +6,11 @@ import {
 } from 'reactstrap';
 
 import {toast} from 'react-toastify';
-
+import Select from 'react-select';
 
 class ModifyPublicationModal extends React.Component {
     constructor(props) {
         super(props);
-
         this.state = {
             modal: false,
             publData: {},
@@ -19,63 +18,91 @@ class ModifyPublicationModal extends React.Component {
                 Location: ''
             },
             admTokenObj: {},
-            adminData: {}
+            adminData: {},
+            facilitiesAux: [],
+            facilitiesSelectTemp: [],
+            facilitiesSelect: []
         };
         this.toggle = this.toggle.bind(this);
         this.save = this.save.bind(this);
-        this.deleteImage = this.deleteImage.bind(this);
+        this.handleSelectChange = this.handleSelectChange.bind(this)
+       
     }
 
-    toggle(publData, admTokenObj, adminData, spaceTypes) {
+    toggle(publData, admTokenObj, adminData, spaceTypes, facilities) {
+            const facilitiesAux = facilities.map(function(row) {         
+                return { value : row.Code, label : row.Description }
+             })
+             var facilitiesSelectTemp = []
+             var facilitiesSelect = []
+             publData.Facilities.forEach(element => {
+                 let infText = facilities.filter( function(fac){
+                     return parseInt(fac.Code) == parseInt(element)
+                 });
+                 facilitiesSelectTemp.push({label : infText[0].Description, value: element});
+                 facilitiesSelect.push(infText[0].Code)
+                 
+             });        
         this.setState({
             modal: !this.state.modal,
             publData: publData,
             publDataChanged: publData,
             admTokenObj: admTokenObj,
             adminData: adminData,
-            spaceTypes: spaceTypes
+            spaceTypes: spaceTypes,
+            facilitiesAux : facilitiesAux,
+            facilitiesSelectTemp : facilitiesSelectTemp,
+            facilitiesSelect: facilitiesSelect
         });
     }
 
-    deleteImage(id){
-        console.log ('delete image');
+    handleSelectChange(facilitiesSelectTemp){
+        var values = [];
+        for (var i = 0, l = facilitiesSelectTemp.length; i < l; i++) {
+            values.push(facilitiesSelectTemp[i].value);
+        }        
+        this.setState({
+            facilitiesSelectTemp: facilitiesSelectTemp,
+            facilitiesSelect : values
+        })
+    } 
 
-        var tempImgArr = this.state.publDataChanged.ImagesURL.filter(function(value, index){
-            return index != id;
-        });
-        this.onChange({target :{value:tempImgArr, id:"ImagesURL"}});
-    }
     save() {
         console.log("save - this.state: ");
-        console.log(this.state);
-        
-        let {Mail, Name, LastName, Phone, Rut, RazonSocial, Address, CheckPublisher, PublisherValidated, MailValidated, Active  } = this.state.userDataChanged;
-        let objUser = {
-            Mail: Mail,
-            OriginalMail : this.state.userData.Mail,
-            Name: Name,
-            LastName: LastName,
-            Phone: Phone,
-            Rut: Rut,
-            RazonSocial: RazonSocial,
-            Address: Address,
-            CheckPublisher: CheckPublisher,
-            PublisherValidated: PublisherValidated,
-            MailValidated: MailValidated,
-            AccessToken: this.state.admTokenObj.accesToken,
-            AdminMail: this.state.adminData.Mail,
-            Active: Active
+        console.log(this.state);        
+        let objPub = {
+            "AccessToken": this.state.admTokenObj.accesToken,
+            "Publication": {
+                "IdPublication": this.state.publDataChanged.IdPublication,
+                "Mail": this.state.publDataChanged.Mail,
+                "SpaceType": parseInt(this.state.publDataChanged.SpaceType),
+                "Title": this.state.publDataChanged.Title,
+                "Description": this.state.publDataChanged.Description,
+                "Address": this.state.publDataChanged.Address,
+                "City": this.state.publDataChanged.City,
+                "Location": {
+                    "Latitude": this.state.publDataChanged.Latitude,
+                    "Longitude": this.state.publDataChanged.Longitude
+                },
+                "Capacity": parseInt(this.state.publDataChanged.Capacity),
+                "VideoURL": this.state.publDataChanged.VideoURL,
+                "HourPrice": parseFloat(this.state.publDataChanged.HourPrice),
+                "DailyPrice": parseFloat(this.state.publDataChanged.DailyPrice),
+                "WeeklyPrice": parseFloat(this.state.publDataChanged.WeeklyPrice),
+                "MonthlyPrice": parseFloat(this.state.publDataChanged.MonthlyPrice),
+                "Availability": this.state.publDataChanged.Availability,
+                "Facilities": this.state.facilitiesSelect,
+            },
+            "ImagesURL" : this.state.publDataChanged.ImagesURL //The ones to keep
         }
-
-        return;
-        fetch('https://localhost:44372/api/updateUserAdmin', {
+        fetch('https://localhost:44372/api/publications', {
             method: 'PUT',
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify(objUser)
+            body: JSON.stringify(objPub)
         }).then(response => response.json()).then(data => {
             console.log("data:" + JSON.stringify(data));
-            if (data.responseCode == "SUCC_USRUPDATED") {
-                toast.success('Usuario actualizado correctamente ', {
+            if (data.responseCode == "SUCC_PUBLICATIONUPDATED") {
+                toast.success('Publicacion actualizada correctamente ', {
                     position: "top-right",
                     autoClose: 5000,
                     hideProgressBar: false,
@@ -85,21 +112,12 @@ class ModifyPublicationModal extends React.Component {
                 });
                 this.setState({
                     modal: !this.state.modal,
-                    userData: this.state.userData,
-                    userDataChanged: this.state.userData
+                    publData: this.state.publData,
+                    publDataChanged: this.state.publDataChanged
                 });
                 this.props.updateTable();
             } else
-                if (data.responseCode == "ERR_MAILALREADYEXIST") {
-                    toast.error('Ese correo ya esta en uso, por favor elija otro.', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                } else if (data.Message) {
+                 if (data.Message) {
                     toast.error('Hubo un error', {
                         position: "top-right",
                         autoClose: 5000,
@@ -122,26 +140,20 @@ class ModifyPublicationModal extends React.Component {
             console.log(error);
         }
         )
-            
-
-
     }
+
     onChange = (e) => {
         var valueToUpdate = e.target.value;
-        if(e.target.value == 'on'){
-            // adapt to checkbox behavior
-            valueToUpdate = !this.state.userDataChanged[e.target.name];
-        }
         this.setState({
             publDataChanged: {
-              ...this.state.userDataChanged,
+              ...this.state.publDataChanged,
               [e.target.name] : valueToUpdate
             }
           })
-          console.log ('Pub changed')
-          console.log (this.state)
     }
+
     render() {
+
         return (
             <span className="d-inline-block mb-2 mr-2">
                 <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
@@ -261,12 +273,21 @@ class ModifyPublicationModal extends React.Component {
                                 <Label key={index+"_imageurl"} for="imageurl" sm={2}>Imagen {index}</Label>
                                 <Col sm={10}>
                                     <a href={obj} target="_blank">ImageURL{index}</a>
-                                    <a href="" onClick={() =>this.deleteImage(index)}><span></span>Eliminar</a>
+                                    <a href="" onClick={() =>alert ('lkjsd')}><span></span>Eliminar</a>
                                 </Col>
                             </FormGroup>
                             )
                         })}
-
+                        <FormGroup>
+                            <Label for="facilitiesSelect" >Infraestructura</Label>
+                            <Select	
+                                isMulti
+                                options={this.state.facilitiesAux}
+                                value={this.state.facilitiesSelectTemp}
+                                onChange = {this.handleSelectChange}
+                                removeSelected = {true}
+                            />
+                        </FormGroup>
                     </Form>
                     </ModalBody>
                     <ModalFooter>

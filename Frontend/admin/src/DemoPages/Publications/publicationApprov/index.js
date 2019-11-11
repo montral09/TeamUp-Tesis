@@ -32,7 +32,8 @@ class PublPendApprov extends Component {
             publPendApp: [],
             admTokenObj: admTokenObj,
             adminMail: adminMail,
-            spaceTypes: []
+            spaceTypes: [],
+            facilities: []
         }
         this.modalElement = React.createRef(); // esto hace unas magias para cambiar el estado de un componente hijo
         this.modalElementAppRej = React.createRef();
@@ -40,32 +41,35 @@ class PublPendApprov extends Component {
         this.rejectPublication = this.rejectPublication.bind(this);
     }
 
-    loadSpaceTypes() {
+    loadInfraestructure() {
         try {
-
-            // call API
-            var dummyData = {
-                spaceTypes: [
-                    {
-                        "Code": 1,
-                        "Description": "Oficinas y despachos"
-                    },
-                    {
-                        "Code": 2,
-                        "Description": "Coworking"
-                    },
-                    {
-                        "Code": 3,
-                        "Description": "Sala de reuniones"
-                    },
-                    {
-                        "Code": 4,
-                        "Description": "Espacios para eventos"
-                    }
-                ]
-            };
-            this.setState({ spaceTypes: dummyData.spaceTypes });
-
+            fetch('https://localhost:44372/api/facilities').then(response => response.json()).then(data => {
+                if (data.responseCode == "SUCC_FACILITIESOK") {
+                    this.setState({ facilities: data.facilities });
+                    console.log(this.state.facilities)
+                } else {
+                    toast.error('Internal error', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                }
+            }
+            ).catch(error => {
+                toast.error('Internal error', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
+                console.log(error);
+            }
+            )
         } catch (error) {
             toast.error('Internal error', {
                 position: "top-right",
@@ -78,6 +82,7 @@ class PublPendApprov extends Component {
         }
     }
 
+    
     changePubTransition ( newTransition, idPub ){
         try{
             console.log("changePubTransition")
@@ -159,6 +164,7 @@ class PublPendApprov extends Component {
     // This function will trigger when the component is mounted, to fill the data from the state
     componentDidMount() {
         this.updateTable();
+        this.loadInfraestructure()
     }
 
     updateTable(){
@@ -205,7 +211,7 @@ class PublPendApprov extends Component {
             return publ.IdPublication === key
         });
 
-        this.modalElement.current.toggle(publData[0],this.state.admTokenObj,this.state.adminData, this.state.spaceTypes);
+        this.modalElement.current.toggle(publData[0],this.state.admTokenObj,this.state.adminData, this.state.spaceTypes, this.state.facilities);
     }
 
     // This funciton will call the api to submit the publisher
