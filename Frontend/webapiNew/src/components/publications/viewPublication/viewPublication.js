@@ -1,4 +1,5 @@
 import React from 'react';
+import { Redirect } from 'react-router-dom';
 import Header from "../../header/header";
 import { Helmet } from 'react-helmet';
 import { toast } from 'react-toastify';
@@ -35,27 +36,25 @@ class ViewPublication extends React.Component {
             infIsLoading : true,
             planChosen : "Hours",
             quantityPeople: 1,
+            generalError : false,
         }
         this.loadPublication = this.loadPublication.bind(this);
         this.redirectToPub = this.redirectToPub.bind(this);
         this.loadPublication(pubID);
         this.submitFavorite = this.submitFavorite.bind(this);
+        this.handleErrors = this.handleErrors.bind(this);
     }
 
     componentDidMount() {
         this.loadInfraestructure();
         window.scrollTo(0, 0);
     }
-
+    handleErrors(error){
+        this.setState({ generalError: true });
+    }
     onChange = (e) => {
         this.setState({
             [e.target.id]: e.target.value
-        });
-    }
-
-    handlePlanSelected = (e) => {
-        this.setState ({
-            planChosen : e.target.value
         });
     }
 
@@ -122,34 +121,17 @@ class ViewPublication extends React.Component {
                 }
             }
             ).catch(error => {
-                this.setState({ infIsLoading: false});
-                toast.error('Internal error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                console.log(error);
+                this.handleErrors(error);
             }
             )
         } catch (error) {
-            this.setState({ infIsLoading: false});
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
+            this.handleErrors(error);
         }
     }
     
     loadPublication(pubID){
         try{
-            var email ="";
+            var email = "";
             if(this.props.userData){
                 email = this.props.userData.Mail;
             }
@@ -160,44 +142,25 @@ class ViewPublication extends React.Component {
                 if (data.responseCode == "SUCC_PUBLICATIONSOK") {
                     var pubObj = data.Publication;
                     pubObj.Favorite = data.Favorite;
-                    this.setState({ pubIsLoading: false, pubObj: pubObj, activeImage: { index: 0, src: pubObj.ImagesURL[0]}, relatedPublications : data.RelatedPublications});
+                    var defaultPlanSelected = "";
+                    if(pubObj.HourPrice > 0){ defaultPlanSelected = "Hours"; }else if(pubObj.DailyPrice > 0){defaultPlanSelected = "Days"} else if(pubObj.WeeklyPrice > 0){defaultPlanSelected = "Weeks";}else if(pubObj.MonthlyPrice > 0){defaultPlanSelected = "Months";}
+                    this.setState({ pubIsLoading: false, pubObj: pubObj, activeImage: { index: 0, src: pubObj.ImagesURL[0]}, 
+                        relatedPublications : data.RelatedPublications, planChosen:defaultPlanSelected });
                 } else {
                     this.setState({ pubIsLoading: false});
                     if(data.responseCode == 'ERR_SPACENOTFOUND'){
-                        console.log("espacio no encontrado");
+                        this.handleErrors(data.responseCode);
                     }
                     if (data.Message) {
-                        toast.error('Hubo un error: ' + data.Message, {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                        });
+                        this.handleErrors(data.Message);
+
                     } else {
-                        toast.error('Internal error', {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                        });
+                        this.handleErrors("Generic error");
                     }
                 }
             }
             ).catch(error => {
-                this.setState({ pubIsLoading: false, buttonIsDisable: false });
-                toast.error('Internal error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                console.log(error);
+                this.handleErrors(error);
             }
             )
         }catch(error){
@@ -232,8 +195,7 @@ class ViewPublication extends React.Component {
         }).then(response => response.json()).then(data => {
             console.log("data:" + JSON.stringify(data));
             if (data.responseCode == "SUCC_FAVORITEUPDATED" ) {
-                var newCode = code === 1 ? true: false
-                this.setState({ pubObj: { ...this.state.pubObj, Favorite: newCode}})                
+                this.setState({ pubObj: { ...this.state.pubObj, Favorite: code === 1 ? true: false}})                
                 toast.success(code === 1 ? 'Agregado a favoritos' : 'Quitado de favoritos', {
                     position: "top-right",
                     autoClose: 5000,
@@ -243,37 +205,11 @@ class ViewPublication extends React.Component {
                     draggable: true,
                 });
             } else {
-                if (data.Message) {
-                    toast.error('Hubo un error: ' + data.Message, {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                } else {
-                    toast.error('Internal error', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                }
+                this.handleErrors("Generic error");
             }
         }
         ).catch(error => {
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-            console.log(error);
+            this.handleErrors(error);
         }
         )
     }
@@ -310,6 +246,7 @@ class ViewPublication extends React.Component {
 		    }
         };
         var loadStatus = !this.state.pubIsLoading && !this.state.infIsLoading ? false : true;
+        if (this.state.generalError) return <Redirect to='/error' />
         return (
             <>
                 <LoadingOverlay
@@ -393,7 +330,6 @@ class ViewPublication extends React.Component {
                                                                                                     {this.state.pubObj.DailyPrice > 0 && "Por Día : $"+ this.state.pubObj.DailyPrice + " - "}
                                                                                                     {this.state.pubObj.WeeklyPrice > 0 && "Por Semana : $"+ this.state.pubObj.WeeklyPrice + " - "}
                                                                                                     {this.state.pubObj.MonthlyPrice > 0 && "Por Mes : $"+ this.state.pubObj.MonthlyPrice}
-
                                                                                                     </span>
                                                                                                 </div>
                                                                                                 <div className="review">
@@ -414,11 +350,11 @@ class ViewPublication extends React.Component {
                                                                                                 <div className="col-md-12" style= {{border: '1px solid dodgerBlue'}}>
                                                                                                     <div>
                                                                                                     <span><b>Plan</b></span>
-                                                                                                    <select style= {{marginLeft: '10%'}} className="browser" id= "planChosen" onChange={this.handlePlanSelected} defaultValue = " -- select an option --">                                                                                                        
-                                                                                                        <option value="Hours">{this.state.pubObj.HourPrice > 0 && "Por Hora : $"+ this.state.pubObj.HourPrice }</option>
-                                                                                                        <option value="Days">{this.state.pubObj.DailyPrice > 0 && "Por Día : $"+ this.state.pubObj.DailyPrice}</option>
-                                                                                                        <option value="Weeks">{this.state.pubObj.WeeklyPrice > 0 && "Por Semana : $"+ this.state.pubObj.WeeklyPrice }</option>
-                                                                                                        <option value="Months">{this.state.pubObj.MonthlyPrice > 0 && "Por Mes : $"+ this.state.pubObj.MonthlyPrice}</option>
+                                                                                                    <select style= {{marginLeft: '10%'}} className="browser" id= "planChosen" onChange={this.onChange} defaultValue = " -- select an option --">                                                                                                        
+                                                                                                        {this.state.pubObj.HourPrice > 0 && <option value="Hours"> {"Por Hora : $"+ this.state.pubObj.HourPrice}</option>}
+                                                                                                        {this.state.pubObj.DailyPrice > 0 && <option value="Days"> {"Por Día : $"+ this.state.pubObj.DailyPrice}</option>}
+                                                                                                        {this.state.pubObj.WeeklyPrice > 0 && <option value="Weeks"> {"Por Semana : $"+ this.state.pubObj.WeeklyPrice}</option>}
+                                                                                                        {this.state.pubObj.MonthlyPrice > 0 && <option value="Months"> {"Por Mes : $"+ this.state.pubObj.MonthlyPrice}</option>}
                                                                                                     </select>                                                                                                    
                                                                                                     <div className="cart">
                                                                                                     <div className="add-to-cart d-flex">                                                                                                        

@@ -38,7 +38,7 @@ class MainPublications extends React.Component {
             spaceTypeSelectedText : "",
             capacity : capacity == "empty" ? "" :capacity,
             city : city  == "empty" ? "" : city,
-            totalPublications : 1,
+            totalPublications : 10,
             spaceTypesLoaded : false,
             publicationsLoaded : false,
             grid: grid, 
@@ -49,13 +49,13 @@ class MainPublications extends React.Component {
             totalPages : 1,
             publicationsPerPage : 10,
             pagination : [1],
-            generalError : false
+            generalError : false,
+            facilitiesSelected : []
         };
         this.loadInfraestructure = this.loadInfraestructure.bind(this);		
         this.loadSpaceTypes = this.loadSpaceTypes.bind(this);
         this.startSearch = this.startSearch.bind(this);
         this.redirectToPub = this.redirectToPub.bind(this);
-        this.changeFilters = this.changeFilters.bind(this);
         this.handleErrors = this.handleErrors.bind(this);
     }
     handleErrors(error){
@@ -64,8 +64,13 @@ class MainPublications extends React.Component {
         console.log(error);
     }
     onChange = (e) => {
+        const targetId = e.target.id;
         this.setState({
-            [e.target.id]: e.target.value
+            [targetId]: e.target.value
+        }, () =>{
+            if(targetId == "publicationsPerPage" || targetId == "currentPage" || targetId == "facilitiesSelected" || targetId == "spacetypeSelected"){
+                this.startSearch();
+            }
         });
     }
 
@@ -98,6 +103,10 @@ class MainPublications extends React.Component {
             "Capacity": this.state.capacity,
             "State": "ACTIVE",
             "City": this.state.city,
+            "PageNumber" : parseInt(this.state.currentPage)-1
+        }
+        if(this.state.facilitiesSelected.length > 0){
+            objToSend.Facilities = this.state.facilitiesSelected;
         }
         console.log("startSearch:");
         console.log(objToSend);
@@ -109,13 +118,13 @@ class MainPublications extends React.Component {
         }).then(response => response.json()).then(data => {
             console.log(data);
             if (data.responseCode == "SUCC_PUBLICATIONSOK") {
-                let newTotalPages = parseInt(data.TotalPublications/this.state.publicationsPerPage);
+                let newTotalPages = Math.round(parseFloat(data.TotalPublications/this.state.publicationsPerPage));
                 let newPagination = [];
-                for(var i=1;i<newTotalPages;i++){
+                for(var i=1;i<=newTotalPages;i++){
                     newPagination.push(i);
                 }
                 this.setState({ publicationsLoaded: true, publications:data.Publications, 
-                    totalPublications:data.TotalPublications,totalPages:newTotalPages, pagination:newPagination });
+                    totalPublications:data.TotalPublications,totalPages:newTotalPages, pagination: newPagination });
             } else {
                 this.handleErrors(data.responseCode || "Generic error");
             }
@@ -191,18 +200,6 @@ class MainPublications extends React.Component {
         }
     }
 
-    changeFilters(filter,value){
-        console.log("filter:"+filter+",value:"+value)
-        if(filter == "spacetypeSelected"){
-            let sts = this.state.spacetypeSelected;
-            var spaceTypeSelectedText = this.state.spaceTypes.filter(function(st){
-                return parseInt(st.Code) === parseInt(sts);
-            });
-            this.setState({[filter]: value, spaceTypeSelectedText : spaceTypeSelectedText[0].Description }, () => {this.startSearch()});
-        }
-
-    }
-
     render() {
         if (this.state.generalError) return <Redirect to='/error' />
         return (
@@ -242,7 +239,8 @@ class MainPublications extends React.Component {
                             <div className="container">
 								<div className="row">
 									<div className="col-md-3 " id="column-left">
-										<Filters facilitiesList = {this.state.facilities} spaceTypesList = {this.state.spaceTypes} changeFilters={this.changeFilters}/>										
+                                        <Filters facilitiesList = {this.state.facilities} spaceTypesList = {this.state.spaceTypes} 
+                                            facilitiesSelected={this.state.facilitiesSelected} onChange={this.onChange}/>										
 									</div>
 									<div className="col-md-9">
 										<div className="row">
@@ -267,9 +265,9 @@ class MainPublications extends React.Component {
 													        </div>
 													        <div className="limit">
 													            Mostrar: 	
-																<select id="publicationsPerPage" onChange={this.onChange}>
+																<select id="publicationsPerPage" onChange={null}>
                                                                     <option value="10">10</option>
-																	<option value="25">25</option>
+																	<option value="30">30</option>
 																	<option value="50">50</option>
 																</select>
 													        </div>
@@ -296,7 +294,7 @@ class MainPublications extends React.Component {
 																	<ul className="pagination">
                                                                         {this.state.pagination.map(page => {
 																			return (
-																				<li className={this.state.currentPage === page ? 'active' : ''} key={page}><a href="#pagination" onClick={() => alert("pagina "+page)}>{page}</a></li>
+																				<li className={this.state.currentPage === page ? 'active' : ''} key={page}><a href="#pagination" onClick={() => this.onChange({target:{id:'currentPage',value:page}})}>{page}</a></li>
 																			);
 																		})}
 																	</ul>
