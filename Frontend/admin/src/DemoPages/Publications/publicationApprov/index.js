@@ -39,6 +39,7 @@ class PublPendApprov extends Component {
         this.modalElementAppRej = React.createRef();
         this.approvePublication  = this.approvePublication.bind(this);
         this.rejectPublication = this.rejectPublication.bind(this);
+        this.updateTable = this.updateTable.bind(this);
     }
 
     loadInfraestructure() {
@@ -173,8 +174,8 @@ class PublPendApprov extends Component {
             method: 'POST',
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify({
-                "AccessToken": this.props.admTokenObj.accesToken,
-                "AdminMail": this.props.adminData.Mail                   
+                "AccessToken": this.state.admTokenObj.accesToken,
+                "AdminMail": this.state.adminMail                   
             })
         }).then(response => response.json()).then(data => {
             if (data.responseCode == "SUCC_PUBLICATIONSOK") {

@@ -26,15 +26,30 @@ class ModifyPublicationModal extends React.Component {
         this.toggle = this.toggle.bind(this);
         this.save = this.save.bind(this);
         this.handleSelectChange = this.handleSelectChange.bind(this)
+        this.deleteImage = this.deleteImage.bind(this);
        
     }
 
+    deleteImage(id){
+        console.log ('delete image id');
+        console.log (id);
+        console.log (this.state.publDataChanged.ImagesURL);
+        var tempImgArr = this.state.publDataChanged.ImagesURL.filter(function(value, index){
+            return index != id;
+        });
+        console.log('tempImgArr')
+        console.log(tempImgArr)
+        this.onChange({target :{value:tempImgArr, name:"ImagesURL"}});
+    }
+
     toggle(publData, admTokenObj, adminData, spaceTypes, facilities) {
-            const facilitiesAux = facilities.map(function(row) {         
+        var facilitiesAux = []
+        var facilitiesSelectTemp = []
+        var facilitiesSelect = []
+        if (facilities) {
+            facilitiesAux = facilities.map(function(row) {         
                 return { value : row.Code, label : row.Description }
              })
-             var facilitiesSelectTemp = []
-             var facilitiesSelect = []
              publData.Facilities.forEach(element => {
                  let infText = facilities.filter( function(fac){
                      return parseInt(fac.Code) == parseInt(element)
@@ -42,7 +57,7 @@ class ModifyPublicationModal extends React.Component {
                  facilitiesSelectTemp.push({label : infText[0].Description, value: element});
                  facilitiesSelect.push(infText[0].Code)
                  
-             });        
+             }); }        
         this.setState({
             modal: !this.state.modal,
             publData: publData,
@@ -143,13 +158,14 @@ class ModifyPublicationModal extends React.Component {
     }
 
     onChange = (e) => {
+        console.log('estado despues de borrar')
         var valueToUpdate = e.target.value;
         this.setState({
             publDataChanged: {
               ...this.state.publDataChanged,
               [e.target.name] : valueToUpdate
             }
-          })
+          }, () => console.log ((this.state)))
     }
 
     render() {
@@ -267,17 +283,17 @@ class ModifyPublicationModal extends React.Component {
                                         value={this.state.publDataChanged.Availability || ""} onChange={this.onChange}/>
                             </Col>
                         </FormGroup>
-                        {this.state.publDataChanged.ImagesURL && this.state.publDataChanged.ImagesURL.map(function(obj,index) {
-                            return(
-                            <FormGroup row>
+                        {this.state.publDataChanged.ImagesURL && this.state.publDataChanged.ImagesURL.map((obj,index) => {
+                            return (
+                            <FormGroup row >
                                 <Label key={index+"_imageurl"} for="imageurl" sm={2}>Imagen {index}</Label>
                                 <Col sm={10}>
                                     <a href={obj} target="_blank">ImageURL{index}</a>
-                                    <a href="" onClick={() =>alert ('lkjsd')}><span></span>Eliminar</a>
+                                    <Button color="link" onClick={() => this.deleteImage(index)}>Eliminar</Button>
                                 </Col>
-                            </FormGroup>
-                            )
-                        })}
+                            </FormGroup>)
+                            })
+                        }
                         <FormGroup>
                             <Label for="facilitiesSelect" >Infraestructura</Label>
                             <Select	
@@ -292,7 +308,7 @@ class ModifyPublicationModal extends React.Component {
                     </ModalBody>
                     <ModalFooter>
                         <Button color="link" onClick={this.toggle}>Cancelar</Button>
-                        <Button color="primary" onClick={this.save}>Guardar</Button>{' '}
+                        <Button color="primary" onClick={this.save}>Guardar</Button>
                     </ModalFooter>
                 </Modal>
             </span>
