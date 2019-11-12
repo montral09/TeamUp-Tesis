@@ -3,6 +3,7 @@ import $ from 'jquery';
 import { withRouter } from "react-router";
 
 class Filters extends React.Component {
+
 	componentDidMount() {
 		$(".open-filter").click(function () {
 			$(".aside, .close-aside-box").addClass("active");
@@ -13,6 +14,23 @@ class Filters extends React.Component {
 			$(".aside, .close-aside-box").removeClass("active");
 			$("body").css("overflow", "visible");
 		});
+	}
+
+	handleCheckbox(facilityCode){
+		var facilityIndex = this.props.facilitiesSelected.indexOf(facilityCode);
+		var newFacilitySelectArr = this.props.facilitiesSelected;
+		if(facilityIndex == -1){
+			// this means -> check
+			newFacilitySelectArr.push(facilityCode);
+		}else{
+			// this means -> uncheck
+			newFacilitySelectArr.splice(facilityIndex,1);
+		}
+		this.props.onChange({target:{id:'facilitiesSelected',value:newFacilitySelectArr}});
+	}
+	onClick(spaceCode,spaceDescription){
+		this.props.onChange({target:{id:'spacetypeSelected',value:spaceCode}})
+		this.props.onChange({target:{id:'spaceTypeSelectedText',value:spaceDescription}})		
 	}
  	render() { 	
 		return (
@@ -30,7 +48,6 @@ class Filters extends React.Component {
 										<i className="mfilter-head-icon"></i>
 									</div>
 								</div>
-
 								<div className="mfilter-content-opts">
 									<div className="mfilter-opts-container">
 										<div className="mfilter-content-wrapper mfilter-iscroll scroll-content scroll-wrapper mfilter-scroll-standard">
@@ -42,7 +59,7 @@ class Filters extends React.Component {
 															return (
 																<li className="mfilter-tb-as-tr" key={spaceType.Code+spaceType.Description} >
 																	<div className="mfilter-tb-as-td" key={spaceType.Code*3+spaceType.Description}>
-																		<a href="#category" onClick={() => this.props.changeFilters("spacetypeSelected",spaceType.Code)}>{spaceType.Description}</a>
+																		<a href="#category" onClick={() => this.onClick(spaceType.Code,spaceType.Description)}>{spaceType.Description}</a>
 																	</div>
 																</li>
 															);
@@ -74,11 +91,12 @@ class Filters extends React.Component {
 												<div className="mfilter-options-container">
 													<div className="mfilter-tb">
 														{this.props.facilitiesList.map(facility => {
+															var isSelected = this.props.facilitiesSelected.indexOf(facility.Code) != -1;
 															return (
 																<div key={facility.Code}>
 																	<div className="mfilter-option mfilter-tb-as-tr mfilter-visible">
 																		<div className='mfilter-tb-as-td mfilter-col-input mfilter-input-active'>
-																			<input id={'mfilter-opts-attribs-32-manufacturers-' + facility.Code} name="facility" type="checkbox" readOnly={true} checked={true} />
+																			<input id={'mfilter-opts-attribs-32-manufacturers-' + facility.Code} name="facility" type="checkbox" checked={isSelected} onChange={() => this.handleCheckbox(facility.Code)} />
 																		</div>
 																		<label className="mfilter-tb-as-td">{facility.Description}</label>
 																	</div>
