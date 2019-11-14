@@ -6,6 +6,14 @@ export const PublNav = [
     },
 ];  
 
+export const AllPublNav = [
+    {
+        icon: 'pe-7s-up-arrow',
+        label: 'Publicaciones',
+        to: '#/publications/AllPublications',
+    },
+];
+
 export const GestNav = [
     {
         icon: 'pe-7s-up-arrow',

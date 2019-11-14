@@ -131,12 +131,12 @@ class ViewPublication extends React.Component {
     
     loadPublication(pubID){
         try{
-            var email = "";
-            if(this.props.userData){
-                email = this.props.userData.Mail;
+            var url = 'https://localhost:44372/api/publication?idPublication='+pubID+'&mail';
+            if(this.props.userData.Mail != null){
+                url = url + '=' + this.props.userData.Mail;
             }
             this.setState({ pubIsLoading: true});
-            fetch('https://localhost:44372/api/publication?idPublication='+pubID+'&mail='+email).then(response => response.json()).then(data => {
+            fetch(url).then(response => response.json()).then(data => {
                 console.log("data:");
                 console.log(data);
                 if (data.responseCode == "SUCC_PUBLICATIONSOK") {

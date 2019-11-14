@@ -8,7 +8,7 @@ import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import PageTitle from '../../../Layout/AppMain/PageTitle';
 
 import PublicationApprovTable from './publicationApprovTable';
-import ModifyPublicationModal from './modifyPublication';
+import ModifyPublicationModal from '../modifyPublication';
 import ApproveRejectPublicationModal from './approveRejectPublication';
 
 import { connect } from 'react-redux';
@@ -29,7 +29,7 @@ class PublPendApprov extends Component {
         const admTokenObj = props.admTokenObj;
         const adminMail = props.adminData.Mail
         this.state = {
-            publPendApp: [],
+            publ: [],
             admTokenObj: admTokenObj,
             adminMail: adminMail,
             spaceTypes: [],
@@ -175,12 +175,13 @@ class PublPendApprov extends Component {
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify({
                 "AccessToken": this.state.admTokenObj.accesToken,
-                "AdminMail": this.state.adminMail                   
+                "AdminMail": this.state.adminMail,
+                "PublicationsPerPage": 10                  
             })
         }).then(response => response.json()).then(data => {
             if (data.responseCode == "SUCC_PUBLICATIONSOK") {
                 console.log(data.Publications);
-                this.setState({ 'publPendApp': data.Publications })
+                this.setState({ 'publ': data.Publications })
             } else {
                 toast.error('Hubo un error', {
                     position: "top-right",
@@ -208,7 +209,7 @@ class PublPendApprov extends Component {
 
     // This function will trigger the save function inside the modal to update the values
     editPublication = (key) => {
-        const publData = this.state.publPendApp.filter(publ => {
+        const publData = this.state.publ.filter(publ => {
             return publ.IdPublication === key
         });
 
@@ -230,7 +231,7 @@ class PublPendApprov extends Component {
             if (data.responseCode == "SUCC_PUBLISHERSOK") {
                 let text = "Solicitud ejecutada correctamente";
                 this.setState({
-                    publPendApp: newArrIfSuccess,
+                    publ: newArrIfSuccess,
                 });
                 toast.success(text, {
                     position: "top-right",
@@ -283,13 +284,13 @@ class PublPendApprov extends Component {
                     transitionEnter={false}
                     transitionLeave={false}>
                     <Row>
-                        <ModifyPublicationModal ref = {this.modalElement} updateTable={this.updateTable}/>
+                        <ModifyPublicationModal ref = {this.modalElement} updateTable={this.updateTable} disableFields = {true}/>
                         <ApproveRejectPublicationModal ref = {this.modalElementAppRej} updateTable={this.updateTable}/>
                         <Col lg="12">
                             <Card className="main-card mb-3">
                                 <CardBody>
                                     <CardTitle>Pendientes de aprobación</CardTitle>
-                                    <PublicationApprovTable publPendApp={this.state.publPendApp} rejectPublication={this.rejectPublication} approvePublication={this.approvePublication} editPublication={this.editPublication} spaceTypes={this.state.spaceTypes} />
+                                    <PublicationApprovTable publ={this.state.publ} rejectPublication={this.rejectPublication} approvePublication={this.approvePublication} spaceTypes={this.state.spaceTypes}/>
                                 </CardBody>
                             </Card>
                         </Col>
