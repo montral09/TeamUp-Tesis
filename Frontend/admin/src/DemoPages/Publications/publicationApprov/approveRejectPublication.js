@@ -63,7 +63,6 @@ class ApproveRejectPublicationModal extends React.Component {
             AccessToken: this.state.admTokenObj.accesToken,
             IdPublication: this.state.pubData.id
         }
-        console.log("fabi");
         console.log(objPub);
         fetch('https://localhost:44372/api/publication', {
             method: 'PUT',

@@ -9,6 +9,9 @@ namespace backend.Data_Access.VO.Data
         public int IdPublication { get; set; }
         public Int64 IdUser { get; set; }
         public String Mail { get; set; }
+        public String NamePublisher { get; set; }
+        public String LastNamePublisher { get; set; }
+        public String PhonePublisher { get; set; }
         public int SpaceType { get; set; }
         public DateTime CreationDate { get; set; }
         public String Title { get; set; }
@@ -28,7 +31,8 @@ namespace backend.Data_Access.VO.Data
         public List<string> ImagesURL { get; set; }
         public int QuantityRented { get; set; } //TODO : harcoded, fix
         public List<VOReview> Reviews { get; set; }
-        public int Ranking { get; set; }        
+        public int Ranking { get; set; }  
+        public int TotalViews { get; set; }
 
         public VOPublication() { }
 
@@ -53,7 +57,7 @@ namespace backend.Data_Access.VO.Data
         }
 
         public VOPublication(int idPublication, Int64 idUser, string mail, int spaceType, DateTime creationDate, string title, string description, string address, VOLocationCordinates location,
-            int capacity, string videoURL, int hourPrice, int dailyPrice, int weeklyPrice, int monthlyPrice, string availability, List<int> facilities, List<string> imagesURL, string state)
+            int capacity, string videoURL, int hourPrice, int dailyPrice, int weeklyPrice, int monthlyPrice, string availability, List<int> facilities, List<string> imagesURL, string state, string city)
         {
             IdPublication = idPublication;
             IdUser = idUser;
@@ -74,13 +78,18 @@ namespace backend.Data_Access.VO.Data
             Facilities = facilities;
             ImagesURL = imagesURL;
             State = state;
+            City = city;
         }
 
-        public VOPublication(int idPublication, int spaceType, DateTime creationDate, string title, string description, string address, string city, VOLocationCordinates location,
+        public VOPublication(int idPublication, string mail, string namePublisher, string lastNamePublisher, string phone, int spaceType, DateTime creationDate, string title, string description, string address, string city, VOLocationCordinates location,
              int capacity, string videoURL, int hourPrice, int dailyPrice, int weeklyPrice, int monthlyPrice, string availability,
-             List<int> facilities, List<string> imagesURL, string state, int quantityRented, List<VOReview> reviews, int ranking)
+             List<int> facilities, List<string> imagesURL, string state, int quantityRented, List<VOReview> reviews, int ranking, int totalViews)
         {
             IdPublication = idPublication;
+            Mail = mail;
+            NamePublisher = namePublisher;
+            LastNamePublisher = lastNamePublisher;
+            PhonePublisher = phone;
             SpaceType = spaceType;
             CreationDate = creationDate;
             Title = title;
@@ -101,6 +110,7 @@ namespace backend.Data_Access.VO.Data
             Reviews = reviews;
             Ranking = ranking;
             City = city;
+            TotalViews = totalViews;
         }
     }
 }

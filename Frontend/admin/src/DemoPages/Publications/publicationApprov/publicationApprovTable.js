@@ -3,14 +3,14 @@ import { Table } from 'reactstrap';
 
 
 // This component will render the table with the values passed as parameters -props-
-const PublicationApprovTable = ({publPendApp, approvePublication, editPublication, rejectPublication}) =>{
+const PublicationApprovTable = ({publ, approvePublication, editPublication, rejectPublication}) =>{
     const columnsName = ['ID Pub','Mail','Nombre','Telefono','Fecha Creado','Titulo','Capacidad','Ver Mas','Aprobar','Rechazar'];
 
     const columnsTable = columnsName.map( colName => {
         return (<th key={colName}>{colName}</th>)
     });
-    const arrDataAppList = publPendApp.length ? (
-        publPendApp.map( obj => {
+    const arrDataAppList = publ.length ? (
+        publ.map( obj => {
             return(
             <tr key={obj.IdPublication}>
                 <td>{obj.IdPublication}</td>

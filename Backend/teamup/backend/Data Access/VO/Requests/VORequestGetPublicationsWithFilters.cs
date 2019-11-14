@@ -13,10 +13,11 @@ namespace backend.Data_Access.VO
         public string City { get; set; }
         public int PageNumber { get; set; }
         public string State { get; set; }
+        public int PublicationsPerPage { get; set; }
  
         public VORequestGetPublicationsWithFilters() { }
 
-        public VORequestGetPublicationsWithFilters(int spaceType, int capacity, List<int> facilities, string city, int pageNumber, string state)
+        public VORequestGetPublicationsWithFilters(int spaceType, int capacity, List<int> facilities, string city, int pageNumber, string state, int publicationsPerPage)
         {
             SpaceType = spaceType;
             Capacity = capacity;
@@ -24,6 +25,7 @@ namespace backend.Data_Access.VO
             PageNumber = pageNumber;
             State = state;
             City = city;
+            PublicationsPerPage = publicationsPerPage;
         }
     }
 }

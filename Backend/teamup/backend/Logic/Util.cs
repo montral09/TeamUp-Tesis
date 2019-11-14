@@ -135,12 +135,12 @@ namespace backend.Logic
             if (statusCode == 2)
             //Active
             {                
-                body += "<br /><br />Your publication " + title + "has been approved. This means other users will see it and rented. Congratulations!.";
+                body += "<br /><br />Your publication " + title + " has been approved. This means other users will see it and rented. Congratulations!.";
                 subject = "Publication approved";
             } else
             //Rejected
             {
-                body += "<br /><br />Your publication " + title + "has been rejected. Reason: " + rejectedReason + " You can contact our team for further information";
+                body += "<br /><br />Your publication " + title + " has been rejected. Reason: " + rejectedReason + " You can contact our team for further information";
                 subject = "Publication rejected";
             }
             mm.Body = body;

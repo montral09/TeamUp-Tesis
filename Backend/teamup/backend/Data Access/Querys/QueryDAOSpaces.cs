@@ -42,7 +42,7 @@ namespace backend.Data_Access.Query
         public String GetPublicationsPendingApproval()
         {
             String query = "select p.idPublication, p.idUser, u.name, u.lastName, u.mail, u.phone, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, " +
-                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities from PUBLICATIONS p, USERS u where " +
+                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities, p.city from PUBLICATIONS p, USERS u where " +
                 "p.idUser = u.idUser and p.state = 1";
             return query;
         }
@@ -58,7 +58,7 @@ namespace backend.Data_Access.Query
         public String GetSpace()
         {
             String query = "select p.idPublication, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, " +
-                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities, p.city from PUBLICATIONS p where " +
+                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities, p.city, p.totalViews from PUBLICATIONS p where " +
                 " p.idPublication = @idPublication and p.state = 2";
             return query;
         }
@@ -121,7 +121,7 @@ namespace backend.Data_Access.Query
         public String GetPublicationsWithFilter(VORequestGetPublicationsWithFilters voGetPublicationsFilter, int maxPublicationsPage, int state)
         {
             StringBuilder query = new StringBuilder();
-            query = query.Append("select p.idPublication, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities, p.city from PUBLICATIONS p where p.creationDate is not null ");
+            query = query.Append("select p.idPublication, u.name, u.lastName, u.mail, u.phone, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities, p.city, p.totalViews from PUBLICATIONS p, Users u where p.idUser = u.idUser ");
             if (state != 0)
             {
                 query.Append("and p.state = @state ");
@@ -146,7 +146,7 @@ namespace backend.Data_Access.Query
                 }
                 
             }
-            query.Append("order by p.idPublication offset ").Append((voGetPublicationsFilter.PageNumber) * maxPublicationsPage).Append(" rows fetch next 10 rows only ");
+            query.Append("order by p.idPublication offset ").Append((voGetPublicationsFilter.PageNumber) * maxPublicationsPage).Append(" rows fetch next ").Append(maxPublicationsPage).Append(" rows only ");
             return query.ToString();
         }
 
@@ -165,7 +165,7 @@ namespace backend.Data_Access.Query
         public String GetRelatedSpaces ()
         {
             String query = "select p.idPublication, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, " +
-                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities, p.city from PUBLICATIONS p where " +
+                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities, p.city, p.totalViews from PUBLICATIONS p where " +
                 " p.idPublication <> @idPublication and p.state = 2 and p.capacity >= @capacity and p.spaceType = @spaceType and p.city = @city";
             return query;
         }
@@ -210,7 +210,12 @@ namespace backend.Data_Access.Query
             query.Append("')");
             return query.ToString();
         }
-        
+
+        public String AddOneVisit()
+        {
+            String query = "update PUBLICATIONS set totalViews = totalViews + 1 where idPublication = @idPublication";
+            return query;
+        }
 
     }
      
