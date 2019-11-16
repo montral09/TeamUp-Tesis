@@ -1,6 +1,7 @@
 ﻿using backend.Data_Access.Query;
 using backend.Data_Access.VO;
 using backend.Data_Access.VO.Data;
+using backend.Data_Access.VO.Requests;
 using backend.Exceptions;
 using backend.Logic;
 using System;
@@ -24,40 +25,7 @@ namespace backend.Data_Access
             String con = ConfigurationManager.ConnectionStrings["ConnectionString"].ToString();
             return con;
         }
-
-        public List<VOLocation> GetLocations()
-        {
-            SqlConnection con = null;
-            List<VOLocation> locations = new List<VOLocation>();
-            try
-            {
-                con = new SqlConnection(GetConnectionString());
-                con.Open();
-                String query = cns.GetLocations();
-                SqlCommand selectCommand = new SqlCommand(query, con);
-                SqlDataReader dr = selectCommand.ExecuteReader();
-                VOLocation vOLocation;
-                while (dr.Read())
-                {
-                    vOLocation = new VOLocation(Convert.ToInt32(dr["idLocation"]), Convert.ToString(dr["description"]));
-                    locations.Add(vOLocation);
-                }
-                dr.Close();
-            }
-            catch (Exception)
-            {
-                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
-            }
-            finally
-            {
-                if (con != null)
-                {
-                    con.Close();
-                }
-            }
-            return locations;
-        }
-
+    
         public List<VOSpaceType> GetSpaceTypes()
         {
             SqlConnection con = null;
@@ -833,6 +801,315 @@ namespace backend.Data_Access
                 updateCommand.Parameters.AddRange(prm.ToArray());
                 updateCommand.Transaction = objTrans;
                 updateCommand.ExecuteNonQuery();
+                objTrans.Commit();
+            }
+            catch (Exception e)
+            {
+                objTrans.Rollback();
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                    objTrans.Dispose();
+                }
+            }
+        }
+
+        public void CreateReservation(VORequestCreateReservation voCreateReservation, User user)
+        {
+            SqlConnection con = null;
+            SqlTransaction objTrans = null;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                objTrans = con.BeginTransaction();
+                String query = cns.CreateReservation();
+                SqlCommand insertCommand = new SqlCommand(query, con);
+                List<SqlParameter> prm = new List<SqlParameter>()
+                    {
+                        new SqlParameter("@idPublication", SqlDbType.Int) {Value = voCreateReservation.VOReservation.IdPublication},
+                        new SqlParameter("@idCustomer", SqlDbType.Int) {Value = user.IdUser},
+                        new SqlParameter("@planSelected", SqlDbType.VarChar) {Value = voCreateReservation.VOReservation.PlanSelected},
+                        new SqlParameter("@dateFrom", SqlDbType.DateTime) {Value = voCreateReservation.VOReservation.DateFrom},
+                        new SqlParameter("@hourFrom", SqlDbType.VarChar) {Value = voCreateReservation.VOReservation.HourFrom},
+                        new SqlParameter("@hourTo", SqlDbType.VarChar) {Value = voCreateReservation.VOReservation.HourTo},
+                        new SqlParameter("@people", SqlDbType.Int) {Value = voCreateReservation.VOReservation.People},
+                        new SqlParameter("@comment", SqlDbType.VarChar) {Value = voCreateReservation.VOReservation.Comment},
+                        new SqlParameter("@totalPrice", SqlDbType.Int) {Value = voCreateReservation.VOReservation.TotalPrice}
+                    };
+                insertCommand.Parameters.AddRange(prm.ToArray());
+                insertCommand.Transaction = objTrans;
+                insertCommand.ExecuteNonQuery();
+                // Send email to publisher
+                User publisher = GetPublisherByPublication(con, objTrans, voCreateReservation.VOReservation.IdPublication);
+                string subject = "Reservation created";
+                string body = Util.CreateBodyEmailNewReservationToPublisher(publisher.Name);
+                Util util = new Util();
+                util.SendEmailAsync(publisher.Mail, body, subject);
+                // Send email to customer
+                string bodyCustomer = Util.CreateBodyEmailNewReservationToCustomer(user.Name);
+                util.SendEmailAsync(user.Mail, bodyCustomer, subject);
+                objTrans.Commit();
+            }
+            catch (Exception e)
+            {
+                objTrans.Rollback();
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        private User GetPublisherByPublication(SqlConnection con, SqlTransaction objTrans, object idPublication)
+        {
+            String query = cns.GetPublisherByPublication();
+            SqlCommand selectCommand = new SqlCommand(query, con);
+            User user = null;
+            SqlParameter param = new SqlParameter()
+            {
+                ParameterName = "@idPublication",
+                Value = idPublication,
+                SqlDbType = SqlDbType.Int
+            };
+            selectCommand.Parameters.Add(param);
+            selectCommand.Transaction = objTrans;
+            SqlDataReader dr = selectCommand.ExecuteReader();
+            while (dr.Read())
+            {
+                user = new User(Convert.ToInt64(dr["idUser"]), Convert.ToString(dr["mail"]), null, Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), null, Convert.ToBoolean(dr["checkPublisher"]), null, null, null, Convert.ToBoolean(dr["mailValidated"]), Convert.ToBoolean(dr["publisherValidated"]), Convert.ToBoolean(dr["active"]));
+            }
+            dr.Close();
+
+            return user;
+        }
+
+        public List<VOReservationExtended> GetReservationsCustomer(VORequestGetReservationsCustomer voGetReservationsCustomer, long idCustomer)
+        {
+            List<VOReservationExtended> reservations = new List<VOReservationExtended>();
+            VOReservationExtended voReservation = null;
+            SqlConnection con = null;            
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+
+                String query = cns.GetReservations(idCustomer, 0);
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                SqlParameter param = new SqlParameter()
+                 {
+                    ParameterName = "@idCustomer",
+                    Value = idCustomer,
+                    SqlDbType = SqlDbType.Int                    
+                };
+                selectCommand.Parameters.Add(param);
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                while (dr.Read())
+                {                   
+                    voReservation = new VOReservationExtended(Convert.ToInt32(dr["idReservation"]), Convert.ToString(dr["title"]), Convert.ToInt32(dr["idPublication"]),
+                        Convert.ToString(voGetReservationsCustomer.Mail), Convert.ToString(dr["planSelected"]),
+                        Convert.ToInt32(dr["reservedQty"] is DBNull ? 0 : dr["reservedQty"]), Convert.ToDateTime(dr["dateFrom"]), Convert.ToString(dr["hourFrom"]),
+                        Convert.ToString(dr["hourTo"]), Convert.ToInt32(dr["people"] is DBNull ? 0 : dr["people"]), Convert.ToString(dr["comment"]),
+                        Convert.ToInt32(dr["totalPrice"]), Convert.ToInt32(dr["state"]));
+                    reservations.Add(voReservation);
+                }
+                dr.Close();
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+            return reservations;
+
+        }
+        public List<VOReservationExtended> GetReservationsPublisher(VORequestGetReservationsPublisher voGetReservationsPublisher, long idUser)
+        {
+            List<VOReservationExtended> reservations = new List<VOReservationExtended>();
+            VOReservationExtended voReservation = null;
+            SqlConnection con = null;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.GetReservations(0, idUser);
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                SqlParameter param = new SqlParameter()
+                {
+                    ParameterName = "@idPublisher",
+                    Value = idUser,
+                    SqlDbType = SqlDbType.Int
+                };
+                selectCommand.Parameters.Add(param);
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                while (dr.Read())
+                {
+                    voReservation = new VOReservationExtended(Convert.ToInt32(dr["idReservation"]), Convert.ToString(dr["title"]), Convert.ToInt32(dr["idPublication"]),
+                        Convert.ToString(voGetReservationsPublisher.Mail), Convert.ToString(dr["planSelected"]),
+                        Convert.ToInt32(dr["reservedQty"] is DBNull ? 0 : dr["reservedQty"]), Convert.ToDateTime(dr["dateFrom"]), Convert.ToString(dr["hourFrom"]),
+                        Convert.ToString(dr["hourTo"]), Convert.ToInt32(dr["people"] is DBNull ? 0 : dr["people"]), Convert.ToString(dr["comment"]),
+                        Convert.ToInt32(dr["totalPrice"]), Convert.ToInt32(dr["state"]));
+                    reservations.Add(voReservation);
+                }
+                dr.Close();
+  
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+            return reservations;
+
+        }
+
+        public void UpdateStateReservation(int idReservation, string canceledReason, int newCodeState, string newDescriptionState, bool isAdmin)
+        {            
+            SqlConnection con = null;
+            SqlTransaction objTrans;
+            string canceledReasonAux = "";
+            if (canceledReason != null)
+            {
+                canceledReasonAux = canceledReason;
+            }
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                objTrans = con.BeginTransaction();
+                String query = cns.UdpdateStateReservation(canceledReason);
+                SqlCommand updateCommand = new SqlCommand(query, con);
+                List<SqlParameter> prm = new List<SqlParameter>()
+                {
+                        new SqlParameter("@idReservation", SqlDbType.Int) {Value = idReservation},
+                        new SqlParameter("@state", SqlDbType.Int) {Value = newCodeState},
+                        new SqlParameter("@canceledReason", SqlDbType.VarChar) {Value = canceledReasonAux},
+
+                };
+                updateCommand.Parameters.AddRange(prm.ToArray());
+                updateCommand.Transaction = objTrans;
+                updateCommand.ExecuteNonQuery(); 
+                string queryUsers = cns.GetUsersByReservation();
+                SqlCommand selectCommandUsers = new SqlCommand(queryUsers, con);
+                string customerMail = null;
+                string publisherMail = null;
+                string customerName = null;
+                string publisherName = null;
+                SqlParameter param = new SqlParameter()
+                {
+                    ParameterName = "@idReservation",
+                    Value = idReservation,
+                    SqlDbType = SqlDbType.Int
+                };
+                selectCommandUsers.Parameters.Add(param);
+                selectCommandUsers.Transaction = objTrans;
+                SqlDataReader dr = selectCommandUsers.ExecuteReader();
+                while (dr.Read())
+                {
+                    customerMail = Convert.ToString(dr["cMail"]);
+                    publisherMail = Convert.ToString(dr["pMail"]);
+                    customerName = Convert.ToString(dr["cName"]);
+                    publisherName = Convert.ToString(dr["pName"]);
+                        
+                }
+                dr.Close();
+                // Send email to publisher                
+                string subject = "ATENCION: Cambio en reserva";
+                string body = Util.CreateBodyEmailStateReservationToPublisher(publisherName, newDescriptionState, canceledReason);
+                Util util = new Util();
+                util.SendEmailAsync(publisherMail, body, subject);
+                // Send email to customer
+                string bodyCustomer = Util.CreateBodyEmailStateReservationToCustomer(customerName, newDescriptionState, canceledReason);
+                util.SendEmailAsync(customerMail, bodyCustomer, subject);
+                objTrans.Commit();
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        public void UpdateReservation(VORequestUpdateReservation voUpdateReservation)
+        {
+            SqlConnection con = null;
+            SqlTransaction objTrans = null;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                objTrans = con.BeginTransaction();
+                string query = cns.UpdateReservation();                
+                SqlCommand updateCommand = new SqlCommand(query, con);
+                List<SqlParameter> prm = new List<SqlParameter>()
+                {
+                    new SqlParameter("@idReservation", SqlDbType.Int) {Value = voUpdateReservation.IdReservation},
+                    new SqlParameter("@dateFrom", SqlDbType.DateTime) {Value = voUpdateReservation.DateFrom},
+                    new SqlParameter("@hourFrom", SqlDbType.VarChar) {Value = voUpdateReservation.HourFrom},
+                    new SqlParameter("@hourTo", SqlDbType.VarChar) {Value = voUpdateReservation.HourTo},
+                    new SqlParameter("@totalPrice", SqlDbType.Int) {Value = voUpdateReservation.TotalPrice},                        
+                };
+                updateCommand.Parameters.AddRange(prm.ToArray());
+                updateCommand.Transaction = objTrans;
+                updateCommand.ExecuteNonQuery();
+                string queryUsers = cns.GetUsersByReservation();
+                SqlCommand selectCommandUsers = new SqlCommand(queryUsers, con);
+                string customerMail = null;
+                string publisherMail = null;
+                string customerName = null;
+                string publisherName = null;
+                SqlParameter param = new SqlParameter()
+                {
+                    ParameterName = "@idReservation",
+                    Value = voUpdateReservation.IdReservation,
+                    SqlDbType = SqlDbType.Int
+                };
+                selectCommandUsers.Parameters.Add(param);
+                selectCommandUsers.Transaction = objTrans;
+                SqlDataReader dr = selectCommandUsers.ExecuteReader();
+                while (dr.Read())
+                {
+                    customerMail = Convert.ToString(dr["cMail"]);
+                    publisherMail = Convert.ToString(dr["pMail"]);
+                    customerName = Convert.ToString(dr["cName"]);
+                    publisherName = Convert.ToString(dr["pName"]);
+
+                }
+                dr.Close();
+                // Send email to publisher                
+                string subject = "ATENCION: Cambio en reserva";
+                string body = Util.CreateBodyEmailUpdateReservationToPublisher(publisherName);
+                Util util = new Util();
+                util.SendEmailAsync(publisherMail, body, subject);
+                // Send email to customer
+                string bodyCustomer = Util.CreateBodyEmailUpdateReservationToCustomer(customerName);
+                util.SendEmailAsync(customerMail, bodyCustomer, subject);
                 objTrans.Commit();
             }
             catch (Exception e)

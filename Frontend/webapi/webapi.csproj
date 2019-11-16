@@ -385,6 +385,9 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Controllers\ReservationPublisherController .cs" />
+    <Compile Include="Controllers\ReservationCustomerController.cs" />
+    <Compile Include="Controllers\ReservationController.cs" />
     <Compile Include="Controllers\PublicationsController.cs" />
     <Compile Include="Controllers\FavoriteController.cs" />
     <Compile Include="Controllers\PublisherSpacesController.cs" />
@@ -396,7 +399,6 @@
     <Compile Include="Controllers\UserDataController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PasswordRecoveryController.cs" />
-    <Compile Include="Controllers\LocationController.cs" />
     <Compile Include="Controllers\SpaceTypeController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\CustomerController.cs" />

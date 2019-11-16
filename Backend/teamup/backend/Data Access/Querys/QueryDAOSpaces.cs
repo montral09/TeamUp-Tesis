@@ -12,12 +12,6 @@ namespace backend.Data_Access.Query
             return query;
         }
 
-        public String GetLocations()
-        {
-            String query = "select idLocation, description from LOCATIONS";
-            return query;
-        }
-
         public String GetReservationTypes()
         {
             String query = "select idReservationType, description from RESERVATION_TYPES";
@@ -217,6 +211,67 @@ namespace backend.Data_Access.Query
             return query;
         }
 
+        public String CreateReservation()
+        {
+            String query = "insert into RESERVATIONS (idPublication, idCustomer, planSelected, dateFrom, hourFrom, HourTo," +
+                " people, comment, totalPrice, state) VALUES (@idPublication, @idCustomer, @planSelected, @dateFrom, @hourFrom, @HourTo," +
+                " @people, @comment, @totalPrice, 1)";
+            return query;
+        }
+
+        public String GetPublisherByPublication()
+        {
+            String query = "select u.idUser, u.mail, u.name, u.lastName, u.checkPublisher, u.mailValidated, u.publisherValidated, u.active " +
+                "from USERS u, PUBLICATIONS p where p.idPublication = @idPublication and u.idUser = p.idUser";
+            return query;
+        }
+
+        public String GetReservations(long idCustomer, long idPublisher)
+        {
+            StringBuilder query = new StringBuilder();
+            query = query.Append("select p.title, r.idReservation, r.idPublication, r.idCustomer, r.planSelected, r.reservedQty, r.dateFrom, r.hourFrom, r.HourTo," +
+                " r.people, r.comment, r.totalPrice, r.state from RESERVATIONS r, PUBLICATIONS p, Users u where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) ");
+            if (idCustomer != 0)
+            {
+                query.Append("and r.idCustomer = @idCustomer ");
+            } else if (idPublisher != 0)
+            {
+                query.Append("and p.idUser = u.idUser and u.idUser = @idPublisher");
+            }
+            return query.ToString();
+        }
+
+        public String GetPublicationsPublisher ()
+        {
+            string query = "select idPublication from PUBLICATIONS where idUser = @idUser";
+            return query;
+        }
+
+        public String UdpdateStateReservation(string canceledReason)
+        {
+            StringBuilder query = new StringBuilder();
+            query = query.Append("update RESERVATIONS set state = @state");
+            if (canceledReason != null)
+            {
+                query.Append(",canceledReason = @canceledReason");
+            }
+            query.Append(" where idReservation = @idReservation");
+            return query.ToString();
+        }
+
+        public String GetUsersByReservation()
+        {
+            String query = "select u1.mail as cMail, u1.name as cName, u2.mail as pMail, u2.name as pName " +
+                "from USERS u1, USERS u2, PUBLICATIONS p, RESERVATIONS r where r.idReservation = @idReservation and p.idPublication = r.idPublication and u1.idUser = r.idCustomer and u2.idUser = p.idUser";
+            return query;
+        }
+
+        public String UpdateReservation()
+        {           
+        String query = "update RESERVATIONS set dateFrom = @dateFrom, hourFrom = @hourFrom, hourTo = @hourTo, totalPrice = @totalPrice " +
+                "where idReservation = @idReservation";
+            return query;
+        }
     }
      
 }
