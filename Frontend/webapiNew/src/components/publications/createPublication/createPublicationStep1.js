@@ -62,11 +62,6 @@ class CreatePublicationStep1 extends React.Component {
                     value ={this.props.parentState.capacity}/>
             </FormGroup>
             <FormGroup>
-                <Label for="availability">Disponibilidad (*)</Label>
-                <Input type="textarea" name="availability" id="availability" placeholder="ej: Lunes a viernes de 09 a 18hrs" onChange={this.props.onChange} maxLength="200"
-                    value ={this.props.parentState.availability}/>
-            </FormGroup>
-            <FormGroup>
                 <Label for="facilitiesSelect" >Infraestructura</Label>
                 <Select	
                     isMulti
