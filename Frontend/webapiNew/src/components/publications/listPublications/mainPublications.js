@@ -104,7 +104,7 @@ class MainPublications extends React.Component {
             "State": "ACTIVE",
             "City": this.state.city,
             "PageNumber" : parseInt(this.state.currentPage)-1,
-            "PublicationsPerPage": 10
+            "PublicationsPerPage": parseInt(this.state.publicationsPerPage)
         }
         if(this.state.facilitiesSelected.length > 0){
             objToSend.Facilities = this.state.facilitiesSelected;
