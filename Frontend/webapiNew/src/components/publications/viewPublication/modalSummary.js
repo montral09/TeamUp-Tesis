@@ -11,7 +11,7 @@ class ModalSummary extends React.Component {
         this.state = {
             modal: false,
             summaryObject : {},
-            textboxValue : "",
+            reservationComment : "",
             isLoading : false,
             buttonIsDisabled: false
         };
@@ -49,7 +49,9 @@ class ModalSummary extends React.Component {
         this.setState({
             [e.target.id]: e.target.value
         });
+        this.props.onChange({target : {id : "reservationComment", value : e.target.value}})
     }
+
     render() {
         return (
             <span className="d-inline-block mb-2 mr-2">
@@ -114,23 +116,27 @@ class ModalSummary extends React.Component {
                                             <Label for="IdPublication" sm={4}>Total horas</Label>
                                             <Col sm={8}>
                                                 <Input type="text" name="IdPublication" id="IdPublication"
-                                                        value="3" readOnly/>
+                                                        value={parseInt(this.state.summaryObject.hourToSelect-this.state.summaryObject.hourFromSelect)} readOnly/>
                                             </Col>
                                         </FormGroup>
                                     </>
                                     ) : (null)}
                                     <FormGroup row>
-                                        <Label for="IdPublication" sm={4}>Precio final</Label>
+                                        <Label for="IdPublication" sm={4}>Precio final {" U$"}</Label>
                                         <Col sm={8}>
                                             <Input type="text" name="IdPublication" id="IdPublication"
-                                                    value={"2500"} readOnly/>
+                                                    value={this.state.summaryObject.totalPrice} readOnly/>
                                         </Col>
                                     </FormGroup>
                                     <FormGroup row>
                                         <Label for="textboxValue" sm={2}>Comentario (opcional)</Label>
                                         <Col sm={10}>
                                             <Input type="textarea" name="textboxValue" id="textboxValue"
-                                                    value={this.state.textboxValue || ""} onChange={this.onChange}/>
+                                                    value={this.state.reservationComment || ""} onChange={this.onChange}/>
+                                        </Col>
+                                        <Col sm={10}>
+                                            <Label for="message" sm={10}>Atencion! Este valor esta pendiente de confirmar. 
+                                            Va a recibir un correo con los detalles finales y la confirmacion dentro de las proximas 48hrs.</Label>
                                         </Col>
                                     </FormGroup>
                                 </Form>

@@ -16,7 +16,7 @@ import Footer from "../../footer/footer";
 import Map from '../map/Map';
 import ModalReqInfo from './modalReqInfo';
 import ModalSummary from './modalSummary';
-
+import TabQuestions from './tabQuestions';
 
 class ViewPublication extends React.Component {
 
@@ -42,6 +42,8 @@ class ViewPublication extends React.Component {
                                     , '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
             hourFromSelect      : '00',
             hourToSelect        : '01',
+            reservationComment  : "",
+            totalPrice          : 0
         }
         this.modalElement           = React.createRef(); // Connects the reference to the modal
         this.modalSummaryElement    = React.createRef(); // Connects the reference to the modal
@@ -50,6 +52,7 @@ class ViewPublication extends React.Component {
         this.submitFavorite         = this.submitFavorite.bind(this);
         this.handleErrors           = this.handleErrors.bind(this);
         this.modalSave              = this.modalSave.bind(this);
+        this.confirmReservation     = this.confirmReservation.bind(this);
         this.loadPublication(pubID);
     }
 
@@ -62,8 +65,10 @@ class ViewPublication extends React.Component {
     setInitialHour(){
         var today = new Date();
         var hourFromSelect = today.getHours();
-        this.changeHour({target : {value : hourFromSelect, id: hourFromSelect }})
+        this.changeHour({target : {value : hourFromSelect, id: "hourFromSelect" }})
+
     }
+
     handleErrors(error) {
         this.setState({ generalError: true });
     }
@@ -241,33 +246,93 @@ class ViewPublication extends React.Component {
     }
 
     modalSave(textboxValue, modalRef) {
-        console.log("modalSave triggered, textboxValue: " + textboxValue);
         this.modalElement.current.changeModalLoadingState(true);
     }
 
     confirmReservation(){
-        alert("Reserva confirmada")
-        this.modalSummaryElement.current.changeModalLoadingState(true);
+        var objToSend = {}
+        var fetchUrl = 'https://localhost:44372/api/reservation';
+        var method = "POST";
+        var PlanSelected = "";
+        switch(this.state.planChosen){
+            case "HourPrice": PlanSelected ="Hour";break;
+            case "DailyPrice": PlanSelected ="Day";break;
+            case "WeeklyPrice" : PlanSelected ="Week";break;
+            case "MonthlyPrice": PlanSelected ="Month";break;
+        }
+
+        var objToSend = {
+            "AccessToken": this.props.tokenObj.accesToken,
+            "VOReservation": {
+                "IdPublication": this.state.pubID,
+                "MailCustomer": this.props.userData.Mail,
+                "PlanSelected": PlanSelected,
+                "ReservedQuantity": this.state.quantityPlan,
+                "DateFrom": this.state.date,
+                "HourFrom": this.state.hourFromSelect,
+                "HourTo": this.state.hourToSelect,
+                "People": this.state.quantityPeople,
+                "Comment": this.state.reservationComment,
+                "TotalPrice": this.state.totalPrice
+            }
+        }
+
+        this.modalSummaryElement.current.changeModalLoadingState(false);
+        fetch(fetchUrl, {
+            method: method,
+            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(objToSend)
+        }).then(response => response.json()).then(data => {
+            this.setState({ isLoading: false, buttonIsDisable: false });
+            console.log("data:" + JSON.stringify(data));
+            if (data.responseCode == "SUCC_RESERVATIONCREATED") {
+                toast.success('Su reserva ha sido enviada correctamente, revise su casilla de correo para más informacion. ', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
+                this.modalSummaryElement.current.changeModalLoadingState(true);
+            } else {
+                this.modalSummaryElement.current.changeModalLoadingState(true);
+                this.handleErrors(data.responseCode);
+            }
+        }
+        ).catch(error => {
+            this.handleErrors(error);
+        }
+        )
     }
 
     triggerSummaryModal(){
         var validObj = this.validateReservation();
         if(validObj.valid){
             var planChosenText = "";
+            var tmpHfs = 0;
+            var tmpHts = 1;
             switch(this.state.planChosen){
-                case "HourPrice" : planChosenText = "por hora"; break;
+                case "HourPrice" : planChosenText = "por hora"; tmpHfs = this.state.hourFromSelect; tmpHts = this.state.hourToSelect == 0 ? 24 : this.state.hourToSelect;  break;
                 case "DailyPrice" : planChosenText = "por día"; break;
                 case "WeeklyPrice" : planChosenText = "por semana"; break;
                 case "MonthlyPrice" : planChosenText = "por mes"; break;
             }
+            var totalPrice = (parseInt(tmpHts-tmpHfs) * parseInt(this.state.pubObj[this.state.planChosen]))*parseInt(this.state.quantityPeople);
+
+            this.setState({
+                totalPrice : totalPrice
+            });
+            
             var summaryObject = {
                 planChosen: this.state.planChosen,
                 planChosenText: planChosenText,
                 planValue : this.state.pubObj[this.state.planChosen],
-                hourFromSelect : this.state.hourFromSelect,
-                hourToSelect : this.state.hourToSelect,
+                hourFromSelect : tmpHfs,
+                hourToSelect : tmpHts,
                 date: this.convertDate(this.state.date),
-                quantityPeople : this.state.quantityPeople
+                quantityPeople : this.state.quantityPeople,
+                totalPrice : totalPrice,
             };
             this.modalSummaryElement.current.toggle(summaryObject);
         }else{
@@ -389,7 +454,8 @@ class ViewPublication extends React.Component {
                                         textboxDisplay: true, textboxLabel: 'Consulta:',
                                     }} />
 
-                                <ModalSummary ref={this.modalSummaryElement} login_status={this.props.login_status} confirmReservation={this.confirmReservation} />
+                                <ModalSummary ref={this.modalSummaryElement} login_status={this.props.login_status} 
+                                    confirmReservation={this.confirmReservation} onChange ={this.onChange}/>
 
                                 <div className="pattern" >
                                     <div>
@@ -532,21 +598,14 @@ class ViewPublication extends React.Component {
                                                                                                                 <span><b>Personas</b></span>
                                                                                                                 <div style={{ marginLeft: '2%' }} className="quantity">
                                                                                                                     <input type="text" name="quantityPeople" id="quantityPeople" size="2" value={this.state.quantityPeople} onChange={(event) => this.changeQuantityPeople(event.target.value)} />
-                                                                                                                    <a href="#" id="q_up" onClick={() => this.increaseQuantityPeople()}><i className="fa fa-plus"></i></a>
-                                                                                                                    <a href="#" id="q_down" onClick={() => this.decreaseQuantityPeople()}><i className="fa fa-minus"></i></a>
+                                                                                                                    <a id="q_up" onClick={() => this.increaseQuantityPeople()}><i className="fa fa-plus"></i></a>
+                                                                                                                    <a id="q_down" onClick={() => this.decreaseQuantityPeople()}><i className="fa fa-minus"></i></a>
                                                                                                                 </div>
                                                                                                             </div>
                                                                                                         </div>
                                                                                                     </div>
                                                                                                     <div style={{ marginLeft: '35%' }} className="description add-to-cart d-flex">
                                                                                                         <input type="button" value="Reservar" onClick={() => this.triggerSummaryModal()} className="button" />
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                                <div id="product">
-                                                                                                    <div className="description">
-                                                                                                        <div style={{ marginLeft: '25%' }} className="add-to-cart d-flex">
-                                                                                                            <input type="button" value="Solicitar Información" onClick={() => this.modalElement.current.toggle({})} className="button" />
-                                                                                                        </div>
                                                                                                     </div>
                                                                                                 </div>
                                                                                             </div>
@@ -557,6 +616,7 @@ class ViewPublication extends React.Component {
 
                                                                             <div id="tabs" className="htabs">
                                                                                 <a href="#tab-description" onClick={() => this.goToTab(1)} {...(this.state.tabDisplayed == 1 ? { className: "selected" } : {})} >Descripción</a>
+                                                                                <a href="#tab-questions" onClick={() => this.goToTab(3)} {...(this.state.tabDisplayed == 3 ? { className: "selected" } : {})} >Preguntas (2)</a>
                                                                                 <a href="#tab-review" onClick={() => this.goToTab(2)} {...(this.state.tabDisplayed == 2 ? { className: "selected" } : {})} >Reviews ({this.state.pubObj.Reviews.length})</a>
                                                                             </div>
                                                                             {this.state.tabDisplayed === 1 ? (
@@ -586,6 +646,11 @@ class ViewPublication extends React.Component {
                                                                             {this.state.tabDisplayed === 2 ? (
                                                                                 <div id="tab-review" className="tab-content">
                                                                                     <TabReview reviews={this.state.pubObj.Reviews} />
+                                                                                </div>
+                                                                            ) : (null)}
+                                                                            {this.state.tabDisplayed === 3 ? (
+                                                                                <div id="tab-questions" className="tab-content">
+                                                                                    <TabQuestions questions={[]} />
                                                                                 </div>
                                                                             ) : (null)}
                                                                             <span><h5>Ubicación</h5><br /></span>
