@@ -77,13 +77,17 @@ class ModalReqInfo extends React.Component {
                     </Form>
                     </ModalBody>
                     <ModalFooter>
-                        <Button color="link" onClick={this.toggle}>Cancelar</Button>
-                        <Button color="primary" onClick={this.save} disabled= {this.state.buttonIsDisabled}>EnviarS
-                            &nbsp;&nbsp;
-                            {this.state.isLoading &&  
-                                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                            }
-                        </Button>
+                        {this.props.login_status == 'LOGGED_IN' ? (
+                        <ModalFooter>
+                            {this.props.modalConfigObj.cancelAvailable ?(<Button color="link" onClick={this.toggle}>{this.props.modalConfigObj.cancelText}</Button>) : (null)}
+                            {this.props.modalConfigObj.confirmAvailable ?(<Button color="primary" onClick={this.save} disabled= {this.state.buttonIsDisabled}>{this.props.modalConfigObj.confirmText}
+                                &nbsp;&nbsp;
+                                {this.state.isLoading &&  
+                                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                }
+                            </Button>) : (null)}
+                        </ModalFooter>
+                    ) : (null)}
                     </ModalFooter>
                 </Modal>
             </span>

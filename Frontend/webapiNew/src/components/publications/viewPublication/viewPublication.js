@@ -43,7 +43,8 @@ class ViewPublication extends React.Component {
             hourFromSelect      : '00',
             hourToSelect        : '01',
             reservationComment  : "",
-            totalPrice          : 0
+            totalPrice          : 0,
+            arrQA               : []
         }
         this.modalElement           = React.createRef(); // Connects the reference to the modal
         this.modalSummaryElement    = React.createRef(); // Connects the reference to the modal
@@ -56,9 +57,35 @@ class ViewPublication extends React.Component {
         this.loadPublication(pubID);
     }
 
+    loadDummyQuestions(){
+        const arrQA = [
+            {
+                Question: {
+                    UserName: "Alex",
+                    Date: "27/08/2019",
+                    Text: "Hola, esta disponible?"
+                },
+                Answer: {
+                    UserName: "Fabi",
+                    Date: "28/08/2019",
+                    Text: "Si. Saludos"
+                }
+            },{
+                Question: {
+                    UserName: "Bruno",
+                    Date: "29/08/2019",
+                    Text: "Hola, esta disponible!!! >-<?"
+                }
+            }];
+        this.setState({
+            "arrQA": arrQA
+        });
+    }
+
     componentDidMount() {
         this.loadInfraestructure();
         this.setInitialHour();
+        this.loadDummyQuestions();
         window.scrollTo(0, 0);
     }
 
@@ -286,15 +313,8 @@ class ViewPublication extends React.Component {
             this.setState({ isLoading: false, buttonIsDisable: false });
             console.log("data:" + JSON.stringify(data));
             if (data.responseCode == "SUCC_RESERVATIONCREATED") {
-                toast.success('Su reserva ha sido enviada correctamente, revise su casilla de correo para más informacion. ', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
                 this.modalSummaryElement.current.changeModalLoadingState(true);
+                this.modalElement.current.toggle(null);
             } else {
                 this.modalSummaryElement.current.changeModalLoadingState(true);
                 this.handleErrors(data.responseCode);
@@ -450,8 +470,8 @@ class ViewPublication extends React.Component {
                             <div className="main-content  full-width  home">
                                 <ModalReqInfo ref={this.modalElement} modalSave={this.modalSave}
                                     modalConfigObj={{
-                                        title: 'Realizar una consulta', mainText: 'Por favor ingrese su consulta aqui y el gestor se comunicara a la brevead',
-                                        textboxDisplay: true, textboxLabel: 'Consulta:',
+                                        title: 'Reserva enviada', mainText: 'Su reserva ha sido enviada correctamente, revise su casilla de correo para más informacion. ',
+                                        textboxDisplay: false, cancelAvailable: true, cancelText : 'Entendido'
                                     }} />
 
                                 <ModalSummary ref={this.modalSummaryElement} login_status={this.props.login_status} 
@@ -616,7 +636,7 @@ class ViewPublication extends React.Component {
 
                                                                             <div id="tabs" className="htabs">
                                                                                 <a href="#tab-description" onClick={() => this.goToTab(1)} {...(this.state.tabDisplayed == 1 ? { className: "selected" } : {})} >Descripción</a>
-                                                                                <a href="#tab-questions" onClick={() => this.goToTab(3)} {...(this.state.tabDisplayed == 3 ? { className: "selected" } : {})} >Preguntas (2)</a>
+                                                                                <a href="#tab-questions" onClick={() => this.goToTab(3)} {...(this.state.tabDisplayed == 3 ? { className: "selected" } : {})} >Preguntas ({this.state.arrQA.length})</a>
                                                                                 <a href="#tab-review" onClick={() => this.goToTab(2)} {...(this.state.tabDisplayed == 2 ? { className: "selected" } : {})} >Reviews ({this.state.pubObj.Reviews.length})</a>
                                                                             </div>
                                                                             {this.state.tabDisplayed === 1 ? (
@@ -650,7 +670,7 @@ class ViewPublication extends React.Component {
                                                                             ) : (null)}
                                                                             {this.state.tabDisplayed === 3 ? (
                                                                                 <div id="tab-questions" className="tab-content">
-                                                                                    <TabQuestions questions={[]} />
+                                                                                    <TabQuestions arrQA={this.state.arrQA} login_status={this.props.login_status} userData={this.props.userData} />
                                                                                 </div>
                                                                             ) : (null)}
                                                                             <span><h5>Ubicación</h5><br /></span>

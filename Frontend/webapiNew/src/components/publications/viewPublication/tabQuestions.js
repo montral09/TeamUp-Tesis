@@ -1,28 +1,11 @@
 import React from "react";
+import { Link } from 'react-router-dom';
 
 
 class TabQuestions extends React.Component {
     render() {
-        //const {questions} = this.props;
-        const arrQA = [
-            {
-                Question: {
-                    UserName: "Alex",
-                    Date: "27/08/2019",
-                    Text: "Hola, esta disponible?"
-                },
-                Answer: {
-                    UserName: "Fabi",
-                    Date: "28/08/2019",
-                    Text: "Si. Saludos"
-                }
-            },{
-                Question: {
-                    UserName: "Bruno",
-                    Date: "29/08/2019",
-                    Text: "Hola, esta disponible!!! >-<?"
-                }
-            }];
+        const {arrQA} = this.props;
+
         return (
             <React.Fragment>
                 <form className="form-horizontal" id="form-review">
@@ -51,23 +34,26 @@ class TabQuestions extends React.Component {
                             )}
                     </div>
                     <h3>Haga su consulta</h3>
+					<div className="form-group row">
+						<div className="col-md-12">
+							<label className="control-label" htmlFor="userName">Nombre</label>
+							<input type="text" name="name" id="userName" className="form-control" disabled value={this.props.userData.Name || ""} />
+						</div>
+					</div>
 					<div className="form-group row required">
 						<div className="col-md-12">
-							<label className="control-label" htmlFor="input-name">Nombre</label>
-							<input type="text" name="name" id="input-name" className="form-control" />
+							<label className="control-label" htmlFor="textQuestion">Consulta</label>
+							<textarea name="text" rows="5" id="textQuestion" className="form-control" disabled={this.props.login_status == 'LOGGED_IN' ? false : true}></textarea>
 						</div>
 					</div>
-					<div className="form-group row required">
-						<div className="col-md-12">
-							<label className="control-label" htmlFor="input-review">Consulta</label>
-							<textarea name="text" rows="5" id="input-review" className="form-control"></textarea>
-						</div>
-					</div>
-					<div className="buttons clearfix">
-						<div className="">
-							<button type="button" id="button-review" data-loading-text="Loading..." className="btn btn-primary" onClick ={ () => alert("Se ha enviado su consulta") }>Continuar</button>
-						</div>
-					</div>
+                    {this.props.login_status == 'LOGGED_IN' ? (
+                        <div className="buttons clearfix">
+                            <div className="">
+                                <button type="button" id="button-review" data-loading-text="Loading..." className="btn btn-primary" onClick ={ () => alert("Se ha enviado su consulta") }>Continuar</button>
+                            </div>
+                        </div>
+                    ) : (<><p>Debe de estar logueado para poder realizar consultas, por favor <Link target="_blank" to="/account/login">inicie sesión</Link>o sino tiene cuenta regístrese</p></>)}
+
                 </form>
             </React.Fragment>
         );

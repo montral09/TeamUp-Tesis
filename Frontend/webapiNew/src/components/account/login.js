@@ -65,7 +65,7 @@ class Login extends React.Component {
             const scopeThis = this;
             setTimeout(function () {
                 scopeThis.toggleButton();
-            }, 150);
+            }, 350);
         }
     }
     toggleButton() {
