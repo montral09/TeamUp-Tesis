@@ -1,5 +1,6 @@
 ﻿using backend.Data_Access.VO;
 using backend.Data_Access.VO.Data;
+using backend.Data_Access.VO.Requests;
 using backend.Data_Access.VO.Responses;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,6 @@ namespace backend.Logic
         VOResponseAdminLogin GetAdmin(String mail, String password);
         VOResponseRequestPublisher RequestPublisher(VORequestRequestPublisher voRequestRequestPublisher);
         List<VOSpaceType> GetSpaceTypes();
-        List<VOLocation> GetLocations();
         void CreateTokens(String mail);
         void RecoverPassword(VORequestPasswordRecovery voPasswordRecovery);
         int ValidateEmail(VORequestValidateEmail voValidateEmail);
@@ -40,5 +40,10 @@ namespace backend.Logic
         VOResponseGetPublicationsWithFilters GetPublicationsWithFilters(VORequestGetPublicationsWithFilters voGetPublicationsFilter);
         VOResponseUpdateFavorite UpdateFavorite(VORequestUpdateFavorite voUpdateFavorite);
         Task<VOResponseUpdatePublication> UpdatePublication(VORequestUpdatePublication voUpdatePublication);
+        VOResponseCreateReservation CreateReservation(VORequestCreateReservation voCreateReservation);
+        VOResponseGetReservationsCustomer GetReservationsCustomer(VORequestGetReservationsCustomer voGetReservationsCustomer);
+        VOResponseGetReservationsPublisher GetReservationsPublisher(VORequestGetReservationsPublisher voGetReservationsPublisher);
+        VOResponseUpdateStateReservation UpdateStateReservation(VORequestUpdateStateReservation voUpdateStateReservation);
+        VOResponseUpdateReservation UpdateReservation(VORequestUpdateReservation voUpdateRservation);
     }
 }

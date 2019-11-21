@@ -29,10 +29,11 @@ namespace backend.Data_Access.VO.Data
         public List<int> Facilities { get; set; }
         public String State { get; set; }
         public List<string> ImagesURL { get; set; }
-        public int QuantityRented { get; set; } //TODO : harcoded, fix
+        public int QuantityRented { get; set; }
         public List<VOReview> Reviews { get; set; }
         public int Ranking { get; set; }  
         public int TotalViews { get; set; }
+        public bool IndividualRent { get; set; }
 
         public VOPublication() { }
 
@@ -83,7 +84,7 @@ namespace backend.Data_Access.VO.Data
 
         public VOPublication(int idPublication, string mail, string namePublisher, string lastNamePublisher, string phone, int spaceType, DateTime creationDate, string title, string description, string address, string city, VOLocationCordinates location,
              int capacity, string videoURL, int hourPrice, int dailyPrice, int weeklyPrice, int monthlyPrice, string availability,
-             List<int> facilities, List<string> imagesURL, string state, int quantityRented, List<VOReview> reviews, int ranking, int totalViews)
+             List<int> facilities, List<string> imagesURL, string state, int quantityRented, List<VOReview> reviews, int ranking, int totalViews, bool individualRent)
         {
             IdPublication = idPublication;
             Mail = mail;
@@ -111,6 +112,7 @@ namespace backend.Data_Access.VO.Data
             Ranking = ranking;
             City = city;
             TotalViews = totalViews;
+            IndividualRent = individualRent;
         }
     }
 }
