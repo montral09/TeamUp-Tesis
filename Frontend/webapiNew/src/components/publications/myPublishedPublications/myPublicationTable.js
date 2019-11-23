@@ -44,7 +44,7 @@ const MyPublicationTable = (props) =>{
                             ) :(null) }
                         </div>)}
                     </div>
-                    </td>
+                </td>
             </tr>
             )
         })

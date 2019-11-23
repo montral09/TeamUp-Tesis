@@ -52,8 +52,8 @@ namespace backend.Data_Access.Query
         public String GetSpace()
         {
             String query = "select p.idPublication, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, " +
-                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities, p.city, p.totalViews from PUBLICATIONS p where " +
-                " p.idPublication = @idPublication and p.state = 2";
+                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities, p.city, p.totalViews, s.individualRent from PUBLICATIONS p, SPACE_TYPES s where " +
+                " p.idPublication = @idPublication and p.state = 2 and s.idSpaceType = p.spaceType";
             return query;
         }
 
@@ -230,7 +230,7 @@ namespace backend.Data_Access.Query
         {
             StringBuilder query = new StringBuilder();
             query = query.Append("select p.title, r.idReservation, r.idPublication, r.idCustomer, r.planSelected, r.reservedQty, r.dateFrom, r.hourFrom, r.HourTo," +
-                " r.people, r.comment, r.totalPrice, r.state from RESERVATIONS r, PUBLICATIONS p, Users u where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) ");
+                " r.people, r.comment, r.totalPrice, r.state, rs.description from RESERVATIONS r, PUBLICATIONS p, USERS u, RESERVATION_STATES rs where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) and rs.idReservationState = r.state ");
             if (idCustomer != 0)
             {
                 query.Append("and r.idCustomer = @idCustomer ");
