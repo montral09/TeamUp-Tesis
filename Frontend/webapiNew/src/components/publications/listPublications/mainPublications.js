@@ -266,7 +266,7 @@ class MainPublications extends React.Component {
 													        </div>
 													        <div className="limit">
 													            Mostrar: 	
-																<select id="publicationsPerPage" onChange={null}>
+																<select id="publicationsPerPage" onChange={this.onChange}>
                                                                     <option value="10">10</option>
 																	<option value="30">30</option>
 																	<option value="50">50</option>
@@ -286,7 +286,7 @@ class MainPublications extends React.Component {
 
 															{this.state.product_grid === 'product-grid active' &&
 																<div className={this.state.product_grid}>
-																	<PublicationGrid publications = {this.state.publications}/>
+																	<PublicationGrid redirectToPub={this.redirectToPub} publications = {this.state.publications}/>
 																</div>
 															}
 

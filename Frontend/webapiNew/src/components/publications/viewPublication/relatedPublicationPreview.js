@@ -15,8 +15,6 @@ class RelatedPublicationPreview extends React.Component {
 	}
  	render() {
 		 const { Capacity, Description, IdPublication, ImagesURL} = this.props;
-		 console.log("rel pub prev: ");
-		 console.log(this.props);
 		return (
 			<React.Fragment>
 				<div className="product clearfix product-hover">

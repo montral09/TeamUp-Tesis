@@ -4,7 +4,6 @@ import React from "react";
 class TabReview extends React.Component {
  	render() {
         const {reviews} = this.props;
-        	console.log(this.props)
 		return (
 			<React.Fragment>
 				<form className="form-horizontal" id="form-review">

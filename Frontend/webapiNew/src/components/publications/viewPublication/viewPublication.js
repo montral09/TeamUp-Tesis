@@ -9,98 +9,141 @@ import LoadingOverlay from 'react-loading-overlay';
 import OwlCarousel from 'react-owl-carousel2';
 import 'react-owl-carousel2/src/owl.carousel.css';
 import InnerImageZoom from 'react-inner-image-zoom';
-import DatePicker from  './datePicker';
+import DatePicker from './datePicker';
 import RelatedPublications from './relatedPublications';
 import TabReview from './tabReview';
 import Footer from "../../footer/footer";
 import Map from '../map/Map';
-
-
+import ModalReqInfo from './modalReqInfo';
+import ModalSummary from './modalSummary';
+import TabQuestions from './tabQuestions';
 
 class ViewPublication extends React.Component {
 
     constructor(props) {
         super(props);
         const pubID = props.match.params.publicationID;
-        
+
         this.state = {
-            pubID: pubID,
-            pubObj: null,
-            activeImage: null,
-            date: null,
-            quantityPlan: 1,
-            tabDisplayed: 1,
-            relatedPublications: [],
-            facilities: [],
-            pubIsLoading : true,
-            infIsLoading : true,
-            planChosen : "Hours",
-            quantityPeople: 1,
-            generalError : false,
+            pubID               : pubID,
+            pubObj              : null,
+            activeImage         : null,
+            date                : new Date(),
+            quantityPlan        : 1,
+            tabDisplayed        : 1,
+            relatedPublications : [],
+            facilities          : [],
+            pubIsLoading        : true,
+            infIsLoading        : true,
+            planChosen          : "HourPrice",
+            quantityPeople      : 1,
+            generalError        : false,
+            hoursAvailable      : ["00", '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13'
+                                    , '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
+            hourFromSelect      : '00',
+            hourToSelect        : '01',
+            reservationComment  : "",
+            totalPrice          : 0,
+            arrQA               : []
         }
-        this.loadPublication = this.loadPublication.bind(this);
-        this.redirectToPub = this.redirectToPub.bind(this);
+        this.modalElement           = React.createRef(); // Connects the reference to the modal
+        this.modalSummaryElement    = React.createRef(); // Connects the reference to the modal
+        this.loadPublication        = this.loadPublication.bind(this);
+        this.redirectToPub          = this.redirectToPub.bind(this);
+        this.submitFavorite         = this.submitFavorite.bind(this);
+        this.handleErrors           = this.handleErrors.bind(this);
+        this.modalSave              = this.modalSave.bind(this);
+        this.confirmReservation     = this.confirmReservation.bind(this);
         this.loadPublication(pubID);
-        this.submitFavorite = this.submitFavorite.bind(this);
-        this.handleErrors = this.handleErrors.bind(this);
+    }
+
+    loadDummyQuestions(){
+        const arrQA = [
+            {
+                Question: {
+                    UserName: "Alex",
+                    Date: "27/08/2019",
+                    Text: "Hola, esta disponible?"
+                },
+                Answer: {
+                    UserName: "Fabi",
+                    Date: "28/08/2019",
+                    Text: "Si. Saludos"
+                }
+            },{
+                Question: {
+                    UserName: "Bruno",
+                    Date: "29/08/2019",
+                    Text: "Hola, esta disponible!!! >-<?"
+                }
+            }];
+        this.setState({
+            "arrQA": arrQA
+        });
     }
 
     componentDidMount() {
         this.loadInfraestructure();
+        this.setInitialHour();
+        this.loadDummyQuestions();
         window.scrollTo(0, 0);
     }
-    handleErrors(error){
+
+    setInitialHour(){
+        var today = new Date();
+        var hourFromSelect = today.getHours();
+        this.changeHour({target : {value : hourFromSelect, id: "hourFromSelect" }})
+
+    }
+
+    handleErrors(error) {
         this.setState({ generalError: true });
     }
+
     onChange = (e) => {
         this.setState({
             [e.target.id]: e.target.value
         });
     }
 
-    handleSelect = (e) => {
+    handleChange = (e) => {
         this.setState({
             date: e
         });
     }
 
-    handleChange = (e) => {
-        this.setState({
-            date: e
-        }); 
+    increaseQuantityPlan() {
+        this.setState({ quantityPlan: parseInt(this.state.quantityPlan) + 1 });
     }
 
-    increaseQuantityPlan() {
-		this.setState({ quantityPlan: parseInt(this.state.quantityPlan)+1});
+    decreaseQuantityPlan() {
+        if (parseInt(this.state.quantityPlan) > 1) {
+            this.setState({ quantityPlan: parseInt(this.state.quantityPlan) - 1 });
+        }
     }
-    
-	decreaseQuantityPlan() {
-		if(parseInt(this.state.quantityPlan) > 1) {
-			this.setState({ quantityPlan: parseInt(this.state.quantityPlan)-1});
-		}
-    }
-    
+
     changeQuantityPlan(value) {
-		if(parseInt(value) > 0) {
-			this.setState({ quantityPlan: parseInt(value)});
-		}
+        if (parseInt(value) > 0) {
+            this.setState({ quantityPlan: parseInt(value) });
+        }
     }
 
     increaseQuantityPeople() {
-		this.setState({ quantityPeople: parseInt(this.state.quantityPeople)+1});
+        this.setState({ quantityPeople: parseInt(this.state.quantityPeople) + 1 });
     }
-    
-	decreaseQuantityPeople() {
-		if(parseInt(this.state.quantityPeople) > 1) {
-			this.setState({ quantityPeople: parseInt(this.state.quantityPeople)-1});
-		}
+
+    decreaseQuantityPeople() {
+        if (parseInt(this.state.quantityPeople) > 1) {
+            this.setState({ quantityPeople: parseInt(this.state.quantityPeople) - 1 });
+        }
     }
-    
+
     changeQuantityPeople(value) {
-		if(parseInt(value) > 0) {
-			this.setState({ quantityPeople: parseInt(value)});
-		}
+        if (parseInt(value) > 0) {
+            this.setState({ quantityPeople: parseInt(value) });
+        }
     }
+
     loadInfraestructure() {
         try {
             fetch('https://localhost:44372/api/facilities').then(response => response.json()).then(data => {
@@ -108,7 +151,7 @@ class ViewPublication extends React.Component {
                 if (data.responseCode == "SUCC_FACILITIESOK") {
                     this.setState({ facilities: data.facilities, infIsLoading: false });
                 } else {
-                    this.setState({ infIsLoading: false});
+                    this.setState({ infIsLoading: false });
 
                     toast.error('Internal error', {
                         position: "top-right",
@@ -128,14 +171,14 @@ class ViewPublication extends React.Component {
             this.handleErrors(error);
         }
     }
-    
-    loadPublication(pubID){
-        try{
-            var url = 'https://localhost:44372/api/publication?idPublication='+pubID+'&mail';
-            if(this.props.userData.Mail != null){
+
+    loadPublication(pubID) {
+        try {
+            var url = 'https://localhost:44372/api/publication?idPublication=' + pubID + '&mail';
+            if (this.props.userData.Mail != null) {
                 url = url + '=' + this.props.userData.Mail;
             }
-            this.setState({ pubIsLoading: true});
+            this.setState({ pubIsLoading: true });
             fetch(url).then(response => response.json()).then(data => {
                 console.log("data:");
                 console.log(data);
@@ -143,12 +186,14 @@ class ViewPublication extends React.Component {
                     var pubObj = data.Publication;
                     pubObj.Favorite = data.Favorite;
                     var defaultPlanSelected = "";
-                    if(pubObj.HourPrice > 0){ defaultPlanSelected = "Hours"; }else if(pubObj.DailyPrice > 0){defaultPlanSelected = "Days"} else if(pubObj.WeeklyPrice > 0){defaultPlanSelected = "Weeks";}else if(pubObj.MonthlyPrice > 0){defaultPlanSelected = "Months";}
-                    this.setState({ pubIsLoading: false, pubObj: pubObj, activeImage: { index: 0, src: pubObj.ImagesURL[0]}, 
-                        relatedPublications : data.RelatedPublications, planChosen:defaultPlanSelected });
+                    if (pubObj.HourPrice > 0) { defaultPlanSelected = "HourPrice"; } else if (pubObj.DailyPrice > 0) { defaultPlanSelected = "DailyPrice" } else if (pubObj.WeeklyPrice > 0) { defaultPlanSelected = "WeeklyPrice"; } else if (pubObj.MonthlyPrice > 0) { defaultPlanSelected = "MonthlyPrice"; }
+                    this.setState({
+                        pubIsLoading: false, pubObj: pubObj, activeImage: { index: 0, src: pubObj.ImagesURL[0] },
+                        relatedPublications: data.RelatedPublications, planChosen: defaultPlanSelected
+                    });
                 } else {
-                    this.setState({ pubIsLoading: false});
-                    if(data.responseCode == 'ERR_SPACENOTFOUND'){
+                    this.setState({ pubIsLoading: false });
+                    if (data.responseCode == 'ERR_SPACENOTFOUND') {
                         this.handleErrors(data.responseCode);
                     }
                     if (data.Message) {
@@ -163,7 +208,7 @@ class ViewPublication extends React.Component {
                 this.handleErrors(error);
             }
             )
-        }catch(error){
+        } catch (error) {
             toast.error('Internal error', {
                 position: "top-right",
                 autoClose: 5000,
@@ -184,8 +229,8 @@ class ViewPublication extends React.Component {
             "AccessToken": this.props.tokenObj.accesToken,
             "Mail": this.props.userData.Mail,
             "IdPublication": this.state.pubObj.IdPublication,
-            "Code" : code
-        }    
+            "Code": code
+        }
         fetchUrl = "https://localhost:44372/api/favorite";
         method = "POST";
         fetch(fetchUrl, {
@@ -194,8 +239,8 @@ class ViewPublication extends React.Component {
             body: JSON.stringify(objToSend)
         }).then(response => response.json()).then(data => {
             console.log("data:" + JSON.stringify(data));
-            if (data.responseCode == "SUCC_FAVORITEUPDATED" ) {
-                this.setState({ pubObj: { ...this.state.pubObj, Favorite: code === 1 ? true: false}})                
+            if (data.responseCode == "SUCC_FAVORITEUPDATED") {
+                this.setState({ pubObj: { ...this.state.pubObj, Favorite: code === 1 ? true : false } })
                 toast.success(code === 1 ? 'Agregado a favoritos' : 'Quitado de favoritos', {
                     position: "top-right",
                     autoClose: 5000,
@@ -214,36 +259,195 @@ class ViewPublication extends React.Component {
         )
     }
 
-    redirectToPub(id){
-        this.props.history.push('/publications/viewPublication/viewPublication/'+id);
+    redirectToPub(id) {
+        this.props.history.push('/publications/viewPublication/viewPublication/' + id);
         window.location.reload();
     }
 
-	changeImage(image, index) {
-		this.setState({ activeImage: { index: index, src: image } })
+    changeImage(image, index) {
+        this.setState({ activeImage: { index: index, src: image } })
     }
 
-    goToTab(tab){
+    goToTab(tab) {
         this.setState({ tabDisplayed: tab })
     }
+
+    modalSave(textboxValue, modalRef) {
+        this.modalElement.current.changeModalLoadingState(true);
+    }
+
+    confirmReservation(){
+        var objToSend = {}
+        var fetchUrl = 'https://localhost:44372/api/reservation';
+        var method = "POST";
+        var PlanSelected = "";
+        switch(this.state.planChosen){
+            case "HourPrice": PlanSelected ="Hour";break;
+            case "DailyPrice": PlanSelected ="Day";break;
+            case "WeeklyPrice" : PlanSelected ="Week";break;
+            case "MonthlyPrice": PlanSelected ="Month";break;
+        }
+
+        var objToSend = {
+            "AccessToken": this.props.tokenObj.accesToken,
+            "VOReservation": {
+                "IdPublication": this.state.pubID,
+                "MailCustomer": this.props.userData.Mail,
+                "PlanSelected": PlanSelected,
+                "ReservedQuantity": this.state.quantityPlan,
+                "DateFrom": this.state.date,
+                "HourFrom": this.state.hourFromSelect,
+                "HourTo": this.state.hourToSelect,
+                "People": this.state.quantityPeople,
+                "Comment": this.state.reservationComment,
+                "TotalPrice": this.state.totalPrice
+            }
+        }
+
+        this.modalSummaryElement.current.changeModalLoadingState(false);
+        fetch(fetchUrl, {
+            method: method,
+            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(objToSend)
+        }).then(response => response.json()).then(data => {
+            this.setState({ isLoading: false, buttonIsDisable: false });
+            console.log("data:" + JSON.stringify(data));
+            if (data.responseCode == "SUCC_RESERVATIONCREATED") {
+                this.modalSummaryElement.current.changeModalLoadingState(true);
+                this.modalElement.current.toggle(null);
+            } else {
+                this.modalSummaryElement.current.changeModalLoadingState(true);
+                this.handleErrors(data.responseCode);
+            }
+        }
+        ).catch(error => {
+            this.handleErrors(error);
+        }
+        )
+    }
+
+    triggerSummaryModal(){
+        var validObj = this.validateReservation();
+        if(validObj.valid){
+            var planChosenText = "";
+            var tmpHfs = 0;
+            var tmpHts = 1;
+            switch(this.state.planChosen){
+                case "HourPrice" : planChosenText = "por hora"; tmpHfs = this.state.hourFromSelect; tmpHts = this.state.hourToSelect == 0 ? 24 : this.state.hourToSelect;  break;
+                case "DailyPrice" : planChosenText = "por día"; break;
+                case "WeeklyPrice" : planChosenText = "por semana"; break;
+                case "MonthlyPrice" : planChosenText = "por mes"; break;
+            }
+            var totalPrice = (parseInt(tmpHts-tmpHfs) * parseInt(this.state.pubObj[this.state.planChosen]))*parseInt(this.state.quantityPeople);
+
+            this.setState({
+                totalPrice : totalPrice
+            });
+            
+            var summaryObject = {
+                planChosen: this.state.planChosen,
+                planChosenText: planChosenText,
+                planValue : this.state.pubObj[this.state.planChosen],
+                hourFromSelect : tmpHfs,
+                hourToSelect : tmpHts,
+                date: this.convertDate(this.state.date),
+                quantityPeople : this.state.quantityPeople,
+                totalPrice : totalPrice,
+            };
+            this.modalSummaryElement.current.toggle(summaryObject);
+        }else{
+            toast.error(validObj.message, {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+        }
+    }
+
+    validateReservation(){
+        if(this.state.date){}
+        var objResponse = {
+            valid : true,
+            message : ""
+        }
+        return objResponse;;
+    }
+
+    changeHour = (e) => {
+        var newHourFromSelect = this.state.hourFromSelect;
+        var newHourToSelect = this.state.hourToSelect;
+        if(e.target.id == "hourFromSelect"){
+            newHourFromSelect = e.target.value;
+            if(parseInt(newHourFromSelect) >= parseInt(newHourToSelect)  ){
+                if((parseInt(newHourFromSelect)+1) <= 9){
+                    newHourToSelect = "0"+(parseInt(newHourFromSelect)+1);
+                }else{
+                    newHourToSelect = parseInt(newHourFromSelect)+1;
+                    if(newHourToSelect == 24){
+                        newHourToSelect = "00";
+                    }
+                }
+            }
+        }else{
+            // hourToSelect
+            newHourToSelect = e.target.value;
+            if(parseInt(newHourToSelect) <= parseInt(newHourFromSelect)){
+                if((parseInt(newHourFromSelect)-1) <= 9){
+                    newHourFromSelect = "0"+(parseInt(newHourToSelect)-1);
+                }else{
+                    newHourFromSelect = parseInt(newHourFromSelect)-1;
+                    if(newHourFromSelect == 0){
+                        newHourFromSelect = "00";
+                    }
+                }
+            }
+        }
+        if(newHourToSelect == "00" && newHourFromSelect == "00"){
+            newHourToSelect = "01";
+        };
+        this.setState({
+            hourFromSelect: newHourFromSelect,
+            hourToSelect: newHourToSelect
+        });
+    }
+
+    convertDate(date) {
+        var today = new Date(date);
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1; //January is 0!
+
+        var yyyy = today.getFullYear();
+        if (dd < 10) {
+            dd = '0' + dd;
+        }
+        if (mm < 10) {
+            mm = '0' + mm;
+        }
+        var dateConv = yyyy + "-" + mm + '-' + dd;
+        return dateConv;
+    }
+
     render() {
         const { login_status } = this.props;
         const options = {
-	    	slideSpeed: 500,
-	    	margin: 10,
-	    	nav: false,
-	    	dots: false,
-		    responsive:{
-		        0:{
-		            items:4,
-		        },
-		        600:{
-		            items:4,
-		        },
-		        1000:{
-		            items:5,
-		        }
-		    }
+            slideSpeed: 500,
+            margin: 10,
+            nav: false,
+            dots: false,
+            responsive: {
+                0: {
+                    items: 4,
+                },
+                600: {
+                    items: 4,
+                },
+                1000: {
+                    items: 5,
+                }
+            }
         };
         var loadStatus = !this.state.pubIsLoading && !this.state.infIsLoading ? false : true;
         if (this.state.generalError) return <Redirect to='/error' />
@@ -253,7 +457,7 @@ class ViewPublication extends React.Component {
                     active={loadStatus}
                     spinner
                     text='Cargando...'
-                    >
+                >
                     {this.state.pubIsLoading == false && this.state.infIsLoading == false ? (
                         <>
                             {/*SEO Support*/}
@@ -264,6 +468,15 @@ class ViewPublication extends React.Component {
                             {/*SEO Support End */}
                             <Header />
                             <div className="main-content  full-width  home">
+                                <ModalReqInfo ref={this.modalElement} modalSave={this.modalSave}
+                                    modalConfigObj={{
+                                        title: 'Reserva enviada', mainText: 'Su reserva ha sido enviada correctamente, revise su casilla de correo para más informacion. ',
+                                        textboxDisplay: false, cancelAvailable: true, cancelText : 'Entendido'
+                                    }} />
+
+                                <ModalSummary ref={this.modalSummaryElement} login_status={this.props.login_status} 
+                                    confirmReservation={this.confirmReservation} onChange ={this.onChange}/>
+
                                 <div className="pattern" >
                                     <div>
                                         <div className="row">
@@ -285,7 +498,7 @@ class ViewPublication extends React.Component {
                                                                                                 <div className="product-image cloud-zoom">
                                                                                                     {true === true &&
                                                                                                         <div className="sale">Recomendado!</div>
-                                                                                                    }                                                                                        
+                                                                                                    }
                                                                                                     {<InnerImageZoom src={this.state.activeImage.src} />}
                                                                                                 </div>
                                                                                                 <div className="overflow-thumbnails-carousel">
@@ -299,22 +512,22 @@ class ViewPublication extends React.Component {
                                                                                                 </div>
                                                                                             </div>
                                                                                             <div className="col-md-5 product-center clearfix">
-                                                                                                <h1 className="product-name">{this.state.pubObj.Title}</h1>  
+                                                                                                <h1 className="product-name">{this.state.pubObj.Title}</h1>
                                                                                                 {this.state.pubObj.Favorite === false && login_status == 'LOGGED_IN' ? (
-                                                                                                <div>
-                                                                                                    <a href="#add_to_wishlist" onClick={this.submitFavorite}><span><i className="fas fa-heart"></i></span> Agregar a favoritos</a>
-                                                                                                </div> 
-                                                                                                ) : (
-                                                                                                <div>
-                                                                                                    {this.state.pubObj.Favorite === true ? (
                                                                                                     <div>
-                                                                                                        <a href="#remove_from_wishlist" onClick={this.submitFavorite}><span><i className="fas fa-heart"></i></span> Quitar de favoritos</a>
+                                                                                                        <a href="#add_to_wishlist" onClick={this.submitFavorite}><span><i className="fas fa-heart"></i></span> Agregar a favoritos</a>
                                                                                                     </div>
-                                                                                                ) : (null) }
-                                                                                                </div>)}
-                                                                                                                                                                 
+                                                                                                ) : (
+                                                                                                        <div>
+                                                                                                            {this.state.pubObj.Favorite === true ? (
+                                                                                                                <div>
+                                                                                                                    <a href="#remove_from_wishlist" onClick={this.submitFavorite}><span><i className="fas fa-heart"></i></span> Quitar de favoritos</a>
+                                                                                                                </div>
+                                                                                                            ) : (null)}
+                                                                                                        </div>)}
+
                                                                                                 <div className="description">{this.state.pubObj.QuantityRented} veces alquilado</div>
-                                                                                                    
+
                                                                                                 <div className="review">
                                                                                                     <div className="rating"><i className={this.state.pubObj.Ranking > 0 ? 'fa fa-star active' : 'fa fa-star'}></i><i className={this.state.pubObj.Ranking > 1 ? 'fa fa-star active' : 'fa fa-star'}></i><i className={this.state.pubObj.Ranking > 2 ? 'fa fa-star active' : 'fa fa-star'}></i><i className={this.state.pubObj.Ranking > 3 ? 'fa fa-star active' : 'fa fa-star'}></i><i className={this.state.pubObj.Ranking > 4 ? 'fa fa-star active' : 'fa fa-star'}></i>&nbsp;&nbsp;&nbsp;</div>
                                                                                                 </div>
@@ -322,129 +535,150 @@ class ViewPublication extends React.Component {
                                                                                                     <span> <b>Capacidad: </b></span>{this.state.pubObj.Capacity} personas <br />
                                                                                                 </div>
                                                                                                 <div className="review">
-                                                                                                    <span><b>Precios</b><br/></span>
+                                                                                                    <span><b>Precios</b><br /></span>
                                                                                                 </div>
                                                                                                 <div className="price">
                                                                                                     <span className="col-md-9 center-column">
-                                                                                                    {this.state.pubObj.HourPrice > 0 && "Por Hora : $"+ this.state.pubObj.HourPrice + " - " }
-                                                                                                    {this.state.pubObj.DailyPrice > 0 && "Por Día : $"+ this.state.pubObj.DailyPrice + " - "}
-                                                                                                    {this.state.pubObj.WeeklyPrice > 0 && "Por Semana : $"+ this.state.pubObj.WeeklyPrice + " - "}
-                                                                                                    {this.state.pubObj.MonthlyPrice > 0 && "Por Mes : $"+ this.state.pubObj.MonthlyPrice}
+                                                                                                        {this.state.pubObj.HourPrice > 0 && "Por Hora : $" + this.state.pubObj.HourPrice + " - "}
+                                                                                                        {this.state.pubObj.DailyPrice > 0 && "Por Día : $" + this.state.pubObj.DailyPrice + " - "}
+                                                                                                        {this.state.pubObj.WeeklyPrice > 0 && "Por Semana : $" + this.state.pubObj.WeeklyPrice + " - "}
+                                                                                                        {this.state.pubObj.MonthlyPrice > 0 && "Por Mes : $" + this.state.pubObj.MonthlyPrice}
                                                                                                     </span>
                                                                                                 </div>
                                                                                                 <div className="review">
-                                                                                                    <div className="title-page" > 
+                                                                                                    <div className="title-page" >
                                                                                                         <span><b>Disponibilidad</b></span>
                                                                                                     </div>
                                                                                                     <div >
-                                                                                                        <span>{this.state.pubObj.Availability}<br/></span>
+                                                                                                        <span>{this.state.pubObj.Availability}<br /></span>
                                                                                                     </div>
                                                                                                 </div>
-                                                                                                
+
                                                                                             </div>
-                                                                                            <div className="review col-md-4" style= {{marginLeft: '60%'}}>
-                                                                                                <div className = "title-page">
-                                                                                                    <span><b>Haga su reserva ahora!</b></span>
+                                                                                            <div className="review col-md-4" style={{ marginLeft: '60%' }}>
+                                                                                                <div className="title-page">
+                                                                                                    <span style={{ marginLeft: '20%' }}><b>Haga su reserva ahora!</b></span>
                                                                                                 </div>
-                                                                                                
-                                                                                                <div className="col-md-12" style= {{border: '1px solid dodgerBlue'}}>
-                                                                                                    <div>
+
+                                                                                                <div className="col-md-12" style={{ border: '1px solid dodgerBlue' }}>
                                                                                                     <span><b>Plan</b></span>
-                                                                                                    <select style= {{marginLeft: '10%'}} className="browser" id= "planChosen" onChange={this.onChange} defaultValue = " -- select an option --">                                                                                                        
-                                                                                                        {this.state.pubObj.HourPrice > 0 && <option value="Hours"> {"Por Hora : $"+ this.state.pubObj.HourPrice}</option>}
-                                                                                                        {this.state.pubObj.DailyPrice > 0 && <option value="Days"> {"Por Día : $"+ this.state.pubObj.DailyPrice}</option>}
-                                                                                                        {this.state.pubObj.WeeklyPrice > 0 && <option value="Weeks"> {"Por Semana : $"+ this.state.pubObj.WeeklyPrice}</option>}
-                                                                                                        {this.state.pubObj.MonthlyPrice > 0 && <option value="Months"> {"Por Mes : $"+ this.state.pubObj.MonthlyPrice}</option>}
-                                                                                                    </select>                                                                                                    
-                                                                                                    <div className="cart">
-                                                                                                    <div className="add-to-cart d-flex">                                                                                                        
-                                                                                                    <span><b>{this.state.planChosen}</b></span>
-                                                                                                        <div className="quantity">
-                                                                                                            <input type="text" name="quantity" id="quantity_wanted" size="2" value={this.state.quantityPlan} onChange={(event) => this.changeQuantityPlan(event.target.value)} />
-                                                                                                            <a href="#quantity_up" id="q_up" onClick={() => this.increaseQuantityPlan()}><i className="fa fa-plus"></i></a>
-                                                                                                            <a href="#quantity_down" id="q_down" onClick={() => this.decreaseQuantityPlan()}><i className="fa fa-minus"></i></a>
-                                                                                                        </div>																				
-                                                                                                    </div>
-                                                                                                    </div>
-                                                                                                    <span><b>Desde</b></span>
-                                                                                                    <DatePicker placeholderText="Fecha"
-                                                                                                        dateFormat="dd/MM/yyyy"
-                                                                                                        selected={this.state.date}
-                                                                                                        onSelect={this.handleSelect} //when day is clicked
-                                                                                                        onChange={this.handleChange} //only when value has changed
-                                                                                                    />
-                                                                                                    <div className={ this.state.pubObj.state === 3 ? 'hidden' : 'shown'}>
+                                                                                                    <select style={{ marginLeft: '10%' }} className="browser" id="planChosen" onChange={this.onChange} defaultValue=" -- select an option --">
+                                                                                                        {this.state.pubObj.HourPrice > 0 && <option value="HourPrice"> {"Por Hora : $" + this.state.pubObj.HourPrice}</option>}
+                                                                                                        {this.state.pubObj.DailyPrice > 0 && <option value="DailyPrice"> {"Por Día : $" + this.state.pubObj.DailyPrice}</option>}
+                                                                                                        {this.state.pubObj.WeeklyPrice > 0 && <option value="WeeklyPrice"> {"Por Semana : $" + this.state.pubObj.WeeklyPrice}</option>}
+                                                                                                        {this.state.pubObj.MonthlyPrice > 0 && <option value="MonthlyPrice"> {"Por Mes : $" + this.state.pubObj.MonthlyPrice}</option>}
+                                                                                                    </select>
+                                                                                                    {this.state.planChosen == "HourPrice" ? (
                                                                                                         <div className="cart">
-                                                                                                            <div className="add-to-cart d-flex">                                                                                                        
-                                                                                                                <span><b>Personas</b></span>
-                                                                                                                <div className="quantity">
-                                                                                                                    <input type="text" name="quantity" id="quantity_wanted" size="2" value={this.state.quantityPeople} onChange={(event) => this.changeQuantityPeople(event.target.value)} />
-                                                                                                                    <a href="#quantity_up" id="q_up" onClick={() => this.increaseQuantityPeople()}><i className="fa fa-plus"></i></a>
-                                                                                                                    <a href="#quantity_down" id="q_down" onClick={() => this.decreaseQuantityPeople()}><i className="fa fa-minus"></i></a>
-                                                                                                                </div>																				
+                                                                                                            <div className="add-to-cart d-flex">
+                                                                                                                <span><b>Hora</b></span>
+                                                                                                                <div style={{ marginLeft: '8%' }} className="browser">
+                                                                                                                    <select style={{ marginLeft: '8%' }} className="browser" id="hourFromSelect" 
+                                                                                                                        value={this.state.hourFromSelect} onChange={this.changeHour} defaultValue=" -- select an option --">
+                                                                                                                        {this.state.hoursAvailable.map((hours) => {
+                                                                                                                            return (
+                                                                                                                                <option key={'hourTo'+hours} value={hours}>{hours}</option>
+                                                                                                                            );
+                                                                                                                        })}
+                                                                                                                    </select>
+                                                                                                                </div>
+                                                                                                                <b style={{ marginLeft: '8%' }}>a</b>
+                                                                                                                <div className="browser">
+                                                                                                                    <select className="browser" id="hourToSelect" 
+                                                                                                                    value={this.state.hourToSelect} onChange={this.changeHour} defaultValue=" -- select an option --">
+                                                                                                                        {this.state.hoursAvailable.map((hours) => {
+                                                                                                                            return (
+                                                                                                                                <option key={'hourTo'+hours} value={hours}>{hours}</option>
+                                                                                                                            );
+                                                                                                                        })}
+                                                                                                                    </select>
+                                                                                                                </div>
                                                                                                             </div>
                                                                                                         </div>
-                                                                                                    </div>                                                                                                    
-                                                                                                    <div className="description add-to-cart d-flex">
-                                                                                                            <input type="button" value="Reservar" onClick={() => alert("Ver resumen de la reserva, incluyendo el monto total para pagar y explicando el procedimiento")} className="button" /> 
-                                                                                                        </div>																			
+                                                                                                    ) : (null)}
+                                                                                                    <div className="cart">
+                                                                                                        <div className="add-to-cart d-flex">
+                                                                                                            <span><b>Fecha</b></span>
+                                                                                                                <div style={{ marginLeft: '7%' }} className="browser">
+                                                                                                                    <DatePicker placeholderText="Fecha"
+                                                                                                                        dateFormat="dd/MM/yyyy"
+                                                                                                                        selected={this.state.date}
+                                                                                                                        minDate={new Date()}
+                                                                                                                        selected={new Date()}
+                                                                                                                        onSelect={this.handleChange} //when day is clicked
+                                                                                                                        onChange={this.handleChange} //only when value has changed
+                                                                                                                    />
+                                                                                                                </div>
+                                                                                                        </div>
                                                                                                     </div>
+                                                                                                    
+                                                                                                    <div className={this.state.pubObj.state === 3 ? 'hidden' : 'shown'}>
+                                                                                                        <div className="cart">
+                                                                                                            <div className="add-to-cart d-flex">
+                                                                                                                <span><b>Personas</b></span>
+                                                                                                                <div style={{ marginLeft: '2%' }} className="quantity">
+                                                                                                                    <input type="text" name="quantityPeople" id="quantityPeople" size="2" value={this.state.quantityPeople} onChange={(event) => this.changeQuantityPeople(event.target.value)} />
+                                                                                                                    <a id="q_up" onClick={() => this.increaseQuantityPeople()}><i className="fa fa-plus"></i></a>
+                                                                                                                    <a id="q_down" onClick={() => this.decreaseQuantityPeople()}><i className="fa fa-minus"></i></a>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
                                                                                                     </div>
-                                                                                                    <div id="product">
-                                                                                                    <div className="description">
-                                                                                                        <div className="add-to-cart d-flex">                                                                                                                                                                                            
-                                                                                                            <input type="button" value="Solicitar Información" onClick={() => alert("Mandar 'mensaje' si esta logueado?")} className="button" />
-                                                                                                        </div>                                                                                                                                                                                           
-                                                                                                    </div>
+                                                                                                    <div style={{ marginLeft: '35%' }} className="description add-to-cart d-flex">
+                                                                                                        <input type="button" value="Reservar" onClick={() => this.triggerSummaryModal()} className="button" />
                                                                                                     </div>
                                                                                                 </div>
-                                    
+                                                                                            </div>
                                                                                         </div>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
 
                                                                             <div id="tabs" className="htabs">
-                                                                                <a href="#tab-description" onClick={() => this.goToTab(1)} {...(this.state.tabDisplayed == 1 ? {className :"selected"} : {})} >Descripción</a>
-                                                                                <a href="#tab-review" onClick={() => this.goToTab(2)} {...(this.state.tabDisplayed == 2 ? {className :"selected"} : {})} >Reviews ({this.state.pubObj.Reviews.length})</a>
+                                                                                <a href="#tab-description" onClick={() => this.goToTab(1)} {...(this.state.tabDisplayed == 1 ? { className: "selected" } : {})} >Descripción</a>
+                                                                                <a href="#tab-questions" onClick={() => this.goToTab(3)} {...(this.state.tabDisplayed == 3 ? { className: "selected" } : {})} >Preguntas ({this.state.arrQA.length})</a>
+                                                                                <a href="#tab-review" onClick={() => this.goToTab(2)} {...(this.state.tabDisplayed == 2 ? { className: "selected" } : {})} >Reviews ({this.state.pubObj.Reviews.length})</a>
                                                                             </div>
-                                                                            { this.state.tabDisplayed === 1 ? (
+                                                                            {this.state.tabDisplayed === 1 ? (
                                                                                 <>
-                                                                                <div id="tab-description" className="tab-content" style={{ display: 'block' }}>
-                                                                                
-                                                                                    <div dangerouslySetInnerHTML={{ __html: this.state.pubObj.Description }} /><br/>
-                                                                                    
-                                                                                    <h5>Dirección</h5>{this.state.pubObj.Address}<br/>
-                                                                                    <h5>Servicios<br/></h5>
-                                                                                
-                                                                                    <div className="review">
-                                                                                        <span>{this.state.pubObj.Facilities.map((inf, index) => {
-                                                                                            let infText = this.state.facilities.filter( function(fac){
-                                                                                                return parseInt(fac.Code) == parseInt(inf)
-                                                                                            });
-                                                                                            return (
-                                                                                                <div key={index}>
-                                                                                                    <p><i className="fa fa-circle"></i>{infText[0].Description}</p>
-                                                                                                </div>
-                                                                                            );
-                                                                                            })}<br/></span>
+                                                                                    <div id="tab-description" className="tab-content" style={{ display: 'block' }}>
+
+                                                                                        <div dangerouslySetInnerHTML={{ __html: this.state.pubObj.Description }} /><br />
+
+                                                                                        <h5>Dirección</h5>{this.state.pubObj.Address}<br />
+                                                                                        <h5>Servicios<br /></h5>
+
+                                                                                        <div className="review">
+                                                                                            <span>{this.state.pubObj.Facilities.map((inf, index) => {
+                                                                                                let infText = this.state.facilities.filter(function (fac) {
+                                                                                                    return parseInt(fac.Code) == parseInt(inf)
+                                                                                                });
+                                                                                                return (
+                                                                                                    <div key={index}>
+                                                                                                        <p><i className="fa fa-circle"></i>{infText[0].Description}</p>
+                                                                                                    </div>
+                                                                                                );
+                                                                                            })}<br /></span>
+                                                                                        </div>
                                                                                     </div>
-                                                                                </div>
                                                                                 </>
                                                                             ) : (null)}
-                                                                            { this.state.tabDisplayed === 2 ? (
+                                                                            {this.state.tabDisplayed === 2 ? (
                                                                                 <div id="tab-review" className="tab-content">
-                                                                                    <TabReview reviews = {this.state.pubObj.Reviews}/>
+                                                                                    <TabReview reviews={this.state.pubObj.Reviews} />
                                                                                 </div>
                                                                             ) : (null)}
-                                                                            <span><h5>Ubicación</h5><br/></span>
+                                                                            {this.state.tabDisplayed === 3 ? (
+                                                                                <div id="tab-questions" className="tab-content">
+                                                                                    <TabQuestions arrQA={this.state.arrQA} login_status={this.props.login_status} userData={this.props.userData} />
+                                                                                </div>
+                                                                            ) : (null)}
+                                                                            <span><h5>Ubicación</h5><br /></span>
                                                                             {
                                                                                 this.state.pubObj &&
-                                                                                <Map objGoogleMaps = {{zoom : 17, latitude: this.state.pubObj.Location.Latitude, longitude: this.state.pubObj.Location.Longitude}}/>
+                                                                                <Map objGoogleMaps={{ zoom: 17, latitude: this.state.pubObj.Location.Latitude, longitude: this.state.pubObj.Location.Longitude }} />
                                                                             }
-
-                                                                        <RelatedPublications relatedPublications={this.state.relatedPublications} redirectToPub={this.redirectToPub}/>
-
+                                                                            <RelatedPublications relatedPublications={this.state.relatedPublications} redirectToPub={this.redirectToPub} />
                                                                         </div>
                                                                     </div>
                                                                 </div>

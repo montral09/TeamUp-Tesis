@@ -35,8 +35,8 @@ class PublPendApprov extends Component {
             spaceTypes: [],
             facilities: []
         }
-        this.modalElement = React.createRef(); // esto hace unas magias para cambiar el estado de un componente hijo
-        this.modalElementAppRej = React.createRef();
+        this.modalElement = React.createRef(); // Connects the reference to the modal
+        this.modalElementAppRej = React.createRef(); // Connects the reference to the modal
         this.approvePublication  = this.approvePublication.bind(this);
         this.rejectPublication = this.rejectPublication.bind(this);
         this.updateTable = this.updateTable.bind(this);

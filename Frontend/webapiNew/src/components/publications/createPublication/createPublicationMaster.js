@@ -135,7 +135,7 @@ class CreatePublication extends React.Component {
         try{
             switch(this.state.currentStep){
                 case 1:
-                    if(this.state.spaceName && this.state.capacity && this.state.availability){
+                    if(this.state.spaceName && this.state.capacity){
                         isValid = true;
                     }
                 break;
@@ -145,8 +145,8 @@ class CreatePublication extends React.Component {
                     }
                 break;
                 case 3:
-                    if(this.state.HourPrice != 0 || this.state.DailyPrice != 0 || 
-                        this.state.WeeklyPrice != 0 || this.state.MonthlyPrice != 0){
+                    if((this.state.HourPrice != 0 || this.state.DailyPrice != 0 || 
+                        this.state.WeeklyPrice != 0 || this.state.MonthlyPrice != 0)  && this.state.availability){
                         isValid = true;
                     }
                 break;
