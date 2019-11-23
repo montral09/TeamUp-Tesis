@@ -426,7 +426,7 @@ class ViewPublication extends React.Component {
         if (mm < 10) {
             mm = '0' + mm;
         }
-        var dateConv = yyyy + "-" + mm + '-' + dd;
+        var dateConv = dd + "-" + mm + '-' + yyyy;
         return dateConv;
     }
 
@@ -604,7 +604,6 @@ class ViewPublication extends React.Component {
                                                                                                                         dateFormat="dd/MM/yyyy"
                                                                                                                         selected={this.state.date}
                                                                                                                         minDate={new Date()}
-                                                                                                                        selected={new Date()}
                                                                                                                         onSelect={this.handleChange} //when day is clicked
                                                                                                                         onChange={this.handleChange} //only when value has changed
                                                                                                                     />

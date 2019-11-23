@@ -52,8 +52,8 @@ namespace backend.Data_Access.Query
         public String GetSpace()
         {
             String query = "select p.idPublication, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, " +
-                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities, p.city, p.totalViews from PUBLICATIONS p where " +
-                " p.idPublication = @idPublication and p.state = 2";
+                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities, p.city, p.totalViews, s.individualRent from PUBLICATIONS p, SPACE_TYPES s where " +
+                " p.idPublication = @idPublication and p.state = 2 and s.idSpaceType = p.spaceType";
             return query;
         }
 

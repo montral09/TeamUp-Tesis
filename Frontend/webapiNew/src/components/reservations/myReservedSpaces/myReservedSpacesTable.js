@@ -19,7 +19,7 @@ const MyReservedSpacesTable = (props) =>{
                 <td>{obj.MailCustomer}</td>
                 <td>{obj.PlanSelected}</td>
                 <td>{obj.People}</td>
-                <td>{obj.DateFrom}</td>
+                <td>{obj.DateFromString}</td>
                 <td>{obj.HourFrom}</td>
                 <td>{obj.HourTo}</td>             
                 <td>{obj.TotalPrice}</td>
