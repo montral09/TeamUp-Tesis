@@ -1,12 +1,10 @@
 import React from "react";
-import $ from 'jquery';
 import { Link } from 'react-router-dom';
 
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual'
 
 class PublicationListCard extends React.Component {
-
 
  	render() {
         const {IdPublication, Description, Capacity, HourPrice, DailyPrice, WeeklyPrice, MonthlyPrice, Title, ImagesURL, City, Ranking} = this.props;
@@ -15,7 +13,7 @@ class PublicationListCard extends React.Component {
                 <div className="row">
                     <div className="image col-md-3">
                         <Link to={`/publications/viewPublication/viewPublication/${IdPublication}`}>
-                            <img src={ImagesURL[0]} alt='No image available' className="" />
+                            <img src={ImagesURL[0]} onError={(e)=>{e.target.onerror = null; e.target.src="/images/no-image-available.png"}} alt='No image available' className="" />
                         </Link>
                     </div>
                     <div className="name-desc col-md-6">

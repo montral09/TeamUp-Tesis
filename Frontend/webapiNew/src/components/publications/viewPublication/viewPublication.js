@@ -180,7 +180,7 @@ class ViewPublication extends React.Component {
             }
             this.setState({ pubIsLoading: true });
             fetch(url).then(response => response.json()).then(data => {
-                console.log("data:");
+                console.log("loadPublication:");
                 console.log(data);
                 if (data.responseCode == "SUCC_PUBLICATIONSOK") {
                     var pubObj = data.Publication;
@@ -338,8 +338,10 @@ class ViewPublication extends React.Component {
                 case "WeeklyPrice" : planChosenText = "por semana"; break;
                 case "MonthlyPrice" : planChosenText = "por mes"; break;
             }
-            var totalPrice = (parseInt(tmpHts-tmpHfs) * parseInt(this.state.pubObj[this.state.planChosen]))*parseInt(this.state.quantityPeople);
-
+            var totalPrice = (parseInt(tmpHts-tmpHfs) * parseInt(this.state.pubObj[this.state.planChosen]));
+            if(this.state.pubObj.IndividualRent == true){
+                totalPrice = totalPrice * parseInt(this.state.quantityPeople);
+            }
             this.setState({
                 totalPrice : totalPrice
             });
@@ -505,7 +507,7 @@ class ViewPublication extends React.Component {
                                                                                                     <OwlCarousel options={options} className="thumbnails-carousel owl-carousel">
                                                                                                         {this.state.pubObj.ImagesURL.map((image, index) => {
                                                                                                             return (
-                                                                                                                <div className="owl-item" key={index}><p><a href="#product_image" className={this.state.activeImage.index === index ? 'popup-image active' : 'popup-image'} onClick={() => this.changeImage(image, index)}><img src={image} title={this.state.pubObj.Title} alt={this.state.pubObj.Title} /></a></p></div>
+                                                                                                                <div className="owl-item" key={index}><p><a href="#product_image" className={this.state.activeImage.index === index ? 'popup-image active' : 'popup-image'} onClick={() => this.changeImage(image, index)}><img src={image} onError={(e)=>{e.target.onerror = null; e.target.src="/images/no-image-available.png"}} title={this.state.pubObj.Title} alt={this.state.pubObj.Title} /></a></p></div>
                                                                                                             );
                                                                                                         })}
                                                                                                     </OwlCarousel>

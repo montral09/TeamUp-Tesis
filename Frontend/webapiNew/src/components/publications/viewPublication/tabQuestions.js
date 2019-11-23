@@ -52,7 +52,7 @@ class TabQuestions extends React.Component {
                                 <button type="button" id="button-review" data-loading-text="Loading..." className="btn btn-primary" onClick ={ () => alert("Se ha enviado su consulta") }>Continuar</button>
                             </div>
                         </div>
-                    ) : (<><p>Debe de estar logueado para poder realizar consultas, por favor <Link target="_blank" to="/account/login">inicie sesión</Link>o sino tiene cuenta regístrese</p></>)}
+                    ) : (<><p>Debe de estar logueado para poder realizar consultas, por favor <Link target="_blank" to="/account/login">inicie sesión</Link> o sino tiene cuenta regístrese</p></>)}
 
                 </form>
             </React.Fragment>
