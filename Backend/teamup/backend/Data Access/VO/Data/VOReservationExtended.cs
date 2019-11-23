@@ -8,11 +8,12 @@ namespace backend.Data_Access.VO.Data
     { 
         public int IdReservation { get; set; }
         public string TitlePublication { get; set; }
+        public string StateDescription { get; set; }
 
         public VOReservationExtended() { }
 
         public VOReservationExtended(int idReservation, string title, int idPublication, String mailCustomer, String planSelected, int reservedQuantity, DateTime dateFrom, string hourFrom, string hourTo,
-            int people, string comment, int totalPrice, int state)  : base (idPublication, mailCustomer, planSelected, reservedQuantity, dateFrom, hourFrom, hourTo,
+            int people, string comment, int totalPrice, int state, string stateDescription)  : base (idPublication, mailCustomer, planSelected, reservedQuantity, dateFrom, hourFrom, hourTo,
              people, comment, totalPrice, state)       
         {
             IdReservation = idReservation;
@@ -28,6 +29,7 @@ namespace backend.Data_Access.VO.Data
             Comment = comment;
             TotalPrice = totalPrice;
             State = state;
+            StateDescription = stateDescription;
         }
     }
 }

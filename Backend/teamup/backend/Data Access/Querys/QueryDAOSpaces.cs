@@ -230,7 +230,7 @@ namespace backend.Data_Access.Query
         {
             StringBuilder query = new StringBuilder();
             query = query.Append("select p.title, r.idReservation, r.idPublication, r.idCustomer, r.planSelected, r.reservedQty, r.dateFrom, r.hourFrom, r.HourTo," +
-                " r.people, r.comment, r.totalPrice, r.state from RESERVATIONS r, PUBLICATIONS p, Users u where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) ");
+                " r.people, r.comment, r.totalPrice, r.state, rs.description from RESERVATIONS r, PUBLICATIONS p, USERS u, RESERVATION_STATES rs where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) and rs.idReservationState = r.state ");
             if (idCustomer != 0)
             {
                 query.Append("and r.idCustomer = @idCustomer ");
