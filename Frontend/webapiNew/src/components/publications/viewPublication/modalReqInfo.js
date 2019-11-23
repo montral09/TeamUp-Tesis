@@ -26,9 +26,11 @@ class ModalReqInfo extends React.Component {
                 optionalData: optionalData
             });
         }else{
-            this.setState({
-                modal: !this.state.modal
-            });
+            if(!this.state.isLoading){
+                this.setState({
+                    modal: !this.state.modal
+                });
+            }
         }
     }
 
@@ -48,7 +50,7 @@ class ModalReqInfo extends React.Component {
     }
 
     save() {
-        this.changeModalLoadingState();
+        this.changeModalLoadingState(true);
         this.props.modalSave(this.state.textboxValue,this.props.ref);
     }
     onChange = (e) => {
@@ -79,7 +81,7 @@ class ModalReqInfo extends React.Component {
                     <ModalFooter>
                         {this.props.login_status == 'LOGGED_IN' ? (
                         <ModalFooter>
-                            {this.props.modalConfigObj.cancelAvailable ?(<Button color="link" onClick={this.toggle}>{this.props.modalConfigObj.cancelText}</Button>) : (null)}
+                            {this.props.modalConfigObj.cancelAvailable ?(<Button color="link" onClick={this.toggle} disabled= {this.state.buttonIsDisabled}>{this.props.modalConfigObj.cancelText}</Button>) : (null)}
                             {this.props.modalConfigObj.confirmAvailable ?(<Button color="primary" onClick={this.save} disabled= {this.state.buttonIsDisabled}>{this.props.modalConfigObj.confirmText}
                                 &nbsp;&nbsp;
                                 {this.state.isLoading &&  

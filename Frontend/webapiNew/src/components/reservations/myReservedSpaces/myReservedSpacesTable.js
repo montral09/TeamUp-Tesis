@@ -9,7 +9,7 @@ const MyReservedSpacesTable = (props) =>{
     const columnsTable = columnsName.map( colName => {
         return (<th key={colName}>{colName}</th>)
     });
-
+    const isPublisher = props.isPublisher || false;
     const arrDataList = reservations.length ? (
         reservations.map( obj => {            
             return(
@@ -26,25 +26,34 @@ const MyReservedSpacesTable = (props) =>{
                 <td>{obj.StateDescription}</td>
                 <td>
                     <div>
-                    {obj.StateDescription != 'FINISHED' && obj.StateDescription != 'CANCELED' ? (
-                        <div>
-                            <a className = "col-md-12" onClick={() => {props.editReservation(obj.IdReservation)}}> <span><i className="col-md-1 fa fa-pencil-alt"></i></span>EDITAR</a>                            
-                        </div>
-                    ) : (
-                        <div>
-                            {obj.State === 'PAUSED P' ? (
+                        {obj.StateDescription === 'PENDING' || obj.StateDescription === 'RESERVED' ? (
                             <div>
-                                <a className = "col-md-12" href="" onClick={() => alert("Agregar reanudar publicacion")}><span><i className="col-md-1 fa fa-play"></i></span>REANUDAR</a>                        
+                                <a onClick={() => {props.cancelModal.toggle()}}> <span><i className="col-md-1 fa fa-times"></i></span>CANCELAR</a> 
+                                {isPublisher && obj.StateDescription === 'PENDING' ? (
+                                    <a onClick={() => {alert("Confirmar")}}> <span><i className="col-md-1 fa fa-check"></i></span>CONFIRMAR</a>                            
+                                    ) : (null)}
                             </div>
-                            ) :(null) }
-                        </div>)}
+                            ) :(null)
+                        }
+                        {obj.StateDescription === 'FINISHED' && !isPublisher ? (
+                            <div>
+                                <a onClick={() => {alert("Calificar")}}> <span><i className="col-md-1 fa fa-comments"></i></span> CALIFICAR</a> 
+                            </div>
+                            ) :(
+                                <div>
+                                {!isPublisher && obj.StateDescription != 'FINISHED' && obj.StateDescription != 'CANCELED'  && obj.StateDescription != 'RESERVED' ? (
+                                        <a onClick={() => {props.editReservation(obj.IdReservation)}}> <span><i className="col-md-1 fa fa-pencil-alt"></i></span>EDITAR</a>                            
+                                    ) : (null)}
+                                </div>
+                            )
+                        }
                     </div>
                 </td>
             </tr>
             )
         })
     ) : (
-        <tr><td colSpan={columnsName.length}>"No se encontraron elementos"</td></tr>
+        <tr><td colSpan={columnsName.length}>"No se encontraron resultados"</td></tr>
         );
     return(
     <Table hover striped bordered size="lg" responsive className = "center">
