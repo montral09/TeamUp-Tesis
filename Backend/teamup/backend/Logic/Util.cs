@@ -69,8 +69,7 @@ namespace backend.Logic
                 facilities = facilitiesString.Split(',').Select(int.Parse).ToList();
             }
             return facilities;
-        }                    
-
+        }
 
         public static string CreateStringImages(List<VOImage> images)
         {
@@ -135,12 +134,12 @@ namespace backend.Logic
             if (statusCode == 2)
             //Active
             {                
-                body += "<br /><br />Your publication " + title + "has been approved. This means other users will see it and rented. Congratulations!.";
+                body += "<br /><br />Your publication " + title + " has been approved. This means other users will see it and rented. Congratulations!.";
                 subject = "Publication approved";
             } else
             //Rejected
             {
-                body += "<br /><br />Your publication " + title + "has been rejected. Reason: " + rejectedReason + " You can contact our team for further information";
+                body += "<br /><br />Your publication " + title + " has been rejected. Reason: " + rejectedReason + " You can contact our team for further information";
                 subject = "Publication rejected";
             }
             mm.Body = body;
@@ -154,6 +153,86 @@ namespace backend.Logic
             smtp.Credentials = NetworkCred;
             smtp.Port = 587;
             smtp.Send(mm);
+        }
+
+        public static string CreateBodyEmailNewReservationToPublisher(String name)
+        {
+            string body = "Hello, " + name;
+            body += "<br /><br />One of your publication has been reserved!.";
+            body += "<br /><br />Thanks";
+            return body;
+        }
+
+        public static string CreateBodyEmailNewReservationToCustomer(string name)
+        {
+            string body = "Hola, " + name;
+            body += "<br /><br />Has reservado una espacio, felicitaciones! El dueño del espacio se comunicará contigo a la brevedad ";
+            body += "<br /><br />Thanks";
+            return body;
+        }
+
+        public int ConvertStateReservation(string oldState)
+        {
+            switch (oldState)
+            {
+                case "PENDING":
+                    return 1;
+                case "RESERVED":
+                    return 2;
+                case "IN PROGRESS":
+                    return 3;                
+                case "FINISHED":
+                    return 4;
+                case "CANCELED":
+                    return 5;
+                default:
+                    return 0;
+            }
+        }
+
+        public bool UpdateValidReservation(bool isAdmin, int oldCodeState, int newCodeState)
+        {
+            return true;
+        }
+
+        public static string CreateBodyEmailStateReservationToPublisher(String name, string newState, string canceledReason)
+        {
+            string body = "Hola, " + name;
+            body += "<br /><br />Una de tus reservas ha cambiado a " + newState + ".";
+            if (canceledReason != null)
+            {
+                body += "<br /><br />Motivo: " + canceledReason + ".";
+            }
+            body += "<br /><br />Gracias";
+            return body;
+        }
+
+        public static string CreateBodyEmailStateReservationToCustomer(String name, string newState, string canceledReason)
+        {
+            string body = "Hola, " + name;
+            body += "<br /><br />Una de tus reservas ha cambiado a " + newState + ".";
+            if (canceledReason != null)
+            {
+                body += "<br /><br />Motivo: " + canceledReason + ".";
+            }
+            body += "<br /><br />Gracias";
+            return body;
+        }
+
+        public static string CreateBodyEmailUpdateReservationToPublisher(String name)
+        {
+            string body = "Hola, " + name;
+            body += "<br /><br />Una de tus reservas ha sido modificada";           
+            body += "<br /><br />Gracias";
+            return body;
+        }
+
+        public static string CreateBodyEmailUpdateReservationToCustomer(String name)
+        {
+            string body = "Hola, " + name;
+            body += "<br /><br />Una de tus reservas ha sido modificada";            
+            body += "<br /><br />Gracias";
+            return body;
         }
     }
 }

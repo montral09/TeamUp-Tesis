@@ -3,7 +3,7 @@ import { Route, Switch } from 'react-router-dom';
 
 // Layout Components
 import HomePage from './home';
-import Login from './account/login';
+import LoginPage from './account/loginPage';
 import Register from './account/register';
 import Modify from './account/modify';
 import ForgotPassword from './account/forgotPassword';
@@ -12,13 +12,15 @@ import CreatePublication from './publications/createPublication/createPublicatio
 import ViewPublication from './publications/viewPublication/viewPublication';
 import MyPublicationsList from './publications/myPublishedPublications/myPublicationsList';
 import MainPublications from './publications/listPublications/mainPublications';
+import MyReservedSpacesList from './reservations/myReservedSpaces/myReservedSpacesList';
+import NotFoundPage from './pages/404';
 
 const Page = () => {
   return (
     <>
       <Switch>
         <Route path="/" exact component={HomePage} />
-        <Route path="/account/login" component={Login} />
+        <Route path="/account/login" component={LoginPage} />
         <Route path="/account/register" component={Register} />
         <Route path="/account/modify" component={Modify} />
         <Route path="/account/forgotPassword" component={ForgotPassword} />
@@ -28,6 +30,8 @@ const Page = () => {
         <Route path="/publications/myPublishedPublications/myPublicationsList" component={MyPublicationsList} />
         <Route path="/publications/listPublications/mainPublications/:spacetype/:capacity/:city" component={MainPublications} />
         <Route path="/publications/listPublications/mainPublications" component={MainPublications} />
+        <Route path="/reservations/myReservedSpaces/myReservedSpacesList" component={MyReservedSpacesList} />
+        <Route component={NotFoundPage} />
       </Switch>
     </>
   );

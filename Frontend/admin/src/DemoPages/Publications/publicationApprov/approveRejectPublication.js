@@ -1,9 +1,6 @@
 import React from 'react';
-import {Button, Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
-import { Form, FormGroup, Label, Input, FormText } from 'reactstrap';
-import {
-    Col
-} from 'reactstrap';
+import {Button, Modal, ModalHeader, ModalBody, ModalFooter,
+    Form, FormGroup, Label, Input, Col } from 'reactstrap';
 
 import {toast} from 'react-toastify';
 
@@ -63,7 +60,6 @@ class ApproveRejectPublicationModal extends React.Component {
             AccessToken: this.state.admTokenObj.accesToken,
             IdPublication: this.state.pubData.id
         }
-        console.log("fabi");
         console.log(objPub);
         fetch('https://localhost:44372/api/publication', {
             method: 'PUT',

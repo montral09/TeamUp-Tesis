@@ -135,7 +135,7 @@ class CreatePublication extends React.Component {
         try{
             switch(this.state.currentStep){
                 case 1:
-                    if(this.state.spaceName && this.state.capacity && this.state.availability){
+                    if(this.state.spaceName && this.state.capacity){
                         isValid = true;
                     }
                 break;
@@ -145,8 +145,8 @@ class CreatePublication extends React.Component {
                     }
                 break;
                 case 3:
-                    if(this.state.HourPrice != 0 || this.state.DailyPrice != 0 || 
-                        this.state.WeeklyPrice != 0 || this.state.MonthlyPrice != 0){
+                    if((this.state.HourPrice != 0 || this.state.DailyPrice != 0 || 
+                        this.state.WeeklyPrice != 0 || this.state.MonthlyPrice != 0)  && this.state.availability){
                         isValid = true;
                     }
                 break;
@@ -254,17 +254,15 @@ class CreatePublication extends React.Component {
             this.loadPublication(this.state.publicationID);
         }
     }
-
+    
     onChange = (e) => {
         var targetValue = e.target.value;
         switch(e.target.id){
             case "facilitiesSelect":
-                var options = e.target.options;
+                var options = e.target.value;
                 var values = [];
                 for (var i = 0, l = options.length; i < l; i++) {
-                    if (options[i].selected) {
-                        values.push(options[i].value);
-                    }
+                    values.push(options[i].value);
                 }
                 targetValue = values;
                 break;
@@ -280,6 +278,7 @@ class CreatePublication extends React.Component {
             fetch('https://localhost:44372/api/spaceTypes'
             ).then(response => response.json()).then(data => {
                 if (data.responseCode == "SUCC_SPACETYPESOK") {
+                    console.log(data);
                     this.setState({ spaceTypes: data.spaceTypes })
                 } else {
                     toast.error('Hubo un error', {

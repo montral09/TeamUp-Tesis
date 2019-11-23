@@ -210,7 +210,7 @@ class ModifyUserModal extends React.Component {
                     </ModalBody>
                     <ModalFooter>
                         <Button color="link" onClick={this.toggle}>Cancel</Button>
-                        <Button color="primary" onClick={this.save}>Guardar</Button>{' '}
+                        <Button color="primary" onClick={this.save}>Guardar</Button>
                     </ModalFooter>
                 </Modal>
             </span>

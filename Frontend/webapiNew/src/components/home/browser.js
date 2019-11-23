@@ -33,7 +33,7 @@ class Browser extends React.Component {
             fetch('https://localhost:44372/api/spaceTypes'
             ).then(response => response.json()).then(data => {
                 if (data.responseCode == "SUCC_SPACETYPESOK") {
-                    this.setState({ spaceTypes: data.spaceTypes })
+                    this.setState({ spaceTypes: data.spaceTypes , spaceTypeSelected : data.spaceTypes[0].Code })
                 } else {
                     toast.error('Hubo un error', {
                         position: "top-right",
@@ -70,7 +70,10 @@ class Browser extends React.Component {
     }
 
     startSearch() {
-        this.props.history.push('/publications/listPublications/mainPublications/'+this.state.spaceTypeSelected+'/'+this.state.capacity+'/'+this.state.city+'');
+        let spaceTypeSelected = this.state.spaceTypeSelected  == "" ? "empty" :this.state.spaceTypeSelected;
+        let capacity = this.state.capacity  == "" ? "empty" :this.state.capacity;
+        let city = this.state.city  == "" ? "empty" :this.state.city;
+        this.props.history.push('/publications/listPublications/mainPublications/'+spaceTypeSelected +'/'+capacity+'/'+city);
     }
 
     onChange = (e) => {

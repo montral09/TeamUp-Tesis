@@ -14,27 +14,11 @@ class PageNotFound extends React.Component {
             <>
                 {/*SEO Support*/}
                 <Helmet>
-                    <title>Avano | Not Found Page</title>
-                    <meta name="description" content="Avano – Multipurpose eCommerce React Template" />
+                    <title>TeamUp! | Not Found Page</title>
+                    <meta name="description" content="" />
                 </Helmet>
                 {/*SEO Support End */}
                 <Header />
-                <div className="breadcrumb  full-width ">
-                    <div className="background-breadcrumb"></div>
-                    <div className="background">
-                        <div className="shadow"></div>
-                        <div className="pattern">
-                            <div className="container">
-                                <div className="clearfix">
-                                    <ul>
-                                        <li><Link to="/">'home'}</Link></li>
-                                        <li>'the_page_cannot_be_found'</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 <div className="main-content  full-width  home">
                     <div className="background-content"></div>
                     <div className="background">
@@ -43,10 +27,10 @@ class PageNotFound extends React.Component {
                             <div className="container">
                                 <div className="row">
                                     <div className="col-md-12 center-column" id="content">
-                                        <h1>'the_page_cannot_be_found'</h1>
-                                        <p>'the_page_cannot_be_found'</p> 
+                                        <h1>La pagina que estabas buscando no se encuentra o hubo un error...</h1>
+                                        <p>Sorry, we can't find that page or something has gone wrong...</p> 
                                         <div className="buttons">
-                                            <div className="pull-right"><Link to="/" className="btn btn-primary">'continue'</Link></div>
+                                            <div className="pull-right"><Link to="/" className="btn btn-primary">Pagina Inicial</Link></div>
                                         </div>
                                     </div>
                                 </div>

@@ -8,7 +8,7 @@ import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import PageTitle from '../../../Layout/AppMain/PageTitle';
 
 import PublicationApprovTable from './publicationApprovTable';
-import ModifyPublicationModal from './modifyPublication';
+import ModifyPublicationModal from '../modifyPublication';
 import ApproveRejectPublicationModal from './approveRejectPublication';
 
 import { connect } from 'react-redux';
@@ -29,43 +29,48 @@ class PublPendApprov extends Component {
         const admTokenObj = props.admTokenObj;
         const adminMail = props.adminData.Mail
         this.state = {
-            publPendApp: [],
+            publ: [],
             admTokenObj: admTokenObj,
             adminMail: adminMail,
-            spaceTypes: []
+            spaceTypes: [],
+            facilities: []
         }
-        this.modalElement = React.createRef(); // esto hace unas magias para cambiar el estado de un componente hijo
-        this.modalElementAppRej = React.createRef();
+        this.modalElement = React.createRef(); // Connects the reference to the modal
+        this.modalElementAppRej = React.createRef(); // Connects the reference to the modal
         this.approvePublication  = this.approvePublication.bind(this);
         this.rejectPublication = this.rejectPublication.bind(this);
+        this.updateTable = this.updateTable.bind(this);
     }
 
-    loadSpaceTypes() {
+    loadInfraestructure() {
         try {
-
-            // call API
-            var dummyData = {
-                spaceTypes: [
-                    {
-                        "Code": 1,
-                        "Description": "Oficinas y despachos"
-                    },
-                    {
-                        "Code": 2,
-                        "Description": "Coworking"
-                    },
-                    {
-                        "Code": 3,
-                        "Description": "Sala de reuniones"
-                    },
-                    {
-                        "Code": 4,
-                        "Description": "Espacios para eventos"
-                    }
-                ]
-            };
-            this.setState({ spaceTypes: dummyData.spaceTypes });
-
+            fetch('https://localhost:44372/api/facilities').then(response => response.json()).then(data => {
+                if (data.responseCode == "SUCC_FACILITIESOK") {
+                    this.setState({ facilities: data.facilities });
+                    console.log(this.state.facilities)
+                } else {
+                    toast.error('Internal error', {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                }
+            }
+            ).catch(error => {
+                toast.error('Internal error', {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
+                console.log(error);
+            }
+            )
         } catch (error) {
             toast.error('Internal error', {
                 position: "top-right",
@@ -78,6 +83,7 @@ class PublPendApprov extends Component {
         }
     }
 
+    
     changePubTransition ( newTransition, idPub ){
         try{
             console.log("changePubTransition")
@@ -159,6 +165,7 @@ class PublPendApprov extends Component {
     // This function will trigger when the component is mounted, to fill the data from the state
     componentDidMount() {
         this.updateTable();
+        this.loadInfraestructure()
     }
 
     updateTable(){
@@ -167,13 +174,14 @@ class PublPendApprov extends Component {
             method: 'POST',
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify({
-                "AccessToken": this.props.admTokenObj.accesToken,
-                "AdminMail": this.props.adminData.Mail                   
+                "AccessToken": this.state.admTokenObj.accesToken,
+                "AdminMail": this.state.adminMail,
+                "PublicationsPerPage": 10                  
             })
         }).then(response => response.json()).then(data => {
             if (data.responseCode == "SUCC_PUBLICATIONSOK") {
                 console.log(data.Publications);
-                this.setState({ 'publPendApp': data.Publications })
+                this.setState({ 'publ': data.Publications })
             } else {
                 toast.error('Hubo un error', {
                     position: "top-right",
@@ -201,16 +209,15 @@ class PublPendApprov extends Component {
 
     // This function will trigger the save function inside the modal to update the values
     editPublication = (key) => {
-        const publData = this.state.publPendApp.filter(publ => {
+        const publData = this.state.publ.filter(publ => {
             return publ.IdPublication === key
         });
 
-        this.modalElement.current.toggle(publData[0],this.state.admTokenObj,this.state.adminData, this.state.spaceTypes);
+        this.modalElement.current.toggle(publData[0],this.state.admTokenObj,this.state.adminData, this.state.spaceTypes, this.state.facilities);
     }
 
     // This funciton will call the api to submit the publisher
-    submitPublisher(publishersEmails, newArrIfSuccess, admTokenObj, adminMail) {
-        console.log("FAbi1" + adminMail)
+    submitPublisher(publishersEmails, newArrIfSuccess, admTokenObj, adminMail) {        
         fetch('https://localhost:44372/api/publisher', {
             method: 'PUT',
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
@@ -224,7 +231,7 @@ class PublPendApprov extends Component {
             if (data.responseCode == "SUCC_PUBLISHERSOK") {
                 let text = "Solicitud ejecutada correctamente";
                 this.setState({
-                    publPendApp: newArrIfSuccess,
+                    publ: newArrIfSuccess,
                 });
                 toast.success(text, {
                     position: "top-right",
@@ -277,13 +284,13 @@ class PublPendApprov extends Component {
                     transitionEnter={false}
                     transitionLeave={false}>
                     <Row>
-                        <ModifyPublicationModal ref = {this.modalElement} updateTable={this.updateTable}/>
+                        <ModifyPublicationModal ref = {this.modalElement} updateTable={this.updateTable} disableFields = {true}/>
                         <ApproveRejectPublicationModal ref = {this.modalElementAppRej} updateTable={this.updateTable}/>
                         <Col lg="12">
                             <Card className="main-card mb-3">
                                 <CardBody>
                                     <CardTitle>Pendientes de aprobación</CardTitle>
-                                    <PublicationApprovTable publPendApp={this.state.publPendApp} rejectPublication={this.rejectPublication} approvePublication={this.approvePublication} editPublication={this.editPublication} spaceTypes={this.state.spaceTypes} />
+                                    <PublicationApprovTable publ={this.state.publ} rejectPublication={this.rejectPublication} approvePublication={this.approvePublication} spaceTypes={this.state.spaceTypes}/>
                                 </CardBody>
                             </Card>
                         </Col>

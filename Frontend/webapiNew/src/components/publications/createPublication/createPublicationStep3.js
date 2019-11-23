@@ -31,6 +31,12 @@ class CreatePublicationStep3 extends React.Component {
               <Label for='MonthlyPrice'>Precio por mes</Label>
               <Input type="text" name='MonthlyPrice' id='MonthlyPrice' maxLength="4" onChange={this.props.onChange} value={this.props.parentState.MonthlyPrice}/>
             </FormGroup>
+            <FormGroup>
+                <Label for="availability">Disponibilidad (*)</Label>
+                <p>Tenga en cuenta de aclarar por ejemplo, cual es el horario por día, que días esta disponible, etc.</p>
+                <Input type="textarea" name="availability" id="availability" placeholder="ej: Lunes a viernes de 09 a 18hrs" onChange={this.props.onChange} maxLength="200"
+                    value ={this.props.parentState.availability}/>
+            </FormGroup>
         </Form>
       )
     }

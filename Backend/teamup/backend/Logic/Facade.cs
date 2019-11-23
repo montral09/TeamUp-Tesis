@@ -2,6 +2,7 @@
 using backend.Data_Access.Query;
 using backend.Data_Access.VO;
 using backend.Data_Access.VO.Data;
+using backend.Data_Access.VO.Requests;
 using backend.Data_Access.VO.Responses;
 using backend.Exceptions;
 using System;
@@ -280,22 +281,7 @@ namespace backend.Logic
                 throw e;
             }
             return spaceTypes;
-        }
-
-        /*This function return all locations available*/
-        public List<VOLocation> GetLocations()
-        {
-            List<VOLocation> locations = new List<VOLocation>();
-            try
-            {
-                locations = spaces.GetLocations();
-            }
-            catch (GeneralException e)
-            {
-                throw e;
-            }
-            return locations;
-        }
+        }        
 
         public void CreateTokens(String mail)
         {
@@ -581,7 +567,7 @@ namespace backend.Logic
                     {
                         VOPublicationAdmin publisherData = spaces.UpdateStatePublication(voUpdateStatePublication.IdPublication, voUpdateStatePublication.RejectedReason, newCodeState, isAdmin);
                         message = EnumMessages.SUCC_PUBLICATIONUPDATED.ToString();
-                        if (newCodeState == 2 || newCodeState == 6)
+                        if (publisherData != null && (newCodeState == 2 || newCodeState == 6))
                         {
                             util.SendEmailPublicationStatus(publisherData.Mail, publisherData.NamePublisher, publisherData.Title, voUpdateStatePublication.RejectedReason, newCodeState);
                         }
@@ -659,5 +645,133 @@ namespace backend.Logic
                 throw e;
             }
         }
+
+        public VOResponseCreateReservation CreateReservation(VORequestCreateReservation voCreateReservation)
+        {
+            VOResponseCreateReservation response = new VOResponseCreateReservation();
+            try
+            {
+                String message = util.ValidAccessToken(voCreateReservation.AccessToken, voCreateReservation.VOReservation.MailCustomer);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    User user = users.Find(voCreateReservation.VOReservation.MailCustomer);
+                    spaces.CreateReservation(voCreateReservation, user);
+                    message = EnumMessages.SUCC_RESERVATIONCREATED.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+
+        public VOResponseGetReservationsCustomer GetReservationsCustomer(VORequestGetReservationsCustomer voGetReservationsCustomer)
+        {
+            {
+                VOResponseGetReservationsCustomer response = new VOResponseGetReservationsCustomer();
+                try
+                {
+                    String message = util.ValidAccessToken(voGetReservationsCustomer.AccessToken, voGetReservationsCustomer.Mail);
+                    if (EnumMessages.OK.ToString().Equals(message))
+                    {
+                        User user = users.Find(voGetReservationsCustomer.Mail);
+                        response.Reservations = spaces.GetReservationsCustomer(voGetReservationsCustomer, user.IdUser);
+                        message = EnumMessages.SUCC_RESERVATIONSOK.ToString();
+                    }
+                    response.responseCode = message;
+                    return response;
+                }
+                catch (GeneralException e)
+                {
+                    throw e;
+                }
+
+            }
+        }
+
+        public VOResponseGetReservationsPublisher GetReservationsPublisher(VORequestGetReservationsPublisher voGetReservationsPublisher)
+        {
+            {
+                VOResponseGetReservationsPublisher response = new VOResponseGetReservationsPublisher();
+                try
+                {
+                    String message = util.ValidAccessToken(voGetReservationsPublisher.AccessToken, voGetReservationsPublisher.Mail);
+                    if (EnumMessages.OK.ToString().Equals(message))
+                    {
+                        User user = users.Find(voGetReservationsPublisher.Mail);
+                        response.Reservations = spaces.GetReservationsPublisher(voGetReservationsPublisher, user.IdUser);
+                        message = EnumMessages.SUCC_RESERVATIONSOK.ToString();
+                    }
+                    response.responseCode = message;
+                    return response;
+                }
+                catch (GeneralException e)
+                {
+                    throw e;
+                }
+
+            }
+        }
+
+        public VOResponseUpdateStateReservation UpdateStateReservation(VORequestUpdateStateReservation voUpdateStateReservation)
+        {
+            VOResponseUpdateStateReservation response = new VOResponseUpdateStateReservation();
+            bool isAdmin = false;
+            bool updateValid = true;
+            try
+            {
+                String message = util.ValidAccessToken(voUpdateStateReservation.AccessToken, voUpdateStateReservation.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    if (users.AdminMember(voUpdateStateReservation.Mail))
+                    {
+                        isAdmin = true;
+                    }
+                    Util util = new Util();
+                    int oldCodeRservation = util.ConvertStateReservation(voUpdateStateReservation.OldState);
+                    int newCodeReservation = util.ConvertStateReservation(voUpdateStateReservation.NewState);
+                    updateValid = util.UpdateValidReservation(isAdmin, oldCodeRservation, newCodeReservation);
+                    if (updateValid)
+                    {
+                        spaces.UpdateStateReservation(voUpdateStateReservation.IdReservation, voUpdateStateReservation.CanceledReason, newCodeReservation, voUpdateStateReservation.NewState, isAdmin);
+                        message = EnumMessages.SUCC_RESERVATIONUPDATED.ToString();
+                        
+                    }
+                    else
+                    {
+                        message = EnumMessages.ERR_INVALIDUPDATE.ToString();
+                    }
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+
+        public VOResponseUpdateReservation UpdateReservation(VORequestUpdateReservation voUpdateReservation)
+        {
+            try
+            {
+                VOResponseUpdateReservation response = new VOResponseUpdateReservation();
+                String message = util.ValidAccessToken(voUpdateReservation.AccessToken, voUpdateReservation.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    spaces.UpdateReservation(voUpdateReservation);
+                    message = EnumMessages.SUCC_RESERVATIONUPDATED.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+
     }
 }

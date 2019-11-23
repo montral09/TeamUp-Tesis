@@ -49,9 +49,11 @@ namespace backend.Logic
         ERR_INVALIDACCESSTOKEN,
         ERR_REFRESHTOKENEXPIRED,
         ERR_INVALIDREFRESHTOKEN,
-        SUCC_TOKENSUPDATED
-
-
+        SUCC_TOKENSUPDATED,
+        //Reservations
+        SUCC_RESERVATIONCREATED,
+        SUCC_RESERVATIONSOK,
+        SUCC_RESERVATIONUPDATED
     }
     
 }

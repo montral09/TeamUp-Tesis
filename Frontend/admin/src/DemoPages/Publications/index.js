@@ -4,6 +4,7 @@ import {Route} from 'react-router-dom';
 // Tables
 
 import PublPendApprov from './publicationApprov/';
+import AllPublications from './AllPublications/'
 
 // Layout
 
@@ -20,6 +21,7 @@ const Publications = ({match}) => (
                 <div className="app-main__inner">
                     {/* Pendiente Aprobacion */}
                     <Route path={`${match.url}/publicationApprov`} component={PublPendApprov}/>
+                    <Route path={`${match.url}/AllPublications`} component={AllPublications}/>
                 </div>
                 <AppFooter/>
             </div>

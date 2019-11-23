@@ -1,5 +1,6 @@
 ﻿using backend.Data_Access.VO;
 using backend.Data_Access.VO.Data;
+using backend.Data_Access.VO.Requests;
 using backend.Logic;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -9,7 +10,6 @@ namespace backend.Data_Access
     interface IDAOSpaces
     {
         List<VOSpaceType> GetSpaceTypes();
-        List<VOLocation> GetLocations();
         List<VOReservationType> GetReservationTypes();
         List<VOFacility> GetFacilities();
         Task CreatePublicationAsync(VORequestCreatePublication voCreatePublication, User user);
@@ -22,5 +22,10 @@ namespace backend.Data_Access
         List<VOPublication> GetRelatedSpaces(int idPublication, int capacity, int spaceType, string city);
         void UpdateFavorite(VORequestUpdateFavorite voUpdateFavorite, long idUser);
         Task UpdatePublication(VORequestUpdatePublication voUpdatePublication, User user);
+        void CreateReservation(VORequestCreateReservation voCreateReservation, User user);
+        List<VOReservationExtended> GetReservationsCustomer(VORequestGetReservationsCustomer voGetReservationsCustomer, long idCustomer);
+        List<VOReservationExtended> GetReservationsPublisher(VORequestGetReservationsPublisher voGetReservationsPublisher, long idPublisher);
+        void UpdateStateReservation(int idReservation, string canceledReason, int newCodeState, string newDescriptionState, bool isAdmin);
+        void UpdateReservation(VORequestUpdateReservation voUpdateRservation);
     }
 }
