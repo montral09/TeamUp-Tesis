@@ -1,17 +1,10 @@
 import React from "react";
-import $ from 'jquery';
 import { Link } from 'react-router-dom';
 
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual'
 
 class PublicationGridCard extends React.Component {
-	loadQuickview(id) {
-		this.props.changeQuickview(id);
-		setTimeout(function () {
-			$('#modalProduct-' + id).modal('show')
-		}, 100);
-	}
  	render() {
         const {IdPublication, Description, Capacity, HourPrice, DailyPrice, WeeklyPrice, MonthlyPrice, Title, ImagesURL, City, Ranking} = this.props;
 		return (
@@ -21,7 +14,7 @@ class PublicationGridCard extends React.Component {
 						<div className="sale">Recomendado</div>
 				        <div className="image ">
 							<Link to={`/publications/viewPublication/viewPublication/${IdPublication}`}>
-								<img src={ImagesURL[0]} className="" alt='No image available' />		
+                            	<img src={ImagesURL[0]} onError={(e)=>{e.target.onerror = null; e.target.src="/images/no-image-available.png"}} alt='No image available' className="" />
 							</Link>
 				    	</div>
 					</div>
