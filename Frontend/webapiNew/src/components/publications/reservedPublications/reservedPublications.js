@@ -20,7 +20,7 @@ class MyReservedPublications extends React.Component {
             reservations : [],
             loadingStatusChange : false
         }
-        this.modalElement = React.createRef(); // Connects the reference to the modal
+        this.cancelModal = React.createRef(); // Connects the reference to the modal
         this.loadMyReservations = this.loadMyReservations.bind(this);      
     }
 
@@ -77,7 +77,7 @@ class MyReservedPublications extends React.Component {
         }
     }
     modalSave(){
-        this.modalElement.current.changeModalLoadingState(true);
+        this.cancelModal.current.changeModalLoadingState(true);
     }
     render() {        
         if (this.props.login_status != 'LOGGED_IN') return <Redirect to='/' />
@@ -98,13 +98,13 @@ class MyReservedPublications extends React.Component {
                 <div className="main-content  full-width  home">
                     <div className="pattern" >
                         <div className="col-md-12 center-column">
-                            <ModalReqInfo ref={this.modalElement} modalSave={this.modalSave}
+                            <ModalReqInfo ref={this.cancelModal} modalSave={this.modalSave}
                                 modalConfigObj={{
                                     title: 'Cancelar reserva', mainText: 'Desea cancelar la reserva? Por favor indique el motivo: ', 
                                     textboxDisplay: true, cancelAvailable: true, confirmAvailable: true, cancelText : 'No', confirmText : 'Si' 
                                 }} />
                             <MyReservedSpacesTable isPublisher={true} editReservation={this.editReservation} 
-                                reservations={this.state.reservations} cancelModal={this.modalElement.current}/>
+                                reservations={this.state.reservations} cancelModal={this.cancelModal.current}/>
                         </div>
                     </div>
                 </div>               

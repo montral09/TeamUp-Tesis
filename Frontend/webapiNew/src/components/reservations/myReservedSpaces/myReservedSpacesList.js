@@ -7,6 +7,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { connect } from 'react-redux';
 import MyReservedSpacesTable from './myReservedSpacesTable';
 import ModifyReservationModal from './modifyReservationModal';
+import ModalReqInfo from '../../publications/viewPublication/modalReqInfo';
+
 
 class MyReservedSpacesList extends React.Component {
 
@@ -18,6 +20,7 @@ class MyReservedSpacesList extends React.Component {
             reservations : []
         }
         this.modalElement = React.createRef();
+        this.cancelModal = React.createRef();
         this.loadMyReservations = this.loadMyReservations.bind(this);      
     }
 
@@ -101,7 +104,12 @@ class MyReservedSpacesList extends React.Component {
                     <div className="pattern" >
                         <div className="col-md-12 center-column">
                         <ModifyReservationModal ref = {this.modalElement}/>
-                        <MyReservedSpacesTable editReservation={this.editReservation} reservations={this.state.reservations}/>
+                        <ModalReqInfo ref={this.cancelModal} modalSave={this.modalSave}
+                                modalConfigObj={{
+                                    title: 'Cancelar reserva', mainText: 'Desea cancelar la reserva? Por favor indique el motivo: ', 
+                                    textboxDisplay: true, cancelAvailable: true, confirmAvailable: true, cancelText : 'No', confirmText : 'Si' 
+                                }} />
+                        <MyReservedSpacesTable editReservation={this.editReservation} reservations={this.state.reservations} cancelModal={this.cancelModal.current}/>
                         </div>
                     </div>
                 </div>
