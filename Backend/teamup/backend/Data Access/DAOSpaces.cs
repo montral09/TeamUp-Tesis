@@ -950,7 +950,8 @@ namespace backend.Data_Access
                         Convert.ToString(voGetReservationsCustomer.Mail), Convert.ToString(dr["planSelected"]),
                         Convert.ToInt32(dr["reservedQty"] is DBNull ? 0 : dr["reservedQty"]), Convert.ToDateTime(dr["dateFrom"]), dateConverted,  Convert.ToString(dr["hourFrom"]),
                         Convert.ToString(dr["hourTo"]), Convert.ToInt32(dr["people"] is DBNull ? 0 : dr["people"]), Convert.ToString(dr["comment"]),
-                        Convert.ToInt32(dr["totalPrice"]), Convert.ToInt32(dr["state"]), Convert.ToString(dr["description"]));
+                        Convert.ToInt32(dr["totalPrice"]), Convert.ToInt32(dr["state"]), Convert.ToString(dr["description"]), Convert.ToBoolean(dr["individualRent"]), Convert.ToInt32(dr["hourPrice"]),
+                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]));
                     reservations.Add(voReservation);
                 }
                 dr.Close();
@@ -995,7 +996,8 @@ namespace backend.Data_Access
                         Convert.ToString(voGetReservationsPublisher.Mail), Convert.ToString(dr["planSelected"]),
                         Convert.ToInt32(dr["reservedQty"] is DBNull ? 0 : dr["reservedQty"]), Convert.ToDateTime(dr["dateFrom"]), dateConverted, Convert.ToString(dr["hourFrom"]),
                         Convert.ToString(dr["hourTo"]), Convert.ToInt32(dr["people"] is DBNull ? 0 : dr["people"]), Convert.ToString(dr["comment"]),
-                        Convert.ToInt32(dr["totalPrice"]), Convert.ToInt32(dr["state"]), Convert.ToString(dr["description"]));
+                        Convert.ToInt32(dr["totalPrice"]), Convert.ToInt32(dr["state"]), Convert.ToString(dr["description"]), Convert.ToBoolean(dr["individualRent"]), Convert.ToInt32(dr["hourPrice"]), 
+                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]));
                     reservations.Add(voReservation);
                 }
                 dr.Close();
