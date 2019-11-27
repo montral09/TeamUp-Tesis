@@ -28,7 +28,7 @@ const MyReservedSpacesTable = (props) =>{
                     <div>
                         {obj.StateDescription === 'PENDING' || obj.StateDescription === 'RESERVED' ? (
                             <div>
-                                <a onClick={() => {props.cancelModal.toggle()}}> <span><i className="col-md-1 fa fa-times"></i></span>CANCELAR</a> 
+                                <a onClick={() => {props.triggerModal("CANCEL")}}> <span><i className="col-md-1 fa fa-times"></i></span>CANCELAR</a> 
                                 {isPublisher && obj.StateDescription === 'PENDING' ? (
                                     <a onClick={() => {alert("Confirmar")}}> <span><i className="col-md-1 fa fa-check"></i></span>CONFIRMAR</a>                            
                                     ) : (null)}
@@ -37,7 +37,7 @@ const MyReservedSpacesTable = (props) =>{
                         }
                         {obj.StateDescription === 'FINISHED' && !isPublisher ? (
                             <div>
-                                <a onClick={() => {alert("Calificar")}}> <span><i className="col-md-1 fa fa-comments"></i></span> CALIFICAR</a> 
+                                <a onClick={() => {props.triggerModal("RATE")}}> <span><i className="col-md-1 fa fa-comments"></i></span> CALIFICAR</a> 
                             </div>
                             ) :(
                                 <div>

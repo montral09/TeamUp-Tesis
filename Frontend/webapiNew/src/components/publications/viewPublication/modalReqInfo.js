@@ -51,7 +51,14 @@ class ModalReqInfo extends React.Component {
 
     save() {
         this.changeModalLoadingState(true);
-        this.props.modalSave(this.state.textboxValue,this.props.ref);
+        if(this.props.modalConfigObj.mode){
+            switch(this.props.modalConfigObj.mode){
+                case "saveCancel": this.props.saveCancel(this.state.textboxValue);break;
+                case "saveRate": this.props.saveRate(this.state.textboxValue);break;
+            }
+        }else{
+            this.props.modalSave(this.state.textboxValue);
+        }
     }
     onChange = (e) => {
         this.setState({
@@ -66,7 +73,7 @@ class ModalReqInfo extends React.Component {
                     <ModalBody>
                     <Form>                        
                         <p> {this.props.modalConfigObj.mainText} </p>
-                        {this.props.modalConfigObj.textboxDisplay? 
+                        {this.props.modalConfigObj.textboxDisplay ? 
                         (
                             <FormGroup row>
                                 <Label for="textboxValue" sm={2}>{this.props.modalConfigObj.textboxLabel}</Label>
@@ -78,11 +85,10 @@ class ModalReqInfo extends React.Component {
                         ) : (null)}
                     </Form>
                     </ModalBody>
-                    <ModalFooter>
-                        {this.props.login_status == 'LOGGED_IN' ? (
+                        {this.props.modalConfigObj.login_status == 'LOGGED_IN' ? (
                         <ModalFooter>
-                            {this.props.modalConfigObj.cancelAvailable ?(<Button color="link" onClick={this.toggle} disabled= {this.state.buttonIsDisabled}>{this.props.modalConfigObj.cancelText}</Button>) : (null)}
-                            {this.props.modalConfigObj.confirmAvailable ?(<Button color="primary" onClick={this.save} disabled= {this.state.buttonIsDisabled}>{this.props.modalConfigObj.confirmText}
+                            {this.props.modalConfigObj.cancelAvailable == true ? (<Button color="link" onClick={this.toggle} disabled= {this.state.buttonIsDisabled}>{this.props.modalConfigObj.cancelText}</Button>) : (null)}
+                            {this.props.modalConfigObj.confirmAvailable == true ? (<Button color="primary" onClick={this.save} disabled= {this.state.buttonIsDisabled}>{this.props.modalConfigObj.confirmText}
                                 &nbsp;&nbsp;
                                 {this.state.isLoading &&  
                                     <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -90,7 +96,6 @@ class ModalReqInfo extends React.Component {
                             </Button>) : (null)}
                         </ModalFooter>
                     ) : (null)}
-                    </ModalFooter>
                 </Modal>
             </span>
         );

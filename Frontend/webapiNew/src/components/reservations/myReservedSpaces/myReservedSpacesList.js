@@ -17,12 +17,14 @@ class MyReservedSpacesList extends React.Component {
         this.state = {
             loadingReservations : true,
             reservationId : null,
-            reservations : []
+            reservations : [],
+            modalConfigObj : {}
         }
         this.modalElement = React.createRef();
         this.loadMyReservations = this.loadMyReservations.bind(this);      
-        this.cancelModal = React.createRef();
+        this.modalReqInfo = React.createRef();
         this.confirmEditReservation = this.confirmEditReservation.bind(this);
+        this.triggerModal = this.triggerModal.bind(this);
     }
 
     componentDidMount() {
@@ -154,6 +156,30 @@ class MyReservedSpacesList extends React.Component {
         )
     }
 
+    triggerModal(mode){
+        var modalConfigObj = {};
+        if(mode === "CANCEL"){
+            modalConfigObj ={
+                title: 'Cancelar reserva', mainText: 'Desea cancelar la reserva? Por favor indique el motivo: ', mode : mode, saveFunction : "saveCancel",
+                textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :'No', confirmText :'Si' , login_status: this.props.login_status
+            };
+        }else if (mode === "RATE"){
+            modalConfigObj ={
+                title: 'Calificar reserva', mainText: 'Puede agregar un comentario: ', mode : mode, saveFunction : "saveRate",
+                textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :'Cancelar', confirmText :'Calificar' , login_status: this.props.login_status
+            };
+        }
+        this.setState({modalConfigObj : modalConfigObj},() => {this.modalReqInfo.current.toggle();})
+    }
+
+    saveCancel(){
+        console.log("SAVECANCEL");
+    }
+
+    saveRate(){
+        console.log("SAVERATE");
+    }
+
     render() {        
         const { login_status } = this.props;
         if (login_status != 'LOGGED_IN') return <Redirect to='/' />
@@ -171,12 +197,9 @@ class MyReservedSpacesList extends React.Component {
                     <div className="pattern" >
                         <div className="col-md-12 center-column">
                         <ModifyReservationModal ref = {this.modalElement} confirmEditReservation = {this.confirmEditReservation}/>
-                        <MyReservedSpacesTable editReservation={this.editReservation} reservations={this.state.reservations} cancelModal={this.cancelModal.current}/>
-                        <ModalReqInfo ref={this.cancelModal} modalSave={this.modalSave}
-                                modalConfigObj={{
-                                    title: 'Cancelar reserva', mainText: 'Desea cancelar la reserva? Por favor indique el motivo: ', 
-                                    textboxDisplay: true, cancelAvailable: true, confirmAvailable: true, cancelText : 'No', confirmText : 'Si' 
-                                }} />
+                        <MyReservedSpacesTable editReservation={this.editReservation} reservations={this.state.reservations} triggerModal={this.triggerModal}/>
+                        <ModalReqInfo ref={this.modalReqInfo} modalSave={this.modalSave}
+                                modalConfigObj={this.state.modalConfigObj} saveCancel={this.saveCancel} saveRate={this.saveRate}/>
                         </div>
                     </div>
                 </div>
