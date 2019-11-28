@@ -18,9 +18,10 @@ class MyReservedPublications extends React.Component {
             loadingReservations : true,
             reservationId : null,
             reservations : [],
-            loadingStatusChange : false
+            loadingStatusChange : false,
+            modalConfigObj : {}
         }
-        this.modalElement = React.createRef(); // Connects the reference to the modal
+        this.modalReqInfo = React.createRef(); // Connects the reference to the modal
         this.loadMyReservations = this.loadMyReservations.bind(this);      
     }
 
@@ -77,15 +78,31 @@ class MyReservedPublications extends React.Component {
         }
     }
     modalSave(){
-        this.modalElement.current.changeModalLoadingState(true);
+        this.modalReqInfo.current.changeModalLoadingState(true);
     }
+
+    triggerModal(mode){
+        var modalConfigObj = {};
+        if(mode === "CANCEL"){
+            modalConfigObj ={
+                title: 'Cancelar reserva', mainText: 'Desea cancelar la reserva? Por favor indique el motivo ', mode : mode, saveFunction : "saveCancel", textboxLabel: 'Comentario',
+                textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :'No', confirmText :'Si' , login_status: this.props.login_status
+            };
+        }
+        this.setState({modalConfigObj : modalConfigObj},() => {this.modalReqInfo.current.toggle();})
+    }
+
+    saveCancel(){
+        alert("Cancelar API");
+    }
+
     render() {        
         if (this.props.login_status != 'LOGGED_IN') return <Redirect to='/' />
         return (
         <>
             {/*SEO Support*/}
             <Helmet>
-                <title>TeamUp | Publicacines reservadas</title>
+                <title>TeamUp | Publicaciones reservadas</title>
                 <meta name="description" content="---" />
             </Helmet>
             {/*SEO Support End */}
@@ -98,13 +115,11 @@ class MyReservedPublications extends React.Component {
                 <div className="main-content  full-width  home">
                     <div className="pattern" >
                         <div className="col-md-12 center-column">
-                            <ModalReqInfo ref={this.modalElement} modalSave={this.modalSave}
-                                modalConfigObj={{
-                                    title: 'Cancelar reserva', mainText: 'Desea cancelar la reserva? Por favor indique el motivo: ', 
-                                    textboxDisplay: true, cancelAvailable: true, confirmAvailable: true, cancelText : 'No', confirmText : 'Si' 
-                                }} />
+                            <h1>Publicaciones reservadas</h1>
+                            <ModalReqInfo ref={this.modalReqInfo} modalSave={this.modalSave}
+                                modalConfigObj={this.state.modalConfigObj} />
                             <MyReservedSpacesTable isPublisher={true} editReservation={this.editReservation} 
-                                reservations={this.state.reservations} cancelModal={this.modalElement.current}/>
+                                reservations={this.state.reservations} modalReqInfo={this.modalReqInfo.current} saveCancel={this.saveCancel}/>
                         </div>
                     </div>
                 </div>               

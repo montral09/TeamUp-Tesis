@@ -7,6 +7,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { connect } from 'react-redux';
 import MyReservedSpacesTable from './myReservedSpacesTable';
 import ModifyReservationModal from './modifyReservationModal';
+import ModalReqInfo from '../../publications/viewPublication/modalReqInfo';
+
 
 class MyReservedSpacesList extends React.Component {
 
@@ -15,11 +17,14 @@ class MyReservedSpacesList extends React.Component {
         this.state = {
             loadingReservations : true,
             reservationId : null,
-            reservations : []
+            reservations : [],
+            modalConfigObj : {}
         }
         this.modalElement = React.createRef();
-        this.loadMyReservations = this.loadMyReservations.bind(this);
+        this.loadMyReservations = this.loadMyReservations.bind(this);      
+        this.modalReqInfo = React.createRef();
         this.confirmEditReservation = this.confirmEditReservation.bind(this);
+        this.triggerModal = this.triggerModal.bind(this);
     }
 
     componentDidMount() {
@@ -151,6 +156,31 @@ class MyReservedSpacesList extends React.Component {
         )
     }
 
+    triggerModal(mode){
+        var modalConfigObj = {};
+        if(mode === "CANCEL"){
+            modalConfigObj ={
+                title: 'Cancelar reserva', mainText: 'Desea cancelar la reserva? Por favor indique el motivo ', mode : mode, saveFunction : "saveCancel", textboxLabel: 'Comentario',
+                textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :'No', confirmText :'Si' , login_status: this.props.login_status
+            };
+        }else if (mode === "RATE"){
+            modalConfigObj ={
+                title: 'Calificar reserva', mainText: 'Por favor, denos su calificación sobre la reserva y el lugar ', mode : mode, saveFunction : "saveRate", textboxLabel: 'Comentario',
+                textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :'Cancelar', confirmText :'Calificar' , login_status: this.props.login_status,
+                optionDisplay: true, optionLabel: 'Puntuación', optionDefaultValue:1, optionArray: [1,2,3,4,5]
+            };
+        }
+        this.setState({modalConfigObj : modalConfigObj},() => {this.modalReqInfo.current.toggle();})
+    }
+
+    saveCancel(){
+        alert("Cancelar API");
+    }
+
+    saveRate(){
+        alert("Rating API");
+    }
+
     render() {        
         const { login_status } = this.props;
         if (login_status != 'LOGGED_IN') return <Redirect to='/' />
@@ -167,8 +197,11 @@ class MyReservedSpacesList extends React.Component {
                 <div className="main-content  full-width  home">
                     <div className="pattern" >
                         <div className="col-md-12 center-column">
+                        <h1>Mis Reservas</h1>
                         <ModifyReservationModal ref = {this.modalElement} confirmEditReservation = {this.confirmEditReservation}/>
-                        <MyReservedSpacesTable editReservation={this.editReservation} reservations={this.state.reservations}/>
+                        <MyReservedSpacesTable editReservation={this.editReservation} reservations={this.state.reservations} triggerModal={this.triggerModal}/>
+                        <ModalReqInfo ref={this.modalReqInfo} modalSave={this.modalSave}
+                                modalConfigObj={this.state.modalConfigObj} saveCancel={this.saveCancel} saveRate={this.saveRate}/>
                         </div>
                     </div>
                 </div>
