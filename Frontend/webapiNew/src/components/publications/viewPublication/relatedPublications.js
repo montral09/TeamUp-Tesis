@@ -26,7 +26,8 @@ class RelatedPublications extends React.Component {
  	render() {
 
 		const {relatedPublications} = this.props;
-
+		console.log("RELATED PUBLICATIONS");
+		console.log(relatedPublications);
 		const options = {
 	    	slideSpeed: 500,
 	    	margin: 30,

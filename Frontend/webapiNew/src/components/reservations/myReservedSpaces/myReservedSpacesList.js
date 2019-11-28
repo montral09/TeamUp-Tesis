@@ -160,24 +160,25 @@ class MyReservedSpacesList extends React.Component {
         var modalConfigObj = {};
         if(mode === "CANCEL"){
             modalConfigObj ={
-                title: 'Cancelar reserva', mainText: 'Desea cancelar la reserva? Por favor indique el motivo: ', mode : mode, saveFunction : "saveCancel",
+                title: 'Cancelar reserva', mainText: 'Desea cancelar la reserva? Por favor indique el motivo ', mode : mode, saveFunction : "saveCancel", textboxLabel: 'Comentario',
                 textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :'No', confirmText :'Si' , login_status: this.props.login_status
             };
         }else if (mode === "RATE"){
             modalConfigObj ={
-                title: 'Calificar reserva', mainText: 'Puede agregar un comentario: ', mode : mode, saveFunction : "saveRate",
-                textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :'Cancelar', confirmText :'Calificar' , login_status: this.props.login_status
+                title: 'Calificar reserva', mainText: 'Por favor, denos su calificación sobre la reserva y el lugar ', mode : mode, saveFunction : "saveRate", textboxLabel: 'Comentario',
+                textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :'Cancelar', confirmText :'Calificar' , login_status: this.props.login_status,
+                optionDisplay: true, optionLabel: 'Puntuación', optionDefaultValue:1, optionArray: [1,2,3,4,5]
             };
         }
         this.setState({modalConfigObj : modalConfigObj},() => {this.modalReqInfo.current.toggle();})
     }
 
     saveCancel(){
-        console.log("SAVECANCEL");
+        alert("Cancelar API");
     }
 
     saveRate(){
-        console.log("SAVERATE");
+        alert("Rating API");
     }
 
     render() {        
@@ -196,6 +197,7 @@ class MyReservedSpacesList extends React.Component {
                 <div className="main-content  full-width  home">
                     <div className="pattern" >
                         <div className="col-md-12 center-column">
+                        <h1>Mis Reservas</h1>
                         <ModifyReservationModal ref = {this.modalElement} confirmEditReservation = {this.confirmEditReservation}/>
                         <MyReservedSpacesTable editReservation={this.editReservation} reservations={this.state.reservations} triggerModal={this.triggerModal}/>
                         <ModalReqInfo ref={this.modalReqInfo} modalSave={this.modalSave}

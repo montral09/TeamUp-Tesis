@@ -30,7 +30,7 @@ const MyReservedSpacesTable = (props) =>{
                             <div>
                                 <a onClick={() => {props.triggerModal("CANCEL")}}> <span><i className="col-md-1 fa fa-times"></i></span>CANCELAR</a> 
                                 {isPublisher && obj.StateDescription === 'PENDING' ? (
-                                    <a onClick={() => {alert("Confirmar")}}> <span><i className="col-md-1 fa fa-check"></i></span>CONFIRMAR</a>                            
+                                    <a onClick={() => {alert("Confirmar API")}}> <span><i className="col-md-1 fa fa-check"></i></span>CONFIRMAR</a>                            
                                     ) : (null)}
                             </div>
                             ) :(null)

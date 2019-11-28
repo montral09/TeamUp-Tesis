@@ -62,7 +62,7 @@ class ModalReqInfo extends React.Component {
     }
     onChange = (e) => {
         this.setState({
-            textboxValue: e.target.value
+            [e.target.id]: e.target.value
           })
     }
     render() {
@@ -71,8 +71,24 @@ class ModalReqInfo extends React.Component {
                 <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
                     <ModalHeader toggle={this.toggle}>{this.props.modalConfigObj.title}</ModalHeader>
                     <ModalBody>
-                    <Form>                        
+                    <Form>
                         <p> {this.props.modalConfigObj.mainText} </p>
+                        {this.props.modalConfigObj.optionDisplay ? 
+                        (
+                            <FormGroup row>
+                                <Label for="optionValue" sm={2}>{this.props.modalConfigObj.optionLabel}</Label>
+                                <Col sm={10}>
+                                    <select style={{ marginLeft: '8%' }} className="browser" id="optionValue" 
+                                        value={this.props.modalConfigObj.optionDefaultValue} onChange={this.onChange}>
+                                        {this.props.modalConfigObj.optionArray.map((option) => {
+                                            return (
+                                                <option key={option} value={option}>{option}</option>
+                                            );
+                                        })}
+                                    </select>
+                                </Col>
+                            </FormGroup>
+                        ) : (null)}
                         {this.props.modalConfigObj.textboxDisplay ? 
                         (
                             <FormGroup row>
@@ -83,6 +99,7 @@ class ModalReqInfo extends React.Component {
                                 </Col>
                             </FormGroup>
                         ) : (null)}
+
                     </Form>
                     </ModalBody>
                         {this.props.modalConfigObj.login_status == 'LOGGED_IN' ? (

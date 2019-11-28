@@ -85,20 +85,15 @@ class MyReservedPublications extends React.Component {
         var modalConfigObj = {};
         if(mode === "CANCEL"){
             modalConfigObj ={
-                title: 'Cancelar reserva', mainText: 'Desea cancelar la reserva? Por favor indique el motivo: ', mode : mode, saveFunction : "saveCancel",
+                title: 'Cancelar reserva', mainText: 'Desea cancelar la reserva? Por favor indique el motivo ', mode : mode, saveFunction : "saveCancel", textboxLabel: 'Comentario',
                 textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :'No', confirmText :'Si' , login_status: this.props.login_status
-            };
-        }else if (mode === "RATE"){
-            modalConfigObj ={
-                title: 'Calificar reserva', mainText: 'Puede agregar un comentario: ', mode : mode, saveFunction : "saveRate",
-                textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :'Cancelar', confirmText :'Calificar' , login_status: this.props.login_status
             };
         }
         this.setState({modalConfigObj : modalConfigObj},() => {this.modalReqInfo.current.toggle();})
     }
 
     saveCancel(){
-        console.log("SAVECANCEL");
+        alert("Cancelar API");
     }
 
     render() {        
@@ -120,6 +115,7 @@ class MyReservedPublications extends React.Component {
                 <div className="main-content  full-width  home">
                     <div className="pattern" >
                         <div className="col-md-12 center-column">
+                            <h1>Publicaciones reservadas</h1>
                             <ModalReqInfo ref={this.modalReqInfo} modalSave={this.modalSave}
                                 modalConfigObj={this.state.modalConfigObj} />
                             <MyReservedSpacesTable isPublisher={true} editReservation={this.editReservation} 
