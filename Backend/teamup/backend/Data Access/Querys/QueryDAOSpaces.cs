@@ -152,8 +152,11 @@ namespace backend.Data_Access.Query
 
         public String GetReviews()
         {
-            String query = "select p.idUser, u.name, p.rating, p.review from PUBLICATION_REVIEWS p, USERS u  where idPublication = @idPublication and u.idUser = p.idUser";
-            return query;
+            StringBuilder query = new StringBuilder();
+            query = query.Append("select u.mail, u.name, rr.rating, rr.review, r.idReservation from reservation_reviews rr, reservations r, publications p, USERS u where ");
+            query.Append("rr.idReservation = r.idReservation and r.idPublication = p.idPublication and ");
+            query.Append("p.idPublication = @idPublication and u.idUser = rr.idUser");
+            return query.ToString();
         }
 
         public String GetRelatedSpaces ()
@@ -230,13 +233,13 @@ namespace backend.Data_Access.Query
         {
             StringBuilder query = new StringBuilder();
             query = query.Append("select p.title, r.idReservation, r.idPublication, r.idCustomer, r.planSelected, r.reservedQty, r.dateFrom, r.hourFrom, r.HourTo," +
-                " r.people, r.comment, r.totalPrice, r.state, rs.description, s.individualRent, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice from RESERVATIONS r, PUBLICATIONS p, USERS u, RESERVATION_STATES rs, SPACE_TYPES s where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) and rs.idReservationState = r.state and p.spaceType = s.idSpaceType ");
+                " r.people, r.comment, r.totalPrice, r.state, rs.description, s.individualRent, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice from RESERVATIONS r, PUBLICATIONS p, RESERVATION_STATES rs, SPACE_TYPES s");
             if (idCustomer != 0)
             {
-                query.Append("and r.idCustomer = @idCustomer ");
+                query.Append(" where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) and rs.idReservationState = r.state and p.spaceType = s.idSpaceType and r.idCustomer = @idCustomer");
             } else if (idPublisher != 0)
             {
-                query.Append("and p.idUser = u.idUser and u.idUser = @idPublisher");
+                query.Append(", USERS u where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) and rs.idReservationState = r.state and p.spaceType = s.idSpaceType and p.idUser = u.idUser and u.idUser = @idPublisher");
             }
             return query.ToString();
         }
@@ -278,6 +281,39 @@ namespace backend.Data_Access.Query
             String query = "select count(idReservation) as quantity from RESERVATIONS where idPublication = @idPublication";
             return query;
         }
+
+        public String CreateReview()
+        {
+            String query = "insert into RESERVATION_REVIEWS (idReservation, idUser, rating, review) VALUES (@idReservation, @idUser, @rating, @review)";
+            return query;
+        }
+
+        public String CreateQuestion()
+        {
+            String query = "insert into PUBLICATION_QUESTIONS (idPublication, idUser, question, creationDate) VALUES (@idPublication, @idUser, @question, getdate())";
+            return query;
+        }
+
+        public String CreateAnswer()
+        {
+            String query = "insert into PUBLICATION_ANSWERS (idQuestion, answer, creationDate) VALUES (@idQuestion, @answer, getdate())";
+            return query;
+        }
+
+        public String GetPublicationQuestions()
+        {
+            String query = "select q.idQuestion, u.name, q.question, q.creationDate from PUBLICATION_QUESTIONS q, USERS u where " +
+                "q.idPublication = @idPublication and q.idUser = u.idUser order by q.creationDate desc";
+            return query;
+        }
+
+        public String GetAnswers()
+        {
+            String query = "select a.answer, a.creationDate from PUBLICATION_ANSWERS a where " +
+                "a.idQuestion = @idQuestion order by a.creationDate desc";
+            return query;
+        }
+
     }
      
 }

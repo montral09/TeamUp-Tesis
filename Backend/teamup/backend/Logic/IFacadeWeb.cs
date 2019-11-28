@@ -45,5 +45,8 @@ namespace backend.Logic
         VOResponseGetReservationsPublisher GetReservationsPublisher(VORequestGetReservationsPublisher voGetReservationsPublisher);
         VOResponseUpdateStateReservation UpdateStateReservation(VORequestUpdateStateReservation voUpdateStateReservation);
         VOResponseUpdateReservation UpdateReservation(VORequestUpdateReservation voUpdateRservation);
+        VOResponseCreateReview CreateReview(VORequestCreateReview voCreateReview);
+        VOResponseCreatePublicationQuestion CreatePublicationQuestion(VORequestCreatePublicationQuestion voCreatePublicationQuestion);
+        VOResponseCreatePublicationAnswer CreatePublicationAnswer(VORequestCreatePublicationAnswer voCreatePublicationAnswer);        
     }
 }

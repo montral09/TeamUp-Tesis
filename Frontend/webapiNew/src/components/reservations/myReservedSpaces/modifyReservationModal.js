@@ -120,7 +120,8 @@ class ModifyReservationModal extends React.Component {
                 HourFrom: newHourFromSelect,
                 HourTo: newHourToSelect
             }
-        });
+        }, () => this.calculatePrice());
+        
     }
 
     calculatePrice = () => {

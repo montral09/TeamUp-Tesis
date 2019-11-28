@@ -628,12 +628,12 @@ namespace backend.Data_Access
                 VOReview voReview;
                 while (dr.Read())
                 {
-                    voReview = new VOReview(Convert.ToInt32(dr["idUser"]), Convert.ToString(dr["name"]), Convert.ToInt32(dr["rating"]), Convert.ToString(dr["review"]));                   
+                    voReview = new VOReview(Convert.ToString(dr["mail"]), Convert.ToString(dr["name"]), Convert.ToInt32(dr["rating"]), Convert.ToString(dr["review"]), Convert.ToInt32(dr["idReservation"]));                   
                     reviews.Add(voReview);
                 }
                 dr.Close();
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }            
@@ -728,6 +728,7 @@ namespace backend.Data_Access
             }
             return related;
         }
+
         public void UpdateFavorite(VORequestUpdateFavorite voUpdateFavorite, long idUser)
         {
             SqlConnection con = null;            
@@ -1160,6 +1161,152 @@ namespace backend.Data_Access
                     objTrans.Dispose();
                 }
             }
+        }
+
+        public void CreateReview(VORequestCreateReview voCreateReview, long idUser)
+        {
+            SqlConnection con = null;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.CreateReview();
+                SqlCommand insertCommand = new SqlCommand(query, con);
+                List<SqlParameter> prm = new List<SqlParameter>()
+                    {                    
+                        new SqlParameter("@idReservation", SqlDbType.Int) {Value = voCreateReview.VOReview.IdReservation},
+                        new SqlParameter("@idUser", SqlDbType.Int) {Value = idUser},
+                        new SqlParameter("@rating", SqlDbType.VarChar) {Value = voCreateReview.VOReview.Rating},
+                        new SqlParameter("@review", SqlDbType.VarChar) {Value = voCreateReview.VOReview.Review},                        
+                    };
+                insertCommand.Parameters.AddRange(prm.ToArray());
+                insertCommand.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        public void CreatePublicationQuestion(VORequestCreatePublicationQuestion voCreatePublicationQuestion, long idUser)
+        {
+            SqlConnection con = null;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.CreateQuestion();
+                SqlCommand insertCommand = new SqlCommand(query, con);
+                List<SqlParameter> prm = new List<SqlParameter>()
+                    {
+                        new SqlParameter("@idPublication", SqlDbType.Int) {Value = voCreatePublicationQuestion.IdPublication},
+                        new SqlParameter("@idUser", SqlDbType.Int) {Value = idUser},
+                        new SqlParameter("@question", SqlDbType.VarChar) {Value = voCreatePublicationQuestion.Question},
+                    };
+                insertCommand.Parameters.AddRange(prm.ToArray());
+                insertCommand.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        public void CreatePublicationAnswer(VORequestCreatePublicationAnswer voCreatePublicationAnswer, long idUser)
+        {
+            SqlConnection con = null;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.CreateAnswer();
+                SqlCommand insertCommand = new SqlCommand(query, con);
+                List<SqlParameter> prm = new List<SqlParameter>()
+                    {
+                        new SqlParameter("@idQuestion", SqlDbType.Int) {Value = voCreatePublicationAnswer.IdQuestion},
+                        new SqlParameter("@answer", SqlDbType.VarChar) {Value = voCreatePublicationAnswer.Answer},
+                    };
+                insertCommand.Parameters.AddRange(prm.ToArray());
+                insertCommand.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        public List<VOPublicationQuestion> GetPublicationQuestions(int idPublication)
+        {
+            List<VOPublicationQuestion> questions = new List<VOPublicationQuestion>();
+            SqlConnection con = null;
+            Util util = new Util();
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.GetPublicationQuestions();
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                SqlParameter param = new SqlParameter()
+                {
+                    ParameterName = "@idPublication",
+                    Value = idPublication,
+                    SqlDbType = SqlDbType.Int
+                };
+                selectCommand.Parameters.Add(param);
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                VOPublicationQuestion voQuestion;
+                while (dr.Read())
+                {
+                    List<VOAnswer> answers = new List<VOAnswer>();
+                    String queryAnswers = cns.GetAnswers();
+                    SqlCommand selectCommandAnswers = new SqlCommand(queryAnswers, con);
+                    SqlParameter paramAnswers = new SqlParameter()
+                    {
+                        ParameterName = "@idQuestion",
+                        Value = Convert.ToInt32(dr["idQuestion"]),
+                        SqlDbType = SqlDbType.Int
+                    };
+                    selectCommandAnswers.Parameters.Add(paramAnswers);
+                    SqlDataReader drAnswers = selectCommandAnswers.ExecuteReader();
+                    while (drAnswers.Read())
+                    {
+                        string creationDateAnswer = Util.ConvertDateToString(Convert.ToDateTime(drAnswers["creationDate"]));
+                        VOAnswer answer = new VOAnswer(Convert.ToString(drAnswers["answer"]), creationDateAnswer);
+                        answers.Add(answer);
+                    }
+                    drAnswers.Close();
+                    string creationDate = Util.ConvertDateToString(Convert.ToDateTime(dr["creationDate"]));
+                    voQuestion = new VOPublicationQuestion(Convert.ToInt32(dr["idQuestion"]), Convert.ToString(dr["name"]), Convert.ToString(dr["question"]), creationDate, answers);
+                    questions.Add(voQuestion);
+                }
+                dr.Close();
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            return questions;
         }
     }
 }
