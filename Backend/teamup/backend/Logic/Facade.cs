@@ -516,15 +516,19 @@ namespace backend.Logic
         {
             VOResponseGetSpace response = new VOResponseGetSpace();
             bool isFavorite = false;
+            User user = null;
             try
             {
-                VOPublication voPublication = spaces.GetSpace(idPublication);
+                if (mail != null)
+                {
+                   user = users.Find(mail);
+                }
+                VOPublication voPublication = spaces.GetSpace(idPublication, user);
 
                 if (voPublication != null)
                 {
                     if (mail != null)
                     {
-                        User user = users.Find(mail);
                         isFavorite = spaces.IsFavourite(idPublication, user.IdUser);
                     }
                     List<VOPublication> related = spaces.GetRelatedSpaces(idPublication, voPublication.Capacity, voPublication.SpaceType, voPublication.City);

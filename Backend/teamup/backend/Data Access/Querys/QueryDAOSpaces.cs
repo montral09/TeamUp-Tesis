@@ -52,7 +52,7 @@ namespace backend.Data_Access.Query
         public String GetSpace()
         {
             String query = "select p.idPublication, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, " +
-                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities, p.city, p.totalViews, s.individualRent from PUBLICATIONS p, SPACE_TYPES s where " +
+                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities, p.city, p.totalViews, s.individualRent, p.idUser from PUBLICATIONS p, SPACE_TYPES s where " +
                 " p.idPublication = @idPublication and p.state = 2 and s.idSpaceType = p.spaceType";
             return query;
         }
@@ -314,6 +314,20 @@ namespace backend.Data_Access.Query
             return query;
         }
 
+        public String GetReviewReservation()
+        {
+            String query = "select r.idReview from RESERVATION_REVIEWS r where " +
+                "r.idReservation = @idReservation";
+            return query;
+        }
+
+        public String GetQuestionsWithoutAnswer()
+        {
+            String query = "select count(q.idQuestion) as qty from PUBLICATION_QUESTIONS q left join PUBLICATION_ANSWERS a " +
+                "on a.idQuestion = q.idQuestion where q.idPublication = @idPublication and a.idQuestion is null";
+                
+            return query;
+        }
     }
      
 }
