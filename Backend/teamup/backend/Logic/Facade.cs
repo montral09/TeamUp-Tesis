@@ -531,6 +531,8 @@ namespace backend.Logic
                     response.Publication = voPublication;
                     response.Favorite = isFavorite;
                     response.RelatedPublications = related;
+                    List<VOPublicationQuestion> questions = spaces.GetPublicationQuestions(idPublication);
+                    response.Questions = questions;
                     response.responseCode = EnumMessages.SUCC_PUBLICATIONSOK.ToString();
                 }
                 else
@@ -772,6 +774,66 @@ namespace backend.Logic
                 throw e;
             }
         }
+        public VOResponseCreateReview CreateReview(VORequestCreateReview voCreateReview)
+        {
+            try
+            {
+                VOResponseCreateReview response = new VOResponseCreateReview();
+                String message = util.ValidAccessToken(voCreateReview.AccessToken, voCreateReview.VOReview.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    User user = users.Find(voCreateReview.VOReview.Mail);
+                    spaces.CreateReview(voCreateReview, user.IdUser);
+                    message = EnumMessages.SUCC_REVIEWCREATED.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
 
+        public VOResponseCreatePublicationQuestion CreatePublicationQuestion(VORequestCreatePublicationQuestion voCreatePublicationQuestion)
+        {
+            try
+            {
+                VOResponseCreatePublicationQuestion response = new VOResponseCreatePublicationQuestion();
+                String message = util.ValidAccessToken(voCreatePublicationQuestion.AccessToken, voCreatePublicationQuestion.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    User user = users.Find(voCreatePublicationQuestion.Mail);
+                    spaces.CreatePublicationQuestion(voCreatePublicationQuestion, user.IdUser);
+                    message = EnumMessages.SUCC_QUESTIONCREATED.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+        public VOResponseCreatePublicationAnswer CreatePublicationAnswer(VORequestCreatePublicationAnswer voCreatePublicationAnswer)
+        {
+            try
+            {
+                VOResponseCreatePublicationAnswer response = new VOResponseCreatePublicationAnswer();
+                String message = util.ValidAccessToken(voCreatePublicationAnswer.AccessToken, voCreatePublicationAnswer.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    User user = users.Find(voCreatePublicationAnswer.Mail);
+                    spaces.CreatePublicationAnswer(voCreatePublicationAnswer, user.IdUser);
+                    message = EnumMessages.SUCC_ANSWERCREATED.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
     }
 }

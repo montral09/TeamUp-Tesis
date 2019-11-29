@@ -27,5 +27,9 @@ namespace backend.Data_Access
         List<VOReservationExtended> GetReservationsPublisher(VORequestGetReservationsPublisher voGetReservationsPublisher, long idPublisher);
         void UpdateStateReservation(int idReservation, string canceledReason, int newCodeState, string newDescriptionState, bool isAdmin);
         void UpdateReservation(VORequestUpdateReservation voUpdateRservation);
+        void CreateReview(VORequestCreateReview voCreateReview, long idUser);
+        void CreatePublicationQuestion(VORequestCreatePublicationQuestion voCreatePublicationQuestion, long idUser);
+        void CreatePublicationAnswer(VORequestCreatePublicationAnswer voCreatePublicationAnswer, long idUser);
+        List<VOPublicationQuestion> GetPublicationQuestions(int idPublication);
     }
 }

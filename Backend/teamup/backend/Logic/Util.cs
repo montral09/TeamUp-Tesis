@@ -234,5 +234,10 @@ namespace backend.Logic
             body += "<br /><br />Gracias";
             return body;
         }
+
+        public static string ConvertDateToString(DateTime date)
+        {
+            return date.ToString("dd/MM/yyyy");
+        }
     }
 }
