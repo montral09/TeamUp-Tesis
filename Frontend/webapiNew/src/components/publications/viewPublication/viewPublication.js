@@ -44,48 +44,24 @@ class ViewPublication extends React.Component {
             hourToSelect        : '01',
             reservationComment  : "",
             totalPrice          : 0,
-            arrQA               : []
+            arrQA               : [],
+            modalConfigObj      : null
         }
-        this.modalElement           = React.createRef(); // Connects the reference to the modal
+        this.modalReqInfo           = React.createRef(); // Connects the reference to the modal
         this.modalSummaryElement    = React.createRef(); // Connects the reference to the modal
         this.loadPublication        = this.loadPublication.bind(this);
         this.redirectToPub          = this.redirectToPub.bind(this);
         this.submitFavorite         = this.submitFavorite.bind(this);
         this.handleErrors           = this.handleErrors.bind(this);
-        this.modalSave              = this.modalSave.bind(this);
+        this.reservationSuccess     = this.reservationSuccess.bind(this);
         this.confirmReservation     = this.confirmReservation.bind(this);
+        this.triggerModal           = this.triggerModal.bind(this);
         this.loadPublication(pubID);
-    }
-
-    loadDummyQuestions(){
-        const arrQA = [
-            {
-                Question: {
-                    UserName: "Alex",
-                    Date: "27/08/2019",
-                    Text: "Hola, esta disponible?"
-                },
-                Answer: {
-                    UserName: "Fabi",
-                    Date: "28/08/2019",
-                    Text: "Si. Saludos"
-                }
-            },{
-                Question: {
-                    UserName: "Bruno",
-                    Date: "29/08/2019",
-                    Text: "Hola, esta disponible!!! >-<?"
-                }
-            }];
-        this.setState({
-            "arrQA": arrQA
-        });
     }
 
     componentDidMount() {
         this.loadInfraestructure();
         this.setInitialHour();
-        this.loadDummyQuestions();
         window.scrollTo(0, 0);
     }
 
@@ -189,7 +165,7 @@ class ViewPublication extends React.Component {
                     if (pubObj.HourPrice > 0) { defaultPlanSelected = "HourPrice"; } else if (pubObj.DailyPrice > 0) { defaultPlanSelected = "DailyPrice" } else if (pubObj.WeeklyPrice > 0) { defaultPlanSelected = "WeeklyPrice"; } else if (pubObj.MonthlyPrice > 0) { defaultPlanSelected = "MonthlyPrice"; }
                     this.setState({
                         pubIsLoading: false, pubObj: pubObj, activeImage: { index: 0, src: pubObj.ImagesURL[0] },
-                        relatedPublications: data.RelatedPublications, planChosen: defaultPlanSelected
+                        relatedPublications: data.RelatedPublications, planChosen: defaultPlanSelected, arrQA : data.Questions
                     });
                 } else {
                     this.setState({ pubIsLoading: false });
@@ -272,8 +248,8 @@ class ViewPublication extends React.Component {
         this.setState({ tabDisplayed: tab })
     }
 
-    modalSave(textboxValue, modalRef) {
-        this.modalElement.current.changeModalLoadingState(true);
+    reservationSuccess(textboxValue, modalRef) {
+        this.modalReqInfo.current.changeModalLoadingState(true);
     }
 
     confirmReservation(){
@@ -314,7 +290,7 @@ class ViewPublication extends React.Component {
             console.log("data:" + JSON.stringify(data));
             if (data.responseCode == "SUCC_RESERVATIONCREATED") {
                 this.modalSummaryElement.current.changeModalLoadingState(true);
-                this.modalElement.current.toggle(null);
+                this.triggerModal("RESSUCC");
             } else {
                 this.modalSummaryElement.current.changeModalLoadingState(true);
                 this.handleErrors(data.responseCode);
@@ -432,6 +408,26 @@ class ViewPublication extends React.Component {
         return dateConv;
     }
 
+    triggerModal(mode, idAnswer){
+        var modalConfigObj = {};
+        if(mode === "ANSWER"){
+            modalConfigObj ={
+                title: 'Responder', mainText: 'Por favor responda la pregunta ', mode : mode, saveFunction : "saveAnswer", textboxLabel: 'Respuesta',
+                textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :'Cancelar', confirmText :'Responder' , login_status: this.props.login_status
+            };
+        }else{
+            modalConfigObj ={
+                title: 'Reserva enviada', mainText: 'Su reserva ha sido enviada correctamente, revise su casilla de correo para más informacion. ',
+                textboxDisplay: false, cancelAvailable: true, cancelText : 'Entendido', mode : mode, saveFunction : "reservationSuccess"
+            };
+        }
+        this.setState({modalConfigObj : modalConfigObj},() => {this.modalReqInfo.current.toggle();})
+    }
+
+    saveAnswer(){
+        alert("Save answer");
+    }
+
     render() {
         const { login_status } = this.props;
         const options = {
@@ -470,11 +466,8 @@ class ViewPublication extends React.Component {
                             {/*SEO Support End */}
                             <Header />
                             <div className="main-content  full-width  home">
-                                <ModalReqInfo ref={this.modalElement} modalSave={this.modalSave}
-                                    modalConfigObj={{
-                                        title: 'Reserva enviada', mainText: 'Su reserva ha sido enviada correctamente, revise su casilla de correo para más informacion. ',
-                                        textboxDisplay: false, cancelAvailable: true, cancelText : 'Entendido'
-                                    }} />
+                                <ModalReqInfo ref={this.modalReqInfo} reservationSuccess={this.reservationSuccess}
+                                    modalConfigObj={this.state.modalConfigObj} />
 
                                 <ModalSummary ref={this.modalSummaryElement} login_status={this.props.login_status} 
                                     confirmReservation={this.confirmReservation} onChange ={this.onChange}/>
@@ -671,7 +664,8 @@ class ViewPublication extends React.Component {
                                                                             ) : (null)}
                                                                             {this.state.tabDisplayed === 3 ? (
                                                                                 <div id="tab-questions" className="tab-content">
-                                                                                    <TabQuestions arrQA={this.state.arrQA} login_status={this.props.login_status} userData={this.props.userData} />
+                                                                                    <TabQuestions arrQA={this.state.arrQA} login_status={this.props.login_status} 
+                                                                                    userData={this.props.userData} isMyPublication={this.state.pubObj.IsMyPublication} triggerModal={this.triggerModal} />
                                                                                 </div>
                                                                             ) : (null)}
                                                                             <span><h5>Ubicación</h5><br /></span>

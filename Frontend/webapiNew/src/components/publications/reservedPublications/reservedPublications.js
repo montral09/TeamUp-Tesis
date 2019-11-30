@@ -19,10 +19,15 @@ class MyReservedPublications extends React.Component {
             reservationId : null,
             reservations : [],
             loadingStatusChange : false,
-            modalConfigObj : {}
+            modalConfigObj : {},
+            selectedIdRes : null,
+            selectedResState : ""
         }
         this.modalReqInfo = React.createRef(); // Connects the reference to the modal
-        this.loadMyReservations = this.loadMyReservations.bind(this);      
+        this.loadMyReservations = this.loadMyReservations.bind(this);   
+        this.triggerModal = this.triggerModal.bind(this);   
+        this.saveCancel = this.saveCancel.bind(this);
+        this.saveConfirm = this.saveConfirm.bind(this);
     }
 
     componentDidMount() {
@@ -81,21 +86,84 @@ class MyReservedPublications extends React.Component {
         this.modalReqInfo.current.changeModalLoadingState(true);
     }
 
-    triggerModal(mode){
+    triggerModal(mode, IdReservation, selectedResState){
         var modalConfigObj = {};
         if(mode === "CANCEL"){
             modalConfigObj ={
                 title: 'Cancelar reserva', mainText: 'Desea cancelar la reserva? Por favor indique el motivo ', mode : mode, saveFunction : "saveCancel", textboxLabel: 'Comentario',
                 textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :'No', confirmText :'Si' , login_status: this.props.login_status
             };
+        }else if (mode === "CONFIRM"){
+            modalConfigObj ={
+                title: 'Confirmaar reserva', mainText: 'Desea confirmar esta reserva? ', mode : mode, saveFunction : "saveConfirm",
+                cancelAvailable:true, confirmAvailable:true, cancelText :'Cancelar', confirmText :'Confirmar' , login_status: this.props.login_status,
+            };
         }
-        this.setState({modalConfigObj : modalConfigObj},() => {this.modalReqInfo.current.toggle();})
+        this.setState({modalConfigObj : modalConfigObj, selectedIdRes: IdReservation, selectedResState:selectedResState},() => {this.modalReqInfo.current.toggle();})
     }
 
-    saveCancel(){
-        alert("Cancelar API");
+    saveCancel(commentValue){
+        var objApi = {};
+        objApi.objToSend = {
+            "AccessToken": this.props.tokenObj.accesToken,
+            "IdReservation": this.state.selectedIdRes,
+            "Mail": this.props.userData.Mail,
+            "OldState": this.state.selectedResState,
+            "NewState": "CANCELED",
+            "CanceledReason": commentValue
+        }
+        objApi.fetchUrl = "https://localhost:44372/api/reservation";
+        objApi.method = "PUT";
+        objApi.responseSuccess = "SUCC_RESERVATIONUPDATED";
+        objApi.successMessage = "Se ha cancelado la reserva"
+        this.callAPI(objApi);
     }
 
+    saveConfirm(){
+        var objApi = {};
+        objApi.objToSend = {
+            "AccessToken": this.props.tokenObj.accesToken,
+            "IdReservation": this.state.selectedIdRes,
+            "Mail": this.props.userData.Mail,
+            "OldState": this.state.selectedResState,
+            "NewState": "RESERVED"
+        }
+        objApi.fetchUrl = "https://localhost:44372/api/reservation";
+        objApi.method = "PUT";
+        objApi.responseSuccess = "SUCC_RESERVATIONUPDATED";
+        objApi.successMessage = "Se ha confirmado la reserva"
+        this.callAPI(objApi);
+    }
+
+    callAPI(objApi){
+        this.modalReqInfo.current.changeModalLoadingState(false);
+        fetch(objApi.fetchUrl, {
+            method: objApi.method,
+            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(objApi.objToSend)
+        }).then(response => response.json()).then(data => {
+            console.log("data:" + JSON.stringify(data));
+            if (data.responseCode == objApi.responseSuccess) {
+                toast.success(objApi.successMessage, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
+                this.loadMyReservations();
+                this.modalReqInfo.current.changeModalLoadingState(true);
+            } else {
+                this.modalReqInfo.current.changeModalLoadingState(false);
+                this.handleErrors("Internal error");
+            }
+        }
+        ).catch(error => {
+            this.handleErrors(error);
+        }
+        )
+    }
     render() {        
         if (this.props.login_status != 'LOGGED_IN') return <Redirect to='/' />
         return (
@@ -116,10 +184,10 @@ class MyReservedPublications extends React.Component {
                     <div className="pattern" >
                         <div className="col-md-12 center-column">
                             <h1>Publicaciones reservadas</h1>
-                            <ModalReqInfo ref={this.modalReqInfo} modalSave={this.modalSave}
-                                modalConfigObj={this.state.modalConfigObj} />
-                            <MyReservedSpacesTable isPublisher={true} editReservation={this.editReservation} 
-                                reservations={this.state.reservations} modalReqInfo={this.modalReqInfo.current} saveCancel={this.saveCancel}/>
+                            <ModalReqInfo ref={this.modalReqInfo} modalSave={this.modalSave} saveConfirm={this.saveConfirm}
+                                modalConfigObj={this.state.modalConfigObj} saveCancel={this.saveCancel}/>
+                            <MyReservedSpacesTable isPublisher={true} editReservation={this.editReservation} triggerModal={this.triggerModal} 
+                                reservations={this.state.reservations} modalReqInfo={this.modalReqInfo.current} />
                         </div>
                     </div>
                 </div>               
