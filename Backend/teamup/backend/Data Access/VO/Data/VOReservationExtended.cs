@@ -14,11 +14,12 @@ namespace backend.Data_Access.VO.Data
         public int DailyPrice { get; set; }
         public int WeeklyPrice { get; set; }
         public int MonthlyPrice { get; set; }
+        public bool Reviewed { get; set; }
 
         public VOReservationExtended() { }
 
         public VOReservationExtended(int idReservation, string title, int idPublication, String mailCustomer, String planSelected, int reservedQuantity, DateTime dateFrom, string dateFromString, string hourFrom, string hourTo,
-            int people, string comment, int totalPrice, int state, string stateDescription, bool individualRent, int hourPrice, int dailyPrice, int weeklyPrice, int monthlyPrice)  : base (idPublication, mailCustomer, planSelected, reservedQuantity, dateFrom, dateFromString, hourFrom, hourTo,
+            int people, string comment, int totalPrice, int state, string stateDescription, bool individualRent, int hourPrice, int dailyPrice, int weeklyPrice, int monthlyPrice, bool reviewed)  : base (idPublication, mailCustomer, planSelected, reservedQuantity, dateFrom, dateFromString, hourFrom, hourTo,
              people, comment, totalPrice, state)       
         {
             IdReservation = idReservation;
@@ -41,6 +42,7 @@ namespace backend.Data_Access.VO.Data
             DailyPrice = dailyPrice;
             WeeklyPrice = weeklyPrice;
             MonthlyPrice = monthlyPrice;
+            Reviewed = reviewed;
         }
     }
 }

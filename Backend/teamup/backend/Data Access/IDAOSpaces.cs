@@ -15,7 +15,7 @@ namespace backend.Data_Access
         Task CreatePublicationAsync(VORequestCreatePublication voCreatePublication, User user);
         List<VOPublicationAdmin> GetPublicationsPendingApproval(VORequestPublicationPendindApproval voPublicationPendingApproval);
         List<VOPublication> GetPublisherSpaces(string mail);
-        VOPublication GetSpace(int idSpace);
+        VOPublication GetSpace(int idSpace, User user);
         VOPublicationAdmin UpdateStatePublication(int idPublication, string rejectedreason, int newCodeState, bool isAdmin);
         VOResponseGetPublicationsWithFilters GetPublicationsWithFilters(VORequestGetPublicationsWithFilters voGetPublicationsFilter);
         bool IsFavourite(int idPublication, long idUser);

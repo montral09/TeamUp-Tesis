@@ -10,16 +10,16 @@ namespace backend.Data_Access.VO.Data
         public string Name { get; set; }
         public string Question { get; set; }
         public string CreationDate { get; set; }
-        public List<VOAnswer> Answers { get; set; }
+        public VOAnswer Answer { get; set; }
 
         public VOPublicationQuestion() { }
-        public VOPublicationQuestion(int idQuestion, string name, string question, string creationDate, List<VOAnswer> answers)
+        public VOPublicationQuestion(int idQuestion, string name, string question, string creationDate, VOAnswer answer)
         {
             IdQuestion = idQuestion;
             Name = name;
             Question = question;
             CreationDate = creationDate;
-            Answers = answers;
+            Answer = answer;
         }
     }
 }
