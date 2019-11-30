@@ -31,5 +31,6 @@ namespace backend.Data_Access
         void CreatePublicationQuestion(VORequestCreatePublicationQuestion voCreatePublicationQuestion, long idUser);
         void CreatePublicationAnswer(VORequestCreatePublicationAnswer voCreatePublicationAnswer, long idUser);
         List<VOPublicationQuestion> GetPublicationQuestions(int idPublication);
+        List<VOPublicationPlan> GetPublicationPlans();
     }
 }

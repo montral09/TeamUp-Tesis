@@ -42,6 +42,8 @@ namespace backend.Logic
         SUCC_PUBLICATIONUPDATED,
         ERR_INVALIDUPDATE,
         ERR_SPACENOTFOUND,
+        //Publications
+        SUCC_PUBLICATIONPLANSOK,
         //Favorites
         SUCC_FAVORITEUPDATED,
         //Tokens

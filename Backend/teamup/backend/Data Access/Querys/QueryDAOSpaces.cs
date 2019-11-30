@@ -328,6 +328,12 @@ namespace backend.Data_Access.Query
                 
             return query;
         }
-    }
+
+        public String GetPublicationPlans()
+        {
+            String query = "select idPlan, name, price, days from PUBLICATION_PLANS";
+            return query;            
+        }
+}
      
 }

@@ -1369,5 +1369,38 @@ namespace backend.Data_Access
             }
             return qty;
         }
+
+        public List<VOPublicationPlan> GetPublicationPlans()
+        {
+            SqlConnection con = null;
+            List<VOPublicationPlan> plans = new List<VOPublicationPlan>();
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.GetPublicationPlans();
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                VOPublicationPlan voPlan;
+                while (dr.Read())
+                {
+                    voPlan = new VOPublicationPlan(Convert.ToInt32(dr["idPlan"]), Convert.ToString(dr["name"]), Convert.ToInt32(dr["price"]), Convert.ToInt32(dr["days"]));
+                    plans.Add(voPlan);
+                }
+                dr.Close();
+            }
+            catch (Exception)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+            return plans;
+        }
     }
 }

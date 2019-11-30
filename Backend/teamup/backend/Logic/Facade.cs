@@ -435,6 +435,7 @@ namespace backend.Logic
             }
             return response;
         }
+
         public VOResponseGetFacilities GetFacilities()
         {
             VOResponseGetFacilities response = new VOResponseGetFacilities();
@@ -838,6 +839,22 @@ namespace backend.Logic
             {
                 throw e;
             }
+        }
+
+        public VOResponseGetPublicationPlans GetPublicationPlans()
+        {
+            VOResponseGetPublicationPlans response = new VOResponseGetPublicationPlans();
+            List<VOPublicationPlan> plans;
+            try
+            {
+                plans = spaces.GetPublicationPlans();
+                response.Plans = plans;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+            return response;
         }
     }
 }
