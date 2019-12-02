@@ -24,13 +24,19 @@ class MyReservedSpacesList extends React.Component {
             selectedResState : ""
         }
         this.modalElement = React.createRef();
-        this.loadMyReservations = this.loadMyReservations.bind(this);      
         this.modalReqInfo = React.createRef();
+        this.bindFunctions();
+    }
+
+    bindFunctions(){
+        this.loadMyReservations = this.loadMyReservations.bind(this);    
         this.confirmEditReservation = this.confirmEditReservation.bind(this);
         this.triggerModal = this.triggerModal.bind(this);
         this.saveRate = this.saveRate.bind(this);
         this.saveCancel = this.saveCancel.bind(this);
+        this.triggerSaveModal = this.triggerSaveModal.bind(this);
     }
+
     handleErrors(error) {
         this.setState({ generalError: true });
     }
@@ -173,6 +179,14 @@ class MyReservedSpacesList extends React.Component {
         this.setState({modalConfigObj : modalConfigObj, selectedIdRes: IdReservation, selectedResState:selectedResState},() => {this.modalReqInfo.current.toggle();})
     }
 
+    triggerSaveModal(saveFunction, objData){
+        switch(saveFunction){
+            case "saveCancel": this.saveCancel(objData.textboxValue);break;
+            case "saveRate": this.saveRate(objData.optionValue, objData.textboxValue);break;
+            case "saveConfirm": this.saveConfirm();break;
+        }
+    }
+
     saveCancel(commentValue){
         var objApi = {};
         objApi.objToSend = {
@@ -187,7 +201,7 @@ class MyReservedSpacesList extends React.Component {
         objApi.method = "PUT";
         objApi.responseSuccess = "SUCC_RESERVATIONUPDATED";
         objApi.successMessage = "Se ha cancelado la reserva"
-        this.callAPI(objApi);
+        this.callAPImodal(objApi);
     }
 
     saveRate(optionValue, commentValue){
@@ -205,10 +219,10 @@ class MyReservedSpacesList extends React.Component {
         objApi.method = "POST";
         objApi.responseSuccess = "SUCC_REVIEWCREATED";
         objApi.successMessage = "Calificación realizada correctamente!"
-        this.callAPI(objApi);
+        this.callAPImodal(objApi);
     }
 
-    callAPI(objApi){
+    callAPImodal(objApi){
         this.modalReqInfo.current.changeModalLoadingState(false);
         fetch(objApi.fetchUrl, {
             method: objApi.method,

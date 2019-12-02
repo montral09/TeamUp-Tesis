@@ -51,12 +51,7 @@ class ModalReqInfo extends React.Component {
 
     save() {
         if(this.props.modalConfigObj.saveFunction){
-            switch(this.props.modalConfigObj.saveFunction){
-                case "saveCancel": this.props.saveCancel(this.state.textboxValue);break;
-                case "saveRate": this.props.saveRate(this.state.optionValue, this.state.textboxValue);break;
-                case "saveConfirm": this.props.saveConfirm();break;
-                case "reservationSuccess": this.props.reservationSuccess();break;
-            }
+            this.props.triggerSaveModal(this.props.modalConfigObj.saveFunction,{optionValue:this.state.optionValue, textboxValue:this.state.textboxValue })
         }else{
             this.props.modalSave(this.state.textboxValue);
         }
