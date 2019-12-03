@@ -30,6 +30,23 @@ namespace webapi.Controllers
             {
                 return InternalServerError(new Exception(e.Codigo));
             }
-        }    
+        }
+
+        [EnableCors(origins: "*", headers: "*", methods: "*")]
+        [HttpPut]
+        [Route("api/publicationPlan")]
+        public async Task<IHttpActionResult> Put([FromBody]VORequestUpdatePreferentialPayment voUpdatePayment)
+        {
+            try
+            {
+                VOResponseUpdatePreferentialPayment voResp = new VOResponseUpdatePreferentialPayment();
+                voResp = await fach.UpdatePreferentialPayment(voUpdatePayment);
+                return Ok(voResp);               
+            }
+            catch (GeneralException e)
+            {
+                return InternalServerError(new Exception(e.Codigo));
+            }
+        }
     }
 }

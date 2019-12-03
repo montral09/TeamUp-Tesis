@@ -137,6 +137,7 @@ namespace backend.Data_Access
                 String query = cns.CreatePublication();
                 String mail = voCreatePublication.VOPublication.Mail;
                 String facilities = Util.CreateFacilitiesString(voCreatePublication.VOPublication.Facilities);
+                DateTime expirationDate = CalculateExpirationDatePublication(voCreatePublication.VOPublication.IdPlan, con, objTrans);
                 SqlCommand insertCommand = new SqlCommand(query, con);
                 List<SqlParameter> prm = new List<SqlParameter>()
                     {
@@ -155,11 +156,17 @@ namespace backend.Data_Access
                         new SqlParameter("@monthlyPrice", SqlDbType.Int) {Value = voCreatePublication.VOPublication.MonthlyPrice},
                         new SqlParameter("@availability", SqlDbType.VarChar) {Value = voCreatePublication.VOPublication.Availability},
                         new SqlParameter("@facilities", SqlDbType.VarChar) {Value = facilities},
-                        new SqlParameter("@city", SqlDbType.VarChar) {Value = voCreatePublication.VOPublication.City}
+                        new SqlParameter("@city", SqlDbType.VarChar) {Value = voCreatePublication.VOPublication.City},
+                        new SqlParameter("@expirationDate", SqlDbType.DateTime) {Value = expirationDate}
                     };
                 insertCommand.Parameters.AddRange(prm.ToArray());                
                 insertCommand.Transaction = objTrans;
                 int idPublication = Convert.ToInt32(insertCommand.ExecuteScalar());
+                // If Plan <> FREE, insert preferential payment
+                if (voCreatePublication.VOPublication.IdPlan != 1)
+                {
+                    CreatePreferentialPayment(idPublication, voCreatePublication.VOPublication.IdPlan, con, objTrans);
+                }
                 // Store images
                 StorageUtil storageUtil = new StorageUtil();
                 List<string> urls = await storageUtil.StoreImageAsync(voCreatePublication.Images, user.IdUser, idPublication);
@@ -178,6 +185,7 @@ namespace backend.Data_Access
             catch (Exception e)
             {
                 objTrans.Rollback();
+                objTrans.Dispose();
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             finally
@@ -187,6 +195,43 @@ namespace backend.Data_Access
                     con.Close();
                 }
             }
+        }
+
+        private void CreatePreferentialPayment(int idPublication, int idPlan, SqlConnection con, SqlTransaction objTrans)
+        {
+            String query = cns.CreatePreferentialPayment();
+            SqlCommand insertCommand = new SqlCommand(query, con);
+            List<SqlParameter> prm = new List<SqlParameter>()
+            {
+                        new SqlParameter("@idPublication", SqlDbType.Int) {Value = idPublication},
+                        new SqlParameter("@idPlan", SqlDbType.Int) {Value = idPlan},                       
+            };
+            insertCommand.Parameters.AddRange(prm.ToArray());
+            insertCommand.Transaction = objTrans;
+            insertCommand.ExecuteNonQuery();
+        }
+
+        private DateTime CalculateExpirationDatePublication(int idPlan, SqlConnection con, SqlTransaction objTrans)
+        {
+            int days = 0;
+            DateTime today = DateTime.Now;
+            String query = cns.GetDaysPlan();
+            SqlCommand selectCommand = new SqlCommand(query, con);
+            SqlParameter param = new SqlParameter()
+            {
+                ParameterName = "@idPlan",
+                Value = idPlan,
+                SqlDbType = SqlDbType.Int
+            };
+            selectCommand.Parameters.Add(param);
+            selectCommand.Transaction = objTrans;
+            SqlDataReader dr = selectCommand.ExecuteReader();
+            while (dr.Read())
+            {
+                days = Convert.ToInt32(dr["days"]);
+            }
+            dr.Close();
+            return today.AddDays(days);
         }
 
         private void InsertImages(SqlConnection con, SqlTransaction objTrans, int idPublication, List<string> urls)
@@ -1402,5 +1447,91 @@ namespace backend.Data_Access
             }
             return plans;
         }
-    }
+
+        public async Task UpdatePreferentialPayment(VORequestUpdatePreferentialPayment voUpdatePayment, bool isAdmin)
+        {
+            SqlConnection con = null;
+            SqlTransaction objTrans = null;
+            StorageUtil storageUtil = new StorageUtil();
+            string url = "";
+            int idPlan = 2;
+            string commentAux = "";
+            if (voUpdatePayment.Comment != null)
+            {
+                commentAux = voUpdatePayment.Comment;
+            }
+            if (isAdmin)
+            {
+                idPlan = 3;
+            }
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                objTrans = con.BeginTransaction();
+                int idPayment = GetIdPaymentPlan(voUpdatePayment.IdPublication, con, objTrans);
+                if (voUpdatePayment.Evidence != null)
+                {
+                    // Insert evidence
+                    url = await storageUtil.StoreEvidencePaymentAsync(voUpdatePayment.Evidence, idPayment, voUpdatePayment.IdPublication);
+                }
+                string query = cns.UpdatePreferentialPayment(voUpdatePayment.Comment, url, idPlan);
+                SqlCommand updateCommand = new SqlCommand(query, con);
+                List<SqlParameter> prm = new List<SqlParameter>()
+                {
+                new SqlParameter("@idPrefPayments", SqlDbType.Int) {Value = idPayment},
+                new SqlParameter("@idPlan", SqlDbType.Int) {Value = idPlan},
+                new SqlParameter("@comment", SqlDbType.VarChar) {Value = commentAux},
+                new SqlParameter("@evidence", SqlDbType.VarChar) {Value = url},
+                };
+                
+                updateCommand.Parameters.AddRange(prm.ToArray());
+                updateCommand.Transaction = objTrans;
+                updateCommand.ExecuteNonQuery();
+                objTrans.Commit();
+            }
+            catch (Exception e)
+            {
+                objTrans.Rollback();
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                    objTrans.Dispose();
+                }
+            } 
+        }
+
+        private int GetIdPaymentPlan(int idPublication, SqlConnection con, SqlTransaction objTrans)
+        {
+            int id = 0;
+            try
+            {
+                String query = cns.GetIdPaymentPlan();
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                SqlParameter param = new SqlParameter()
+                {
+                    ParameterName = "@idPublication",
+                    Value = idPublication,
+                    SqlDbType = SqlDbType.Int
+                };
+                selectCommand.Parameters.Add(param);
+                selectCommand.Transaction = objTrans;
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                while (dr.Read())
+                {
+                    id = Convert.ToInt32(dr["idPrefPayments"]);
+                }
+                dr.Close();
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            return id;
+        }
+    }    
 }

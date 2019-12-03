@@ -27,9 +27,9 @@ namespace backend.Data_Access.Query
         public String CreatePublication()
         {
             String query = "insert into PUBLICATIONS (idUser, spaceType, creationDate, title, description, address, locationLat, locationLong, capacity," +
-                " videoURL, hourPrice, dailyPrice, weeklyPrice, monthlyPrice, availability, facilities, state, city)" +
+                " videoURL, hourPrice, dailyPrice, weeklyPrice, monthlyPrice, availability, facilities, state, city, expirationDate)" +
                 " output INSERTED.idPublication VALUES(@idUser, @spaceType, getdate(), @title, @description, @address, @locationLat, @locationLong, @capacity, " +
-                " @videoURL, @hourPrice, @dailyPrice, @weeklyPrice, @monthlyPrice, @availability, @facilities, 1, @city)";
+                " @videoURL, @hourPrice, @dailyPrice, @weeklyPrice, @monthlyPrice, @availability, @facilities, 1, @city, @expirationDate)";
             return query;
         }
 
@@ -334,6 +334,45 @@ namespace backend.Data_Access.Query
             String query = "select idPlan, name, price, days from PUBLICATION_PLANS";
             return query;            
         }
-}
+
+        public String GetDaysPlan()
+        {
+            String query = "select days from PUBLICATION_PLANS where idPlan = @idPlan";
+            return query;
+        }
+
+        public String CreatePreferentialPayment()
+        {
+            String query = "insert into PREFERENTIAL_PAYMENTS(idPublication, idPlan, state) values (@idPublication, @idPlan, 1)";
+            return query;
+        }
+
+        public String GetIdPaymentPlan()
+        {
+            String query = "select idPrefPayments from PREFERENTIAL_PAYMENTS where idPublication = @idPublication";
+            return query;
+        }
+        
+        public String UpdatePreferentialPayment(string comment, string url, int idPlan)
+        {
+            StringBuilder query = new StringBuilder();
+            query = query.Append("update PREFERENTIAL_PAYMENTS set idPlan = @idPlan");
+            if (comment != null)
+            {
+                query.Append(",comment = @comment");
+            }
+            if (url != null)
+            {
+                query.Append(",evidence = @evidence");
+            }
+            if (idPlan == 2)
+            {
+                query.Append(",paymentDate = getdate()");
+            }
+            query.Append(" where idPrefPayments = @idPrefPayments");
+            return query.ToString();
+        }
+
+    }
      
 }

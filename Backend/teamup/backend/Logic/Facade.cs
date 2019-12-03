@@ -779,6 +779,7 @@ namespace backend.Logic
                 throw e;
             }
         }
+
         public VOResponseCreateReview CreateReview(VORequestCreateReview voCreateReview)
         {
             try
@@ -856,5 +857,31 @@ namespace backend.Logic
             }
             return response;
         }
+
+        public async Task<VOResponseUpdatePreferentialPayment> UpdatePreferentialPayment(VORequestUpdatePreferentialPayment voUpdatePayment)
+        {
+            bool isAdmin = false;
+            try
+            {
+                VOResponseUpdatePreferentialPayment response = new VOResponseUpdatePreferentialPayment();
+                String message = util.ValidAccessToken(voUpdatePayment.AccessToken, voUpdatePayment.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    if (users.AdminMember(voUpdatePayment.Mail))
+                    {
+                        isAdmin = true;
+                    }
+                    await spaces.UpdatePreferentialPayment(voUpdatePayment, isAdmin);
+                    message = EnumMessages.SUCC_PAYMENTUPDATED.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+        
     }
 }

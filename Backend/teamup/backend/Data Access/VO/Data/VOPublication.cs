@@ -36,6 +36,7 @@ namespace backend.Data_Access.VO.Data
         public bool IndividualRent { get; set; }
         public int QuestionsWithoutAnswer { get; set; }
         public bool IsMyPublication { get; set; }
+        public int IdPlan { get; set; }
 
         public VOPublication() { }
 

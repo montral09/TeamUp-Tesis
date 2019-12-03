@@ -32,5 +32,6 @@ namespace backend.Data_Access
         void CreatePublicationAnswer(VORequestCreatePublicationAnswer voCreatePublicationAnswer, long idUser);
         List<VOPublicationQuestion> GetPublicationQuestions(int idPublication);
         List<VOPublicationPlan> GetPublicationPlans();
+        Task UpdatePreferentialPayment(VORequestUpdatePreferentialPayment voUpdatePayment, bool isAdmin);
     }
 }
