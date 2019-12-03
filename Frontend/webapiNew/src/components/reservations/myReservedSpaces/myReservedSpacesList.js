@@ -18,15 +18,28 @@ class MyReservedSpacesList extends React.Component {
             loadingReservations : true,
             reservationId : null,
             reservations : [],
-            modalConfigObj : {}
+            modalConfigObj : {},
+            generalError : false,
+            selectedIdRes : null,
+            selectedResState : ""
         }
         this.modalElement = React.createRef();
-        this.loadMyReservations = this.loadMyReservations.bind(this);      
         this.modalReqInfo = React.createRef();
-        this.confirmEditReservation = this.confirmEditReservation.bind(this);
-        this.triggerModal = this.triggerModal.bind(this);
+        this.bindFunctions();
     }
 
+    bindFunctions(){
+        this.loadMyReservations = this.loadMyReservations.bind(this);    
+        this.confirmEditReservation = this.confirmEditReservation.bind(this);
+        this.triggerModal = this.triggerModal.bind(this);
+        this.saveRate = this.saveRate.bind(this);
+        this.saveCancel = this.saveCancel.bind(this);
+        this.triggerSaveModal = this.triggerSaveModal.bind(this);
+    }
+
+    handleErrors(error) {
+        this.setState({ generalError: true });
+    }
     componentDidMount() {
         window.scrollTo(0, 0);
         this.loadMyReservations();
@@ -81,12 +94,9 @@ class MyReservedSpacesList extends React.Component {
     }
 
     editReservation = (key) => {
-        console.log ('edit reservation');
-        console.log (key);
         const resData = this.state.reservations.filter(res => {
             return res.IdReservation === key
         });
-        console.log(resData);
         this.modalElement.current.toggle(resData[0], this.props.tokenObj, this.props.userData);
     }
 
@@ -107,8 +117,6 @@ class MyReservedSpacesList extends React.Component {
     }
 
     confirmEditReservation(modalInfo) {
-        console.log("save - this.state: ");
-        console.log(modalInfo);
         let {IdReservation, HourFrom, HourTo, TotalPrice} = modalInfo.resDataChanged;
         let objRes = {
             AccessToken: this.props.tokenObj.accesToken,
@@ -119,8 +127,6 @@ class MyReservedSpacesList extends React.Component {
             HourTo: HourTo,
             TotalPrice: TotalPrice,            
         }
-        console.log('objRes')
-        console.log(objRes)
         this.modalElement.current.changeModalLoadingState(false);
         fetch('https://localhost:44372/api/reservationCustomer', {
             method: 'PUT',
@@ -156,7 +162,7 @@ class MyReservedSpacesList extends React.Component {
         )
     }
 
-    triggerModal(mode){
+    triggerModal(mode, IdReservation, selectedResState){
         var modalConfigObj = {};
         if(mode === "CANCEL"){
             modalConfigObj ={
@@ -170,20 +176,86 @@ class MyReservedSpacesList extends React.Component {
                 optionDisplay: true, optionLabel: 'Puntuación', optionDefaultValue:1, optionArray: [1,2,3,4,5]
             };
         }
-        this.setState({modalConfigObj : modalConfigObj},() => {this.modalReqInfo.current.toggle();})
+        this.setState({modalConfigObj : modalConfigObj, selectedIdRes: IdReservation, selectedResState:selectedResState},() => {this.modalReqInfo.current.toggle();})
     }
 
-    saveCancel(){
-        alert("Cancelar API");
+    triggerSaveModal(saveFunction, objData){
+        switch(saveFunction){
+            case "saveCancel": this.saveCancel(objData.textboxValue);break;
+            case "saveRate": this.saveRate(objData.optionValue, objData.textboxValue);break;
+            case "saveConfirm": this.saveConfirm();break;
+        }
     }
 
-    saveRate(){
-        alert("Rating API");
+    saveCancel(commentValue){
+        var objApi = {};
+        objApi.objToSend = {
+            "AccessToken": this.props.tokenObj.accesToken,
+            "IdReservation": this.state.selectedIdRes,
+            "Mail": this.props.userData.Mail,
+            "OldState": this.state.selectedResState,
+            "NewState": "CANCELED",
+            "CanceledReason": commentValue
+        }
+        objApi.fetchUrl = "https://localhost:44372/api/reservation";
+        objApi.method = "PUT";
+        objApi.responseSuccess = "SUCC_RESERVATIONUPDATED";
+        objApi.successMessage = "Se ha cancelado la reserva"
+        this.callAPImodal(objApi);
+    }
+
+    saveRate(optionValue, commentValue){
+        var objApi = {};
+        objApi.objToSend = {
+            "AccessToken": this.props.tokenObj.accesToken,
+            "VOReview": {
+                "Rating": optionValue,
+                "Review": commentValue,
+                "IdReservation": this.state.selectedIdRes,
+                "Mail": this.props.userData.Mail
+            }        
+        }
+        objApi.fetchUrl = "https://localhost:44372/api/review";
+        objApi.method = "POST";
+        objApi.responseSuccess = "SUCC_REVIEWCREATED";
+        objApi.successMessage = "Calificación realizada correctamente!"
+        this.callAPImodal(objApi);
+    }
+
+    callAPImodal(objApi){
+        this.modalReqInfo.current.changeModalLoadingState(false);
+        fetch(objApi.fetchUrl, {
+            method: objApi.method,
+            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(objApi.objToSend)
+        }).then(response => response.json()).then(data => {
+            console.log("data:" + JSON.stringify(data));
+            if (data.responseCode == objApi.responseSuccess) {
+                toast.success(objApi.successMessage, {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
+                this.loadMyReservations();
+                this.modalReqInfo.current.changeModalLoadingState(true);
+            } else {
+                this.modalReqInfo.current.changeModalLoadingState(false);
+                this.handleErrors("Internal error");
+            }
+        }
+        ).catch(error => {
+            this.handleErrors(error);
+        }
+        )
     }
 
     render() {        
         const { login_status } = this.props;
         if (login_status != 'LOGGED_IN') return <Redirect to='/' />
+        if (this.state.generalError) return <Redirect to='/error' />
         return (
             <>
                 <>

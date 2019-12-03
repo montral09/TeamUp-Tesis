@@ -30,7 +30,8 @@ namespace webapi.Controllers
                 return InternalServerError(new Exception(e.Codigo));
             }
         }
-        
+
+        [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpPut]
         [Route("api/reservation")]
         public IHttpActionResult Put([FromBody]VORequestUpdateStateReservation voUpdateStateReservation)

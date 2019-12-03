@@ -50,12 +50,8 @@ class ModalReqInfo extends React.Component {
     }
 
     save() {
-        this.changeModalLoadingState(true);
-        if(this.props.modalConfigObj.mode){
-            switch(this.props.modalConfigObj.mode){
-                case "saveCancel": this.props.saveCancel(this.state.textboxValue);break;
-                case "saveRate": this.props.saveRate(this.state.textboxValue);break;
-            }
+        if(this.props.modalConfigObj.saveFunction){
+            this.props.triggerSaveModal(this.props.modalConfigObj.saveFunction,{optionValue:this.state.optionValue, textboxValue:this.state.textboxValue })
         }else{
             this.props.modalSave(this.state.textboxValue);
         }
@@ -67,8 +63,10 @@ class ModalReqInfo extends React.Component {
     }
     render() {
         return (
+
             <span className="d-inline-block mb-2 mr-2">
-                <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+                {this.props.modalConfigObj ? (
+                    <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
                     <ModalHeader toggle={this.toggle}>{this.props.modalConfigObj.title}</ModalHeader>
                     <ModalBody>
                     <Form>
@@ -79,7 +77,7 @@ class ModalReqInfo extends React.Component {
                                 <Label for="optionValue" sm={2}>{this.props.modalConfigObj.optionLabel}</Label>
                                 <Col sm={10}>
                                     <select style={{ marginLeft: '8%' }} className="browser" id="optionValue" 
-                                        value={this.props.modalConfigObj.optionDefaultValue} onChange={this.onChange}>
+                                        value={this.state.optionValue} onChange={this.onChange}>
                                         {this.props.modalConfigObj.optionArray.map((option) => {
                                             return (
                                                 <option key={option} value={option}>{option}</option>
@@ -114,6 +112,8 @@ class ModalReqInfo extends React.Component {
                         </ModalFooter>
                     ) : (null)}
                 </Modal>
+                ) : (null)}
+                
             </span>
         );
     }
