@@ -5,7 +5,7 @@ import { Table } from 'reactstrap';
 // This component will render the table with the values passed as parameters -props-
 const MyReservedSpacesTable = (props) =>{
     let reservations = props.reservations;
-    const columnsName = ['ID','Publicacion', 'Mail cliente','Plan', 'Personas', 'Fecha', 'Hora desde', 'Hora hasta', 'Monto', 'Estado', 'Acción'];
+    const columnsName = ['ID','Publicacion', 'Mail cliente', 'Personas', 'Fecha', 'Estadía', 'Monto', 'Pago', 'Estado', 'Acción'];
     const columnsTable = columnsName.map( colName => {
         return (<th key={colName}>{colName}</th>)
     });
@@ -17,32 +17,31 @@ const MyReservedSpacesTable = (props) =>{
                 <td>{obj.IdReservation}</td>
                 <td>{obj.TitlePublication}</td>
                 <td>{obj.MailCustomer}</td>
-                <td>{obj.PlanSelected}</td>
                 <td>{obj.People}</td>
                 <td>{obj.DateFromString}</td>
-                <td>{obj.HourFrom}</td>
-                <td>{obj.HourTo}</td>             
+                <td>{obj.PlanSelected == 'Hour' ? ("Desde "+obj.HourFrom+" a "+obj.HourTo) : ("1 "+ obj.PlanSelected)}</td>
                 <td>{obj.TotalPrice}</td>
+                <td>Pendiente de pago</td>
                 <td>{obj.StateDescription}</td>
                 <td>
                     <div>
                         {obj.StateDescription === 'PENDING' || obj.StateDescription === 'RESERVED' ? (
                             <div>
-                                <a onClick={() => {props.triggerModal("CANCEL", obj.IdReservation, obj.StateDescription)}}> <span><i className="col-md-1 fa fa-times"></i></span>CANCELAR</a> 
+                                <a href="" onClick={() => {props.triggerModal("CANCEL", obj.IdReservation, obj.StateDescription)}}><span><i className="col-md-1 fa fa-times"></i></span>Cancelar</a> 
                                 {isPublisher && obj.StateDescription === 'PENDING' ? (
-                                    <a onClick={() => {props.triggerModal("CONFIRM", obj.IdReservation, obj.StateDescription)}}> <span><i className="col-md-1 fa fa-check"></i></span>CONFIRMAR</a>                            
+                                    <a href="" onClick={() => {props.triggerModal("CONFIRM", obj.IdReservation, obj.StateDescription)}}><span><i className="col-md-1 fa fa-check"></i></span> Confirmar</a>                            
                                     ) : (null)}
                             </div>
                             ) :(null)
                         }
                         {obj.StateDescription === 'FINISHED' && !isPublisher && !obj.Reviewed ? (
                             <div>
-                                <a onClick={() => {props.triggerModal("RATE", obj.IdReservation, obj.StateDescription)}}> <span><i className="col-md-1 fa fa-star"></i></span> CALIFICAR</a> 
+                                <a href="" onClick={() => {props.triggerModal("RATE", obj.IdReservation, obj.StateDescription)}}><span><i className="col-md-1 fa fa-star"></i></span> Calificar</a> 
                             </div>
                             ) :(
                                 <div>
                                 {!isPublisher && obj.StateDescription != 'FINISHED' && obj.StateDescription != 'CANCELED'  && obj.StateDescription != 'RESERVED' ? (
-                                        <a onClick={() => {props.editReservation(obj.IdReservation)}}> <span><i className="col-md-1 fa fa-pencil-alt"></i></span>EDITAR</a>                            
+                                        <a href="" onClick={() => {props.editReservation(obj.IdReservation)}}><span><i className="col-md-1 fa fa-pencil-alt"></i></span> Editar</a>                            
                                     ) : (null)}
                                 </div>
                             )

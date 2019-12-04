@@ -195,6 +195,7 @@ class MyPublicationsList extends React.Component {
                     <Header />
                     <div className="main-content  full-width  home">
                         <div className="pattern" >
+                            <h1>Mis publicaciones</h1>
                             <div className="col-md-12 center-column">
                                 {(!this.state.loadingPubs && !this.state.loadingSpaceTypes) ?
                                 (<MyPublicationTable changePubState={this.changePubState} editPublication={this.editPublication}  publications={this.state.publications} spaceTypes={this.state.spaceTypes} />)
