@@ -46,7 +46,7 @@ class CreatePublication extends React.Component {
             spaceImages: [],
             reservationTypes: [],
             premiumOptions: [],
-            premiumOptionsSelected: [],
+            premiumOptionSelected: null,
             HourPrice: 0,
             DailyPrice: 0,
             WeeklyPrice: 0,
@@ -151,7 +151,9 @@ class CreatePublication extends React.Component {
                     }
                 break;
                 case 4:
-                    isValid = true;
+                    if(this.state.premiumOptionSelected != null){
+                        isValid = true;
+                    }
                 break;
                 case 5:
                     isValid = true;
@@ -360,26 +362,35 @@ class CreatePublication extends React.Component {
         try {
             // call API
             var dummyData = {
-                premiumOptions: [
+                "Plans": [
                     {
-                        "Code": "premium1",
-                        "Description": "Premium 1",
-                        "Price": 100
+                        "IdPlan": 1,
+                        "Name": "FREE",
+                        "Price": 0,
+                        "Days": 90
                     },
                     {
-                        "Code": "premium2",
-                        "Description": "Premium 2",
-                        "Price": 150
+                        "IdPlan": 2,
+                        "Name": "BRONZE",
+                        "Price": 300,
+                        "Days": 90
                     },
                     {
-                        "Code": "premium3",
-                        "Description": "Premium 3",
-                        "Price": 200
+                        "IdPlan": 3,
+                        "Name": "SILVER",
+                        "Price": 450,
+                        "Days": 90
+                    },
+                    {
+                        "IdPlan": 4,
+                        "Name": "GOLD",
+                        "Price": 600,
+                        "Days": 90
                     }
                 ],
-                "responseCode": "SUCC_premiumOptionsOK"
+                "responseCode": "SUCC_PUBLICATIONPLANSOK"
             };
-            this.setState({ premiumOptions: dummyData.premiumOptions });
+            this.setState({ premiumOptions: dummyData.Plans });
 
         } catch (error) {
             toast.error('Internal error', {

@@ -6,9 +6,9 @@ import { Table } from 'reactstrap';
 const MyPublicationTable = (props) =>{
     let publications = props.publications;
     let spaceTypes = props.spaceTypes;
-    const columnsName = ['ID Pub','Tipo de Espacio','Fecha Creado','Title','Estado','Ver Publicacion','Acción',];
+    const columnsName = ['ID Pub','Tipo de Espacio','Fecha Creado','Title','Estado','Pago premium','Preguntas sin responder','Acción'];
     const columnsTable = columnsName.map( colName => {
-        return (<th key={colName}>{colName}</th>)
+        return (colName == 'Acción' ? (<th className="text-center" colSpan='3' key={colName}>{colName}</th>) : (<th className="text-center" key={colName}>{colName}</th>) )
     });
     publications.forEach(element => {
         const spaceType = spaceTypes.filter(space => {
@@ -27,24 +27,25 @@ const MyPublicationTable = (props) =>{
                 <td>{obj.CreationDate}</td>
                 <td>{obj.Title}</td>
                 <td>{obj.State}</td>
-                <td><a href={url}><span><i className="col-md-3 fa fa-eye"></i></span>Ver</a> </td>
+                <td>PENDIENTE DE PAGO</td>
+                <td>0</td>
                 <td>
-                    <div>
-                    {obj.State === 'ACTIVE' ? (
-                        <div>
-                            <a className = "col-md-12" onClick={() => props.editPublication(obj.IdPublication)}> <span><i className="col-md-1 fa fa-pencil-alt"></i></span>EDITAR</a>
-                            <a href="" onClick={() => props.changePubState(obj.State, obj.IdPublication)}><span><i className="col-md-1 fa fa-pause"></i></span>PAUSAR</a>
-                        </div>
-                    ) : (
-                        <div>
-                            {obj.State === 'PAUSED P' ? (
-                            <div>
-                                <a className = "col-md-12" href="" onClick={() => props.changePubState(obj.State, obj.IdPublication)}><span><i className="col-md-1 fa fa-play"></i></span>REANUDAR</a>                        
-                            </div>
-                            ) :(null) }
-                        </div>)}
-                    </div>
+                    <a href={url}><span><i className="col-md-3 fa fa-eye"></i></span> Ver</a>
                 </td>
+                {obj.State === 'ACTIVE' ? (
+                    <>
+                    <td><a href="" className = "col-md-12" onClick={() => props.editPublication(obj.IdPublication)}> <span><i className="col-md-1 fa fa-pencil-alt"></i></span> Editar</a></td> 
+                    <td><a href="" onClick={() => props.changePubState(obj.State, obj.IdPublication)}><span><i className="col-md-1 fa fa-pause"></i></span> Pausar</a></td>
+                    </>
+                ) : (
+                    <>
+                        {obj.State === 'PAUSED P' ? (
+                            <>
+                            <td><a href="" className = "col-md-12" onClick={() => props.changePubState(obj.State, obj.IdPublication)}><span><i className="col-md-1 fa fa-play"></i></span> Reanudar</a></td>
+                            <td></td>
+                            </>  
+                        ) :(<><td></td><td></td><td></td></>) }
+                    </>)}
             </tr>
             )
         })
