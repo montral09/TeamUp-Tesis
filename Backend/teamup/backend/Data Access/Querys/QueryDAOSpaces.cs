@@ -347,7 +347,7 @@ namespace backend.Data_Access.Query
             return query;
         }
 
-        public String GetIdPaymentPlan()
+        public String GetIdPreferentialPayment()
         {
             String query = "select idPrefPayments from PREFERENTIAL_PAYMENTS where idPublication = @idPublication";
             return query;
@@ -356,7 +356,7 @@ namespace backend.Data_Access.Query
         public String UpdatePreferentialPayment(string comment, string url, int idPlan)
         {
             StringBuilder query = new StringBuilder();
-            query = query.Append("update PREFERENTIAL_PAYMENTS set idPlan = @idPlan");
+            query = query.Append("update PREFERENTIAL_PAYMENTS set idPlan = @idPlan, state = 2");
             if (comment != null)
             {
                 query.Append(",comment = @comment");
@@ -373,6 +373,23 @@ namespace backend.Data_Access.Query
             return query.ToString();
         }
 
+        public String UpdatePreferentialPaymentAdmin()
+        {
+            String query = "update PREFERENTIAL_PAYMENTS set state = 3 where idPrefPayments = @idPrefPayments";
+            return query;           
+        }
+
+        public String UpdatePublicationDueToPayment()
+        {
+            String query = "update PUBLICATIONS set idPlan = @idPlan, expirationDate = @expirationDate where idPublication = @idPublication";
+            return query;
+        }
+
+        public String GetIdPreferentialPlan()
+        {
+            String query = "select idPlan from PREFERENTIAL_PAYMENTS where idPrefPayments = @idPrefPayments";
+            return query;
+        }
     }
      
 }

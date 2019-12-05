@@ -1459,36 +1459,63 @@ namespace backend.Data_Access
             if (voUpdatePayment.Comment != null)
             {
                 commentAux = voUpdatePayment.Comment;
-            }
-            if (isAdmin)
-            {
-                idPlan = 3;
-            }
+            }           
             try
             {
                 con = new SqlConnection(GetConnectionString());
                 con.Open();
                 objTrans = con.BeginTransaction();
-                int idPayment = GetIdPaymentPlan(voUpdatePayment.IdPublication, con, objTrans);
-                if (voUpdatePayment.Evidence != null)
+                int idPayment = GetIdPreferentialPayment(voUpdatePayment.IdPublication, con, objTrans);
+                if (isAdmin)
                 {
-                    // Insert evidence
-                    url = await storageUtil.StoreEvidencePaymentAsync(voUpdatePayment.Evidence, idPayment, voUpdatePayment.IdPublication);
+                    int idPreferentialPlan = GetIdPreferentialPlan(idPayment, con, objTrans);
+                    string query = cns.UpdatePreferentialPaymentAdmin();
+                    SqlCommand updateCommand = new SqlCommand(query, con);
+                    SqlParameter prm = new SqlParameter()
+                    {
+                        ParameterName = "@idPrefPayments",
+                        Value = idPayment,
+                        SqlDbType = SqlDbType.Int
+                    };
+                    updateCommand.Parameters.Add(prm);
+                    updateCommand.Transaction = objTrans;
+                    updateCommand.ExecuteNonQuery();
+                    string queryPubl = cns.UpdatePublicationDueToPayment();
+                    SqlCommand updateCommandPubl = new SqlCommand(queryPubl, con);
+                    DateTime expirationDatePublication = CalculateExpirationDatePublication(idPreferentialPlan, con, objTrans);
+                    List<SqlParameter> prmPubl = new List<SqlParameter>()
+                    {
+                        new SqlParameter("@idPublication", SqlDbType.Int) {Value = voUpdatePayment.IdPublication},
+                        new SqlParameter("@idPlan", SqlDbType.Int) {Value = idPreferentialPlan},
+                        new SqlParameter("@expirationDate", SqlDbType.DateTime) {Value = expirationDatePublication},
+                    };
+                    updateCommandPubl.Parameters.AddRange(prmPubl.ToArray());
+                    updateCommandPubl.Transaction = objTrans;
+                    updateCommandPubl.ExecuteNonQuery();
+
+                    objTrans.Commit();
+                } else
+                {
+                    if (voUpdatePayment.Evidence != null)
+                    {
+                        // Insert evidence
+                        url = await storageUtil.StoreEvidencePaymentAsync(voUpdatePayment.Evidence, idPayment, voUpdatePayment.IdPublication);
+                    }
+                    string query = cns.UpdatePreferentialPayment(voUpdatePayment.Comment, url, idPlan);
+                    SqlCommand updateCommand = new SqlCommand(query, con);
+                    List<SqlParameter> prm = new List<SqlParameter>()
+                    {
+                    new SqlParameter("@idPrefPayments", SqlDbType.Int) {Value = idPayment},
+                    new SqlParameter("@idPlan", SqlDbType.Int) {Value = idPlan},
+                    new SqlParameter("@comment", SqlDbType.VarChar) {Value = commentAux},
+                    new SqlParameter("@evidence", SqlDbType.VarChar) {Value = url},
+                    };
+                    updateCommand.Parameters.AddRange(prm.ToArray());
+                    updateCommand.Transaction = objTrans;
+                    updateCommand.ExecuteNonQuery();
+                    objTrans.Commit();
                 }
-                string query = cns.UpdatePreferentialPayment(voUpdatePayment.Comment, url, idPlan);
-                SqlCommand updateCommand = new SqlCommand(query, con);
-                List<SqlParameter> prm = new List<SqlParameter>()
-                {
-                new SqlParameter("@idPrefPayments", SqlDbType.Int) {Value = idPayment},
-                new SqlParameter("@idPlan", SqlDbType.Int) {Value = idPlan},
-                new SqlParameter("@comment", SqlDbType.VarChar) {Value = commentAux},
-                new SqlParameter("@evidence", SqlDbType.VarChar) {Value = url},
-                };
-                
-                updateCommand.Parameters.AddRange(prm.ToArray());
-                updateCommand.Transaction = objTrans;
-                updateCommand.ExecuteNonQuery();
-                objTrans.Commit();
+               
             }
             catch (Exception e)
             {
@@ -1505,17 +1532,17 @@ namespace backend.Data_Access
             } 
         }
 
-        private int GetIdPaymentPlan(int idPublication, SqlConnection con, SqlTransaction objTrans)
+        private int GetIdPreferentialPayment(int idPreferentialPayment, SqlConnection con, SqlTransaction objTrans)
         {
             int id = 0;
             try
             {
-                String query = cns.GetIdPaymentPlan();
+                String query = cns.GetIdPreferentialPayment();
                 SqlCommand selectCommand = new SqlCommand(query, con);
                 SqlParameter param = new SqlParameter()
                 {
                     ParameterName = "@idPublication",
-                    Value = idPublication,
+                    Value = idPreferentialPayment,
                     SqlDbType = SqlDbType.Int
                 };
                 selectCommand.Parameters.Add(param);
@@ -1524,6 +1551,35 @@ namespace backend.Data_Access
                 while (dr.Read())
                 {
                     id = Convert.ToInt32(dr["idPrefPayments"]);
+                }
+                dr.Close();
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            return id;
+        }
+
+        private int GetIdPreferentialPlan(int idPayment, SqlConnection con, SqlTransaction objTrans)
+        {
+            int id = 0;
+            try
+            {
+                String query = cns.GetIdPreferentialPlan();
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                SqlParameter param = new SqlParameter()
+                {
+                    ParameterName = "@idPrefPayments",
+                    Value = idPayment,
+                    SqlDbType = SqlDbType.Int
+                };
+                selectCommand.Parameters.Add(param);
+                selectCommand.Transaction = objTrans;
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                while (dr.Read())
+                {
+                    id = Convert.ToInt32(dr["idPlan"]);
                 }
                 dr.Close();
             }
