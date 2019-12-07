@@ -5,13 +5,56 @@ import { Table } from 'reactstrap';
 // This component will render the table with the values passed as parameters -props-
 const MyReservedSpacesTable = (props) =>{
     let reservations = props.reservations;
-    const columnsName = ['ID','Publicacion', 'Mail cliente', 'Personas', 'Fecha', 'Estadía', 'Monto', 'Pago', 'Estado', 'Acción'];
+    const columnsName = ['ID','Publicacion', 'Mail cliente', 'Personas', 'Fecha', 'Estadía', 'Monto', 'Pago reserva','Pago comisión', 'Estado reserva', 'Acción'];
     const columnsTable = columnsName.map( colName => {
-        return (<th key={colName}>{colName}</th>)
+        var valToRet = <th className="text-center" key={colName}>{colName}</th>;
+        switch(colName){
+            case "Pago reserva": valToRet = <th className="text-center" colSpan='2' key={colName}>{colName}</th>; break;
+            case "Pago comisión": valToRet = <th className="text-center" colSpan='2' key={colName}>{colName}</th>; break;
+        }
+        return valToRet;
     });
     const isPublisher = props.isPublisher || false;
     const arrDataList = reservations.length ? (
-        reservations.map( obj => {      
+        reservations.map( obj => {
+            //DUMMY TO REMOVE
+            var objReservationCustomerPayment = {
+                reservationPaymentState: 'PENDING PAYMENT',
+                reservationPaymentStateText: 'Pendiente de pago',
+                paymentDocument: '',
+                paymentComment: '',
+                reservationPaymentAmmount: 100,
+                reservationpaymentDate: 'Pendiente'
+            }
+            if(obj.IdReservation ==1){
+                objReservationCustomerPayment = {
+                    reservationPaymentState: 'PENDING CONFIRMATION',
+                    reservationPaymentStateText: 'Pendiente de confirmar',
+                    paymentDocument: 'http://gcallapp.co/wp-content/uploads/2019/09/paid-invoice-template-invoice-payment-receipt-template.jpg',
+                    paymentComment: 'Se adjunta boleta',
+                    reservationPaymentAmmount: 100,
+                    reservationpaymentDate: '07/12/2019'
+                }
+            }else if(obj.IdReservation == 2){
+
+            }else {
+                objReservationCustomerPayment = {
+                    reservationPaymentState: 'PAID',
+                    reservationPaymentStateText: 'Pago',
+                    paymentDocument: 'http://gcallapp.co/wp-content/uploads/2019/09/paid-invoice-template-invoice-payment-receipt-template.jpg',
+                    paymentComment: 'Se adjunta boleta',
+                    reservationPaymentAmmount: 100,
+                    reservationpaymentDate: '07/12/2019'
+                }
+            }
+            //DUMMY TO REMOVE
+            var objPayment = {paymentStatus: 'PENDING PAYMENT', paymentStatusText:'Pendiente de pago', paymentAmmount:'$25',paymentDate:'Pending'};
+            if(obj.IdReservation == 1){
+                objPayment = {paymentStatus: 'PENDING CONFIRMATION', paymentStatusText:'Pendiente de confirmar', paymentAmmount:'$25',paymentDate:'07/12/2019',paymentComment:"Adjunto el documento",paymentDocument:"http://gcallapp.co/wp-content/uploads/2019/09/paid-invoice-template-invoice-payment-receipt-template.jpg"};
+            }else if(obj.IdReservation == 2){
+                objPayment = {paymentStatus: 'PAID', paymentStatusText:'Pago', paymentAmmount:'$25',paymentDate:'07/12/2019',paymentComment:"Adjunto el documento",paymentDocument:"http://gcallapp.co/wp-content/uploads/2019/09/paid-invoice-template-invoice-payment-receipt-template.jpg"};
+            }
+            //
             return(
             <tr key={obj.IdReservation}>
                 <td>{obj.IdReservation}</td>
@@ -21,7 +64,10 @@ const MyReservedSpacesTable = (props) =>{
                 <td>{obj.DateFromString}</td>
                 <td>{obj.PlanSelected == 'Hour' ? ("Desde "+obj.HourFrom+" a "+obj.HourTo) : ("1 "+ obj.PlanSelected)}</td>
                 <td>{obj.TotalPrice}</td>
-                <td>Pendiente de pago</td>
+                <td>{objReservationCustomerPayment.reservationPaymentStateText}</td>
+                <td><a href="#" className = "col-md-12" onClick={() => props.triggerModal("PAYRESCUST", obj.IdReservation, objReservationCustomerPayment)}> <span><i className="col-md-1 fa fa-align-justify"></i></span> Detalles</a></td> 
+                <td>{objPayment.paymentStatusText}</td>
+                <td><a href="#" className = "col-md-12" onClick={() => props.triggerModal("PAYRESCOM", obj.IdReservation, objPayment)}> <span><i className="col-md-1 fa fa-align-justify"></i></span> Detalles</a></td> 
                 <td>{obj.StateDescription}</td>
                 <td>
                     <div>

@@ -7,10 +7,16 @@ class CreatePublicationStep3 extends React.Component {
 
     constructor(props) {
       super(props);
+      var isDisabled = false, premOptionSelected = null;
+      if(this.props.parentState.premiumOptionSelected){
+        isDisabled = true;
+        premOptionSelected = this.props.parentState.premiumOptionSelected;
+      }
       this.state = {
         totalToPay: 0,
         totalToPayText: "Total a pagar $0",
-        premOptionSelected: null
+        premOptionSelected: premOptionSelected,
+        isDisabled: isDisabled
       }
     }
 
@@ -46,7 +52,8 @@ class CreatePublicationStep3 extends React.Component {
                 {this.props.parentState.premiumOptions.map((premOpc, key) => {
                       return (
                         <tr key={premOpc.IdPlan}>
-                          <td><CustomInput onChange={this.onChange} value={premOpc.IdPlan} type="radio" id={"premiumSelect_"+premOpc.IdPlan} name="premiumSelect" label={premOpc.Name} /></td>
+                          <td><CustomInput onChange={this.onChange} value={premOpc.IdPlan} type="radio" id={"premiumSelect_"+premOpc.IdPlan} 
+                            name="premiumSelect" label={premOpc.Name} disabled={this.state.isDisabled} defaultValue={this.props.parentState.premiumOptionSelected}/></td>
                           <td>{premOpc.Price}</td>
                           <td>{premOpc.Days}</td>
                         </tr>
