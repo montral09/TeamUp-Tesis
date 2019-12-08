@@ -130,12 +130,12 @@ class ModalSummary extends React.Component {
                                 </Col>
                             </FormGroup>
                             <FormGroup row>
-                                <Label for="textboxValue" sm={2}>Comentario (opcional)</Label>
-                                <Col sm={10}>
+                                <Label for="textboxValue" sm={6}>Comentario (opcional)</Label>
+                                <Col sm={12}>
                                     <Input type="textarea" name="textboxValue" id="textboxValue"
                                             value={this.state.reservationComment || ""} onChange={this.onChange}/>
                                 </Col>
-                                <Col sm={10}>
+                                <Col sm={12}>
                                     Atencion! Este valor esta pendiente de confirmar. <br/>
                                     Va a recibir un correo con los detalles finales y la confirmacion dentro de las proximas 48hrs.
                                 </Col>

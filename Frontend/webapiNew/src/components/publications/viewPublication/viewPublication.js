@@ -450,7 +450,9 @@ class ViewPublication extends React.Component {
         objApi.method = "PUT";
         objApi.responseSuccess = "SUCC_ANSWERCREATED";
         objApi.successMessage = "Respuesta enviada correctamente";
-        this.callAPImodal(objApi);
+        objApi.functionAfterSuccess = "saveAnswer";
+        this.modalReqInfo.current.changeModalLoadingState(false);
+        this.callAPI(objApi);
     }
 
     saveQuestion(question){
@@ -465,29 +467,30 @@ class ViewPublication extends React.Component {
         objApi.method = "POST";
         objApi.responseSuccess = "SUCC_QUESTIONCREATED";
         objApi.successMessage = "Consulta enviada correctamente";
-        this.callAPImodal(objApi);
+        objApi.functionAfterSuccess = "saveQuestion";
+        this.modalReqInfo.current.changeModalLoadingState(false);
+        this.callAPI(objApi);
     }
 
-    callAPImodal(objApi){
-        this.modalReqInfo.current.changeModalLoadingState(false);
+    callAPI(objApi){
         fetch(objApi.fetchUrl, {
             method: objApi.method,
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify(objApi.objToSend)
         }).then(response => response.json()).then(data => {
             if (data.responseCode == objApi.responseSuccess) {
-                toast.success(objApi.successMessage, {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                //this.loadMyReservations();
-                this.modalReqInfo.current.changeModalLoadingState(true);
+                if(objApi.successMessage != ""){
+                    toast.success(objApi.successMessage, {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                }
+                this.callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data);
             } else {
-                this.modalReqInfo.current.changeModalLoadingState(false);
                 this.handleErrors("Internal error");
             }
         }
@@ -496,6 +499,15 @@ class ViewPublication extends React.Component {
             this.handleErrors(error);
         }
         )
+    }
+
+    callFunctionAfterApiSuccess(trigger, objData){
+        switch(trigger){
+            case "saveAnswer":
+            case "saveQuestion":
+                this.modalReqInfo.current.changeModalLoadingState(true);
+            break;
+        }
     }
     render() {
         const { login_status } = this.props;
