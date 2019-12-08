@@ -44,7 +44,7 @@ namespace backend.Data_Access.Query
         public String GetPublisherSpaces()
         {
             String query = "select p.idPublication, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, " +
-                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities, p.city, e.description as state from PUBLICATIONS p, USERS u, SPACE_STATES e where " +
+                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities, p.city, e.description as state, p.idPlan from PUBLICATIONS p, USERS u, SPACE_STATES e where " +
                 "p.idUser = u.idUser and u.mail= @mail and p.state = e.idSpaceState";
             return query;
         }
@@ -217,8 +217,8 @@ namespace backend.Data_Access.Query
         public String CreateReservation()
         {
             String query = "insert into RESERVATIONS (idPublication, idCustomer, planSelected, dateFrom, hourFrom, HourTo," +
-                " people, comment, totalPrice, state) VALUES (@idPublication, @idCustomer, @planSelected, @dateFrom, @hourFrom, @HourTo," +
-                " @people, @comment, @totalPrice, 1)";
+                " people, comment, totalPrice, state, commission) VALUES (@idPublication, @idCustomer, @planSelected, @dateFrom, @hourFrom, @HourTo," +
+                " @people, @comment, @totalPrice, 1, @commission)";
             return query;
         }
 
@@ -233,13 +233,13 @@ namespace backend.Data_Access.Query
         {
             StringBuilder query = new StringBuilder();
             query = query.Append("select p.title, r.idReservation, r.idPublication, r.idCustomer, r.planSelected, r.reservedQty, r.dateFrom, r.hourFrom, r.HourTo," +
-                " r.people, r.comment, r.totalPrice, r.state, rs.description, s.individualRent, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice from RESERVATIONS r, PUBLICATIONS p, RESERVATION_STATES rs, SPACE_TYPES s");
+                " r.people, r.comment, r.totalPrice, r.state, rs.description, s.individualRent, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, r.paymentCustomerState, ps.description as customerPaymentDesc from RESERVATIONS r, PUBLICATIONS p, RESERVATION_STATES rs, SPACE_TYPES s, PAYMENT_STATES ps");
             if (idCustomer != 0)
             {
-                query.Append(" where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) and rs.idReservationState = r.state and p.spaceType = s.idSpaceType and r.idCustomer = @idCustomer");
+                query.Append(" where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) and rs.idReservationState = r.state and p.spaceType = s.idSpaceType and r.idCustomer = @idCustomer and ps.idPaymentState = paymentCustomerState");
             } else if (idPublisher != 0)
             {
-                query.Append(", USERS u where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) and rs.idReservationState = r.state and p.spaceType = s.idSpaceType and p.idUser = u.idUser and u.idUser = @idPublisher");
+                query.Append(", USERS u where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) and rs.idReservationState = r.state and p.spaceType = s.idSpaceType and p.idUser = u.idUser and u.idUser = @idPublisher and ps.idPaymentState = paymentCustomerState");
             }
             return query.ToString();
         }
@@ -390,6 +390,74 @@ namespace backend.Data_Access.Query
             String query = "select idPlan from PREFERENTIAL_PAYMENTS where idPrefPayments = @idPrefPayments";
             return query;
         }
+
+        public String GetPreferentialPlanInfo()
+        {
+            String query = "select pp.idPlan, ppl.name as planDescription, pp.state, ps.description as paymentDescription, ppl.price, pp.paymentDate from PAYMENT_STATES ps, PUBLICATIONS p, PREFERENTIAL_PAYMENTS pp, PUBLICATION_PLANS ppl where p.idPublication = @idPublication and " +
+                "p.idPlan = ppl.idPlan and pp.idPublication = p.idPublication and pp.state = ps.idPaymentState";
+            return query;
+        }
+
+        public String GetPublicationPlanById()
+        {
+            String query = "select name from PUBLICATION_PLANS where idPlan = @idPlan";
+            return query;
+        }
+
+        public String PayReservationCustomer(string comment, string url)
+        {
+            StringBuilder query = new StringBuilder();
+            query = query.Append("update RESERVATIONS set paymentCustomerState = 2");
+            if (comment != null)
+            {
+                query.Append(",paymentCustomerComment = @comment");
+            }
+            if (url != null)
+            {
+                query.Append(",paymentCustomerEvidence = @evidence");
+            }
+            query.Append(",paymentCustomerDate = getdate()");
+           
+            query.Append(" where idReservation = @idReservation");
+            return query.ToString();
+        }
+
+        public String GetPublisherFromReservation()
+        {
+            String query = "select u.name, u.lastName, u.mail from USERS u, RESERVATIONS r, PUBLICATIONS p " +
+                "where r.idReservation = @idReservation and r.idPublication = p.idPublication and p.idUser = u.idUser";                
+            return query;
+        }
+
+        public String PayReservationPublisher(string comment, string url)
+        {
+            StringBuilder query = new StringBuilder();
+            query = query.Append("update RESERVATIONS set commissionPaymentState = 2");
+            if (comment != null)
+            {
+                query.Append(",commissionComment = @comment");
+            }
+            if (url != null)
+            {
+                query.Append(",commissionEvidence = @evidence");
+            }
+            query.Append(",paymentCommissionDate = getdate()");
+
+            query.Append(" where idReservation = @idReservation");
+            return query.ToString();
+        }
+
+        public String ApprovePaymentCustomer()
+        {
+            String query = "update RESERVATIONS set paymentCustomerState = 3 where idReservation = @idReservation";
+            return query;
+        }
+
+        public String GetCustomerFromReservation()
+        {
+            String query = "select u.name, u.lastName, u.mail from USERS u, RESERVATIONS r " +
+                "where r.idReservation = @idReservation and r.idCustomer = u.idUser";
+            return query;
+        }
     }
-     
 }

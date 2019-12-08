@@ -882,6 +882,67 @@ namespace backend.Logic
                 throw e;
             }
         }
-        
+
+        public async Task<VOResponsePayReservationCustomer> PayReservationCustomer(VORequestPayReservationCustomer voPayReservationCustomer)
+        {
+            try
+            {
+                VOResponsePayReservationCustomer response = new VOResponsePayReservationCustomer();
+                String message = util.ValidAccessToken(voPayReservationCustomer.AccessToken, voPayReservationCustomer.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    User user = users.Find(voPayReservationCustomer.Mail);
+                    await spaces.PayReservationCustomer(voPayReservationCustomer, user.IdUser);
+                    message = EnumMessages.SUCC_PAYMENTUPDATED.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+
+        public async Task<VOResponsePayReservationPublisher> PayReservationPublisher(VORequestPayReservationPublisher voPayReservationPublisher)
+        {
+            try
+            {
+                VOResponsePayReservationPublisher response = new VOResponsePayReservationPublisher();
+                String message = util.ValidAccessToken(voPayReservationPublisher.AccessToken, voPayReservationPublisher.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    User user = users.Find(voPayReservationPublisher.Mail);
+                    await spaces.PayReservationPublisher(voPayReservationPublisher, user.IdUser);
+                    message = EnumMessages.SUCC_PAYMENTUPDATED.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+
+        public VOResponseApprovePaymentCustomer ApprovePaymentCustomer(VORequestApprovePaymentCustomer voApprovePayment)
+        {
+            try
+            {
+                VOResponseApprovePaymentCustomer response = new VOResponseApprovePaymentCustomer();
+                String message = util.ValidAccessToken(voApprovePayment.AccessToken, voApprovePayment.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    spaces.ApprovePaymentCustomer(voApprovePayment);
+                    message = EnumMessages.SUCC_PAYMENTUPDATED.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
     }
 }

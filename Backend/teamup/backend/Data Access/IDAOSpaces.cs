@@ -33,5 +33,8 @@ namespace backend.Data_Access
         List<VOPublicationQuestion> GetPublicationQuestions(int idPublication);
         List<VOPublicationPlan> GetPublicationPlans();
         Task UpdatePreferentialPayment(VORequestUpdatePreferentialPayment voUpdatePayment, bool isAdmin);
+        Task PayReservationCustomer(VORequestPayReservationCustomer voPayReservationCustomer, long idUser);
+        Task PayReservationPublisher(VORequestPayReservationPublisher voPayReservationPublisher, long idUser);
+        void ApprovePaymentCustomer(VORequestApprovePaymentCustomer voApprovePayment);
     }
 }

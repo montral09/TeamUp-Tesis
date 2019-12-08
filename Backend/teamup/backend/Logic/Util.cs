@@ -235,9 +235,33 @@ namespace backend.Logic
             return body;
         }
 
+        public static string CreateBodyEmailPayReservationCustomer(String name)
+        {
+            string body = "Hola, " + name;
+            body += "<br /><br />Una de tus reservas ha sido pagada";
+            body += "<br /><br />Gracias";
+            return body;
+        }
+
         public static string ConvertDateToString(DateTime date)
         {
             return date.ToString("dd/MM/yyyy");
+        }
+
+        public static string CreateBodyEmailPayCommissionToAdmin(string publisherMail)
+        {
+            string body = "Hola,";
+            body += "<br /><br />Se ha efectuado el pago de una comision del cliente " + publisherMail + ".";
+            body += "<br /><br />Gracias";
+            return body;
+        }
+
+        public static string CreateBodyEmailUpdatePaymentCustomer(String name)
+        {
+            string body = "Hola, " + name;
+            body += "<br /><br />Han confirmado el pago de tu reserva.";
+            body += "<br /><br />Gracias";
+            return body;
         }
     }
 }
