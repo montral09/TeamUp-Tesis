@@ -1730,7 +1730,7 @@ namespace backend.Data_Access
             return user;
         }
 
-        public async Task PayReservationPublisher(VORequestPayReservationPublisher voPayReservationPublisher, long idUser)
+        public async Task PayReservationPublisher(VORequestPayReservationPublisher voPayReservationPublisher, long idUser, bool isAdmin)
         {
             SqlConnection con = null;
             StorageUtil storageUtil = new StorageUtil();
@@ -1744,27 +1744,49 @@ namespace backend.Data_Access
             {
                 con = new SqlConnection(GetConnectionString());
                 con.Open();
-                if (voPayReservationPublisher.Evidence != null)
+                if (isAdmin)
                 {
-                    // Insert evidence
-                    url = await storageUtil.StoreEvidencePaymentReservationPublisherAsync(voPayReservationPublisher.Evidence, idUser, voPayReservationPublisher.IdReservation);
-                }
-                string query = cns.PayReservationPublisher(voPayReservationPublisher.Comment, url);
-                SqlCommand updateCommand = new SqlCommand(query, con);
-                List<SqlParameter> prm = new List<SqlParameter>()
+                    string query = cns.ApproveCommissionPaymentPublisher();
+                    SqlCommand updateCommand = new SqlCommand(query, con);
+                    SqlParameter prm = new SqlParameter()
                     {
-                    new SqlParameter("@idReservation", SqlDbType.Int) {Value = voPayReservationPublisher.IdReservation},
-                    new SqlParameter("@comment", SqlDbType.VarChar) {Value = commentAux},
-                    new SqlParameter("@evidence", SqlDbType.VarChar) {Value = url},
+                        ParameterName = "@idReservation",
+                        Value = voPayReservationPublisher.IdReservation,
+                        SqlDbType = SqlDbType.Int
                     };
-                updateCommand.Parameters.AddRange(prm.ToArray());
-                updateCommand.ExecuteNonQuery();               
-                // Send email to admin
-                Util util = new Util();
-                string subject = "Reserva paga";
-                string adminEmail = ConfigurationManager.AppSettings["EMAIL_ADMIN"];
-                string bodyAdmin = Util.CreateBodyEmailPayCommissionToAdmin(voPayReservationPublisher.Mail);
-                util.SendEmailAsync(adminEmail, bodyAdmin, subject);
+                    updateCommand.Parameters.Add(prm);
+                    updateCommand.ExecuteNonQuery();
+                    VOUserBasicData user = GetPublisherFromReservation(voPayReservationPublisher.IdReservation, con);
+                    // Send email to publisher
+                    string subject = "Pago aprobado";
+                    string body = Util.CreateBodyEmailApproveCommissionToPublisher(user.Name);
+                    Util util = new Util();
+                    util.SendEmailAsync(user.Mail, body, subject);
+                }
+                else
+                {
+                    if (voPayReservationPublisher.Evidence != null)
+                    {
+                        // Insert evidence
+                        url = await storageUtil.StoreEvidencePaymentReservationPublisherAsync(voPayReservationPublisher.Evidence, idUser, voPayReservationPublisher.IdReservation);
+                    }
+                    string query = cns.PayReservationPublisher(voPayReservationPublisher.Comment, url);
+                    SqlCommand updateCommand = new SqlCommand(query, con);
+                    List<SqlParameter> prm = new List<SqlParameter>()
+                        {
+                        new SqlParameter("@idReservation", SqlDbType.Int) {Value = voPayReservationPublisher.IdReservation},
+                        new SqlParameter("@comment", SqlDbType.VarChar) {Value = commentAux},
+                        new SqlParameter("@evidence", SqlDbType.VarChar) {Value = url},
+                        };
+                    updateCommand.Parameters.AddRange(prm.ToArray());
+                    updateCommand.ExecuteNonQuery();
+                    // Send email to admin
+                    Util util = new Util();
+                    string subject = "Reserva paga";
+                    string adminEmail = ConfigurationManager.AppSettings["EMAIL_ADMIN"];
+                    string bodyAdmin = Util.CreateBodyEmailPayCommissionToAdmin(voPayReservationPublisher.Mail);
+                    util.SendEmailAsync(adminEmail, bodyAdmin, subject);
+                }
             }
             catch (Exception e)
             {
@@ -1796,7 +1818,7 @@ namespace backend.Data_Access
                 };
                 updateCommand.Parameters.Add(param);
                 updateCommand.ExecuteNonQuery();
-                VOUserBasicData user = GetPublisherFromReservation(voApprovePayment.IdReservation, con);
+                VOUserBasicData user = GetCustomerFromReservation(voApprovePayment.IdReservation, con);
                 // Send email to customer
                 string subject = "Pago de reserva confirmado";
                 string body = Util.CreateBodyEmailUpdatePaymentCustomer(user.Name);
@@ -1843,6 +1865,89 @@ namespace backend.Data_Access
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             return user;
+        }
+
+        public List<VOPublicationPaymentAdmin> GetPublicationPlanPayments()
+        {
+            SqlConnection con = null;
+            List<VOPublicationPaymentAdmin> payments = new List<VOPublicationPaymentAdmin>();
+            string paymentDateString = null;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.GetPublicationPlanPayments();
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                VOPublicationPaymentAdmin voPayment;
+                while (dr.Read())
+                {
+                    paymentDateString = null;
+                    if (dr["paymentDate"] != DBNull.Value)
+                    {
+                        paymentDateString = Util.ConvertDateToString(Convert.ToDateTime(dr["paymentDate"]));
+                    }                                                          
+                    voPayment = new VOPublicationPaymentAdmin(Convert.ToInt32(dr["idPublication"]), Convert.ToString(dr["title"]), Convert.ToString(dr["mail"]),
+                         Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToString(dr["planName"]),
+                         Convert.ToString(dr["description"]), Convert.ToInt32(dr["price"]), Convert.ToString(dr["comment"]),
+                         Convert.ToString(dr["evidence"]), paymentDateString);
+                    payments.Add(voPayment);
+                } 
+                dr.Close();
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+            return payments;
+        }
+        public List<VOCommissionPaymentAdmin> GetCommissionPayments()
+        {
+            SqlConnection con = null;
+            List<VOCommissionPaymentAdmin> commissions = new List<VOCommissionPaymentAdmin>();
+            string paymentDateString = null;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.GetCommissionPayments();
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                VOCommissionPaymentAdmin voCommission;
+                while (dr.Read())
+                {
+                    paymentDateString = null;
+                    if (dr["paymentCommissionDate"] != DBNull.Value)
+                    {
+                        paymentDateString = Util.ConvertDateToString(Convert.ToDateTime(dr["paymentCommissionDate"]));
+                    }
+                    voCommission = new VOCommissionPaymentAdmin(Convert.ToInt32(dr["idReservation"]), Convert.ToString(dr["title"]), Convert.ToString(dr["mail"]),
+                         Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToInt32(dr["commission"]),
+                         Convert.ToString(dr["description"]), Convert.ToString(dr["commissionComment"]),
+                         Convert.ToString(dr["commissionEvidence"]), paymentDateString);
+                    commissions.Add(voCommission);
+                }
+                dr.Close();
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+            return commissions;
         }
     }    
 }

@@ -53,5 +53,7 @@ namespace backend.Logic
         Task<VOResponsePayReservationCustomer> PayReservationCustomer(VORequestPayReservationCustomer voPayReservationCustomer);
         Task<VOResponsePayReservationPublisher> PayReservationPublisher(VORequestPayReservationPublisher voPayReservationPublisher);
         VOResponseApprovePaymentCustomer ApprovePaymentCustomer(VORequestApprovePaymentCustomer voApprovePayment);
+        VOResponseGetPublicationPlanPayments GetPublicationPlanPayments(VORequestGetPublicationPlanPayments voGetPayment);
+        VOResponseGetCommissionPayments GetCommissionPayments(VORequestGetCommissionPayments voGetPayment);
     }
 }

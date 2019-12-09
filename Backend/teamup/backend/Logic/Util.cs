@@ -263,5 +263,13 @@ namespace backend.Logic
             body += "<br /><br />Gracias";
             return body;
         }
+
+        public static string CreateBodyEmailApproveCommissionToPublisher(String name)
+        {
+            string body = "Hola, " + name;
+            body += "<br /><br />Se ha aprobado el pago de la comision de la reserva";
+            body += "<br /><br />Gracias";
+            return body;
+        }
     }
 }

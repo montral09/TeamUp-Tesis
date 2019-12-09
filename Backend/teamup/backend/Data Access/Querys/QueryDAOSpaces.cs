@@ -375,7 +375,7 @@ namespace backend.Data_Access.Query
 
         public String UpdatePreferentialPaymentAdmin()
         {
-            String query = "update PREFERENTIAL_PAYMENTS set state = 3 where idPrefPayments = @idPrefPayments";
+            String query = "update PREFERENTIAL_PAYMENTS set state = 3 where idReservation = @idReservation";
             return query;           
         }
 
@@ -459,5 +459,33 @@ namespace backend.Data_Access.Query
                 "where r.idReservation = @idReservation and r.idCustomer = u.idUser";
             return query;
         }
+
+        public String GetPublicationPlanPayments()
+        {
+            String query = "select p.idPublication, p.title, u.mail, u.name, u.lastName, u.phone, ppl.name as planName, ps.description, " +
+                "ppl.price, pp.comment, pp.evidence, pp.paymentDate from PUBLICATIONS p, USERS u, PUBLICATION_PLANS ppl, PREFERENTIAL_PAYMENTS pp, " +
+                "PAYMENT_STATES ps where pp.idPublication = p.idPublication and p.idUser = u.idUser and " +
+                "ppl.idPlan = pp.idPlan and pp.state = ps.idPaymentState ORDER BY CASE pp.state when 2 THEN 1 when 3 THEN 2 when 1 THEN 3 end";
+            return query;
+
+        }
+
+        public String ApproveCommissionPaymentPublisher()
+        {
+            StringBuilder query = new StringBuilder();
+            query = query.Append("update RESERVATIONS set commissionPaymentState = 3");
+            query.Append(" where idReservation = @idReservation");
+            return query.ToString();
+        }
+
+        public String GetCommissionPayments()
+        {
+            String query = "select r.idReservation, p.title, u.mail, u.name, u.lastName, u.phone, r.commission, ps.description, " +
+                "r.commissionComment, r.commissionEvidence, r.paymentCommissionDate from RESERVATIONS r, PUBLICATIONS p, USERS u, " +
+                "PAYMENT_STATES ps where r.commissionPaymentState = ps.idPaymentState and r.idPublication = p.idPublication and p.idUser = u.idUser " +
+                "ORDER BY CASE r.commissionPaymentState when 2 THEN 1 when 3 THEN 2 when 1 THEN 3 end";
+            return query;
+        }
+
     }
 }

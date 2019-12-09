@@ -31,5 +31,22 @@ namespace webapi.Controllers
                 return InternalServerError(new Exception(e.Codigo));
             }
         }
+
+        [EnableCors(origins: "*", headers: "*", methods: "*")]
+        [HttpPut]
+        [Route("api/reservationPaymentPublisher")]
+        public IHttpActionResult Put([FromBody]VORequestGetCommissionPayments voCommissionPayments)
+        {
+            try
+            {
+                VOResponseGetCommissionPayments voResp = new VOResponseGetCommissionPayments();
+                voResp = fach.GetCommissionPayments(voCommissionPayments);
+                return Ok(voResp);
+            }
+            catch (GeneralException e)
+            {
+                return InternalServerError(new Exception(e.Codigo));
+            }
+        }
     }
 }
