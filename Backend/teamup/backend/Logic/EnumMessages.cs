@@ -42,6 +42,9 @@ namespace backend.Logic
         SUCC_PUBLICATIONUPDATED,
         ERR_INVALIDUPDATE,
         ERR_SPACENOTFOUND,
+        //Publication plans
+        SUCC_PUBLICATIONPLANSOK,
+        SUCC_PAYMENTUPDATED,
         //Favorites
         SUCC_FAVORITEUPDATED,
         //Tokens
@@ -58,7 +61,9 @@ namespace backend.Logic
         SUCC_REVIEWCREATED,
         //Questions
         SUCC_QUESTIONCREATED,
-        SUCC_ANSWERCREATED
+        SUCC_ANSWERCREATED,
+        //Commissions
+        SUCC_COMMISSIONSSOK
     }
     
 }

@@ -61,5 +61,101 @@ namespace backend.Logic
         {
             return String.Join("','", imagesURL);
         }
+
+        public async Task<string> StoreEvidencePaymentPlanAsync(VOImage image, int idPrefPayment, int idPublication)
+        {
+            try
+            {
+                var auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey));
+                var a = await auth.SignInWithEmailAndPasswordAsync(AuthEmail, AuthPassword);
+                MemoryStream ms;
+                StringBuilder fullPath = new StringBuilder();
+                string fileName;
+
+                    fileName = Util.GetRandomString();
+                    byte[] byteArray = Convert.FromBase64String(image.Base64String);
+                    ms = new MemoryStream(byteArray);
+                    fullPath = fullPath.Append("Payments/Plan").Append("/").Append(idPrefPayment).Append("/").Append(fileName).Append(".").Append(image.Extension);
+                    var cancellation = new CancellationTokenSource();
+                    var task = new FirebaseStorage(Bucket, new FirebaseStorageOptions
+                    {
+                        AuthTokenAsyncFactory = () => Task.FromResult(a.FirebaseToken),
+                        ThrowOnCancel = true // when you cancel the upload, exception is thrown. By default no exception is thrown
+                    });
+                    var e = await Task.Factory.StartNew(async () => await task.Child(fullPath.ToString()).PutAsync(ms, cancellation.Token));
+                    e.Wait();
+                    var u = await task.Child(fullPath.ToString()).GetDownloadUrlAsync();
+                    fullPath.Clear();
+                    return u;
+            }
+            catch (Exception err)
+            {
+                throw err;
+            }
+        }
+
+        public async Task<string> StoreEvidencePaymentReservationCustomerAsync(VOImage image, long idUser, int idReservation)
+        {
+            try
+            {
+                var auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey));
+                var a = await auth.SignInWithEmailAndPasswordAsync(AuthEmail, AuthPassword);
+                MemoryStream ms;
+                StringBuilder fullPath = new StringBuilder();
+                string fileName;
+
+                fileName = Util.GetRandomString();
+                byte[] byteArray = Convert.FromBase64String(image.Base64String);
+                ms = new MemoryStream(byteArray);
+                fullPath = fullPath.Append("Payments/Reservations/").Append(idReservation).Append("/Customer/").Append(idUser).Append(fileName).Append(".").Append(image.Extension);
+                var cancellation = new CancellationTokenSource();
+                var task = new FirebaseStorage(Bucket, new FirebaseStorageOptions
+                {
+                    AuthTokenAsyncFactory = () => Task.FromResult(a.FirebaseToken),
+                    ThrowOnCancel = true // when you cancel the upload, exception is thrown. By default no exception is thrown
+                });
+                var e = await Task.Factory.StartNew(async () => await task.Child(fullPath.ToString()).PutAsync(ms, cancellation.Token));
+                e.Wait();
+                var u = await task.Child(fullPath.ToString()).GetDownloadUrlAsync();
+                fullPath.Clear();
+                return u;
+            }
+            catch (Exception err)
+            {
+                throw err;
+            }
+        }
+
+        public async Task<string> StoreEvidencePaymentReservationPublisherAsync(VOImage image, long idUser, int idReservation)
+        {
+            try
+            {
+                var auth = new FirebaseAuthProvider(new FirebaseConfig(ApiKey));
+                var a = await auth.SignInWithEmailAndPasswordAsync(AuthEmail, AuthPassword);
+                MemoryStream ms;
+                StringBuilder fullPath = new StringBuilder();
+                string fileName;
+
+                fileName = Util.GetRandomString();
+                byte[] byteArray = Convert.FromBase64String(image.Base64String);
+                ms = new MemoryStream(byteArray);
+                fullPath = fullPath.Append("Payments/Reservations/").Append(idReservation).Append("/Publisher/").Append(idUser).Append(fileName).Append(".").Append(image.Extension);
+                var cancellation = new CancellationTokenSource();
+                var task = new FirebaseStorage(Bucket, new FirebaseStorageOptions
+                {
+                    AuthTokenAsyncFactory = () => Task.FromResult(a.FirebaseToken),
+                    ThrowOnCancel = true // when you cancel the upload, exception is thrown. By default no exception is thrown
+                });
+                var e = await Task.Factory.StartNew(async () => await task.Child(fullPath.ToString()).PutAsync(ms, cancellation.Token));
+                e.Wait();
+                var u = await task.Child(fullPath.ToString()).GetDownloadUrlAsync();
+                fullPath.Clear();
+                return u;
+            }
+            catch (Exception err)
+            {
+                throw err;
+            }
+        }
     }
 }

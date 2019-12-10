@@ -31,5 +31,12 @@ namespace backend.Data_Access
         void CreatePublicationQuestion(VORequestCreatePublicationQuestion voCreatePublicationQuestion, long idUser);
         void CreatePublicationAnswer(VORequestCreatePublicationAnswer voCreatePublicationAnswer, long idUser);
         List<VOPublicationQuestion> GetPublicationQuestions(int idPublication);
+        List<VOPublicationPlan> GetPublicationPlans();
+        Task UpdatePreferentialPayment(VORequestUpdatePreferentialPayment voUpdatePayment, bool isAdmin);
+        Task PayReservationCustomer(VORequestPayReservationCustomer voPayReservationCustomer, long idUser);
+        Task PayReservationPublisher(VORequestPayReservationPublisher voPayReservationPublisher, long idUser, bool isAdmin);
+        void ApprovePaymentCustomer(VORequestApprovePaymentCustomer voApprovePayment);
+        List<VOPublicationPaymentAdmin> GetPublicationPlanPayments();
+        List<VOCommissionPaymentAdmin> GetCommissionPayments();
     }
 }

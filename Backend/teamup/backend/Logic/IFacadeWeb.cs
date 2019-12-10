@@ -47,6 +47,13 @@ namespace backend.Logic
         VOResponseUpdateReservation UpdateReservation(VORequestUpdateReservation voUpdateRservation);
         VOResponseCreateReview CreateReview(VORequestCreateReview voCreateReview);
         VOResponseCreatePublicationQuestion CreatePublicationQuestion(VORequestCreatePublicationQuestion voCreatePublicationQuestion);
-        VOResponseCreatePublicationAnswer CreatePublicationAnswer(VORequestCreatePublicationAnswer voCreatePublicationAnswer);        
+        VOResponseCreatePublicationAnswer CreatePublicationAnswer(VORequestCreatePublicationAnswer voCreatePublicationAnswer);
+        VOResponseGetPublicationPlans GetPublicationPlans();
+        Task<VOResponseUpdatePreferentialPayment> UpdatePreferentialPayment(VORequestUpdatePreferentialPayment voUpdatePayment);
+        Task<VOResponsePayReservationCustomer> PayReservationCustomer(VORequestPayReservationCustomer voPayReservationCustomer);
+        Task<VOResponsePayReservationPublisher> PayReservationPublisher(VORequestPayReservationPublisher voPayReservationPublisher);
+        VOResponseApprovePaymentCustomer ApprovePaymentCustomer(VORequestApprovePaymentCustomer voApprovePayment);
+        VOResponseGetPublicationPlanPayments GetPublicationPlanPayments(VORequestGetPublicationPlanPayments voGetPayment);
+        VOResponseGetCommissionPayments GetCommissionPayments(VORequestGetCommissionPayments voGetPayment);
     }
 }
