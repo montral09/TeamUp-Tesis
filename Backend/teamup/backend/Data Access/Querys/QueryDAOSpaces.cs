@@ -478,7 +478,7 @@ namespace backend.Data_Access.Query
             return query.ToString();
         }
 
-        public String GetCommissionPayments()
+        public String GetCommissionPaymentsAdmin()
         {
             String query = "select r.idReservation, p.title, u.mail, u.name, u.lastName, u.phone, r.commission, ps.description, " +
                 "r.commissionComment, r.commissionEvidence, r.paymentCommissionDate from RESERVATIONS r, PUBLICATIONS p, USERS u, " +
@@ -487,5 +487,18 @@ namespace backend.Data_Access.Query
             return query;
         }
 
+        public String GetReservationPaymentInfo()
+        {
+            String query = "select r.paymentCustomerState, ps.description, r.paymentCustomerComment, r.paymentCustomerEvidence, r.paymentCustomerDate " +
+                "from RESERVATIONS r, PAYMENT_STATES ps where r.idReservation = @idReservation and r.paymentCustomerState = ps.idPaymentState";
+            return query;
+        }
+
+        public String GetCommissionPayment()
+        {
+            String query = "select r.commission, r.commissionPaymentState, ps.description, r.commissionComment, r.commissionEvidence, r.paymentCommissionDate " +
+                "from RESERVATIONS r, PAYMENT_STATES ps where r.idReservation = @idReservation and r.commissionPaymentState = ps.idPaymentState";
+            return query;
+        }
     }
 }
