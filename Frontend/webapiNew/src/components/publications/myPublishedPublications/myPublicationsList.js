@@ -26,6 +26,7 @@ class MyPublicationsList extends React.Component {
         this.loadMyPublications = this.loadMyPublications.bind(this);
         this.editPublication = this.editPublication.bind(this);
         this.changePubState = this.changePubState.bind(this);
+        this.confirmPayment = this.confirmPayment.bind(this);
         this.ModalDetailPayment    = React.createRef(); // Connects the reference to the modal
         this.triggerModalDetailPayment = this.triggerModalDetailPayment.bind(this);
     }
@@ -156,11 +157,30 @@ class MyPublicationsList extends React.Component {
         switch(trigger){
             case "loadMyPublications"   : this.setState({ publications: data.Publications, loadingPubs: false });   break;
             case "loadSpaceTypes"       : this.setState({ spaceTypes: data.spaceTypes, loadingSpaceTypes: false }); break;
+            case "confirmPayment"       : this.ModalDetailPayment.current.changeModalLoadingState(true); break;
         }
     }
 
     confirmPayment(objPaymentDetails){
-        this.ModalDetailPayment.current.changeModalLoadingState(true);
+        var objApi = {};
+        objApi.objToSend = {
+            "AccessToken": this.props.tokenObj.accesToken,
+            "Mail": this.props.userData.Mail,
+            "IdPublication" : objPaymentDetails.IdPublication,
+            "Comment" : objPaymentDetails.paymentComment,
+            "Evidence" : {
+                "Base64String" : objPaymentDetails.archivesUpload[0].Base64String || "",
+                "Extension" :  objPaymentDetails.archivesUpload[0].Extension|| ""
+            }
+        }
+        console.log("confirmPayment: objToSend")
+        console.log(objApi.objToSend)
+        objApi.fetchUrl = "https://localhost:44372/api/publicationPlan";
+        objApi.method = "PUT";
+        objApi.responseSuccess = "SUCC_PAYMENTUPDATED";
+        objApi.successMessage = "Se ha confirmado el envío de pago";
+        objApi.functionAfterSuccess = "confirmPayment";
+        this.callAPI(objApi);
     }
 
     triggerModalDetailPayment(objPaymentDetails){

@@ -11,7 +11,7 @@ class ModalResCustPay extends React.Component {
         this.state = {
             modal: false,
             objPaymentDetails : {},
-            reservationComment : "",
+            paymentComment : "",
             isLoading : false,
             buttonIsDisabled: false
         };
@@ -44,7 +44,9 @@ class ModalResCustPay extends React.Component {
     }
     save() {
         this.changeModalLoadingState(false);
-        this.props.confirmPayment();
+        var objPaymentDetails = this.state.objPaymentDetails;
+        objPaymentDetails.paymentComment = this.state.paymentComment;
+        this.props.confirmPayment(this.state.objPaymentDetails);
     }
 
     deny(){

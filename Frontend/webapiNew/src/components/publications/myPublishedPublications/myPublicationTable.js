@@ -25,14 +25,8 @@ const MyPublicationTable = (props) =>{
     const arrDataList = publications.length ? (
         publications.map( obj => {
             let url = "http://localhost:3000/publications/viewPublication/viewPublication/"+obj.IdPublication;
-            var objPayment = {paymentStatus: 'PENDING PAYMENT', paymentStatusText:'Pendiente de pago', paymentAmmount:'$250',plan:'GOLD',paymentDate:'Pending'};
-            if(obj.IdPublication == 4){
-                objPayment = {paymentStatus: 'PENDING CONFIRMATION', paymentStatusText:'Pendiente de confirmar', paymentAmmount:'$250',plan:'GOLD',paymentDate:'07/12/2019',paymentComment:"Adjunto el documento",paymentDocument:"http://gcallapp.co/wp-content/uploads/2019/09/paid-invoice-template-invoice-payment-receipt-template.jpg"};
-            }else if(obj.IdPublication == 5){
-                objPayment = {paymentStatus: 'PAID', paymentStatusText:'Pago', paymentAmmount:'$250',plan:'GOLD',paymentDate:'07/12/2019',paymentComment:"Adjunto el documento",paymentDocument:"http://gcallapp.co/wp-content/uploads/2019/09/paid-invoice-template-invoice-payment-receipt-template.jpg"};
-            }else if (obj.IdPublication == 6){
-                objPayment = {plan:'FREE'};
-            }
+            var objPayment = {paymentStatus: obj.PreferentialPlan.StateDescription, paymentStatusText:obj.PreferentialPlan.StateDescription, paymentAmmount: 
+                obj.PreferentialPlan.Price,plan: obj.PreferentialPlan.Description,paymentDate:obj.PreferentialPlan.PaymentDate, IdPublication: obj.IdPublication};
             return(
             <tr key={obj.IdPublication}>
                 <td>{obj.IdPublication}</td>
@@ -64,7 +58,7 @@ const MyPublicationTable = (props) =>{
                             <td><a href="" className = "col-md-12" onClick={() => props.changePubState(obj.State, obj.IdPublication)}><span><i className="col-md-1 fa fa-play"></i></span> Reanudar</a></td>
                             <td></td>
                             </>  
-                        ) :(<><td></td><td></td><td></td></>) }
+                        ) :(<><td></td><td></td></>) }
                     </>)}
             </tr>
             )
