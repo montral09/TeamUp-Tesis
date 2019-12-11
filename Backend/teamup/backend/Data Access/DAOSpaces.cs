@@ -387,6 +387,8 @@ namespace backend.Data_Access
             {
                 if (idPlan != 1)
                 {
+                    //It is not a free plan
+                    string paymentDateString = null;
                     String query = cns.GetPreferentialPlanInfo();
                     SqlCommand selectCommand = new SqlCommand(query, con);
                     SqlParameter param = new SqlParameter()
@@ -399,18 +401,19 @@ namespace backend.Data_Access
                     SqlDataReader dr = selectCommand.ExecuteReader();
                     while (dr.Read())
                     {
-                        string paymentDateString = null;
-                        DateTime paymentDate = Convert.ToDateTime(dr["paymentDate"]);
-                        if (paymentDate != null)
+                        paymentDateString = null;
+                        if (!(dr["paymentDate"] is DBNull))
                         {
+                            DateTime paymentDate = Convert.ToDateTime(dr["paymentDate"]);
                             paymentDateString = Util.ConvertDateToString(paymentDate);
-                        }
+                        }                      
                         voPreferentialPlan = new VOPreferentialPlan(Convert.ToInt32(dr["idPlan"]), Convert.ToString(dr["planDescription"]), Convert.ToInt32(dr["state"]),
                              Convert.ToString(dr["paymentDescription"]), Convert.ToInt32(dr["price"]), paymentDateString);
                     }
                     dr.Close();
                 } else
                 {
+                    // It's a free plan
                     String queryPlan = cns.GetPublicationPlanById();
                     SqlCommand selectCommandPlan = new SqlCommand(queryPlan, con);
                     SqlParameter paramPlan = new SqlParameter()
