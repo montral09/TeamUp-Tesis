@@ -1597,11 +1597,7 @@ namespace backend.Data_Access
             StorageUtil storageUtil = new StorageUtil();
             string url = "";
             int idPlan = 2;
-            string commentAux = "";
-            if (voUpdatePayment.Comment != null)
-            {
-                commentAux = voUpdatePayment.Comment;
-            }           
+            string commentAux = "";                  
             try
             {
                 con = new SqlConnection(GetConnectionString());
@@ -1615,8 +1611,8 @@ namespace backend.Data_Access
                     SqlCommand updateCommand = new SqlCommand(query, con);
                     SqlParameter prm = new SqlParameter()
                     {
-                        ParameterName = "@idPrefPayments",
-                        Value = idPayment,
+                        ParameterName = "@idPublication",
+                        Value = voUpdatePayment.IdPublication,
                         SqlDbType = SqlDbType.Int
                     };
                     updateCommand.Parameters.Add(prm);
@@ -1637,11 +1633,15 @@ namespace backend.Data_Access
 
                     objTrans.Commit();
                 } else
-                {
+                {                    
                     if (voUpdatePayment.Evidence != null)
                     {
                         // Insert evidence
                         url = await storageUtil.StoreEvidencePaymentPlanAsync(voUpdatePayment.Evidence, idPayment, voUpdatePayment.IdPublication);
+                    }
+                    if (voUpdatePayment.Comment != null)
+                    {
+                        commentAux = voUpdatePayment.Comment;
                     }
                     string query = cns.UpdatePreferentialPayment(voUpdatePayment.Comment, url, idPlan);
                     SqlCommand updateCommand = new SqlCommand(query, con);

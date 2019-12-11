@@ -375,7 +375,7 @@ namespace backend.Data_Access.Query
 
         public String UpdatePreferentialPaymentAdmin()
         {
-            String query = "update PREFERENTIAL_PAYMENTS set state = 3 where idReservation = @idReservation";
+            String query = "update PREFERENTIAL_PAYMENTS set state = 3 where idPublication = @idPublication";
             return query;           
         }
 
