@@ -11,7 +11,6 @@ class ModalDetailPayment extends React.Component {
         this.state = {
             modal: false,
             objPaymentDetails: {},
-            reservationComment: "",
             isLoading: false,
             buttonIsDisabled: false
         };
@@ -127,9 +126,8 @@ class ModalDetailPayment extends React.Component {
 
     // End Upload image functions
     onChange = (evt) => {
-        if(evt.target.id){
+        if(evt.target.id == 'paymentDocumentNew'){
             if (this.maxSelectFile(evt) && this.checkMimeType(evt) && this.checkFileSize(evt)) {
-                console.log(evt.target.files);
                 this.setState({ spaceImages: [], tempFiles: evt.target.files }, () => {
                     for (var i = 0; i < this.state.tempFiles.length; i++) {
                         var file = this.state.tempFiles[i]; // FileList object

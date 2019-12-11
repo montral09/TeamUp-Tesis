@@ -58,8 +58,14 @@ class CreatePublication extends React.Component {
         this.validateStep = this.validateStep.bind(this);
         this._nextStep = this._nextStep.bind(this);
         this._previousStep = this._previousStep.bind(this);
+        this.handleErrors  = this.handleErrors.bind(this);
         
     }
+
+    handleErrors(error) {
+        this.setState({ generalError: true });
+    }
+
     loadPublication(pubID){
         try{
             this.setState({ pubIsLoading: true});
@@ -276,133 +282,109 @@ class CreatePublication extends React.Component {
 
 
     loadSpaceTypes() {
-        try {
-            fetch('https://localhost:44372/api/spaceTypes'
-            ).then(response => response.json()).then(data => {
-                if (data.responseCode == "SUCC_SPACETYPESOK") {
-                    console.log(data);
-                    this.setState({ spaceTypes: data.spaceTypes })
-                } else {
-                    toast.error('Hubo un error', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                }
-            }
-            ).catch(error => {
-                toast.error('Internal error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                console.log(error);
-            }
-            )
-        } catch (error) {
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-        }
+        var objApi = {};
+        objApi.objToSend = {}
+        objApi.fetchUrl = "https://localhost:44372/api/spaceTypes";
+        objApi.method = "GET";
+        objApi.responseSuccess = "SUCC_SPACETYPESOK";
+        objApi.successMessage = "";
+        objApi.functionAfterSuccess = "loadSpaceTypes";
+        this.callAPI(objApi);
     }
 
     loadInfraestructure() {
-        try {
-            fetch('https://localhost:44372/api/facilities').then(response => response.json()).then(data => {
-                console.log("data:" + JSON.stringify(data));
-                if (data.responseCode == "SUCC_FACILITIESOK") {
-                    this.setState({ facilities: data.facilities });
-                } else {
-                    toast.error('Internal error', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                }
-            }
-            ).catch(error => {
-                toast.error('Internal error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                console.log(error);
-            }
-            )
-        } catch (error) {
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-        }
+        var objApi = {};
+        objApi.objToSend = {}
+        objApi.fetchUrl = "https://localhost:44372/api/facilities";
+        objApi.method = "GET";
+        objApi.responseSuccess = "SUCC_FACILITIESOK";
+        objApi.successMessage = "";
+        objApi.functionAfterSuccess = "loadInfraestructure";
+        this.callAPI(objApi);
     }
 
     loadPremiumOptions() {
-        try {
-            // call API
-            var dummyData = {
-                "Plans": [
-                    {
-                        "IdPlan": 1,
-                        "Name": "FREE",
-                        "Price": 0,
-                        "Days": 90
-                    },
-                    {
-                        "IdPlan": 2,
-                        "Name": "BRONZE",
-                        "Price": 300,
-                        "Days": 90
-                    },
-                    {
-                        "IdPlan": 3,
-                        "Name": "SILVER",
-                        "Price": 450,
-                        "Days": 90
-                    },
-                    {
-                        "IdPlan": 4,
-                        "Name": "GOLD",
-                        "Price": 600,
-                        "Days": 90
-                    }
-                ],
-                "responseCode": "SUCC_PUBLICATIONPLANSOK"
-            };
-            this.setState({ premiumOptions: dummyData.Plans });
+        var objApi = {};
+        objApi.objToSend = {}
+        objApi.fetchUrl = "https://localhost:44372/api/publicationPlan";
+        objApi.method = "GET";
+        objApi.responseSuccess = "SUCC_PUBLICATIONPLANSOK";
+        objApi.successMessage = "";
+        objApi.functionAfterSuccess = "loadPremiumOptions";
+        this.callAPI(objApi);
+    }
 
-        } catch (error) {
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
+
+    callAPI(objApi){
+        if(objApi.method == "GET"){
+            fetch(objApi.fetchUrl).then(response => response.json()).then(data => {
+                if (data.responseCode == objApi.responseSuccess) {
+                    if(objApi.successMessage != ""){
+                        toast.success(objApi.successMessage, {
+                            position: "top-right",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                        });
+                    }
+                    this.callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data);
+                } else {
+                    this.handleErrors("Internal error");
+                }
+            }
+            ).catch(error => {
+                alert(error)
+                this.handleErrors(error);
+            }
+            )
+        }else{
+            fetch(objApi.fetchUrl, {
+                method: objApi.method,
+                header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify(objApi.objToSend)
+            }).then(response => response.json()).then(data => {
+                if (data.responseCode == objApi.responseSuccess) {
+                    if(objApi.successMessage != ""){
+                        toast.success(objApi.successMessage, {
+                            position: "top-right",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                        });
+                    }
+                    this.callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data);
+                } else {
+                    this.handleErrors("Internal error");
+                }
+            }
+            ).catch(error => {
+                alert(error)
+                this.handleErrors(error);
+            }
+            )
+        }
+        
+    }
+
+    callFunctionAfterApiSuccess(trigger, objData){
+        switch(trigger){
+            case "loadPremiumOptions":
+                this.setState({ premiumOptions: objData.Plans });
+            break;
+            case "loadInfraestructure":
+                this.setState({ facilities: objData.facilities });
+            break;
+            case "loadSpaceTypes":
+                this.setState({ spaceTypes: objData.spaceTypes })
+            break;
+
         }
     }
+
     // Validate if all the required inputs are inputted, returns true or false
     checkRequiredInputs() {
         let returnValue = true;

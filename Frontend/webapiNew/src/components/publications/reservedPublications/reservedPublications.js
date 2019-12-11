@@ -158,8 +158,22 @@ class MyReservedPublications extends React.Component {
     rejetPayment(objPaymentDetails){
         alert("rejetPayment")
     }
+    
     confirmPayment(objPaymentDetails){
-        alert("confirmPayment")
+        var objApi = {};
+        objApi.objToSend = {
+            "AccessToken": this.props.tokenObj.accesToken,
+            "Mail": this.props.userData.Mail,
+            "IdReservation": objPaymentDetails.IdReservation
+        }
+        console.log("confirmPayment objToSend: ")
+        console.log(objApi.objToSend)
+        objApi.fetchUrl = "https://localhost:44372/api/reservationPaymentCustomer";
+        objApi.method = "PUT";
+        objApi.responseSuccess = "SUCC_PAYMENTUPDATED";
+        objApi.successMessage = "Se ha confirmado el envío de pago";
+        objApi.functionAfterSuccess = "confirmPayment";
+        this.callAPI(objApi);
     }
     callAPI(objApi){
         fetch(objApi.fetchUrl, {
@@ -194,6 +208,7 @@ class MyReservedPublications extends React.Component {
         switch(trigger){
             case "saveConfirm":
             case "saveCancel":
+            case "confirmPayment":
                 this.loadMyReservations();
                 this.modalReqInfo.current.changeModalLoadingState(true);
             break;
