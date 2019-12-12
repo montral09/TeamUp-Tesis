@@ -22,22 +22,23 @@ const MyReservedSpacesTable = (props) =>{
             console.log(obj)
 
             var objReservationCustomerPayment = {
-                reservationPaymentState: obj.CustomerPaymentDescription,
-                reservationPaymentStateText: obj.CustomerPaymentDescription,
-                paymentDocument: 'http://www.google.com.uy',
-                paymentComment: 'DUMMY HARDCODED COMMENT',
+                reservationPaymentState: obj.CustomerPayment.PaymentDescription,
+                reservationPaymentStateText: obj.CustomerPayment.PaymentDescription,
+                paymentDocument: obj.CustomerPayment.PaymentEvidence,
+                paymentComment: obj.CustomerPayment.PaymentComment,
                 reservationPaymentAmmount: obj.TotalPrice,
-                reservationpaymentDate: 'DUMMY HARDCODED VALUE',
+                reservationpaymentDate: obj.CustomerPayment.PaymentDate,
                 IdReservation: obj.IdReservation
             }
-            //DUMMY TO REMOVE
-            var objCommisionPayment = {paymentStatus: 'PENDING PAYMENT', paymentStatusText:'Pendiente de pago', paymentAmmount:'$25',paymentDate:'Pending'};
-            if(obj.IdReservation == 1){
-                objCommisionPayment = {paymentStatus: 'PENDING CONFIRMATION', paymentStatusText:'Pendiente de confirmar', paymentAmmount:'$25',paymentDate:'07/12/2019',paymentComment:"Adjunto el documento",paymentDocument:"http://gcallapp.co/wp-content/uploads/2019/09/paid-invoice-template-invoice-payment-receipt-template.jpg"};
-            }else if(obj.IdReservation == 2){
-                objCommisionPayment = {paymentStatus: 'PAID', paymentStatusText:'Pago', paymentAmmount:'$25',paymentDate:'07/12/2019',paymentComment:"Adjunto el documento",paymentDocument:"http://gcallapp.co/wp-content/uploads/2019/09/paid-invoice-template-invoice-payment-receipt-template.jpg"};
+            if(isPublisher){
+                var objCommisionPayment = {
+                    paymentStatus: obj.CommissionPayment.PaymentDescription, 
+                    paymentStatusText: obj.CommissionPayment.PaymentDescription,
+                    paymentAmmount: obj.CommissionPayment.Commission,
+                    paymentDate: obj.CommissionPayment.PaymentDate,
+                };
             }
-            //
+
             return(
             <tr key={obj.IdReservation}>
                 <td>{obj.IdReservation}</td>

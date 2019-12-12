@@ -22,6 +22,7 @@ class MyReservedPublications extends React.Component {
             loadingStatusChange : false,
             modalConfigObj : {},
             selectedIdRes : null,
+            generalError : false,
             selectedResState : ""
         }
         this.modalReqInfo = React.createRef(); // Connects the reference to the modal
@@ -31,6 +32,7 @@ class MyReservedPublications extends React.Component {
         this.triggerModal = this.triggerModal.bind(this);   
         this.saveCancel = this.saveCancel.bind(this);
         this.saveConfirm = this.saveConfirm.bind(this);
+        this.saveComissionPayment = this.saveComissionPayment.bind(this);
     }
 
     componentDidMount() {
@@ -38,6 +40,9 @@ class MyReservedPublications extends React.Component {
         this.loadMyReservations();
     }
 
+    handleErrors(error) {
+        this.setState({ generalError: true });
+    }
     loadMyReservations(){
         try {
             fetch('https://localhost:44372/api/reservationPublisher', {
@@ -153,7 +158,26 @@ class MyReservedPublications extends React.Component {
     }
 
     saveComissionPayment(objPaymentDetails){
-        alert("saveComissionPayment")
+        var objApi = {};
+        objApi.objToSend = {
+            "AccessToken": this.props.tokenObj.accesToken,
+            "Mail": this.props.userData.Mail,
+            "IdPublication" : objPaymentDetails.IdPublication,
+            "Comment" : objPaymentDetails.paymentComment,
+            "Evidence" : {
+                "Base64String" : objPaymentDetails.archivesUpload[0].Base64String || "",
+                "Extension" :  objPaymentDetails.archivesUpload[0].Extension|| ""
+            }
+        }
+        console.log("saveComissionPayment objToSend: ")
+        console.log(objApi.objToSend);
+        objApi.fetchUrl = "https://localhost:44372/api/reservationPaymentPublisher";
+        objApi.method = "POST";
+        objApi.responseSuccess = "SUCC_PAYMENTUPDATED";
+        objApi.successMessage = "Se ha enviado el pago de comisión";
+        objApi.functionAfterSuccess = "saveComissionPayment";
+        this.ModalResComPay.current.changeModalLoadingState(false);
+        this.callAPI(objApi);
     }
     rejetPayment(objPaymentDetails){
         alert("rejetPayment")
@@ -198,7 +222,6 @@ class MyReservedPublications extends React.Component {
             }
         }
         ).catch(error => {
-            alert(error)
             this.handleErrors(error);
         }
         )
@@ -206,11 +229,15 @@ class MyReservedPublications extends React.Component {
     
     callFunctionAfterApiSuccess(trigger, objData){
         switch(trigger){
+            case "saveComissionPayment":
             case "saveConfirm":
             case "saveCancel":
-            case "confirmPayment":
                 this.loadMyReservations();
                 this.modalReqInfo.current.changeModalLoadingState(true);
+                break;
+            case "confirmPayment":
+                this.loadMyReservations();
+                this.ModalResCustPay.current.changeModalLoadingState(true);
             break;
         }
     }

@@ -5,12 +5,13 @@ import {
 } from 'reactstrap';
 import { toast } from 'react-toastify';
 
-class ModalDetailPayment extends React.Component {
+class ModalCustResPay extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             modal: false,
             objPaymentDetails: {},
+            reservationComment: "",
             isLoading: false,
             buttonIsDisabled: false
         };
@@ -45,7 +46,7 @@ class ModalDetailPayment extends React.Component {
 
     save() {
         this.changeModalLoadingState(false);
-        this.props.confirmPayment(this.state.objPaymentDetails);
+        this.props.saveCustReservationPayment(this.state.objPaymentDetails);
     }
 
 
@@ -126,8 +127,9 @@ class ModalDetailPayment extends React.Component {
 
     // End Upload image functions
     onChange = (evt) => {
-        if(evt.target.id == 'paymentDocumentNew'){
+        if(evt.target.id != "paymentComment"){
             if (this.maxSelectFile(evt) && this.checkMimeType(evt) && this.checkFileSize(evt)) {
+                console.log(evt.target.files);
                 this.setState({ spaceImages: [], tempFiles: evt.target.files }, () => {
                     for (var i = 0; i < this.state.tempFiles.length; i++) {
                         var file = this.state.tempFiles[i]; // FileList object
@@ -190,35 +192,28 @@ class ModalDetailPayment extends React.Component {
     render() {
         return (
             <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
-                <ModalHeader toggle={this.toggle}>Detalle plan preferencial</ModalHeader>
+                <ModalHeader toggle={this.toggle}>Detalle pago de la reserva</ModalHeader>
                 <ModalBody>
                     <Form>
                         <FormGroup row>
-                            <Label for="plan" sm={4}>Plan</Label>
+                            <Label for="reservationPaymentAmmount" sm={4}>Monto</Label>
                             <Col sm={8}>
-                                <Input type="text" name="plan" id="plan"
-                                    value={this.state.objPaymentDetails.plan} readOnly />
+                                <Input type="text" name="reservationPaymentAmmount" id="reservationPaymentAmmount"
+                                    value={this.state.objPaymentDetails.reservationPaymentAmmount} readOnly />
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label for="paymentAmmount" sm={4}>Monto</Label>
+                            <Label for="reservationPaymentStateText" sm={4}>Estatus del pago</Label>
                             <Col sm={8}>
-                                <Input type="text" name="paymentAmmount" id="paymentAmmount"
-                                    value={this.state.objPaymentDetails.paymentAmmount} readOnly />
+                                <Input type="text" name="reservationPaymentStateText" id="reservationPaymentStateText"
+                                    value={this.state.objPaymentDetails.reservationPaymentStateText} readOnly />
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label for="paymentStatusText" sm={4}>Estatus del pago</Label>
+                            <Label for="reservationpaymentDate" sm={4}>Fecha de pago</Label>
                             <Col sm={8}>
-                                <Input type="text" name="paymentStatusText" id="paymentStatusText"
-                                    value={this.state.objPaymentDetails.paymentStatusText} readOnly />
-                            </Col>
-                        </FormGroup>
-                        <FormGroup row>
-                            <Label for="paymentDate" sm={4}>Fecha de pago</Label>
-                            <Col sm={8}>
-                                <Input type="text" name="paymentDate" id="paymentDate"
-                                    value={this.state.objPaymentDetails.paymentDate == null ? "Pendiente" : this.state.objPaymentDetails.paymentDate} readOnly />
+                                <Input type="text" name="reservationpaymentDate" id="reservationpaymentDate"
+                                    value={this.state.objPaymentDetails.reservationpaymentDate == null ? "Pendiente" : this.state.objPaymentDetails.reservationpaymentDate} readOnly />
                             </Col>
                         </FormGroup>
                         {this.state.objPaymentDetails.paymentDocument ? (
@@ -229,7 +224,7 @@ class ModalDetailPayment extends React.Component {
                                 </Col>
                             </FormGroup>
                         ) : (null)}
-                        {this.state.objPaymentDetails.paymentStatus != "PAID" && this.state.objPaymentDetails.paymentStatus != "CANCELED" ? (
+                        {this.state.objPaymentDetails.reservationPaymentStateText != "PAID" && this.state.objPaymentDetails.reservationPaymentStateText != "CANCELED" ? (
                             <FormGroup row>
                                 <Label for="paymentDocumentNew" sm={4}>Documento prueba</Label>
                                 <Col sm={8}>
@@ -242,13 +237,13 @@ class ModalDetailPayment extends React.Component {
                             <Label for="paymentComment" sm={6}>Comentario (opcional)</Label>
                             <Col sm={12}>
                                 <Input type="textarea" name="paymentComment" id="paymentComment"
-                                    value={this.state.objPaymentDetails.paymentComment} onChange={this.onChange} readOnly={this.state.objPaymentDetails.paymentStatus != "PAID" || this.state.objPaymentDetails.paymentStatus != "CANCELED" ? false : true} />
+                                    value={this.state.objPaymentDetails.paymentComment} onChange={this.onChange} readOnly={this.state.objPaymentDetails.reservationPaymentStateText != "PAID" || this.state.objPaymentDetails.reservationPaymentStateText != "CANCELED" ? false : true} />
                             </Col>
                         </FormGroup>
                         <FormGroup row>
                             <Col sm={12}>
-                                {this.state.objPaymentDetails.paymentStatus != "PAID" && this.state.objPaymentDetails.paymentStatus != "CANCELED" ? (
-                                    "Atencion! El pago deberá ser confirmado, se le enviará un correo cuando el mismo haya sido confirmado."+ 
+                                {this.state.objPaymentDetails.reservationPaymentStateText != "PAID" && this.state.objPaymentDetails.reservationPaymentStateText != "CANCELED" ? (
+                                    "Atencion! El pago deberá ser confirmado por el gestor. " +
                                     "Puede adjuntar una imagen/pdf y agregar un comentario."
                                 ) : (
                                         "El pago fue confirmado."
@@ -260,8 +255,8 @@ class ModalDetailPayment extends React.Component {
                 </ModalBody>
                 <ModalFooter>
                     <Button color="link" onClick={this.toggle} disabled={this.state.buttonIsDisabled}>Cerrar</Button>
-                    {this.state.objPaymentDetails.paymentStatus != "PAID" && this.state.objPaymentDetails.paymentStatus != "CANCELED" ? (
-                        <Button color="primary" onClick={this.save} disabled={this.state.buttonIsDisabled}>Confirmar
+                    {this.state.objPaymentDetails.PaymentDescription != "PAID" && this.state.objPaymentDetails.PaymentDescription != "CANCELED" ? (
+                        <Button color="primary" onClick={this.save} disabled={this.state.buttonIsDisabled}>Guardar
                             &nbsp;&nbsp;
                             {this.state.isLoading &&
                                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -274,4 +269,4 @@ class ModalDetailPayment extends React.Component {
     }
 }
 
-export default ModalDetailPayment;
+export default ModalCustResPay;

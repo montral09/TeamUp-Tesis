@@ -24,6 +24,8 @@ const MyPublicationTable = (props) =>{
     });
     const arrDataList = publications.length ? (
         publications.map( obj => {
+            console.log("MyPublicationTable ")
+            console.log(obj)
             let url = "http://localhost:3000/publications/viewPublication/viewPublication/"+obj.IdPublication;
             var objPayment = {paymentStatus: obj.PreferentialPlan.StateDescription, paymentStatusText:obj.PreferentialPlan.StateDescription, paymentAmmount: 
                 obj.PreferentialPlan.Price,plan: obj.PreferentialPlan.Description,paymentDate:obj.PreferentialPlan.PaymentDate, IdPublication: obj.IdPublication};

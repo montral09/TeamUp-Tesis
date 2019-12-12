@@ -127,7 +127,7 @@ class ModalResComPay extends React.Component {
 
     // End Upload image functions
     onChange = (evt) => {
-        if(evt.target.id){
+        if(evt.target.id != 'paymentComment'){
             if (this.maxSelectFile(evt) && this.checkMimeType(evt) && this.checkFileSize(evt)) {
                 console.log(evt.target.files);
                 this.setState({ spaceImages: [], tempFiles: evt.target.files }, () => {
@@ -213,7 +213,7 @@ class ModalResComPay extends React.Component {
                             <Label for="paymentDate" sm={4}>Fecha de pago</Label>
                             <Col sm={8}>
                                 <Input type="text" name="paymentDate" id="paymentDate"
-                                    value={this.state.objPaymentDetails.paymentDate} readOnly />
+                                    value={this.state.objPaymentDetails.paymentDate == null ? "Pendiente" : this.state.objPaymentDetails.paymentDate} readOnly />
                             </Col>
                         </FormGroup>
                         {this.state.objPaymentDetails.paymentDocument ? (
