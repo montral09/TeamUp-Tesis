@@ -976,7 +976,7 @@ namespace backend.Logic
                 String message = util.ValidAccessToken(voGetPayment.AccessToken, voGetPayment.Mail);
                 if (EnumMessages.OK.ToString().Equals(message))
                 {
-                    response.Commissions = spaces.GetCommissionPayments();
+                    response.Commissions = spaces.GetCommissionPaymentsAdmin();
                     message = EnumMessages.SUCC_COMMISSIONSSOK.ToString();
                 }
                 response.responseCode = message;

@@ -315,7 +315,8 @@ namespace backend.Data_Access
             SqlConnection con = null;
             List<VOPublication> publications = new List<VOPublication>();
             Util util = new Util();
-            VOPreferentialPlan voPreferentialPlan = null;
+            VOPreferentialPlan voPreferentialPlan;
+            VOPayment voPayment;
             try
             {
                 con = new SqlConnection(GetConnectionString());
@@ -380,7 +381,42 @@ namespace backend.Data_Access
             return publications;
         }
 
-        private VOPreferentialPlan GetPreferentialPlanInfo(int idPublication, int idPlan, SqlConnection con)
+        private VOPayment GetCommissionPayment(int idReservation, SqlConnection con)
+        {
+            VOPayment voPayment = null;
+            try
+            {
+                string paymentDateString = null;
+                String query = cns.GetCommissionPayment();
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                SqlParameter param = new SqlParameter()
+                {
+                    ParameterName = "@idReservation",
+                    Value = idReservation,
+                    SqlDbType = SqlDbType.Int
+                };
+                selectCommand.Parameters.Add(param);
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                while (dr.Read())
+                {
+                    paymentDateString = null;
+                    if (!(dr["paymentCommissionDate"] is DBNull))
+                    {
+                        DateTime paymentDate = Convert.ToDateTime(dr["paymentCommissionDate"]);
+                        paymentDateString = Util.ConvertDateToString(paymentDate);
+                    }                    
+                    voPayment = new VOPayment(Convert.ToInt32(dr["commissionPaymentState"]), Convert.ToString(dr["description"]), Convert.ToString(dr["commissionComment"]), Convert.ToString(dr["commissionEvidence"]), paymentDateString, Convert.ToInt32(dr["commission"]));                        
+                }
+                dr.Close();
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            return voPayment;
+        }
+
+            private VOPreferentialPlan GetPreferentialPlanInfo(int idPublication, int idPlan, SqlConnection con)
         {
             VOPreferentialPlan voPreferentialPlan = null;
             try
@@ -1042,6 +1078,7 @@ namespace backend.Data_Access
             List<VOReservationExtended> reservations = new List<VOReservationExtended>();
             VOReservationExtended voReservation = null;
             SqlConnection con = null;
+            int idReservation = 0;
             bool wasReviewed = false;
             try
             {
@@ -1060,14 +1097,16 @@ namespace backend.Data_Access
                 SqlDataReader dr = selectCommand.ExecuteReader();
                 while (dr.Read())
                 {
-                    wasReviewed = ReservationWasReviewed(Convert.ToInt32(dr["idReservation"]), con);
+                    idReservation = Convert.ToInt32(dr["idReservation"]);
+                    wasReviewed = ReservationWasReviewed(idReservation, con);
+                    VOPayment payment = GetReservationPaymentInfo(idReservation, con);
                     String dateConverted = Convert.ToDateTime(dr["dateFrom"]).ToString("dd-MM-yyyy");
-                    voReservation = new VOReservationExtended(Convert.ToInt32(dr["idReservation"]), Convert.ToString(dr["title"]), Convert.ToInt32(dr["idPublication"]),
+                    voReservation = new VOReservationExtended(idReservation, Convert.ToString(dr["title"]), Convert.ToInt32(dr["idPublication"]),
                         Convert.ToString(voGetReservationsCustomer.Mail), Convert.ToString(dr["planSelected"]),
                         Convert.ToInt32(dr["reservedQty"] is DBNull ? 0 : dr["reservedQty"]), Convert.ToDateTime(dr["dateFrom"]), dateConverted,  Convert.ToString(dr["hourFrom"]),
                         Convert.ToString(dr["hourTo"]), Convert.ToInt32(dr["people"] is DBNull ? 0 : dr["people"]), Convert.ToString(dr["comment"]),
                         Convert.ToInt32(dr["totalPrice"]), Convert.ToInt32(dr["state"]), Convert.ToString(dr["description"]), Convert.ToBoolean(dr["individualRent"]), Convert.ToInt32(dr["hourPrice"]),
-                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), wasReviewed, Convert.ToInt32(dr["paymentCustomerState"]), Convert.ToString(dr["customerPaymentDesc"]));
+                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), wasReviewed, payment, null);
                     reservations.Add(voReservation);
                 }
                 dr.Close();
@@ -1086,12 +1125,46 @@ namespace backend.Data_Access
             return reservations;
 
         }
+
+        private VOPayment GetReservationPaymentInfo(int idReservation, SqlConnection con)
+        {
+            string query = cns.GetReservationPaymentInfo();
+            SqlCommand selectCommand = new SqlCommand(query, con);
+            VOPayment payment = null;
+            string paymentDateString = null;
+            SqlParameter param = new SqlParameter()
+            {
+                ParameterName = "@idReservation",
+                Value = idReservation,
+                SqlDbType = SqlDbType.Int
+            };
+            selectCommand.Parameters.Add(param);
+            SqlDataReader dr = selectCommand.ExecuteReader();
+            while (dr.Read())
+            {
+                paymentDateString = null;
+                if (!(dr["paymentCustomerDate"] is DBNull))
+                {
+                    DateTime paymentDate = Convert.ToDateTime(dr["paymentCustomerDate"]);
+                    paymentDateString = Util.ConvertDateToString(paymentDate);
+                }
+                payment = new VOPayment(Convert.ToInt32(dr["paymentCustomerState"]), Convert.ToString(dr["description"]), Convert.ToString(dr["paymentCustomerComment"]), Convert.ToString(dr["paymentCustomerEvidence"]), paymentDateString, 0);
+            }            
+            dr.Close();
+
+            return payment;
+        }
+
         public List<VOReservationExtended> GetReservationsPublisher(VORequestGetReservationsPublisher voGetReservationsPublisher, long idUser)
         {
             List<VOReservationExtended> reservations = new List<VOReservationExtended>();
-            VOReservationExtended voReservation = null;
+            VOReservationExtended voReservation;
             SqlConnection con = null;
-            bool wasReviewed = false;
+            int idReservation;
+            bool wasReviewed;
+            VOPayment payment;
+            VOPayment paymentCommission;
+            String dateConverted;
             try
             {
                 con = new SqlConnection(GetConnectionString());
@@ -1108,14 +1181,17 @@ namespace backend.Data_Access
                 SqlDataReader dr = selectCommand.ExecuteReader();
                 while (dr.Read())
                 {
+                    idReservation = Convert.ToInt32(dr["idReservation"]);
                     wasReviewed = ReservationWasReviewed(Convert.ToInt32(dr["idReservation"]), con);
-                    String dateConverted = Convert.ToDateTime(dr["dateFrom"]).ToString("dd-MM-yyyy");
+                    payment = GetReservationPaymentInfo(idReservation, con);
+                    dateConverted = Convert.ToDateTime(dr["dateFrom"]).ToString("dd-MM-yyyy");
+                    paymentCommission = GetCommissionPayment(idReservation, con);
                     voReservation = new VOReservationExtended(Convert.ToInt32(dr["idReservation"]), Convert.ToString(dr["title"]), Convert.ToInt32(dr["idPublication"]),
                         Convert.ToString(voGetReservationsPublisher.Mail), Convert.ToString(dr["planSelected"]),
                         Convert.ToInt32(dr["reservedQty"] is DBNull ? 0 : dr["reservedQty"]), Convert.ToDateTime(dr["dateFrom"]), dateConverted, Convert.ToString(dr["hourFrom"]),
                         Convert.ToString(dr["hourTo"]), Convert.ToInt32(dr["people"] is DBNull ? 0 : dr["people"]), Convert.ToString(dr["comment"]),
                         Convert.ToInt32(dr["totalPrice"]), Convert.ToInt32(dr["state"]), Convert.ToString(dr["description"]), Convert.ToBoolean(dr["individualRent"]), Convert.ToInt32(dr["hourPrice"]), 
-                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), wasReviewed, Convert.ToInt32(dr["paymentCustomerState"]), Convert.ToString(dr["customerPaymentDesc"]));
+                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), wasReviewed, payment, paymentCommission);
                     reservations.Add(voReservation);
                 }
                 dr.Close();
@@ -1521,11 +1597,7 @@ namespace backend.Data_Access
             StorageUtil storageUtil = new StorageUtil();
             string url = "";
             int idPlan = 2;
-            string commentAux = "";
-            if (voUpdatePayment.Comment != null)
-            {
-                commentAux = voUpdatePayment.Comment;
-            }           
+            string commentAux = "";                  
             try
             {
                 con = new SqlConnection(GetConnectionString());
@@ -1539,8 +1611,8 @@ namespace backend.Data_Access
                     SqlCommand updateCommand = new SqlCommand(query, con);
                     SqlParameter prm = new SqlParameter()
                     {
-                        ParameterName = "@idPrefPayments",
-                        Value = idPayment,
+                        ParameterName = "@idPublication",
+                        Value = voUpdatePayment.IdPublication,
                         SqlDbType = SqlDbType.Int
                     };
                     updateCommand.Parameters.Add(prm);
@@ -1561,11 +1633,15 @@ namespace backend.Data_Access
 
                     objTrans.Commit();
                 } else
-                {
+                {                    
                     if (voUpdatePayment.Evidence != null)
                     {
                         // Insert evidence
                         url = await storageUtil.StoreEvidencePaymentPlanAsync(voUpdatePayment.Evidence, idPayment, voUpdatePayment.IdPublication);
+                    }
+                    if (voUpdatePayment.Comment != null)
+                    {
+                        commentAux = voUpdatePayment.Comment;
                     }
                     string query = cns.UpdatePreferentialPayment(voUpdatePayment.Comment, url, idPlan);
                     SqlCommand updateCommand = new SqlCommand(query, con);
@@ -1911,7 +1987,7 @@ namespace backend.Data_Access
             }
             return payments;
         }
-        public List<VOCommissionPaymentAdmin> GetCommissionPayments()
+        public List<VOCommissionPaymentAdmin> GetCommissionPaymentsAdmin()
         {
             SqlConnection con = null;
             List<VOCommissionPaymentAdmin> commissions = new List<VOCommissionPaymentAdmin>();
@@ -1920,7 +1996,7 @@ namespace backend.Data_Access
             {
                 con = new SqlConnection(GetConnectionString());
                 con.Open();
-                String query = cns.GetCommissionPayments();
+                String query = cns.GetCommissionPaymentsAdmin();
                 SqlCommand selectCommand = new SqlCommand(query, con);
                 SqlDataReader dr = selectCommand.ExecuteReader();
                 VOCommissionPaymentAdmin voCommission;

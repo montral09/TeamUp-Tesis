@@ -37,6 +37,6 @@ namespace backend.Data_Access
         Task PayReservationPublisher(VORequestPayReservationPublisher voPayReservationPublisher, long idUser, bool isAdmin);
         void ApprovePaymentCustomer(VORequestApprovePaymentCustomer voApprovePayment);
         List<VOPublicationPaymentAdmin> GetPublicationPlanPayments();
-        List<VOCommissionPaymentAdmin> GetCommissionPayments();
+        List<VOCommissionPaymentAdmin> GetCommissionPaymentsAdmin();
     }
 }
