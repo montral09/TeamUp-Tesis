@@ -211,7 +211,7 @@ class MyPublicationsList extends React.Component {
                         <div className="pattern" >
                             <h1>Mis publicaciones</h1>
                             <div className="col-md-12 center-column">
-                                <ModalDetailPayment ref={this.ModalDetailPayment} confirmPayment={this.confirmPayment}/>
+                                <ModalDetailPayment ref={this.ModalDetailPayment} confirmPayment={this.confirmPayment} isPublisher={true}/>
                                 {(!this.state.loadingPubs && !this.state.loadingSpaceTypes) ?
                                 (<MyPublicationTable changePubState={this.changePubState} editPublication={this.editPublication} triggerModalDetailPayment={this.triggerModalDetailPayment}
                                     publications={this.state.publications} spaceTypes={this.state.spaceTypes} />)

@@ -53,7 +53,7 @@ class CreatePublicationStep3 extends React.Component {
                       return (
                         <tr key={premOpc.IdPlan}>
                           <td><CustomInput onChange={this.onChange} value={premOpc.IdPlan} type="radio" id={"premiumSelect_"+premOpc.IdPlan} 
-                            name="premiumSelect" label={premOpc.Name} disabled={this.state.isDisabled} defaultValue={this.props.parentState.premiumOptionSelected}/></td>
+                            name="premiumSelect" label={premOpc.Name} disabled={this.state.isDisabled} /></td>
                           <td>{premOpc.Price}</td>
                           <td>{premOpc.Days}</td>
                         </tr>
