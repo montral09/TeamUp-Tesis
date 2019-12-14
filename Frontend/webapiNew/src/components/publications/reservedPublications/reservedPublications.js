@@ -162,7 +162,7 @@ class MyReservedPublications extends React.Component {
         objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,
             "Mail": this.props.userData.Mail,
-            "IdPublication" : objPaymentDetails.IdPublication,
+            "IdReservation" : objPaymentDetails.IdReservation,
             "Comment" : objPaymentDetails.paymentComment,
             "Evidence" : {
                 "Base64String" : objPaymentDetails.archivesUpload[0].Base64String || "",
@@ -230,6 +230,9 @@ class MyReservedPublications extends React.Component {
     callFunctionAfterApiSuccess(trigger, objData){
         switch(trigger){
             case "saveComissionPayment":
+                this.ModalResComPay.current.changeModalLoadingState(true);
+                this.loadMyReservations();
+                break;
             case "saveConfirm":
             case "saveCancel":
                 this.loadMyReservations();

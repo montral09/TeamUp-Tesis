@@ -240,7 +240,7 @@ class MyReservedSpacesList extends React.Component {
         objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,
             "Mail": this.props.userData.Mail,
-            "IdPublication" : objPaymentDetails.IdPublication,
+            "IdReservation" : objPaymentDetails.IdReservation,
             "Comment" : objPaymentDetails.paymentComment,
             "Evidence" : {
                 "Base64String" : objPaymentDetails.archivesUpload[0].Base64String || "",
