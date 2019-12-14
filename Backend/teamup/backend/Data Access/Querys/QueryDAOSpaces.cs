@@ -302,7 +302,7 @@ namespace backend.Data_Access.Query
 
         public String GetPublicationQuestions()
         {
-            String query = "select q.idQuestion, u.name, q.question, q.creationDate from PUBLICATION_QUESTIONS q, USERS u where " +
+            String query = "select TOP 30 q.idQuestion, u.name, q.question, q.creationDate from PUBLICATION_QUESTIONS q, USERS u where " +
                 "q.idPublication = @idPublication and q.idUser = u.idUser order by q.creationDate desc";
             return query;
         }

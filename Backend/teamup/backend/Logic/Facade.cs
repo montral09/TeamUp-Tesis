@@ -93,7 +93,7 @@ namespace backend.Logic
                     result = new VOResponseLogin();
                     result.RefreshToken = voTokens.RefreshToken;
                     result.AccessToken = voTokens.AccessToken;
-                    result.voUserLog = new VOUser(usr.Mail, null, usr.Name, usr.LastName, usr.Phone, usr.Rut, usr.RazonSocial, usr.Address, usr.CheckPublisher);
+                    result.voUserLog = new VOUser(usr.Mail, null, usr.Name, usr.LastName, usr.Phone, usr.Rut, usr.RazonSocial, usr.Address, usr.CheckPublisher, usr.PublisherValidated);
                 }
             }
             catch (GeneralException e)
@@ -377,7 +377,7 @@ namespace backend.Logic
                 if (usr != null)
                 {
                     message = EnumMessages.SUCC_USERSOK.ToString();
-                    response.User = new VOUser(usr.Mail, null, usr.Name, usr.LastName, usr.Phone, usr.Rut, usr.RazonSocial, usr.Address, usr.CheckPublisher);
+                    response.User = new VOUser(usr.Mail, null, usr.Name, usr.LastName, usr.Phone, usr.Rut, usr.RazonSocial, usr.Address, usr.CheckPublisher, usr.PublisherValidated);
                 }
                 else
                 {
