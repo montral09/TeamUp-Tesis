@@ -11,8 +11,9 @@ const MyReservedSpacesTable = (props) =>{
     const columnsTable = columnsName.map( colName => {
         var valToRet = <th className="text-center" key={colName}>{colName}</th>;
         switch(colName){
-            case "Pago reserva": valToRet = <th className="text-center" colSpan='2' key={colName}>{colName}</th>; break;
-            case "Pago comisión": isPublisher ? valToRet = <th className="text-center" colSpan='2' key={colName}>{colName}</th> : valToRet = null; break;
+            case "Pago reserva"  : valToRet = <th className="text-center" colSpan='2' key={colName}>{colName}</th>; break;
+            case "Pago comisión" : isPublisher ? valToRet = <th className="text-center" colSpan='2' key={colName}>{colName}</th> : valToRet = null; break;
+            case "Mail cliente"  : isPublisher ? valToRet = <th className="text-center" key={colName}>{colName}</th> : valToRet = null; break;
         }
         return valToRet;
     });
@@ -36,6 +37,7 @@ const MyReservedSpacesTable = (props) =>{
                     paymentStatusText: obj.CommissionPayment.PaymentDescription,
                     paymentAmmount: obj.CommissionPayment.Commission,
                     paymentDate: obj.CommissionPayment.PaymentDate,
+                    IdReservation :obj.IdReservation
                 };
             }
 
@@ -43,7 +45,7 @@ const MyReservedSpacesTable = (props) =>{
             <tr key={obj.IdReservation}>
                 <td>{obj.IdReservation}</td>
                 <td>{obj.TitlePublication}</td>
-                <td>{obj.MailCustomer}</td>
+                {isPublisher ? <td>{obj.MailCustomer}</td> : null}
                 <td>{obj.People}</td>
                 <td>{obj.DateFromString}</td>
                 <td>{obj.PlanSelected == 'Hour' ? ("Desde "+obj.HourFrom+" a "+obj.HourTo) : ("1 "+ obj.PlanSelected)}</td>
