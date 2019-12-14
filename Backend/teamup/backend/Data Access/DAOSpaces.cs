@@ -420,21 +420,21 @@ namespace backend.Data_Access
         {
             VOPreferentialPlan voPreferentialPlan = null;
             try
-            {
-                if (idPlan != 1)
+            {                   
+                string paymentDateString = null;
+                String query = cns.GetPreferentialPlanInfo();
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                SqlParameter param = new SqlParameter()
                 {
-                    //It is not a free plan
-                    string paymentDateString = null;
-                    String query = cns.GetPreferentialPlanInfo();
-                    SqlCommand selectCommand = new SqlCommand(query, con);
-                    SqlParameter param = new SqlParameter()
-                    {
-                        ParameterName = "@idPublication",
-                        Value = idPublication,
-                        SqlDbType = SqlDbType.Int
-                    };
-                    selectCommand.Parameters.Add(param);
-                    SqlDataReader dr = selectCommand.ExecuteReader();
+                    ParameterName = "@idPublication",
+                    Value = idPublication,
+                    SqlDbType = SqlDbType.Int
+                };
+                selectCommand.Parameters.Add(param);
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                if (dr.HasRows)
+                {
+                    //It is not a free plan 
                     while (dr.Read())
                     {
                         paymentDateString = null;
@@ -442,9 +442,9 @@ namespace backend.Data_Access
                         {
                             DateTime paymentDate = Convert.ToDateTime(dr["paymentDate"]);
                             paymentDateString = Util.ConvertDateToString(paymentDate);
-                        }                      
+                        }
                         voPreferentialPlan = new VOPreferentialPlan(Convert.ToInt32(dr["idPlan"]), Convert.ToString(dr["planDescription"]), Convert.ToInt32(dr["state"]),
-                             Convert.ToString(dr["paymentDescription"]), Convert.ToInt32(dr["price"]), paymentDateString);
+                                Convert.ToString(dr["paymentDescription"]), Convert.ToInt32(dr["price"]), paymentDateString);
                     }
                     dr.Close();
                 } else
@@ -466,7 +466,7 @@ namespace backend.Data_Access
                         plan = Convert.ToString(drPlan["name"]);
                     }
                     drPlan.Close();
-                    voPreferentialPlan = new VOPreferentialPlan(idPlan, plan, 0, null, 0, null);
+                    voPreferentialPlan = new VOPreferentialPlan(idPlan, plan, 0, null, 0, null);                
                 }
             }
             catch (Exception e)
@@ -474,7 +474,7 @@ namespace backend.Data_Access
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             return voPreferentialPlan;
-        }
+            }
 
         public VOPublication GetSpace(int idSpace, User user)
         {

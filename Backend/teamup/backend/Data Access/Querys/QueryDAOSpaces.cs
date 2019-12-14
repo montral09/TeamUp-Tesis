@@ -394,7 +394,7 @@ namespace backend.Data_Access.Query
         public String GetPreferentialPlanInfo()
         {
             String query = "select pp.idPlan, ppl.name as planDescription, pp.state, ps.description as paymentDescription, ppl.price, pp.paymentDate from PAYMENT_STATES ps, PUBLICATIONS p, PREFERENTIAL_PAYMENTS pp, PUBLICATION_PLANS ppl where p.idPublication = @idPublication and " +
-                "p.idPlan = ppl.idPlan and pp.idPublication = p.idPublication and pp.state = ps.idPaymentState";
+                "pp.idPlan = ppl.idPlan and pp.idPublication = p.idPublication and pp.state = ps.idPaymentState";
             return query;
         }
 
