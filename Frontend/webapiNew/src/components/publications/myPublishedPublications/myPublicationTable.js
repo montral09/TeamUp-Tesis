@@ -50,14 +50,14 @@ const MyPublicationTable = (props) =>{
                 </td>
                 {obj.State === 'ACTIVE' ? (
                     <>
-                    <td><a href="" className = "col-md-12" onClick={() => props.editPublication(obj.IdPublication)}> <span><i className="col-md-1 fa fa-pencil-alt"></i></span> Editar</a></td> 
-                    <td><a href="" onClick={() => props.changePubState(obj.State, obj.IdPublication)}><span><i className="col-md-1 fa fa-pause"></i></span> Pausar</a></td>
+                    <td><a href="#" className = "col-md-12" onClick={() => props.editPublication(obj.IdPublication)}> <span><i className="col-md-1 fa fa-pencil-alt"></i></span> Editar</a></td> 
+                    <td><a href="#" onClick={() => props.changePubState(obj.State, obj.IdPublication)}><span><i className="col-md-1 fa fa-pause"></i></span> Pausar</a></td>
                     </>
                 ) : (
                     <>
                         {obj.State === 'PAUSED P' ? (
                             <>
-                            <td><a href="" className = "col-md-12" onClick={() => props.changePubState(obj.State, obj.IdPublication)}><span><i className="col-md-1 fa fa-play"></i></span> Reanudar</a></td>
+                            <td><a href="#" className = "col-md-12" onClick={() => props.changePubState(obj.State, obj.IdPublication)}><span><i className="col-md-1 fa fa-play"></i></span> Reanudar</a></td>
                             <td></td>
                             </>  
                         ) :(<><td></td><td></td></>) }

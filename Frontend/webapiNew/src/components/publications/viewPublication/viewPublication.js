@@ -42,7 +42,6 @@ class ViewPublication extends React.Component {
                                     , '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
             hourFromSelect      : '00',
             hourToSelect        : '01',
-            reservationComment  : "",
             totalPrice          : 0,
             arrQA               : [],
             modalConfigObj      : null
@@ -259,7 +258,7 @@ class ViewPublication extends React.Component {
         this.modalReqInfo.current.changeModalLoadingState(true);
     }
 
-    confirmReservation(){
+    confirmReservation(comment){
         var objToSend = {}
         var fetchUrl = 'https://localhost:44372/api/reservation';
         var method = "POST";
@@ -282,11 +281,10 @@ class ViewPublication extends React.Component {
                 "HourFrom": this.state.hourFromSelect,
                 "HourTo": this.state.hourToSelect,
                 "People": this.state.quantityPeople,
-                "Comment": this.state.reservationComment,
+                "Comment": comment,
                 "TotalPrice": this.state.totalPrice
             }
         }
-
         this.modalSummaryElement.current.changeModalLoadingState(false);
         fetch(fetchUrl, {
             method: method,

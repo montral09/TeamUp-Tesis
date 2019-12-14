@@ -48,7 +48,7 @@ const MyReservedSpacesTable = (props) =>{
                 {isPublisher ? <td>{obj.MailCustomer}</td> : null}
                 <td>{obj.People}</td>
                 <td>{obj.DateFromString}</td>
-                <td>{obj.PlanSelected == 'Hour' ? ("Desde "+obj.HourFrom+" a "+obj.HourTo) : ("1 "+ obj.PlanSelected)}</td>
+                <td>{obj.PlanSelected == 'Hour' ? ("Desde "+obj.HourFrom+" a "+obj.HourTo+" hs") : ("1 "+ obj.PlanSelected)}</td>
                 <td>{obj.TotalPrice}</td>
                 <td>{objReservationCustomerPayment.reservationPaymentStateText}</td>
                 <td><a href="#" className = "col-md-12" onClick={() => props.triggerModal("PAYRESCUST", obj.IdReservation, objReservationCustomerPayment)}> <span><i className="col-md-1 fa fa-align-justify"></i></span> Detalles</a></td> 
@@ -59,21 +59,21 @@ const MyReservedSpacesTable = (props) =>{
                     <div>
                         {obj.StateDescription === 'PENDING' || obj.StateDescription === 'RESERVED' ? (
                             <div>
-                                <a href="" onClick={() => {props.triggerModal("CANCEL", obj.IdReservation, obj.StateDescription)}}><span><i className="col-md-1 fa fa-times"></i></span>Cancelar</a> 
+                                <a href="#" onClick={() => {props.triggerModal("CANCEL", obj.IdReservation, obj.StateDescription)}}><span><i className="col-md-1 fa fa-times"></i></span>Cancelar</a> 
                                 {isPublisher && obj.StateDescription === 'PENDING' ? (
-                                    <a href="" onClick={() => {props.triggerModal("CONFIRM", obj.IdReservation, obj.StateDescription)}}><span><i className="col-md-1 fa fa-check"></i></span> Confirmar</a>                            
+                                    <a href="#" onClick={() => {props.triggerModal("CONFIRM", obj.IdReservation, obj.StateDescription)}}><span><i className="col-md-1 fa fa-check"></i></span> Confirmar</a>                            
                                     ) : (null)}
                             </div>
                             ) :(null)
                         }
                         {obj.StateDescription === 'FINISHED' && !isPublisher && !obj.Reviewed ? (
                             <div>
-                                <a href="" onClick={() => {props.triggerModal("RATE", obj.IdReservation, obj.StateDescription)}}><span><i className="col-md-1 fa fa-star"></i></span> Calificar</a> 
+                                <a href="#" onClick={() => {props.triggerModal("RATE", obj.IdReservation, obj.StateDescription)}}><span><i className="col-md-1 fa fa-star"></i></span> Calificar</a> 
                             </div>
                             ) :(
                                 <div>
                                 {!isPublisher && obj.StateDescription != 'FINISHED' && obj.StateDescription != 'CANCELED'  && obj.StateDescription != 'RESERVED' ? (
-                                        <a href="" onClick={() => {props.editReservation(obj.IdReservation)}}><span><i className="col-md-1 fa fa-pencil-alt"></i></span> Editar</a>                            
+                                        <a href="#" onClick={() => {props.editReservation(obj.IdReservation)}}><span><i className="col-md-1 fa fa-pencil-alt"></i></span> Editar</a>                            
                                     ) : (null)}
                                 </div>
                             )
