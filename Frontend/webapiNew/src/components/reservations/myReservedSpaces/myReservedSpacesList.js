@@ -241,15 +241,15 @@ class MyReservedSpacesList extends React.Component {
             "AccessToken": this.props.tokenObj.accesToken,
             "Mail": this.props.userData.Mail,
             "IdReservation" : objPaymentDetails.IdReservation,
-            "Comment" : objPaymentDetails.paymentComment,
+            "Comment" : objPaymentDetails.paymentComment || "",
             "Evidence" : {
-                "Base64String" : objPaymentDetails.archivesUpload[0].Base64String || "",
-                "Extension" :  objPaymentDetails.archivesUpload[0].Extension|| ""
+                "Base64String" : objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Base64String : "",
+                "Extension" :  objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Extension : ""
             }
         }
         console.log("confirmPayment: objToSend")
         console.log(objApi.objToSend)
-        objApi.fetchUrl = "https://localhost:44372/api/publicationPlan";
+        objApi.fetchUrl = "https://localhost:44372/api/reservationPaymentCustomer";
         objApi.method = "PUT";
         objApi.responseSuccess = "SUCC_PAYMENTUPDATED";
         objApi.successMessage = "Se ha confirmado el envío de pago";

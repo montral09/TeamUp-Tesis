@@ -167,10 +167,10 @@ class MyPublicationsList extends React.Component {
             "AccessToken": this.props.tokenObj.accesToken,
             "Mail": this.props.userData.Mail,
             "IdPublication" : objPaymentDetails.IdPublication,
-            "Comment" : objPaymentDetails.paymentComment,
+            "Comment" : objPaymentDetails.paymentComment || "",
             "Evidence" : {
-                "Base64String" : objPaymentDetails.archivesUpload[0].Base64String || "",
-                "Extension" :  objPaymentDetails.archivesUpload[0].Extension|| ""
+                "Base64String" : objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Base64String : "",
+                "Extension" :  objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Extension : ""
             }
         }
         console.log("confirmPayment: objToSend")

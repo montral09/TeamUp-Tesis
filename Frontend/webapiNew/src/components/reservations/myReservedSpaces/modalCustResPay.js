@@ -237,7 +237,7 @@ class ModalCustResPay extends React.Component {
                             <Label for="paymentComment" sm={6}>Comentario (opcional)</Label>
                             <Col sm={12}>
                                 <Input type="textarea" name="paymentComment" id="paymentComment"
-                                    value={this.state.objPaymentDetails.paymentComment} onChange={this.onChange} readOnly={this.state.objPaymentDetails.reservationPaymentStateText != "PAID" || this.state.objPaymentDetails.reservationPaymentStateText != "CANCELED" ? false : true} />
+                                    value={this.state.objPaymentDetails.paymentComment} onChange={this.onChange} readOnly={this.state.objPaymentDetails.reservationPaymentStateText == "PAID" || this.state.objPaymentDetails.reservationPaymentStateText == "CANCELED" ? true : false} />
                             </Col>
                         </FormGroup>
                         <FormGroup row>
