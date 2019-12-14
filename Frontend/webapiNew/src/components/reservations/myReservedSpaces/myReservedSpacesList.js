@@ -250,7 +250,7 @@ class MyReservedSpacesList extends React.Component {
         console.log("confirmPayment: objToSend")
         console.log(objApi.objToSend)
         objApi.fetchUrl = "https://localhost:44372/api/reservationPaymentCustomer";
-        objApi.method = "PUT";
+        objApi.method = "POST";
         objApi.responseSuccess = "SUCC_PAYMENTUPDATED";
         objApi.successMessage = "Se ha confirmado el envío de pago";
         objApi.functionAfterSuccess = "confirmPayment";
@@ -312,7 +312,7 @@ class MyReservedSpacesList extends React.Component {
     callFunctionAfterApiSuccess(trigger, data){
         switch(trigger){
             case "saveCancel"   :
-            case "callAPImodal" : 
+            case "saveRate" : 
                 this.modalReqInfo.current.changeModalLoadingState(true);
                 this.loadMyReservations();
             break;
@@ -344,8 +344,8 @@ class MyReservedSpacesList extends React.Component {
                         <ModifyReservationModal ref = {this.modalElement} confirmEditReservation = {this.confirmEditReservation}/>
                         <ModalCustResPay ref={this.ModalCustResPay} saveCustReservationPayment={this.saveCustReservationPayment}/>
                         <MyReservedSpacesTable editReservation={this.editReservation} reservations={this.state.reservations} triggerModal={this.triggerModal}/>
-                        <ModalReqInfo ref={this.modalReqInfo} modalSave={this.modalSave}
-                                modalConfigObj={this.state.modalConfigObj} saveCancel={this.saveCancel} saveRate={this.saveRate}/>
+                        <ModalReqInfo ref={this.modalReqInfo} modalSave={this.modalSave} triggerSaveModal={this.triggerSaveModal}
+                                modalConfigObj={this.state.modalConfigObj}/>
                         </div>
                     </div>
                 </div>

@@ -43,9 +43,8 @@ class ModalSummary extends React.Component {
         }
     }
     save() {
-        this.props.onChange({target : {id : "reservationComment", value : this.state.reservationComment}})
         this.changeModalLoadingState(false);
-        this.props.confirmReservation();
+        this.props.confirmReservation(this.state.reservationComment);
     }
 
     onChange = (e) => {
