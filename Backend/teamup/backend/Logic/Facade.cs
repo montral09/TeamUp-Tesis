@@ -988,6 +988,25 @@ namespace backend.Logic
             }
         }
 
-
+        public VOResponseGetFavorites GetFavorites(VORequestGetFavorite voGetFavorite)
+        {
+            VOResponseGetFavorites response = new VOResponseGetFavorites();
+            try
+            {
+                String message = util.ValidAccessToken(voGetFavorite.AccessToken, voGetFavorite.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    User usr = users.Find(voGetFavorite.Mail);
+                    response.Publications = spaces.GetFavorites(usr.IdUser);
+                    message = EnumMessages.SUCC_FAVORITESOK.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
     }
 }

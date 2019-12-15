@@ -46,6 +46,7 @@ namespace backend.Logic
         SUCC_PUBLICATIONPLANSOK,
         SUCC_PAYMENTUPDATED,
         //Favorites
+        SUCC_FAVORITESOK,
         SUCC_FAVORITEUPDATED,
         //Tokens
         ERR_ACCESSTOKENEXPIRED,

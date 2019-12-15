@@ -13,9 +13,10 @@ namespace backend.Data_Access.VO
         public string HourFrom { get; set; }
         public string HourTo { get; set; }
         public int TotalPrice { get; set; }
-       
+        public int People { get; set; }
+
         public VORequestUpdateReservation() { }
-        public VORequestUpdateReservation(int idReservation, string mail, DateTime dateFrom, string hourFrom, string hourTo, int totalPrice, string accessToken)
+        public VORequestUpdateReservation(int idReservation, string mail, DateTime dateFrom, string hourFrom, string hourTo, int totalPrice, int people, string accessToken)
             : base (accessToken)
 
         {
@@ -25,6 +26,7 @@ namespace backend.Data_Access.VO
             HourFrom = hourFrom;
             HourTo = hourTo;
             TotalPrice = totalPrice;
+            People = people;
         }
     }
 }

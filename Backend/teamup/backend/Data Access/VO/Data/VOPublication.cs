@@ -41,24 +41,20 @@ namespace backend.Data_Access.VO.Data
 
         public VOPublication() { }
 
-        public VOPublication(String mail, int spaceType, String title, String description, String address, VOLocationCordinates location,
-            int capacity, string videoURL, int hourPrice, int dailyPrice, int weeklyPrice, int monthlyPrice, string availability, List<int> facilities, string state)
+        public VOPublication(int idPublication, int spaceType, String title, String city, String address,
+            int capacity, int hourPrice, int dailyPrice, int weeklyPrice, int monthlyPrice, int ranking)
         {
-            Mail = mail;
+            IdPublication = idPublication;
             SpaceType = spaceType;
             Title = title;
-            Description = description;
+            City = city;
             Address = address;
-            Location = location;
-            Capacity = capacity;
-            VideoURL = videoURL;
+            Capacity = capacity;           
             HourPrice = hourPrice;
             DailyPrice = dailyPrice;
             WeeklyPrice = weeklyPrice;
             MonthlyPrice = monthlyPrice;
-            Availability = availability;
-            Facilities = facilities;
-            State = state;
+            Ranking = ranking;
         }
 
         public VOPublication(int idPublication, Int64 idUser, string mail, int spaceType, string creationDate, string title, string description, string address, VOLocationCordinates location,
