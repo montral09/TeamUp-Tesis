@@ -54,7 +54,7 @@ class FavPublications extends React.Component {
         }
         objApi.fetchUrl = "https://localhost:44372/api/favorite";
         objApi.method = "PUT";
-        objApi.responseSuccess = "SUCC_PUBLICATIONSOK";
+        objApi.responseSuccess = "SUCC_FAVORITESOK";
         objApi.successMessage = "";
         objApi.functionAfterSuccess = "loadMyFavoritePublications";
         
@@ -147,7 +147,7 @@ class FavPublications extends React.Component {
                             <h1>Mis publicaciones favoritas</h1>
                             <div className="col-md-12 center-column">
                                 {(!this.state.loadingPubs && !this.state.loadingSpaceTypes) ?
-                                (<FavPublicationsTable publications={this.state.publications} />)
+                                (<FavPublicationsTable publications={this.state.publications} spaceTypes={this.state.spaceTypes} />)
                                 : ( <p>LOADING</p>)
                                 }
                             </div>

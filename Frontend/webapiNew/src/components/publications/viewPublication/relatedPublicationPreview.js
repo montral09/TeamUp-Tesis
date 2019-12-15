@@ -14,7 +14,7 @@ class RelatedPublicationPreview extends React.Component {
 		}, 100);
 	}
  	render() {
-		 const { Capacity, Description, IdPublication, ImagesURL} = this.props;
+		 const { Capacity, Title, IdPublication, ImagesURL, City} = this.props;
 		return (
 			<React.Fragment>
 				<div className="product clearfix product-hover">
@@ -26,8 +26,9 @@ class RelatedPublicationPreview extends React.Component {
 				    </div>
 				    <div className="right">				        						
 				        <div className="description">
-							<div>{Description}</div>
-							<div>{Capacity} personas</div>
+							<div>{Title}</div>
+							<i className="fa fa-home" aria-hidden="true"></i>{" "+City}<br/>
+							<i className="fa fa-users" aria-hidden="true"></i>{" "+Capacity}<br/>
 				        </div>
 				        <div className="only-hover">
 				        	<a className="button" onClick={() => this.props.redirectToPub(IdPublication)}>Ver</a>

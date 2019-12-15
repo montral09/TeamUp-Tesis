@@ -26,7 +26,7 @@ class PublicationListCard extends React.Component {
                         <div>
                             <div className="price">
                                 {HourPrice != 0 ? "Hora $" + HourPrice :
-                                     (DailyPrice != 0 ? "Día $" + HourPrice :
+                                     (DailyPrice != 0 ? "Día $" + DailyPrice :
                                         WeeklyPrice != 0 ? "Semana $" + WeeklyPrice :
                                             MonthlyPrice != 0 ? "Mes $" + MonthlyPrice : (null))
                                 }

@@ -3,6 +3,7 @@ import Header from "../header/header";
 import BackPicture from "../images/BackPicture.jpg";
 import Footer from "../footer/footer";
 import Browser from "./browser";
+import RecommendedPublications from "./recommendedPublications";
 
 class Index extends React.Component {
     componentDidMount() {
@@ -18,9 +19,12 @@ class Index extends React.Component {
                     <br />
                     <div className="custom-footer full-width">
                         <div className="container">
-                            <Browser />
+                            <Browser /> 
                         </div>
                     </div>
+                </div>
+                <div className="col-md-12 center-column" id="content">
+                    <RecommendedPublications />
                 </div>
                 <Footer />
             </>

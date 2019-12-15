@@ -25,7 +25,7 @@ class RelatedPublications extends React.Component {
     
  	render() {
 
-		const {relatedPublications} = this.props;
+		const {relatedPublications, title} = this.props;
 		const options = {
 	    	slideSpeed: 500,
 	    	margin: 30,
@@ -47,7 +47,7 @@ class RelatedPublications extends React.Component {
 			<React.Fragment>
 				{relatedPublications.length > 0 ?
 					<div className="box clearfix box-with-products with-scroll box-no-advanced">
-						<div className="box-heading">Publicaciones relacionadas</div>
+						<div className="box-heading">{title}</div>
 						<p className="next" onClick={() => this.refs.carousel.next()}><span></span></p>
 						<p className="prev" onClick={() => this.refs.carousel.prev()}><span></span></p>
 						<div className="strip-line"></div>

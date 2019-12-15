@@ -6,7 +6,7 @@ import { Table } from 'reactstrap';
 const FavPublicationsTable = (props) =>{
     let publications = props.publications;
     let spaceTypes = props.spaceTypes;
-    const columnsName = ['ID Ref','Tipo de Espacio','Ciudad','Dirección','Capacidad',"Precios",'Puntuación','Acción'];
+    const columnsName = ['ID Ref','Tipo de Espacio', 'Nombre','Ciudad','Dirección','Capacidad',"Precios",'Puntuación','Acción'];
     const columnsTable = columnsName.map( colName => {
         return <th className="text-center" key={colName}>{colName}</th>;
     });
@@ -29,13 +29,13 @@ const FavPublicationsTable = (props) =>{
                 <td>{obj.City}</td>
                 <td>{obj.Address}</td>
                 <td>{obj.Capacity}</td>
-                <td>{"Por Hora: "+obj.HourPrice == 0 ? ("N/A") : ("$"+obj.HourPrice)}<br/>
-                    {"Por Día: "+obj.DailyPrice == 0 ? ("N/A") : ("$"+obj.DailyPrice)}<br/>
-                    {"Por Semana: "+obj.WeeklyPrice == 0 ? ("N/A") : ("$"+obj.WeeklyPrice)}<br/>
-                    {"Por Mes: "+obj.MonthlyPrice == 0 ? ("N/A") : ("$"+obj.MonthlyPrice)}<br/>
+                <td>{obj.HourPrice == 0 ? ("Por Hora: N/A") : ("Por Hora: $"+obj.HourPrice)}<br/>
+                    {obj.DailyPrice == 0 ? ("Por Día: N/A") : ("Por Día: $"+obj.DailyPrice)}<br/>
+                    {obj.WeeklyPrice == 0 ? ("Por Semana: N/A") : ("Por Semana: $"+obj.WeeklyPrice)}<br/>
+                    {obj.MonthlyPrice == 0 ? ("Por Mes: N/A") : ("Por Mes: $"+obj.MonthlyPrice)}<br/>
                 </td>
                 <td>{obj.Ranking == 0 ? "N/A" : obj.Ranking}</td>
-                <a href={url}><span><i className="col-md-3 fa fa-eye"></i></span> Ver</a>
+                <td><a href={url}><span><i className="col-md-3 fa fa-eye"></i></span> Ver</a></td>
             </tr>
             )
         })

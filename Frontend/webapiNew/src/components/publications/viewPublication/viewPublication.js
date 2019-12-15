@@ -753,7 +753,7 @@ class ViewPublication extends React.Component {
                                                                                 this.state.pubObj &&
                                                                                 <Map objGoogleMaps={{ zoom: 17, latitude: this.state.pubObj.Location.Latitude, longitude: this.state.pubObj.Location.Longitude }} />
                                                                             }
-                                                                            <RelatedPublications relatedPublications={this.state.relatedPublications} redirectToPub={this.redirectToPub} />
+                                                                            <RelatedPublications relatedPublications={this.state.relatedPublications} redirectToPub={this.redirectToPub} title="Publicaciones relacionadas"/>
                                                                         </div>
                                                                     </div>
                                                                 </div>
