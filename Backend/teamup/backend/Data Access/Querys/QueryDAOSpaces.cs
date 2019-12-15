@@ -271,7 +271,7 @@ namespace backend.Data_Access.Query
 
         public String UpdateReservation()
         {           
-            String query = "update RESERVATIONS set dateFrom = @dateFrom, hourFrom = @hourFrom, hourTo = @hourTo, totalPrice = @totalPrice " +
+            String query = "update RESERVATIONS set dateFrom = @dateFrom, hourFrom = @hourFrom, hourTo = @hourTo, totalPrice = @totalPrice, people = @people " +
                 "where idReservation = @idReservation and state in (1, 2, 3)";
             return query;
         }
@@ -302,7 +302,7 @@ namespace backend.Data_Access.Query
 
         public String GetPublicationQuestions()
         {
-            String query = "select q.idQuestion, u.name, q.question, q.creationDate from PUBLICATION_QUESTIONS q, USERS u where " +
+            String query = "select TOP 30 q.idQuestion, u.name, q.question, q.creationDate from PUBLICATION_QUESTIONS q, USERS u where " +
                 "q.idPublication = @idPublication and q.idUser = u.idUser order by q.creationDate desc";
             return query;
         }
@@ -394,7 +394,7 @@ namespace backend.Data_Access.Query
         public String GetPreferentialPlanInfo()
         {
             String query = "select pp.idPlan, ppl.name as planDescription, pp.state, ps.description as paymentDescription, ppl.price, pp.paymentDate from PAYMENT_STATES ps, PUBLICATIONS p, PREFERENTIAL_PAYMENTS pp, PUBLICATION_PLANS ppl where p.idPublication = @idPublication and " +
-                "p.idPlan = ppl.idPlan and pp.idPublication = p.idPublication and pp.state = ps.idPaymentState";
+                "pp.idPlan = ppl.idPlan and pp.idPublication = p.idPublication and pp.state = ps.idPaymentState";
             return query;
         }
 
@@ -498,6 +498,20 @@ namespace backend.Data_Access.Query
         {
             String query = "select r.commission, r.commissionPaymentState, ps.description, r.commissionComment, r.commissionEvidence, r.paymentCommissionDate " +
                 "from RESERVATIONS r, PAYMENT_STATES ps where r.idReservation = @idReservation and r.commissionPaymentState = ps.idPaymentState";
+            return query;
+        }
+
+        public String CancelPaymentReservation()
+        {
+            String query = "update RESERVATIONS set paymentCustomerState = 4, commissionPaymentState = 4 where idReservation = @idReservation";
+            return query;
+        }
+
+        public String GetFavorites()
+        {
+            String query = "select p.idPublication, p.spaceType, p.title, p.city, p.address, p.capacity, p.hourPrice, p.dailyPrice, " +
+                "p.weeklyPrice, p.monthlyPrice from PUBLICATIONS p, FAVOURITE_SPACES fs where fs.idUser = @idUser and fs.idPublication = p.idPublication and " +
+                "p.state = 2 ";
             return query;
         }
     }

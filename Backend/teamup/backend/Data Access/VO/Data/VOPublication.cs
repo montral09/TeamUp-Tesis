@@ -13,7 +13,7 @@ namespace backend.Data_Access.VO.Data
         public String LastNamePublisher { get; set; }
         public String PhonePublisher { get; set; }
         public int SpaceType { get; set; }
-        public DateTime CreationDate { get; set; }
+        public String CreationDate { get; set; }
         public String Title { get; set; }
         public String Description { get; set; }
         public String Address { get; set; }
@@ -41,27 +41,23 @@ namespace backend.Data_Access.VO.Data
 
         public VOPublication() { }
 
-        public VOPublication(String mail, int spaceType, String title, String description, String address, VOLocationCordinates location,
-            int capacity, string videoURL, int hourPrice, int dailyPrice, int weeklyPrice, int monthlyPrice, string availability, List<int> facilities, string state)
+        public VOPublication(int idPublication, int spaceType, String title, String city, String address,
+            int capacity, int hourPrice, int dailyPrice, int weeklyPrice, int monthlyPrice, int ranking)
         {
-            Mail = mail;
+            IdPublication = idPublication;
             SpaceType = spaceType;
             Title = title;
-            Description = description;
+            City = city;
             Address = address;
-            Location = location;
-            Capacity = capacity;
-            VideoURL = videoURL;
+            Capacity = capacity;           
             HourPrice = hourPrice;
             DailyPrice = dailyPrice;
             WeeklyPrice = weeklyPrice;
             MonthlyPrice = monthlyPrice;
-            Availability = availability;
-            Facilities = facilities;
-            State = state;
+            Ranking = ranking;
         }
 
-        public VOPublication(int idPublication, Int64 idUser, string mail, int spaceType, DateTime creationDate, string title, string description, string address, VOLocationCordinates location,
+        public VOPublication(int idPublication, Int64 idUser, string mail, int spaceType, string creationDate, string title, string description, string address, VOLocationCordinates location,
             int capacity, string videoURL, int hourPrice, int dailyPrice, int weeklyPrice, int monthlyPrice, string availability, List<int> facilities, List<string> imagesURL, string state, string city)
         {
             IdPublication = idPublication;
@@ -86,7 +82,7 @@ namespace backend.Data_Access.VO.Data
             City = city;
         }
 
-        public VOPublication(int idPublication, string mail, string namePublisher, string lastNamePublisher, string phone, int spaceType, DateTime creationDate, string title, string description, string address, string city, VOLocationCordinates location,
+        public VOPublication(int idPublication, string mail, string namePublisher, string lastNamePublisher, string phone, int spaceType, string creationDate, string title, string description, string address, string city, VOLocationCordinates location,
              int capacity, string videoURL, int hourPrice, int dailyPrice, int weeklyPrice, int monthlyPrice, string availability,
              List<int> facilities, List<string> imagesURL, string state, int quantityRented, List<VOReview> reviews, int ranking, int totalViews, bool individualRent, int questionsWithoutAnswer,
              bool isMyPublication, int idPlan, VOPreferentialPlan preferentialPlan)

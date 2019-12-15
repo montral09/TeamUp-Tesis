@@ -38,5 +38,6 @@ namespace backend.Data_Access
         void ApprovePaymentCustomer(VORequestApprovePaymentCustomer voApprovePayment);
         List<VOPublicationPaymentAdmin> GetPublicationPlanPayments();
         List<VOCommissionPaymentAdmin> GetCommissionPaymentsAdmin();
+        List<VOPublication> GetFavorites(long idUser);
     }
 }
