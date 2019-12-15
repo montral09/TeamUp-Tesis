@@ -44,7 +44,7 @@ const MyPublicationTable = (props) =>{
                     </>
                 )}
 
-                <td>0</td>
+                <td>{obj.QuestionsWithoutAnswer}</td>
                 <td>
                     <a href={url}><span><i className="col-md-3 fa fa-eye"></i></span> Ver</a>
                 </td>

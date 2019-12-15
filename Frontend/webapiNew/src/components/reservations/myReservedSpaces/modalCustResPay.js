@@ -255,7 +255,7 @@ class ModalCustResPay extends React.Component {
                 </ModalBody>
                 <ModalFooter>
                     <Button color="link" onClick={this.toggle} disabled={this.state.buttonIsDisabled}>Cerrar</Button>
-                    {this.state.objPaymentDetails.PaymentDescription != "PAID" && this.state.objPaymentDetails.PaymentDescription != "CANCELED" ? (
+                    {this.state.objPaymentDetails.reservationPaymentStateText != "PAID" && this.state.objPaymentDetails.reservationPaymentStateText != "CANCELED" ? (
                         <Button color="primary" onClick={this.save} disabled={this.state.buttonIsDisabled}>Guardar
                             &nbsp;&nbsp;
                             {this.state.isLoading &&

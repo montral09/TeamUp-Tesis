@@ -504,6 +504,7 @@ class ViewPublication extends React.Component {
             case "saveAnswer":
             case "saveQuestion":
                 this.modalReqInfo.current.changeModalLoadingState(true);
+                this.loadPublication(this.state.pubID);
             break;
         }
     }

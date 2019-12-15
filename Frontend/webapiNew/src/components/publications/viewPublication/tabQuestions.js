@@ -24,18 +24,18 @@ class TabQuestions extends React.Component {
                             <div className="review-list">
                                 {arrQA.map((QA, index) => {
                                     return (
-                                        <>
-                                            <div className="review" key={index}>
+                                        <React.Fragment key={index}>
+                                            <div className="review" >
                                                 <div className="author"><b>{QA.Name}</b> <span>{QA.CreationDate}</span>{<span>{!QA.Answer && isMyPublication ? (<a className = "col-md-12" onClick={() => this.props.triggerModal({mode:"ANSWER", questionObj: QA })}><span><i className="col-md-1 fa fa-exclamation-circle"></i></span>Responder</a>) : (null)}</span>}</div>
                                                 <div className="text">{QA.Question}</div>
                                             </div>
                                             {QA.Answer ? (
-                                                <div className="review" key={index+50} style={{ marginLeft: '5%' }}>
+                                                <div className="review" style={{ marginLeft: '5%' }}>
                                                     <div className="author"><strong><b>Respuesta</b></strong><span>{QA.Answer.CreationDate}</span></div>
                                                     <div className="text">{QA.Answer.Answer}</div>
                                                 </div>
                                             ) : (null)}
-                                        </>
+                                        </React.Fragment>
                                     )
                                 })}
                             </div>
