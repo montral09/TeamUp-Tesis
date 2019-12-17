@@ -119,7 +119,7 @@ class MyReservedSpacesList extends React.Component {
     }
 
     confirmEditReservation(modalInfo) {
-        let {IdReservation, HourFrom, HourTo, TotalPrice} = modalInfo.resDataChanged;
+        let {IdReservation, HourFrom, HourTo, TotalPrice, People} = modalInfo.resDataChanged;
         let objRes = {
             AccessToken: this.props.tokenObj.accesToken,
             Mail: this.props.userData.Mail,
@@ -127,7 +127,8 @@ class MyReservedSpacesList extends React.Component {
             DateFrom: this.convertDate(modalInfo.dateFrom),
             HourFrom: HourFrom,
             HourTo: HourTo,
-            TotalPrice: TotalPrice,            
+            TotalPrice: TotalPrice,
+            People : People
         }
         this.modalElement.current.changeModalLoadingState(false);
         fetch('https://localhost:44372/api/reservationCustomer', {
@@ -137,6 +138,14 @@ class MyReservedSpacesList extends React.Component {
         }).then(response => response.json()).then(data => {
             console.log("data:" + JSON.stringify(data));
             if (data.responseCode == "SUCC_RESERVATIONUPDATED") {
+                toast.success("Reserva modificada correctamente", {
+                    position: "top-right",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                });
                 this.modalElement.current.changeModalLoadingState(true);                               
                 this.loadMyReservations();
             } else if (data.Message) {
@@ -178,7 +187,7 @@ class MyReservedSpacesList extends React.Component {
                 modalConfigObj ={
                     title: 'Calificar reserva', mainText: 'Por favor, denos su calificación sobre la reserva y el lugar ', mode : mode, saveFunction : "saveRate", textboxLabel: 'Comentario',
                     textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :'Cancelar', confirmText :'Calificar' , login_status: this.props.login_status,
-                    optionDisplay: true, optionLabel: 'Puntuación', optionDefaultValue:1, optionArray: [1,2,3,4,5]
+                    optionDisplay: true, optionLabel: 'Puntuación', optionDefaultValue:1, optionArray: [5,4,3,2,1]
                 };
                 this.setState({modalConfigObj : modalConfigObj, selectedIdRes: IdReservation, selectedResState: auxParam},() => {this.modalReqInfo.current.toggle();})
             break;

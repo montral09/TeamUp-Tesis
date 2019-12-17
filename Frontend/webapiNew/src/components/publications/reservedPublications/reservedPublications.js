@@ -32,7 +32,9 @@ class MyReservedPublications extends React.Component {
         this.triggerModal = this.triggerModal.bind(this);   
         this.saveCancel = this.saveCancel.bind(this);
         this.saveConfirm = this.saveConfirm.bind(this);
+        this.triggerSaveModal = this.triggerSaveModal.bind(this);
         this.saveComissionPayment = this.saveComissionPayment.bind(this);
+        this.confirmPayment = this.confirmPayment.bind(this);       
     }
 
     componentDidMount() {
@@ -106,7 +108,7 @@ class MyReservedPublications extends React.Component {
             break;
             case "CONFIRM": 
                 modalConfigObj ={
-                    title: 'Confirmaar reserva', mainText: 'Desea confirmar esta reserva? ', mode : mode, saveFunction : "saveConfirm",
+                    title: 'Confirmar reserva', mainText: 'Desea confirmar esta reserva? ', mode : mode, saveFunction : "saveConfirm",
                     cancelAvailable:true, confirmAvailable:true, cancelText :'Cancelar', confirmText :'Confirmar' , login_status: this.props.login_status,
                 };
                 this.setState({modalConfigObj : modalConfigObj, selectedIdRes: IdReservation, selectedResState:auxParam},() => {this.modalReqInfo.current.toggle();})
@@ -157,6 +159,12 @@ class MyReservedPublications extends React.Component {
         this.callAPI(objApi);
     }
 
+    triggerSaveModal(saveFunction, objData){
+        switch(saveFunction){
+            case "saveCancel": this.saveCancel(objData.textboxValue);break;
+            case "saveConfirm": this.saveConfirm();break;
+        }
+    }
     saveComissionPayment(objPaymentDetails){
         var objApi = {};
         objApi.objToSend = {
@@ -266,8 +274,8 @@ class MyReservedPublications extends React.Component {
                             <h1>Publicaciones reservadas</h1>
                             <ModalResComPay ref={this.ModalResComPay} saveComissionPayment={this.saveComissionPayment}/>
                             <ModalResCustPay ref={this.ModalResCustPay} confirmPayment={this.confirmPayment} rejetPayment={this.rejetPayment}/>
-                            <ModalReqInfo ref={this.modalReqInfo} modalSave={this.modalSave} saveConfirm={this.saveConfirm}
-                                modalConfigObj={this.state.modalConfigObj} saveCancel={this.saveCancel}/>
+                            <ModalReqInfo ref={this.modalReqInfo} modalSave={this.modalSave}
+                                modalConfigObj={this.state.modalConfigObj} triggerSaveModal={this.triggerSaveModal}/>
                             <MyReservedSpacesTable isPublisher={true} editReservation={this.editReservation} triggerModal={this.triggerModal} 
                                 reservations={this.state.reservations} modalReqInfo={this.modalReqInfo.current} />
                         </div>
