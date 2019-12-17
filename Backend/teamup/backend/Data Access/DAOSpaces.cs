@@ -17,6 +17,19 @@ namespace backend.Data_Access
     {
         private QueryDAOSpaces cns;
         private const int RESERVATION_CANCELED_STATE = 5;
+        private const int PUBLICATION_OFFICE = 1;
+        private const int PUBLICATION_COWORKING = 2;
+        private const int PUBLICATION_MEETING_ROOM = 3;
+        private const int PUBLICATION_EVENTS = 4;
+        private const int PLAN_GOLD = 4;
+        private const int PLAN_SILVER = 3;
+        private const int PLAN_BRONZE = 2;
+        private const int PLAN_FREE = 1;
+        private const int MAX_GOLD = 10;
+        private const int MAX_SILVER = 5;
+        private const int MAX_TOTAL = 15;
+        private const int MIN_TOTAL = 5;
+
         public DAOSpaces()
         {
             cns = new QueryDAOSpaces();
@@ -2021,6 +2034,7 @@ namespace backend.Data_Access
             }
             return payments;
         }
+
         public List<VOCommissionPaymentAdmin> GetCommissionPaymentsAdmin()
         {
             SqlConnection con = null;
@@ -2107,6 +2121,252 @@ namespace backend.Data_Access
                 }
             }
             return favorites;
+        }
+
+        public List<VOSpaceTypeRecommended> GetRecommendedPublications()
+        {            
+            SqlConnection con = null;
+            List<VOSpaceTypeRecommended> recommendedList = new List<VOSpaceTypeRecommended>();
+            VOSpaceTypeRecommended recommended;
+            List<VORecommended> offices;
+            List<VORecommended> coworking;
+            List<VORecommended> meetingRooms;
+            List<VORecommended> events;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.GetPublicationsRecommended();
+                offices = GetRecommendedSpaceType(query, con, PUBLICATION_OFFICE);
+                recommended = new VOSpaceTypeRecommended
+                {
+                    SpaceType = PUBLICATION_OFFICE,
+                    Publications = offices
+                };
+                recommendedList.Add(recommended);
+                coworking = GetRecommendedSpaceType(query, con, PUBLICATION_COWORKING);
+                recommended = new VOSpaceTypeRecommended
+                {
+                    SpaceType = PUBLICATION_COWORKING,
+                    Publications = coworking
+                };
+                recommendedList.Add(recommended);
+                meetingRooms = GetRecommendedSpaceType(query, con, PUBLICATION_MEETING_ROOM);
+                recommended = new VOSpaceTypeRecommended
+                {
+                    SpaceType = PUBLICATION_MEETING_ROOM,
+                    Publications = meetingRooms
+                };
+                recommendedList.Add(recommended);
+                events = GetRecommendedSpaceType(query, con, PUBLICATION_EVENTS);
+                recommended = new VOSpaceTypeRecommended
+                {
+                    SpaceType = PUBLICATION_EVENTS,
+                    Publications = events
+                };
+                recommendedList.Add(recommended);
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+            return recommendedList;
+        }
+
+        private List<VORecommended> GetRecommendedSpaceType(string query, SqlConnection con, int spaceType)
+        {
+            List<VORecommended> spaceTypeList = new List<VORecommended>(MAX_TOTAL);
+            List<VORecommended> spaceTypeListAux = new List<VORecommended>();
+            VORecommended voPublication;            
+            try
+            {
+                SqlDataReader dr;
+                //GOLD
+                SqlCommand selectCommandGold = new SqlCommand(query, con);
+                List<SqlParameter> prmGold = new List<SqlParameter>()
+                {
+                new SqlParameter("@spaceType", SqlDbType.Int) {Value = spaceType},
+                new SqlParameter("@idPlan", SqlDbType.VarChar) {Value = PLAN_GOLD},
+                };
+                selectCommandGold.Parameters.AddRange(prmGold.ToArray());
+                dr = selectCommandGold.ExecuteReader();
+                while (dr.Read())
+                {
+                    voPublication = BuildRecommended(dr, con);
+                    spaceTypeListAux.Add(voPublication);
+                }
+                dr.Close();
+                int addedSilver = 0;
+                if (spaceTypeListAux.Count != 0)
+                {
+                    // Sort randomic gold
+                    spaceTypeListAux = Util.ShuffleRecommended(spaceTypeListAux);
+                    if (spaceTypeListAux.Count < MAX_GOLD)
+                    {
+                        addedSilver = MAX_GOLD - spaceTypeListAux.Count;
+                    }
+                    else
+                    {
+                        spaceTypeListAux.GetRange(0, MAX_GOLD - 1);
+                    }
+                    spaceTypeList.AddRange(spaceTypeListAux);
+                    spaceTypeListAux.Clear();
+                } else
+                {
+                    addedSilver = MAX_GOLD;
+                }
+                
+                
+                //SILVER
+                SqlCommand selectCommandSilver = new SqlCommand(query, con);
+                List<SqlParameter> prmSilver= new List<SqlParameter>()
+                {
+                new SqlParameter("@spaceType", SqlDbType.Int) {Value = spaceType},
+                new SqlParameter("@idPlan", SqlDbType.VarChar) {Value = PLAN_SILVER},
+                };
+                selectCommandSilver.Parameters.AddRange(prmSilver.ToArray());
+                dr = selectCommandSilver.ExecuteReader();
+                while (dr.Read())
+                {
+                    voPublication = BuildRecommended(dr, con);
+                    spaceTypeListAux.Add(voPublication);
+                }
+                dr.Close();
+                if (spaceTypeListAux.Count != 0)
+                {
+                    // Sort randomic silver
+                    spaceTypeListAux = Util.ShuffleRecommended(spaceTypeListAux);
+                    if (spaceTypeListAux.Count < MAX_SILVER + addedSilver)
+                    {
+                        spaceTypeList.AddRange(spaceTypeListAux);                        
+                    }
+                    else
+                    {
+                        spaceTypeList.AddRange(spaceTypeListAux.GetRange(0, MAX_SILVER - 1));                        
+                    }                    
+                    spaceTypeListAux.Clear();
+                }                
+
+                //BRONZE
+                if (spaceTypeList.Count < MIN_TOTAL)
+                {
+                    SqlCommand selectCommandBronze = new SqlCommand(query, con);
+                    List<SqlParameter> prmBronze = new List<SqlParameter>()
+                    {
+                    new SqlParameter("@spaceType", SqlDbType.Int) {Value = spaceType},
+                    new SqlParameter("@idPlan", SqlDbType.VarChar) {Value = PLAN_BRONZE},
+                    };
+                    selectCommandBronze.Parameters.AddRange(prmBronze.ToArray());
+                    dr = selectCommandBronze.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        voPublication = BuildRecommended(dr, con);
+                        spaceTypeListAux.Add(voPublication);
+                    }
+                    dr.Close();
+                    if (spaceTypeListAux.Count != 0)
+                    {
+                        // Sort randomic bronze
+                        spaceTypeListAux = Util.ShuffleRecommended(spaceTypeListAux);
+                        int spacesLeft = MIN_TOTAL - spaceTypeList.Count;
+                        if (spaceTypeListAux.Count <= spacesLeft)
+                        {
+                            spaceTypeList.AddRange(spaceTypeListAux);
+                        }
+                        else
+                        {
+                            spaceTypeList.AddRange(spaceTypeListAux.GetRange(0, spacesLeft));
+                        }
+                        spaceTypeListAux.Clear();
+                    }
+                }
+                
+
+                if (spaceTypeList.Count < MIN_TOTAL)
+                {
+                    //FREE
+                    String queryFree = cns.GetPublicationsRecommendedFree();
+                    SqlCommand selectCommandFree = new SqlCommand(queryFree, con);
+                    SqlParameter prmFree = new SqlParameter()
+                    {
+                        ParameterName = "@spaceType",
+                        Value = spaceType,
+                        SqlDbType = SqlDbType.Int
+                    };
+                    selectCommandFree.Parameters.Add(prmFree);
+                    dr = selectCommandFree.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        voPublication = BuildRecommended(dr, con);
+                        spaceTypeListAux.Add(voPublication);
+                    }
+                    dr.Close();
+                    if (spaceTypeListAux.Count != 0)
+                    {
+                        // Sort randomic free
+                        spaceTypeListAux = Util.ShuffleRecommended(spaceTypeListAux);
+                        int spacesLeft = MIN_TOTAL - spaceTypeList.Count;
+                        if (spaceTypeListAux.Count <= spacesLeft)
+                        {
+                            spaceTypeList.AddRange(spaceTypeListAux);
+                        }
+                        else
+                        {                            
+                            spaceTypeList.AddRange(spaceTypeListAux.GetRange(0, spacesLeft));
+                        }
+                        spaceTypeListAux.Clear();
+                    }                    
+                }
+                
+            } catch (Exception e)
+            {
+                if (con != null)
+                {
+                    con.Close();
+                } 
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            return spaceTypeList;
+        }
+
+        private VORecommended BuildRecommended(SqlDataReader dr, SqlConnection con)
+        {
+            VORecommended voPublication;
+            List<string> images;
+            int idPublication = Convert.ToInt32(dr["idPublication"]);
+            images = GetImages(idPublication, con);
+            voPublication = new VORecommended(idPublication, Convert.ToString(dr["title"]), Convert.ToString(dr["address"]), Convert.ToString(dr["city"]),
+                Convert.ToInt32(dr["capacity"]), images);
+            return voPublication;
+        }
+
+        private List<String> GetImages (int idPublication, SqlConnection con)
+        {
+            List<String> images = new List<String>();
+            String queryImages = cns.GetImages();
+            SqlCommand selectCommandImages = new SqlCommand(queryImages, con);
+            SqlParameter parametro = new SqlParameter()
+            {
+                ParameterName = "@idPublication",
+                Value = idPublication,
+                SqlDbType = SqlDbType.Int
+            };
+            selectCommandImages.Parameters.Add(parametro);
+            SqlDataReader drImages = selectCommandImages.ExecuteReader();
+            while (drImages.Read())
+            {
+                string accessURL = Convert.ToString(drImages["accessURL"]);
+                images.Add(accessURL);
+            }
+            drImages.Close();
+            return images;
         }
     }    
 }
