@@ -56,5 +56,6 @@ namespace backend.Logic
         VOResponseGetPublicationPlanPayments GetPublicationPlanPayments(VORequestGetPublicationPlanPayments voGetPayment);
         VOResponseGetCommissionPayments GetCommissionPayments(VORequestGetCommissionPayments voGetPayment);
         VOResponseGetFavorites GetFavorites(VORequestGetFavorite voGetFavorite);
+        VOResponseGetRecommendedPublications GetRecommendedPublications(); 
     }
 }

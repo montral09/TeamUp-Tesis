@@ -39,5 +39,6 @@ namespace backend.Data_Access
         List<VOPublicationPaymentAdmin> GetPublicationPlanPayments();
         List<VOCommissionPaymentAdmin> GetCommissionPaymentsAdmin();
         List<VOPublication> GetFavorites(long idUser);
+        List<VOSpaceTypeRecommended> GetRecommendedPublications();
     }
 }

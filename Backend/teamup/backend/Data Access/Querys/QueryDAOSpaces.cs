@@ -514,5 +514,19 @@ namespace backend.Data_Access.Query
                 "p.state = 2 ";
             return query;
         }
+
+        public String GetPublicationsRecommended()
+        {
+            String query = "select p.idPublication, p.title, p.address, p.city, p.capacity from PUBLICATIONS p, PREFERENTIAL_PAYMENTS pp " +
+                "where p.state = 2 and p.spaceType = @spaceType and pp.idPublication = p.idPublication and pp.idPlan = @idPlan and pp.state = 3";
+            return query;
+        }
+
+        public String GetPublicationsRecommendedFree()
+        {
+            String query = "select p.idPublication, p.title, p.address, p.city, p.capacity from PUBLICATIONS p " +
+                "LEFT JOIN PREFERENTIAL_PAYMENTS pp ON pp.idPublication = p.idPublication where pp.idPublication IS NULL and p.state = 2 and p.spaceType = @spaceType";
+            return query;
+        }
     }
 }

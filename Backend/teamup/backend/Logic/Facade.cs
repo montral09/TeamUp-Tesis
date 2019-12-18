@@ -1008,5 +1008,21 @@ namespace backend.Logic
                 throw e;
             }
         }
+
+        public VOResponseGetRecommendedPublications GetRecommendedPublications()
+        {
+            VOResponseGetRecommendedPublications response = new VOResponseGetRecommendedPublications();
+            try
+            {
+                response.Recommended = spaces.GetRecommendedPublications();
+                String message = EnumMessages.SUCC_FAVORITESOK.ToString();
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
     }
 }
