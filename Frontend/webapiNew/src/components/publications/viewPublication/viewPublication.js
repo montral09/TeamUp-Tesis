@@ -515,6 +515,7 @@ class ViewPublication extends React.Component {
             margin: 10,
             nav: false,
             dots: false,
+            video: true,
             responsive: {
                 0: {
                     items: 4,

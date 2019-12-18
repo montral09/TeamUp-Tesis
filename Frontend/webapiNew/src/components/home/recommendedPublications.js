@@ -45,91 +45,10 @@ class RecommendedPublications extends React.Component {
         objApi.objToSend = {}
         objApi.fetchUrl = "https://localhost:44372/api/recommendedPublications";
         objApi.method = "GET";
-        objApi.responseSuccess = "SUCC_PUBLICATIONSOK";
+        objApi.responseSuccess = "SUCC_FAVORITESOK";
         objApi.successMessage = "";
         objApi.functionAfterSuccess = "loadRecommendedPubs";
-        //this.callAPI(objApi);
-
-        //HARDCODED
-        var data = {
-            "Recommended": [
-                {
-                    "SpaceType": 1,
-                    "Publications": [
-                        {
-                            "IdPublication": 21,
-                            "Title": "Salon de eventos espectacular",
-                            "City": "Pocitos",
-                            "Address": "Av Italia 6000",
-                            "Capacity": 200,
-                            "ImagesURL": [
-                                "https://pyme.emol.com/wp-content/uploads/2019/03/cowork222.jpg",
-                                "https://pyme.emol.com/wp-content/uploads/2019/03/cowork222.jpg"
-                            ],
-                        },
-                        {
-                            "IdPublication": 21,
-                            "Title": "Salaaaaaaa",
-                            "City": "Pocitos",
-                            "Address": "Av Italia 6000",
-                            "Capacity": 200,
-                            "ImagesURL": [
-                                "https://pyme.emol.com/wp-content/uploads/2019/03/cowork222.jpg",
-                                "https://pyme.emol.com/wp-content/uploads/2019/03/cowork222.jpg"
-                            ],
-                        }
-                    ],
-                },
-                {
-                    "SpaceType": 2,
-                    "Publications": [
-                        {
-                            "IdPublication": 21,
-                            "Title": "Salaaaaaaa",
-                            "City": "Pocitos",
-                            "Address": "Av Italia 6000",
-                            "Capacity": 200,
-                            "ImagesURL": [
-                                "https://pyme.emol.com/wp-content/uploads/2019/03/cowork222.jpg",
-                                "https://pyme.emol.com/wp-content/uploads/2019/03/cowork222.jpg"
-                            ],
-                        },
-                        {
-                            "IdPublication": 21,
-                            "Title": "Salaaaaaaa",
-                            "City": "Pocitos",
-                            "Address": "Av Italia 6000",
-                            "Capacity": 200,
-                            "ImagesURL": [
-                                "https://pyme.emol.com/wp-content/uploads/2019/03/cowork222.jpg",
-                                "https://pyme.emol.com/wp-content/uploads/2019/03/cowork222.jpg"
-                            ],
-                        },
-                        {
-                            "IdPublication": 21,
-                            "Title": "Salaaaaaaa",
-                            "City": "Pocitos",
-                            "Address": "Av Italia 6000",
-                            "Capacity": 200,
-                            "ImagesURL": [
-                                "https://pyme.emol.com/wp-content/uploads/2019/03/cowork222.jpg",
-                                "https://pyme.emol.com/wp-content/uploads/2019/03/cowork222.jpg"
-                            ],
-                        }
-                    ],
-                }
-            ]
-        };
-        var finalRecommended = data.Recommended;
-        const spaceTypes = this.state.spaceTypes;
-        finalRecommended.forEach(element => {
-            const spaceType = spaceTypes.filter(space => {
-                return space.Code === element.SpaceType
-            });
-            element.SpaceTypeDesc = spaceType[0].Description;    
-        });
-        this.setState({ recommendedPublications: finalRecommended});
-        //HARDCODED
+        this.callAPI(objApi);
     }
 
     callAPI(objApi){
@@ -187,6 +106,9 @@ class RecommendedPublications extends React.Component {
     callFunctionAfterApiSuccess(trigger, objData){
         switch(trigger){
             case "loadRecommendedPubs":
+                console.log("loadRecommendedPubs")
+                console.log(objData)
+
                 var finalRecommended = objData.Recommended;
                 const spaceTypes = this.state.spaceTypes;
                 finalRecommended.forEach(element => {
@@ -205,8 +127,11 @@ class RecommendedPublications extends React.Component {
             <React.Fragment>
                 <h3>Publicaciones recomendadas!</h3>
                 {this.state.recommendedPublications.map((relPubs) => {
+                    if(relPubs.Publications.length == 0){
+                        return null;
+                    }
                     return (
-                        <React.Fragment>
+                        <React.Fragment key={relPubs.SpaceType}>
                             <RelatedPublications relatedPublications={relPubs.Publications} 
                                 redirectToPub={this.redirectToPub} title={relPubs.SpaceTypeDesc}/>
                         </React.Fragment>
