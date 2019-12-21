@@ -50,7 +50,7 @@ namespace backend.Data_Access
 
                 if (accessToken.Equals(actualAccessToken))
                 {
-                    DateTime expirationDate = DateTime.Now;
+                    DateTime expirationDate = DateTime.UtcNow;
                     String queryExpiration = cns.GetExpirationTimeAccessTokenUser();
                     SqlCommand selectCommandExpiration = new SqlCommand(queryExpiration, con);
                     SqlParameter parametroExpiration = new SqlParameter()
@@ -67,7 +67,7 @@ namespace backend.Data_Access
                     }
                     drExpiration.Close();
 
-                    if (expirationDate < DateTime.Now)
+                    if (expirationDate < DateTime.UtcNow)
                     {
                         // Access token expired
                         result = EnumMessages.ERR_ACCESSTOKENEXPIRED.ToString();
@@ -120,7 +120,7 @@ namespace backend.Data_Access
 
                 if (refreshToken.Equals(actualRefreshToken))
                 {
-                    DateTime expirationDate = DateTime.Now;
+                    DateTime expirationDate = DateTime.UtcNow;
                     String queryExpiration = cns.GetExpirationTimeRefreshTokenUser();
                     SqlCommand selectCommandExpiration = new SqlCommand(queryExpiration, con);
                     SqlParameter parameterExpiration = new SqlParameter()
@@ -137,7 +137,7 @@ namespace backend.Data_Access
                     }
                     drExpiration.Close();
 
-                    if (expirationDate < DateTime.Now)
+                    if (expirationDate < DateTime.UtcNow)
                     {
                         // Refresh token expired
                         result = EnumMessages.ERR_REFRESHTOKENEXPIRED.ToString();
