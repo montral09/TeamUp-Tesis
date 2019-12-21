@@ -157,7 +157,7 @@ class MyPublicationsList extends React.Component {
         switch(trigger){
             case "loadMyPublications"   : this.setState({ publications: data.Publications, loadingPubs: false });   break;
             case "loadSpaceTypes"       : this.setState({ spaceTypes: data.spaceTypes, loadingSpaceTypes: false }); break;
-            case "confirmPayment"       : this.ModalDetailPayment.current.changeModalLoadingState(true); break;
+            case "confirmPayment"       : this.ModalDetailPayment.current.changeModalLoadingState(true); this.loadMyPublications(); break;
         }
     }
 

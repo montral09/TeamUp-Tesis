@@ -120,7 +120,7 @@ namespace backend.Data_Access
                 VOFacility voFacility;
                 while (dr.Read())
                 {
-                    voFacility = new VOFacility(Convert.ToInt32(dr["idFacility"]), Convert.ToString(dr["description"]));
+                    voFacility = new VOFacility(Convert.ToInt32(dr["idFacility"]), Convert.ToString(dr["description"]), Convert.ToString(dr["icon"]));
                     facilities.Add(voFacility);
                 }
                 dr.Close();

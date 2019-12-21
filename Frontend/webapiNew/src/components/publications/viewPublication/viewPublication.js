@@ -699,9 +699,15 @@ class ViewPublication extends React.Component {
                                                                                                             </div>
                                                                                                         </div>
                                                                                                     </div>
-                                                                                                    <div style={{ marginLeft: '35%' }} className="description add-to-cart d-flex">
-                                                                                                        <input type="button" value="Reservar" onClick={() => this.triggerSummaryModal()} className="button" />
-                                                                                                    </div>
+                                                                                                        {this.state.pubObj.IsMyPublication != true ? (
+                                                                                                            <div style={{ marginLeft: '35%' }} className="description add-to-cart d-flex">
+                                                                                                                <input type="button" value="Reservar" onClick={() => this.triggerSummaryModal()} className="button" />
+                                                                                                            </div>
+                                                                                                        ) : (
+                                                                                                        <div style={{ marginLeft: '20%' }} className="description add-to-cart d-flex">
+                                                                                                            <p>Reserva disponible para clientes</p>
+                                                                                                        </div>
+                                                                                                        )}
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>
@@ -720,8 +726,8 @@ class ViewPublication extends React.Component {
 
                                                                                         <div dangerouslySetInnerHTML={{ __html: this.state.pubObj.Description }} /><br />
 
-                                                                                        <h5>Dirección</h5>{this.state.pubObj.Address}<br />
-                                                                                        <h5>Servicios<br /></h5>
+                                                                                        <h5>Dirección</h5>{this.state.pubObj.Address}<br /><br />
+                                                                                        <h5>Servicios<br /><br /></h5>
 
                                                                                         <div className="review">
                                                                                             <span>{this.state.pubObj.Facilities.map((inf, index) => {
@@ -730,10 +736,10 @@ class ViewPublication extends React.Component {
                                                                                                 });
                                                                                                 return (
                                                                                                     <div key={index}>
-                                                                                                        <p><i className="fa fa-circle"></i>{infText[0].Description}</p>
+                                                                                                        <p><i className={infText[0].Icon}></i> {infText[0].Description}</p>
                                                                                                     </div>
                                                                                                 );
-                                                                                            })}<br /></span>
+                                                                                            })}<br /><br /></span>
                                                                                         </div>
                                                                                     </div>
                                                                                 </>

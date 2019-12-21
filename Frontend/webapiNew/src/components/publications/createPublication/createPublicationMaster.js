@@ -517,8 +517,9 @@ class CreatePublication extends React.Component {
     }
 
     render() {
-        const { login_status } = this.props;
+        const { login_status , userData} = this.props;
         if (login_status != 'LOGGED_IN') return <Redirect to='/' />
+        if (userData.PublisherValidated != true) return <Redirect to='/' />
         return (
             <>
                 {this.state.pubIsLoading == false ? (

@@ -6,7 +6,7 @@ import { Table } from 'reactstrap';
 const FavPublicationsTable = (props) =>{
     let publications = props.publications;
     let spaceTypes = props.spaceTypes;
-    const columnsName = ['ID Ref','Tipo de Espacio', 'Nombre','Ciudad','Dirección','Capacidad',"Precios",'Puntuación','Acción'];
+    const columnsName = ['#Ref','Tipo de Espacio', 'Nombre','Ciudad','Dirección','Capacidad',"Precios",'Puntuación','Acción'];
     const columnsTable = columnsName.map( colName => {
         return <th className="text-center" key={colName}>{colName}</th>;
     });
@@ -18,8 +18,6 @@ const FavPublicationsTable = (props) =>{
     });
     const arrDataList = publications.length ? (
         publications.map( obj => {
-            console.log("FavPublicationsTable ")
-            console.log(obj)
             let url = "http://localhost:3000/publications/viewPublication/viewPublication/"+obj.IdPublication;
             return(
             <tr key={obj.IdPublication}>

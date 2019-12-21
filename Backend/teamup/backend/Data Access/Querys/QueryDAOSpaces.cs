@@ -20,7 +20,7 @@ namespace backend.Data_Access.Query
 
         public String GetFacilities()
         {
-            String query = "select idFacility, description from FACILITIES";
+            String query = "select idFacility, description, icon from FACILITIES";
             return query;
         }
 

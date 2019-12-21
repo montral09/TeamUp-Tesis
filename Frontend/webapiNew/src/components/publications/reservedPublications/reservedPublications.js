@@ -10,6 +10,7 @@ import LoadingOverlay from 'react-loading-overlay';
 import ModalReqInfo from '../viewPublication/modalReqInfo';
 import ModalResCustPay from './modalResCustPay'
 import ModalResComPay from './modalResComPay';
+import { logOut, updateToken } from '../../../services/login/actions';
 
 class MyReservedPublications extends React.Component {
 
@@ -34,7 +35,8 @@ class MyReservedPublications extends React.Component {
         this.saveConfirm = this.saveConfirm.bind(this);
         this.triggerSaveModal = this.triggerSaveModal.bind(this);
         this.saveComissionPayment = this.saveComissionPayment.bind(this);
-        this.confirmPayment = this.confirmPayment.bind(this);       
+        this.confirmPayment = this.confirmPayment.bind(this);
+        this.handleExpiredToken = this.handleExpiredToken.bind(this);
     }
 
     componentDidMount() {
@@ -46,51 +48,17 @@ class MyReservedPublications extends React.Component {
         this.setState({ generalError: true });
     }
     loadMyReservations(){
-        try {
-            fetch('https://localhost:44372/api/reservationPublisher', {
-                method: 'POST',
-                header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                body: JSON.stringify({
-                    "AccessToken": this.props.tokenObj.accesToken,
-                    "Mail": this.props.userData.Mail                   
-                })
-            }).then(response => response.json()).then(data => {
-                if (data.responseCode == "SUCC_RESERVATIONSOK") {
-                    this.setState({ reservations: data.Reservations, loadingReservations: false })
-                } else {
-                    toast.error('Hubo un error '+data.responseCode, {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                }
-            }
-            ).catch(error => {
-                toast.error('Internal error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                console.log(error);
-            }
-        )
-        }catch(error){
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-            console.log(error);
+        var objApi = {};
+        objApi.objToSend = {
+            "AccessToken": this.props.tokenObj.accesToken,
+            "Mail": this.props.userData.Mail
         }
+        objApi.fetchUrl = "https://localhost:44372/api/reservationPublisher";
+        objApi.method = "POST";
+        objApi.responseSuccess = "SUCC_RESERVATIONSOK";
+        objApi.successMessage = "";
+        objApi.functionAfterSuccess = "loadMyReservations";
+        this.callAPI(objApi);
     }
     modalSave(){
         this.modalReqInfo.current.changeModalLoadingState(true);
@@ -177,8 +145,6 @@ class MyReservedPublications extends React.Component {
                 "Extension" :  objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Extension : ""
             }
         }
-        console.log("saveComissionPayment objToSend: ")
-        console.log(objApi.objToSend);
         objApi.fetchUrl = "https://localhost:44372/api/reservationPaymentPublisher";
         objApi.method = "POST";
         objApi.responseSuccess = "SUCC_PAYMENTUPDATED";
@@ -198,8 +164,6 @@ class MyReservedPublications extends React.Component {
             "Mail": this.props.userData.Mail,
             "IdReservation": objPaymentDetails.IdReservation
         }
-        console.log("confirmPayment objToSend: ")
-        console.log(objApi.objToSend)
         objApi.fetchUrl = "https://localhost:44372/api/reservationPaymentCustomer";
         objApi.method = "PUT";
         objApi.responseSuccess = "SUCC_PAYMENTUPDATED";
@@ -207,34 +171,83 @@ class MyReservedPublications extends React.Component {
         objApi.functionAfterSuccess = "confirmPayment";
         this.callAPI(objApi);
     }
+
+            /* START OF API FUNCTIONS */
     callAPI(objApi){
-        fetch(objApi.fetchUrl, {
-            method: objApi.method,
-            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify(objApi.objToSend)
-        }).then(response => response.json()).then(data => {
-            if (data.responseCode == objApi.responseSuccess) {
-                if(objApi.successMessage != ""){
-                    toast.success(objApi.successMessage, {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                }
-                this.callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data);
-            } else {
-                this.handleErrors("Internal error");
-            }
-        }
-        ).catch(error => {
-            this.handleErrors(error);
-        }
-        )
-    }
+        console.log("API CALL => "+objApi.functionAfterSuccess)
+        console.log(objApi)
+        if(objApi.method == "GET"){
+            fetch(objApi.fetchUrl).then(response => response.json()).then(data => {
+                console.log("<= RESPONSE =>")
+                console.log(data)
+                switch(data.responseCode){
+                    case objApi.responseSuccess: 
+                        if(objApi.successMessage != ""){
+                            toast.success(objApi.successMessage, {
+                                position: "top-right",
+                                autoClose: 5000,
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: true,
+                                draggable: true,
+                            });
+                        }
+                        this.callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data);
+                    break;
     
+                    case "ERR_INVALIDACCESSTOKEN": this.handleExpiredToken(objApi);break;
+                    case "ERR_ACCESSTOKENEXPIRED": this.handleExpiredToken(objApi);break;
+                    case "ERR_INVALIDREFRESHTOKEN": this.handleExpiredToken(objApi);break;
+                    
+                    default: 
+                        this.handleErrors("Internal error");
+                    break;
+                }
+            }
+            ).catch(error => {
+                this.handleErrors(error);
+            }
+            )
+        }else{
+            fetch(objApi.fetchUrl, {
+                method: objApi.method,
+                header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify(objApi.objToSend)
+            }).then(response => response.json()).then(data => {
+                console.log("<= RESPONSE =>")
+                console.log(data)
+                switch(data.responseCode){
+                    case objApi.responseSuccess: 
+                        if(objApi.successMessage != ""){
+                            toast.success(objApi.successMessage, {
+                                position: "top-right",
+                                autoClose: 5000,
+                                hideProgressBar: false,
+                                closeOnClick: true,
+                                pauseOnHover: true,
+                                draggable: true,
+                            });
+                        }
+                        this.callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data);
+                    break;
+    
+                    case "ERR_INVALIDACCESSTOKEN": this.handleExpiredToken(objApi);break;
+                    case "ERR_ACCESSTOKENEXPIRED": this.handleExpiredToken(objApi);break;
+                    case "ERR_INVALIDREFRESHTOKEN": this.handleExpiredToken(objApi);break;
+                    
+                    default: 
+                        this.handleErrors("Internal error");
+                    break;
+                }
+            }
+            ).catch(error => {
+                this.handleErrors(error);
+            }
+            )
+        }
+
+    }
+
     callFunctionAfterApiSuccess(trigger, objData){
         switch(trigger){
             case "saveComissionPayment":
@@ -250,10 +263,62 @@ class MyReservedPublications extends React.Component {
                 this.loadMyReservations();
                 this.ModalResCustPay.current.changeModalLoadingState(true);
             break;
+
+            case "loadMyReservations":
+                this.setState({ reservations: objData.Reservations, loadingReservations: false })
+            break;
+
+            case "updateExpiredToken":
+                // updatetoken &
+                let newTokenObj = {
+                    accesToken: objData.AccessToken,
+                    refreshToken: objData.RefreshToken
+                };
+                this.props.updateToken(newTokenObj);
+                var scopeThis = this;
+                setTimeout(function () {
+                    scopeThis.callAPI(objData.retryObjApi);
+                }, 350);
+            break;
         }
     }
-    render() {        
+
+    handleExpiredToken(retryObjApi){
+        if(retryObjApi.functionAfterSuccess == "updateExpiredToken"){
+            // This is the second attempt -> Log off
+            this.props.logOut();
+            toast.error("Su sesión expiró, por favor inicie sesión nuevamente", {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+        }else{
+            var objApi = {};
+            objApi.objToSend = {
+                "RefreshToken": this.props.tokenObj.refreshToken,
+                "Mail": this.props.userData.Mail
+            }
+            objApi.fetchUrl = "https://localhost:44372/api/tokens";
+            objApi.method = "PUT";
+            objApi.responseSuccess = "SUCC_TOKENSUPDATED";
+            objApi.successMessage = "";
+            objApi.functionAfterSuccess = "updateExpiredToken";
+            objApi.retryObjApi = retryObjApi;
+            this.callAPI(objApi);
+        }
+
+    }
+            /* END OF API FUNCTIONS */
+
+    render() {
+                    /* START SECURITY VALIDATIONS */
         if (this.props.login_status != 'LOGGED_IN') return <Redirect to='/' />
+        // THIS ONE ONLY FOR PUBLISHER PAGES
+        if (this.props.userData.PublisherValidated != true) return <Redirect to='/' />
+                    /* END SECURITY VALIDATIONS */
         return (
         <>
             {/*SEO Support*/}
@@ -294,4 +359,11 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps)(MyReservedPublications);
+const mapDispatchToProps = (dispatch) =>{
+    return{
+        logOut: () => dispatch(logOut()),
+        updateToken: (tokenObj) => dispatch(updateToken(tokenObj))
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(MyReservedPublications);
