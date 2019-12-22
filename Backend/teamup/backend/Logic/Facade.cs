@@ -864,11 +864,7 @@ namespace backend.Logic
                 String message = util.ValidAccessToken(voUpdatePayment.AccessToken, voUpdatePayment.Mail);
                 if (EnumMessages.OK.ToString().Equals(message))
                 {
-                    if (users.AdminMember(voUpdatePayment.Mail))
-                    {
-                        isAdmin = true;
-                    }
-                    await spaces.UpdatePreferentialPayment(voUpdatePayment, isAdmin);
+                    await spaces.UpdatePreferentialPayment(voUpdatePayment);
                     message = EnumMessages.SUCC_PAYMENTUPDATED.ToString();
                 }
                 response.responseCode = message;
@@ -904,19 +900,14 @@ namespace backend.Logic
         public async Task<VOResponsePayReservationPublisher> PayReservationPublisher(VORequestPayReservationPublisher voPayReservationPublisher)
         {
             VOResponsePayReservationPublisher response = new VOResponsePayReservationPublisher();
-            bool isAdmin = false;
             try
             {
                 
                 String message = util.ValidAccessToken(voPayReservationPublisher.AccessToken, voPayReservationPublisher.Mail);
                 if (EnumMessages.OK.ToString().Equals(message))
-                {
-                    if (users.AdminMember(voPayReservationPublisher.Mail))
-                    {
-                        isAdmin = true;
-                    }
+                {                   
                     User user = users.Find(voPayReservationPublisher.Mail);
-                    await spaces.PayReservationPublisher(voPayReservationPublisher, user.IdUser, isAdmin);
+                    await spaces.PayReservationPublisher(voPayReservationPublisher, user.IdUser);
                     message = EnumMessages.SUCC_PAYMENTUPDATED.ToString();
                 }
                 response.responseCode = message;
@@ -928,15 +919,15 @@ namespace backend.Logic
             }
         }
 
-        public VOResponseApprovePaymentCustomer ApprovePaymentCustomer(VORequestApprovePaymentCustomer voApprovePayment)
+        public VOResponseUpdatePaymentCustomer UpdatePaymentCustomer(VORequestUpdatePaymentCustomer voUpdatePayment)
         {
             try
             {
-                VOResponseApprovePaymentCustomer response = new VOResponseApprovePaymentCustomer();
-                String message = util.ValidAccessToken(voApprovePayment.AccessToken, voApprovePayment.Mail);
+                VOResponseUpdatePaymentCustomer response = new VOResponseUpdatePaymentCustomer();
+                String message = util.ValidAccessToken(voUpdatePayment.AccessToken, voUpdatePayment.Mail);
                 if (EnumMessages.OK.ToString().Equals(message))
                 {
-                    spaces.ApprovePaymentCustomer(voApprovePayment);
+                    spaces.UpdatePaymentCustomer(voUpdatePayment);
                     message = EnumMessages.SUCC_PAYMENTUPDATED.ToString();
                 }
                 response.responseCode = message;
@@ -1023,6 +1014,69 @@ namespace backend.Logic
             {
                 throw e;
             }
+        }
+
+        public VOResponseUpdatePreferentialPaymentAdmin UpdatePreferentialPaymentAdmin(VORequestUpdatePreferentialPaymentAdmin voUpdatePayment)
+        {
+            try
+            {
+                VOResponseUpdatePreferentialPaymentAdmin response = new VOResponseUpdatePreferentialPaymentAdmin();
+                String message = util.ValidAccessToken(voUpdatePayment.AccessToken, voUpdatePayment.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    spaces.UpdatePreferentialPaymentAdmin(voUpdatePayment);
+                    message = EnumMessages.SUCC_PAYMENTUPDATED.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+
+        public VOResponseUpdatePaymentCommissionAdmin UpdatePaymentCommissionAdmin(VORequestUpdatePaymentCommissionAdmin voUpdatePayment)
+        {
+            try
+            {
+                VOResponseUpdatePaymentCommissionAdmin response = new VOResponseUpdatePaymentCommissionAdmin();
+                String message = util.ValidAccessToken(voUpdatePayment.AccessToken, voUpdatePayment.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    spaces.UpdatePaymentCommissionAdmin(voUpdatePayment);
+                    message = EnumMessages.SUCC_PAYMENTUPDATED.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+
+        public VOResponseGetMessages GetMessages(VORequestGetMessages voGetMessages)
+        {            
+            try
+            {
+                VOResponseGetMessages response = new VOResponseGetMessages();
+                String message = util.ValidAccessToken(voGetMessages.AccessToken, voGetMessages.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    User user = users.Find(voGetMessages.Mail);
+                    bool isPublisher = users.IsPublisher(voGetMessages.Mail);
+                    response.Messages = spaces.GetMessages(voGetMessages, isPublisher, user.IdUser);
+                    message = EnumMessages.SUCC_MESSAGESOK.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+
         }
     }
 }

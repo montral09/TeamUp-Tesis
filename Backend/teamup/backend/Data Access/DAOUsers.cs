@@ -808,5 +808,42 @@ namespace backend.Data_Access.Query
             return user;
         }
 
+        public bool IsPublisher(String mail)
+        {
+            SqlConnection con = null;
+            bool member = false;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.IsPublisher();
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                SqlParameter parametro = new SqlParameter()
+                {
+                    ParameterName = "@mail",
+                    Value = mail,
+                    SqlDbType = SqlDbType.VarChar
+                };
+                selectCommand.Parameters.Add(parametro);
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                if (dr.HasRows)
+                {
+                    member = true;
+                }
+                dr.Close();
+            }
+            catch (Exception)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+            return member;
+        }
     }
 }

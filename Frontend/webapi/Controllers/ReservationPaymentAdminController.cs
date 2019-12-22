@@ -7,29 +7,29 @@ using backend.Data_Access.VO.Data;
 using backend.Exceptions;
 using System.IO;
 using System.Threading.Tasks;
+using backend.Data_Access.VO.Requests;
 using backend.Data_Access.VO.Responses;
 
 namespace webapi.Controllers
 {
-    public class PublicationPlanAdminController : ApiController
+    public class ReservationPaymentAdminController : ApiController
     {
         IFacadeWeb fach = new FacadeFactory().CreateFacadeWeb;      
         [EnableCors(origins: "*", headers: "*", methods: "*")]
-        [HttpPost]
-        [Route("api/publicationPlanAdmin")]
-        public IHttpActionResult Post([FromBody]VORequestGetPublicationPlanPayments voGetPayment)
+        [HttpPut]
+        [Route("api/reservationPaymentAdmin")]
+        public IHttpActionResult Put([FromBody]VORequestUpdatePaymentCommissionAdmin voUpdatePayment)
         {
             try
             {
-                VOResponseGetPublicationPlanPayments voResp = new VOResponseGetPublicationPlanPayments();
-                voResp = fach.GetPublicationPlanPayments(voGetPayment);
-                return Ok(voResp);               
+                VOResponseUpdatePaymentCommissionAdmin voResp = new VOResponseUpdatePaymentCommissionAdmin();
+                voResp = fach.UpdatePaymentCommissionAdmin(voUpdatePayment);               
+                return Ok(voResp);
             }
             catch (GeneralException e)
             {
                 return InternalServerError(new Exception(e.Codigo));
             }
-        }
-       
+        }        
     }
 }

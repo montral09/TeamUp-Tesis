@@ -5,8 +5,8 @@ using System.Text;
 
 namespace backend.Data_Access.VO
 {
-    public class VOResponseApprovePaymentCustomer : VOResponse
+    public class VOResponseUpdatePaymentCustomer : VOResponse
     {
-        public VOResponseApprovePaymentCustomer() { }
+        public VOResponseUpdatePaymentCustomer() { }
     }
 }

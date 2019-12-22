@@ -196,7 +196,8 @@ class MyReservedPublications extends React.Component {
         objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,
             "Mail": this.props.userData.Mail,
-            "IdReservation": objPaymentDetails.IdReservation
+            "IdReservation": objPaymentDetails.IdReservation,
+            "Approved": true
         }
         console.log("confirmPayment objToSend: ")
         console.log(objApi.objToSend)

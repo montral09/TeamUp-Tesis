@@ -44,7 +44,7 @@ namespace backend.Data_Access.Query
         public String GetPublisherSpaces()
         {
             String query = "select p.idPublication, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, " +
-                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities, p.city, e.description as state, p.idPlan from PUBLICATIONS p, USERS u, SPACE_STATES e where " +
+                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities, p.city, e.description as state, p.idPlan, p.totalViews from PUBLICATIONS p, USERS u, SPACE_STATES e where " +
                 "p.idUser = u.idUser and u.mail= @mail and p.state = e.idSpaceState";
             return query;
         }
@@ -233,10 +233,10 @@ namespace backend.Data_Access.Query
         {
             StringBuilder query = new StringBuilder();
             query = query.Append("select p.title, r.idReservation, r.idPublication, r.idCustomer, r.planSelected, r.reservedQty, r.dateFrom, r.hourFrom, r.HourTo," +
-                " r.people, r.comment, r.totalPrice, r.state, rs.description, s.individualRent, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, r.paymentCustomerState, ps.description as customerPaymentDesc from RESERVATIONS r, PUBLICATIONS p, RESERVATION_STATES rs, SPACE_TYPES s, PAYMENT_STATES ps");
+                " r.people, r.comment, r.totalPrice, r.state, rs.description, s.individualRent, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, r.paymentCustomerState, ps.description as customerPaymentDesc, u.name from RESERVATIONS r, PUBLICATIONS p, RESERVATION_STATES rs, SPACE_TYPES s, PAYMENT_STATES ps");
             if (idCustomer != 0)
             {
-                query.Append(" where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) and rs.idReservationState = r.state and p.spaceType = s.idSpaceType and r.idCustomer = @idCustomer and ps.idPaymentState = paymentCustomerState");
+                query.Append(" , USERS U where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) and rs.idReservationState = r.state and p.spaceType = s.idSpaceType and r.idCustomer = @idCustomer and ps.idPaymentState = paymentCustomerState and u.idUser = r.idCustomer");
             } else if (idPublisher != 0)
             {
                 query.Append(", USERS u where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) and rs.idReservationState = r.state and p.spaceType = s.idSpaceType and p.idUser = u.idUser and u.idUser = @idPublisher and ps.idPaymentState = paymentCustomerState");
@@ -373,10 +373,16 @@ namespace backend.Data_Access.Query
             return query.ToString();
         }
 
-        public String UpdatePreferentialPaymentAdmin()
+        public String UpdatePreferentialPaymentAdmin(string rejectedReason)
         {
-            String query = "update PREFERENTIAL_PAYMENTS set state = 3 where idPublication = @idPublication";
-            return query;           
+            StringBuilder query = new StringBuilder();
+            query = query.Append("update PREFERENTIAL_PAYMENTS set state = @state ");
+            if (rejectedReason != null)
+            {
+                query.Append(", paymentRejectedReason = @paymentRejectedReason ");
+            }
+            query.Append("where idPrefPayments = @idPrefPayments");
+            return query.ToString();           
         }
 
         public String UpdatePublicationDueToPayment()
@@ -447,10 +453,15 @@ namespace backend.Data_Access.Query
             return query.ToString();
         }
 
-        public String ApprovePaymentCustomer()
+        public String UpdatePaymentCustomer(string rejectedReason)
         {
-            String query = "update RESERVATIONS set paymentCustomerState = 3 where idReservation = @idReservation";
-            return query;
+            StringBuilder query = new StringBuilder();
+            query = query.Append("update RESERVATIONS set paymentCustomerState = @paymentCustomerState ");
+            if (rejectedReason != null) {
+                query.Append(", paymentCustomerRejectedReason = @paymentCustomerRejectedReason ");
+            }
+            query.Append("where idReservation = @idReservation");
+            return query.ToString();
         }
 
         public String GetCustomerFromReservation()
@@ -526,6 +537,32 @@ namespace backend.Data_Access.Query
         {
             String query = "select p.idPublication, p.title, p.address, p.city, p.capacity from PUBLICATIONS p " +
                 "LEFT JOIN PREFERENTIAL_PAYMENTS pp ON pp.idPublication = p.idPublication where pp.idPublication IS NULL and p.state = 2 and p.spaceType = @spaceType";
+            return query;
+        }
+
+        public String GetPublisherFromPublication()
+        {
+            String query = "select u.name, u.lastName, u.mail from USERS u, PUBLICATIONS p " +
+                "where p.idPublication = @idPublication and p.idUser = u.idUser";
+            return query;
+        }
+
+        public String UpdatePaymentCommissionAdmin(string rejectedReason)
+        {
+            StringBuilder query = new StringBuilder();
+            query = query.Append("update RESERVATIONS set commissionPaymentState = @commissionPaymentState ");
+            if (rejectedReason != null)
+            {
+                query.Append(", paymentCommissionRejectedReason = @paymentCommissionRejectedReason ");
+            }
+            query.Append("where idReservation = @idReservation");
+            return query.ToString();
+        }
+
+        public String GetQuestionsByCustomer()
+        {
+            String query = "select q.idQuestion, u.name, q.question, q.creationDate, p.idPublication, p.title from PUBLICATION_QUESTIONS q, PUBLICATIONS p, USERS u where " +
+                "q.idUser = @idUser and p.idPublication = q.idPublication and p.state = 2 and u.idUser = q.idUser order by q.creationDate desc";
             return query;
         }
     }

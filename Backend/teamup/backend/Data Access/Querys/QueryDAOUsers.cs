@@ -131,6 +131,12 @@ namespace backend.Data_Access.Query
             String query = "select idUser,mail,name,lastName,password,phone,rut,razonSocial,address,checkPublisher,mailValidated,publisherValidated,active from USERS where accessToken=@accessToken";
             return query;
         }
+
+        public String IsPublisher()
+        {
+            String query = "select idUser from USERS where mail = @mail and publisherValidated = 1 and active = 1";
+            return query;
+        }
     }
      
 }
