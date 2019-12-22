@@ -7,25 +7,23 @@ using backend.Data_Access.VO.Data;
 using backend.Exceptions;
 using System.IO;
 using System.Threading.Tasks;
-using backend.Data_Access.VO.Requests;
 using backend.Data_Access.VO.Responses;
 
 namespace webapi.Controllers
 {
-    public class ReservationPaymentCustomerController : ApiController
+    public class PublicationPlanPaymentAdminController : ApiController
     {
         IFacadeWeb fach = new FacadeFactory().CreateFacadeWeb;      
         [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpPost]
-        [Route("api/reservationPaymentCustomer")]
-        public async Task<IHttpActionResult> Post([FromBody]VORequestPayReservationCustomer voPayReservationCustomer)
+        [Route("api/publicationPlanPaymentAdmin")]
+        public IHttpActionResult Post([FromBody]VORequestGetPublicationPlanPayments voGetPayment)
         {
             try
             {
-                VOResponsePayReservationCustomer voResp = new VOResponsePayReservationCustomer();
-
-                voResp = await fach.PayReservationCustomer(voPayReservationCustomer);               
-                return Ok(voResp);
+                VOResponseGetPublicationPlanPayments voResp = new VOResponseGetPublicationPlanPayments();
+                voResp = fach.GetPublicationPlanPayments(voGetPayment);
+                return Ok(voResp);               
             }
             catch (GeneralException e)
             {
@@ -35,13 +33,13 @@ namespace webapi.Controllers
 
         [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpPut]
-        [Route("api/reservationPaymentCustomer")]
-        public IHttpActionResult Put([FromBody]VORequestUpdatePaymentCustomer voApprovePayment)
+        [Route("api/publicationPlanPaymentAdmin")]
+        public IHttpActionResult Put([FromBody]VORequestUpdatePreferentialPaymentAdmin voUpdatePayment)
         {
             try
             {
-                VOResponseUpdatePaymentCustomer voResp = new VOResponseUpdatePaymentCustomer();
-                voResp = fach.UpdatePaymentCustomer(voApprovePayment);
+                VOResponseUpdatePreferentialPaymentAdmin voResp = new VOResponseUpdatePreferentialPaymentAdmin();
+                voResp = fach.UpdatePreferentialPaymentAdmin(voUpdatePayment);
                 return Ok(voResp);
             }
             catch (GeneralException e)

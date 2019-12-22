@@ -256,10 +256,18 @@ namespace backend.Logic
             return body;
         }
 
-        public static string CreateBodyEmailUpdatePaymentCustomer(String name)
+        public static string CreateBodyEmailApprovedPaymentCustomer(String name)
         {
             string body = "Hola, " + name;
             body += "<br /><br />Han confirmado el pago de tu reserva.";
+            body += "<br /><br />Gracias";
+            return body;
+        }
+
+        public static string CreateBodyEmailCanceledPaymentCustomer(String name)
+        {
+            string body = "Hola, " + name;
+            body += "<br /><br />Han cancelado el pago de tu reserva.";
             body += "<br /><br />Gracias";
             return body;
         }
@@ -284,6 +292,38 @@ namespace backend.Logic
                 recommended.RemoveAt(nextIndex);
             }
             return randomRecommended;
+        }
+
+        public static string CreateBodyEmailPreferentialPaymentApproved(String name)
+        {
+            string body = "Hola, " + name;
+            body += "<br /><br />El pago de plan de tu publicacion ha sido aprobado.";
+            body += "<br /><br />Gracias";
+            return body;
+        }
+
+        public static string CreateBodyEmailPreferentialPaymentRejected(String name)
+        {
+            string body = "Hola, " + name;
+            body += "<br /><br />El pago de plan de tu publicacion ha sido rechazado.";
+            body += "<br /><br />Gracias";
+            return body;
+        }
+
+        public static string CreateBodyEmailCommissionPaymentApproved(String name)
+        {
+            string body = "Hola, " + name;
+            body += "<br /><br />El pago de comision de la publicacion ha sido aprobado.";
+            body += "<br /><br />Gracias";
+            return body;
+        }
+
+        public static string CreateBodyEmailCommissionPaymentRejected(String name)
+        {
+            string body = "Hola, " + name;
+            body += "<br /><br />El pago de comision de la publicacion ha sido rechazado.";
+            body += "<br /><br />Gracias";
+            return body;
         }
     }
 }

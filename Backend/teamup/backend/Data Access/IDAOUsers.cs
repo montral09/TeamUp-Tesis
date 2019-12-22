@@ -29,6 +29,7 @@ namespace backend.Data_Access.Query
         void UpdateUserAdmin(VORequestUpdateUserAdmin voRequest);
         List<VOUserAdmin> GetUsers();
         User GetUserData(VORequestGetUserData voRequestUserData);
+        bool IsPublisher(String mail);
 
     }
 }

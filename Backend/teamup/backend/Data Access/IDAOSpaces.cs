@@ -32,13 +32,16 @@ namespace backend.Data_Access
         void CreatePublicationAnswer(VORequestCreatePublicationAnswer voCreatePublicationAnswer, long idUser);
         List<VOPublicationQuestion> GetPublicationQuestions(int idPublication);
         List<VOPublicationPlan> GetPublicationPlans();
-        Task UpdatePreferentialPayment(VORequestUpdatePreferentialPayment voUpdatePayment, bool isAdmin);
+        Task UpdatePreferentialPayment(VORequestUpdatePreferentialPayment voUpdatePayment);
         Task PayReservationCustomer(VORequestPayReservationCustomer voPayReservationCustomer, long idUser);
-        Task PayReservationPublisher(VORequestPayReservationPublisher voPayReservationPublisher, long idUser, bool isAdmin);
-        void ApprovePaymentCustomer(VORequestApprovePaymentCustomer voApprovePayment);
+        Task PayReservationPublisher(VORequestPayReservationPublisher voPayReservationPublisher, long idUser);
+        void UpdatePaymentCustomer(VORequestUpdatePaymentCustomer voUpdatePayment);
         List<VOPublicationPaymentAdmin> GetPublicationPlanPayments();
         List<VOCommissionPaymentAdmin> GetCommissionPaymentsAdmin();
         List<VOPublication> GetFavorites(long idUser);
         List<VOSpaceTypeRecommended> GetRecommendedPublications();
+        void UpdatePreferentialPaymentAdmin(VORequestUpdatePreferentialPaymentAdmin voUpdatePayment);
+        void UpdatePaymentCommissionAdmin(VORequestUpdatePaymentCommissionAdmin voUpdatePayment);
+        List<VOMessage> GetMessages(VORequestGetMessages voGetMessages, bool isPublisher, long idUser);
     }
 }
