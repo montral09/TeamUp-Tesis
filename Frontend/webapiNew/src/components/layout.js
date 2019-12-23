@@ -13,6 +13,8 @@ import ViewPublication from './publications/viewPublication/viewPublication';
 import MyPublicationsList from './publications/myPublishedPublications/myPublicationsList';
 import MainPublications from './publications/listPublications/mainPublications';
 import MyReservedSpacesList from './reservations/myReservedSpaces/myReservedSpacesList';
+import MyReservedPublications from './publications/reservedPublications/reservedPublications';
+import FavPublications from './publications/favPublications/favPublications';
 import NotFoundPage from './pages/404';
 
 const Page = () => {
@@ -31,6 +33,8 @@ const Page = () => {
         <Route path="/publications/listPublications/mainPublications/:spacetype/:capacity/:city" component={MainPublications} />
         <Route path="/publications/listPublications/mainPublications" component={MainPublications} />
         <Route path="/reservations/myReservedSpaces/myReservedSpacesList" component={MyReservedSpacesList} />
+        <Route path="/publications/reservedPublications/reservedPublications" component={MyReservedPublications} />
+        <Route path="/publications/favPublications" component={FavPublications} />
         <Route component={NotFoundPage} />
       </Switch>
     </>

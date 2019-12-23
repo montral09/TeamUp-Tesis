@@ -26,9 +26,11 @@ class ModalReqInfo extends React.Component {
                 optionalData: optionalData
             });
         }else{
-            this.setState({
-                modal: !this.state.modal
-            });
+            if(!this.state.isLoading){
+                this.setState({
+                    modal: !this.state.modal
+                });
+            }
         }
     }
 
@@ -48,23 +50,44 @@ class ModalReqInfo extends React.Component {
     }
 
     save() {
-        this.changeModalLoadingState();
-        this.props.modalSave(this.state.textboxValue,this.props.ref);
+        if(this.props.modalConfigObj.saveFunction){
+            this.props.triggerSaveModal(this.props.modalConfigObj.saveFunction,{optionValue:this.state.optionValue, textboxValue:this.state.textboxValue })
+        }else{
+            this.props.modalSave(this.state.textboxValue);
+        }
     }
     onChange = (e) => {
         this.setState({
-            textboxValue: e.target.value
+            [e.target.id]: e.target.value
           })
     }
     render() {
         return (
+
             <span className="d-inline-block mb-2 mr-2">
-                <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+                {this.props.modalConfigObj ? (
+                    <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
                     <ModalHeader toggle={this.toggle}>{this.props.modalConfigObj.title}</ModalHeader>
                     <ModalBody>
-                    <Form>                        
+                    <Form>
                         <p> {this.props.modalConfigObj.mainText} </p>
-                        {this.props.modalConfigObj.textboxDisplay? 
+                        {this.props.modalConfigObj.optionDisplay ? 
+                        (
+                            <FormGroup row>
+                                <Label for="optionValue" sm={2}>{this.props.modalConfigObj.optionLabel}</Label>
+                                <Col sm={10}>
+                                    <select style={{ marginLeft: '8%' }} className="browser" id="optionValue" 
+                                        value={this.state.optionValue} onChange={this.onChange}>
+                                        {this.props.modalConfigObj.optionArray.map((option) => {
+                                            return (
+                                                <option key={option} value={option}>{option}</option>
+                                            );
+                                        })}
+                                    </select>
+                                </Col>
+                            </FormGroup>
+                        ) : (null)}
+                        {this.props.modalConfigObj.textboxDisplay ? 
                         (
                             <FormGroup row>
                                 <Label for="textboxValue" sm={2}>{this.props.modalConfigObj.textboxLabel}</Label>
@@ -74,13 +97,13 @@ class ModalReqInfo extends React.Component {
                                 </Col>
                             </FormGroup>
                         ) : (null)}
+
                     </Form>
                     </ModalBody>
-                    <ModalFooter>
-                        {this.props.login_status == 'LOGGED_IN' ? (
+                        {this.props.modalConfigObj.login_status == 'LOGGED_IN' ? (
                         <ModalFooter>
-                            {this.props.modalConfigObj.cancelAvailable ?(<Button color="link" onClick={this.toggle}>{this.props.modalConfigObj.cancelText}</Button>) : (null)}
-                            {this.props.modalConfigObj.confirmAvailable ?(<Button color="primary" onClick={this.save} disabled= {this.state.buttonIsDisabled}>{this.props.modalConfigObj.confirmText}
+                            {this.props.modalConfigObj.cancelAvailable == true ? (<Button color="link" onClick={this.toggle} disabled= {this.state.buttonIsDisabled}>{this.props.modalConfigObj.cancelText}</Button>) : (null)}
+                            {this.props.modalConfigObj.confirmAvailable == true ? (<Button color="primary" onClick={this.save} disabled= {this.state.buttonIsDisabled}>{this.props.modalConfigObj.confirmText}
                                 &nbsp;&nbsp;
                                 {this.state.isLoading &&  
                                     <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -88,8 +111,9 @@ class ModalReqInfo extends React.Component {
                             </Button>) : (null)}
                         </ModalFooter>
                     ) : (null)}
-                    </ModalFooter>
                 </Modal>
+                ) : (null)}
+                
             </span>
         );
     }

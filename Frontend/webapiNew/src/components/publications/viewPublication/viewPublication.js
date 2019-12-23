@@ -42,50 +42,32 @@ class ViewPublication extends React.Component {
                                     , '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
             hourFromSelect      : '00',
             hourToSelect        : '01',
-            reservationComment  : "",
             totalPrice          : 0,
-            arrQA               : []
+            arrQA               : [],
+            modalConfigObj      : null
         }
-        this.modalElement           = React.createRef(); // Connects the reference to the modal
+        this.modalReqInfo           = React.createRef(); // Connects the reference to the modal
         this.modalSummaryElement    = React.createRef(); // Connects the reference to the modal
+        this.bindFunctions();
+        this.loadPublication(pubID);
+    }
+
+    bindFunctions(){
         this.loadPublication        = this.loadPublication.bind(this);
         this.redirectToPub          = this.redirectToPub.bind(this);
         this.submitFavorite         = this.submitFavorite.bind(this);
         this.handleErrors           = this.handleErrors.bind(this);
-        this.modalSave              = this.modalSave.bind(this);
+        this.reservationSuccess     = this.reservationSuccess.bind(this);
         this.confirmReservation     = this.confirmReservation.bind(this);
-        this.loadPublication(pubID);
-    }
-
-    loadDummyQuestions(){
-        const arrQA = [
-            {
-                Question: {
-                    UserName: "Alex",
-                    Date: "27/08/2019",
-                    Text: "Hola, esta disponible?"
-                },
-                Answer: {
-                    UserName: "Fabi",
-                    Date: "28/08/2019",
-                    Text: "Si. Saludos"
-                }
-            },{
-                Question: {
-                    UserName: "Bruno",
-                    Date: "29/08/2019",
-                    Text: "Hola, esta disponible!!! >-<?"
-                }
-            }];
-        this.setState({
-            "arrQA": arrQA
-        });
+        this.triggerModal           = this.triggerModal.bind(this);
+        this.triggerSaveModal       = this.triggerSaveModal.bind(this);
+        this.saveAnswer             = this.saveAnswer.bind(this);
+        this.saveQuestion           = this.saveQuestion.bind(this);
     }
 
     componentDidMount() {
         this.loadInfraestructure();
         this.setInitialHour();
-        this.loadDummyQuestions();
         window.scrollTo(0, 0);
     }
 
@@ -189,7 +171,7 @@ class ViewPublication extends React.Component {
                     if (pubObj.HourPrice > 0) { defaultPlanSelected = "HourPrice"; } else if (pubObj.DailyPrice > 0) { defaultPlanSelected = "DailyPrice" } else if (pubObj.WeeklyPrice > 0) { defaultPlanSelected = "WeeklyPrice"; } else if (pubObj.MonthlyPrice > 0) { defaultPlanSelected = "MonthlyPrice"; }
                     this.setState({
                         pubIsLoading: false, pubObj: pubObj, activeImage: { index: 0, src: pubObj.ImagesURL[0] },
-                        relatedPublications: data.RelatedPublications, planChosen: defaultPlanSelected
+                        relatedPublications: data.RelatedPublications, planChosen: defaultPlanSelected, arrQA : data.Questions
                     });
                 } else {
                     this.setState({ pubIsLoading: false });
@@ -272,11 +254,11 @@ class ViewPublication extends React.Component {
         this.setState({ tabDisplayed: tab })
     }
 
-    modalSave(textboxValue, modalRef) {
-        this.modalElement.current.changeModalLoadingState(true);
+    reservationSuccess(textboxValue, modalRef) {
+        this.modalReqInfo.current.changeModalLoadingState(true);
     }
 
-    confirmReservation(){
+    confirmReservation(comment){
         var objToSend = {}
         var fetchUrl = 'https://localhost:44372/api/reservation';
         var method = "POST";
@@ -299,11 +281,10 @@ class ViewPublication extends React.Component {
                 "HourFrom": this.state.hourFromSelect,
                 "HourTo": this.state.hourToSelect,
                 "People": this.state.quantityPeople,
-                "Comment": this.state.reservationComment,
+                "Comment": comment,
                 "TotalPrice": this.state.totalPrice
             }
         }
-
         this.modalSummaryElement.current.changeModalLoadingState(false);
         fetch(fetchUrl, {
             method: method,
@@ -314,7 +295,7 @@ class ViewPublication extends React.Component {
             console.log("data:" + JSON.stringify(data));
             if (data.responseCode == "SUCC_RESERVATIONCREATED") {
                 this.modalSummaryElement.current.changeModalLoadingState(true);
-                this.modalElement.current.toggle(null);
+                this.triggerModal({mode:'"RESSUCC"'});
             } else {
                 this.modalSummaryElement.current.changeModalLoadingState(true);
                 this.handleErrors(data.responseCode);
@@ -432,6 +413,101 @@ class ViewPublication extends React.Component {
         return dateConv;
     }
 
+    triggerModal(objTrigger){
+        var modalConfigObj = {};
+        if(objTrigger.mode === "ANSWER"){
+            modalConfigObj ={
+                title: 'Responder', mainText: <><strong>Pregunta:</strong><em>{' "'+objTrigger.questionObj.Question+'"'}</em></>, mode : objTrigger.mode, saveFunction : "saveAnswer", textboxLabel: 'Respuesta',
+                textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :'Cancelar', confirmText :'Responder' , login_status: this.props.login_status, IdQuestion : objTrigger.questionObj.IdQuestion
+            };
+        }else{
+            modalConfigObj ={
+                title: 'Reserva enviada', mainText: 'Su reserva ha sido enviada correctamente, revise su casilla de correo para más informacion. ',
+                textboxDisplay: false, cancelAvailable: true, cancelText : 'Entendido', mode : objTrigger.mode, saveFunction : "reservationSuccess"
+            };
+        }
+        this.setState({modalConfigObj : modalConfigObj},() => {this.modalReqInfo.current.toggle();})
+    }
+
+    triggerSaveModal(saveFunction, objData){
+        switch(saveFunction){
+            case "reservationSuccess": this.reservationSuccess();break;
+            case "saveAnswer": this.saveAnswer(objData.textboxValue);break;
+        }
+    }
+
+    saveAnswer(answer){
+        var objApi = {};
+        objApi.objToSend = {
+            "AccessToken": this.props.tokenObj.accesToken,
+            "Mail": this.props.userData.Mail,
+            "IdQuestion": this.state.modalConfigObj.IdQuestion,
+            "Answer": answer
+        }
+        objApi.fetchUrl = "https://localhost:44372/api/publicationQuestions";
+        objApi.method = "PUT";
+        objApi.responseSuccess = "SUCC_ANSWERCREATED";
+        objApi.successMessage = "Respuesta enviada correctamente";
+        objApi.functionAfterSuccess = "saveAnswer";
+        this.modalReqInfo.current.changeModalLoadingState(false);
+        this.callAPI(objApi);
+    }
+
+    saveQuestion(question){
+        var objApi = {};
+        objApi.objToSend = {
+            "AccessToken": this.props.tokenObj.accesToken,
+            "Mail": this.props.userData.Mail,
+            "IdPublication": this.state.pubID,
+            "Question": question
+        }
+        objApi.fetchUrl = "https://localhost:44372/api/publicationQuestions";
+        objApi.method = "POST";
+        objApi.responseSuccess = "SUCC_QUESTIONCREATED";
+        objApi.successMessage = "Consulta enviada correctamente";
+        objApi.functionAfterSuccess = "saveQuestion";
+        this.modalReqInfo.current.changeModalLoadingState(false);
+        this.callAPI(objApi);
+    }
+
+    callAPI(objApi){
+        fetch(objApi.fetchUrl, {
+            method: objApi.method,
+            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify(objApi.objToSend)
+        }).then(response => response.json()).then(data => {
+            if (data.responseCode == objApi.responseSuccess) {
+                if(objApi.successMessage != ""){
+                    toast.success(objApi.successMessage, {
+                        position: "top-right",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                    });
+                }
+                this.callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data);
+            } else {
+                this.handleErrors("Internal error");
+            }
+        }
+        ).catch(error => {
+            alert(error)
+            this.handleErrors(error);
+        }
+        )
+    }
+
+    callFunctionAfterApiSuccess(trigger, objData){
+        switch(trigger){
+            case "saveAnswer":
+            case "saveQuestion":
+                this.modalReqInfo.current.changeModalLoadingState(true);
+                this.loadPublication(this.state.pubID);
+            break;
+        }
+    }
     render() {
         const { login_status } = this.props;
         const options = {
@@ -439,6 +515,7 @@ class ViewPublication extends React.Component {
             margin: 10,
             nav: false,
             dots: false,
+            video: true,
             responsive: {
                 0: {
                     items: 4,
@@ -470,11 +547,8 @@ class ViewPublication extends React.Component {
                             {/*SEO Support End */}
                             <Header />
                             <div className="main-content  full-width  home">
-                                <ModalReqInfo ref={this.modalElement} modalSave={this.modalSave}
-                                    modalConfigObj={{
-                                        title: 'Reserva enviada', mainText: 'Su reserva ha sido enviada correctamente, revise su casilla de correo para más informacion. ',
-                                        textboxDisplay: false, cancelAvailable: true, cancelText : 'Entendido'
-                                    }} />
+                                <ModalReqInfo ref={this.modalReqInfo} triggerSaveModal={this.triggerSaveModal}
+                                    modalConfigObj={this.state.modalConfigObj} />
 
                                 <ModalSummary ref={this.modalSummaryElement} login_status={this.props.login_status} 
                                     confirmReservation={this.confirmReservation} onChange ={this.onChange}/>
@@ -564,7 +638,7 @@ class ViewPublication extends React.Component {
 
                                                                                                 <div className="col-md-12" style={{ border: '1px solid dodgerBlue' }}>
                                                                                                     <span><b>Plan</b></span>
-                                                                                                    <select style={{ marginLeft: '10%' }} className="browser" id="planChosen" onChange={this.onChange} defaultValue=" -- select an option --">
+                                                                                                    <select style={{ marginLeft: '10%' }} className="browser" id="planChosen" onChange={this.onChange} >
                                                                                                         {this.state.pubObj.HourPrice > 0 && <option value="HourPrice"> {"Por Hora : $" + this.state.pubObj.HourPrice}</option>}
                                                                                                         {this.state.pubObj.DailyPrice > 0 && <option value="DailyPrice"> {"Por Día : $" + this.state.pubObj.DailyPrice}</option>}
                                                                                                         {this.state.pubObj.WeeklyPrice > 0 && <option value="WeeklyPrice"> {"Por Semana : $" + this.state.pubObj.WeeklyPrice}</option>}
@@ -576,7 +650,7 @@ class ViewPublication extends React.Component {
                                                                                                                 <span><b>Hora</b></span>
                                                                                                                 <div style={{ marginLeft: '8%' }} className="browser">
                                                                                                                     <select style={{ marginLeft: '8%' }} className="browser" id="hourFromSelect" 
-                                                                                                                        value={this.state.hourFromSelect} onChange={this.changeHour} defaultValue=" -- select an option --">
+                                                                                                                        value={this.state.hourFromSelect} onChange={this.changeHour}>
                                                                                                                         {this.state.hoursAvailable.map((hours) => {
                                                                                                                             return (
                                                                                                                                 <option key={'hourTo'+hours} value={hours}>{hours}</option>
@@ -587,7 +661,7 @@ class ViewPublication extends React.Component {
                                                                                                                 <b style={{ marginLeft: '8%' }}>a</b>
                                                                                                                 <div className="browser">
                                                                                                                     <select className="browser" id="hourToSelect" 
-                                                                                                                    value={this.state.hourToSelect} onChange={this.changeHour} defaultValue=" -- select an option --">
+                                                                                                                    value={this.state.hourToSelect} onChange={this.changeHour}>
                                                                                                                         {this.state.hoursAvailable.map((hours) => {
                                                                                                                             return (
                                                                                                                                 <option key={'hourTo'+hours} value={hours}>{hours}</option>
@@ -625,9 +699,15 @@ class ViewPublication extends React.Component {
                                                                                                             </div>
                                                                                                         </div>
                                                                                                     </div>
-                                                                                                    <div style={{ marginLeft: '35%' }} className="description add-to-cart d-flex">
-                                                                                                        <input type="button" value="Reservar" onClick={() => this.triggerSummaryModal()} className="button" />
-                                                                                                    </div>
+                                                                                                        {this.state.pubObj.IsMyPublication != true ? (
+                                                                                                            <div style={{ marginLeft: '35%' }} className="description add-to-cart d-flex">
+                                                                                                                <input type="button" value="Reservar" onClick={() => this.triggerSummaryModal()} className="button" />
+                                                                                                            </div>
+                                                                                                        ) : (
+                                                                                                        <div style={{ marginLeft: '20%' }} className="description add-to-cart d-flex">
+                                                                                                            <p>Reserva disponible para clientes</p>
+                                                                                                        </div>
+                                                                                                        )}
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>
@@ -646,8 +726,8 @@ class ViewPublication extends React.Component {
 
                                                                                         <div dangerouslySetInnerHTML={{ __html: this.state.pubObj.Description }} /><br />
 
-                                                                                        <h5>Dirección</h5>{this.state.pubObj.Address}<br />
-                                                                                        <h5>Servicios<br /></h5>
+                                                                                        <h5>Dirección</h5>{this.state.pubObj.Address}<br /><br />
+                                                                                        <h5>Servicios<br /><br /></h5>
 
                                                                                         <div className="review">
                                                                                             <span>{this.state.pubObj.Facilities.map((inf, index) => {
@@ -656,10 +736,10 @@ class ViewPublication extends React.Component {
                                                                                                 });
                                                                                                 return (
                                                                                                     <div key={index}>
-                                                                                                        <p><i className="fa fa-circle"></i>{infText[0].Description}</p>
+                                                                                                        <p><i className={infText[0].Icon}></i> {infText[0].Description}</p>
                                                                                                     </div>
                                                                                                 );
-                                                                                            })}<br /></span>
+                                                                                            })}<br /><br /></span>
                                                                                         </div>
                                                                                     </div>
                                                                                 </>
@@ -671,7 +751,8 @@ class ViewPublication extends React.Component {
                                                                             ) : (null)}
                                                                             {this.state.tabDisplayed === 3 ? (
                                                                                 <div id="tab-questions" className="tab-content">
-                                                                                    <TabQuestions arrQA={this.state.arrQA} login_status={this.props.login_status} userData={this.props.userData} />
+                                                                                    <TabQuestions arrQA={this.state.arrQA} login_status={this.props.login_status} saveQuestion={this.saveQuestion}
+                                                                                    userData={this.props.userData} isMyPublication={this.state.pubObj.IsMyPublication} triggerModal={this.triggerModal} />
                                                                                 </div>
                                                                             ) : (null)}
                                                                             <span><h5>Ubicación</h5><br /></span>
@@ -679,7 +760,7 @@ class ViewPublication extends React.Component {
                                                                                 this.state.pubObj &&
                                                                                 <Map objGoogleMaps={{ zoom: 17, latitude: this.state.pubObj.Location.Latitude, longitude: this.state.pubObj.Location.Longitude }} />
                                                                             }
-                                                                            <RelatedPublications relatedPublications={this.state.relatedPublications} redirectToPub={this.redirectToPub} />
+                                                                            <RelatedPublications relatedPublications={this.state.relatedPublications} redirectToPub={this.redirectToPub} title="Publicaciones relacionadas"/>
                                                                         </div>
                                                                     </div>
                                                                 </div>

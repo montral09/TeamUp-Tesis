@@ -23,13 +23,13 @@ class CreatePublicationStep3 extends React.Component {
             </FormGroup>
             <FormGroup>
               <Label for='HourPrice'>Precio por hora</Label>
-              <Input type="text" name='HourPrice' id='HourPrice' maxLength="4" onChange={this.props.onChange} value={this.props.parentState.HourPrice}/>
+              <Input type="text" name='HourPrice' id='HourPrice' maxLength="6" onChange={this.props.onChange} value={this.props.parentState.HourPrice}/>
               <Label for='DailyPrice'>Precio por día</Label>
-              <Input type="text" name='DailyPrice' id='DailyPrice' maxLength="4" onChange={this.props.onChange} value={this.props.parentState.DailyPrice}/>
+              <Input type="text" name='DailyPrice' id='DailyPrice' maxLength="6" onChange={this.props.onChange} value={this.props.parentState.DailyPrice}/>
               <Label for='WeeklyPrice'>Precio por semana</Label>
-              <Input type="text" name='WeeklyPrice' id='WeeklyPrice' maxLength="4" onChange={this.props.onChange} value={this.props.parentState.WeeklyPrice}/>
+              <Input type="text" name='WeeklyPrice' id='WeeklyPrice' maxLength="6" onChange={this.props.onChange} value={this.props.parentState.WeeklyPrice}/>
               <Label for='MonthlyPrice'>Precio por mes</Label>
-              <Input type="text" name='MonthlyPrice' id='MonthlyPrice' maxLength="4" onChange={this.props.onChange} value={this.props.parentState.MonthlyPrice}/>
+              <Input type="text" name='MonthlyPrice' id='MonthlyPrice' maxLength="6" onChange={this.props.onChange} value={this.props.parentState.MonthlyPrice}/>
             </FormGroup>
             <FormGroup>
                 <Label for="availability">Disponibilidad (*)</Label>

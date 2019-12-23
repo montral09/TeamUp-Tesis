@@ -25,7 +25,11 @@ class PublicationListCard extends React.Component {
                     <div className="actions col-md-3">
                         <div>
                             <div className="price">
-                                {"Hora $"}{HourPrice}				  					
+                                {HourPrice != 0 ? "Hora $" + HourPrice :
+                                     (DailyPrice != 0 ? "Día $" + DailyPrice :
+                                        WeeklyPrice != 0 ? "Semana $" + WeeklyPrice :
+                                            MonthlyPrice != 0 ? "Mes $" + MonthlyPrice : (null))
+                                }
                             </div>
                             <div className="add-to-cart">
 				        	    <a href="#redirectToPub" className="button" onClick={ () => this.props.redirectToPub(IdPublication)}>Ver</a>				            

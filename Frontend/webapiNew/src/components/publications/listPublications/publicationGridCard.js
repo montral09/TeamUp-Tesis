@@ -21,7 +21,12 @@ class PublicationGridCard extends React.Component {
 				    <div className="right">		
 						<div className="name"><Link to={`/publications/viewPublication/viewPublication/${IdPublication}`}></Link></div>
 						<div className="price">
-							<i className="fa fa-money" aria-hidden="true"></i>{"Hora$"+HourPrice}<br/>
+							<i className="fa fa-money" aria-hidden="true"></i>                                
+								{HourPrice != 0 ? "Hora $" + HourPrice :
+                                     (DailyPrice != 0 ? "Día $" + DailyPrice :
+                                        WeeklyPrice != 0 ? "Semana $" + WeeklyPrice :
+                                            MonthlyPrice != 0 ? "Mes $" + MonthlyPrice : (null))
+                                }<br/>
 						</div>
 				        <div className="">
 							{Title}<br/>

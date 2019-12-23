@@ -21,10 +21,12 @@ class ModalSummary extends React.Component {
     }
 
     toggle(summaryObject) {
-        this.setState({
-            modal: !this.state.modal,
-            summaryObject: summaryObject || {}
-        });
+        if(!this.state.isLoading){
+            this.setState({
+                modal: !this.state.modal,
+                summaryObject: summaryObject || {}
+            });
+        }
     }
     changeModalLoadingState(closeModal){
         if(closeModal){
@@ -41,9 +43,8 @@ class ModalSummary extends React.Component {
         }
     }
     save() {
-        this.props.onChange({target : {id : "reservationComment", value : this.state.reservationComment}})
-        this.changeModalLoadingState();
-        this.props.confirmReservation();
+        this.changeModalLoadingState(false);
+        this.props.confirmReservation(this.state.reservationComment);
     }
 
     onChange = (e) => {
@@ -128,14 +129,14 @@ class ModalSummary extends React.Component {
                                 </Col>
                             </FormGroup>
                             <FormGroup row>
-                                <Label for="textboxValue" sm={2}>Comentario (opcional)</Label>
-                                <Col sm={10}>
+                                <Label for="textboxValue" sm={6}>Comentario (opcional)</Label>
+                                <Col sm={12}>
                                     <Input type="textarea" name="textboxValue" id="textboxValue"
                                             value={this.state.reservationComment || ""} onChange={this.onChange}/>
                                 </Col>
-                                <Col sm={10}>
-                                    <Label for="message" sm={10}>Atencion! Este valor esta pendiente de confirmar. 
-                                    Va a recibir un correo con los detalles finales y la confirmacion dentro de las proximas 48hrs.</Label>
+                                <Col sm={12}>
+                                    Atencion! Este valor esta pendiente de confirmar. <br/>
+                                    Va a recibir un correo con los detalles finales y la confirmacion dentro de las proximas 48hrs.
                                 </Col>
                             </FormGroup>
                         </>
@@ -144,7 +145,7 @@ class ModalSummary extends React.Component {
                 </ModalBody>
                 {this.props.login_status == 'LOGGED_IN' ? (
                     <ModalFooter>
-                        <Button color="link" onClick={this.toggle}>Cancelar</Button>
+                        <Button color="link" onClick={this.toggle} disabled= {this.state.buttonIsDisabled}>Cancelar</Button>
                         <Button color="primary" onClick={this.save} disabled= {this.state.buttonIsDisabled}>OK
                             &nbsp;&nbsp;
                             {this.state.isLoading &&  

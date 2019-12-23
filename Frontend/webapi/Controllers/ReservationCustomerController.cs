@@ -33,6 +33,7 @@ namespace webapi.Controllers
             }
         }
 
+        [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpPut]
         [Route("api/reservationCustomer")]
         public IHttpActionResult Put([FromBody]VORequestUpdateReservation voUpdateReservation)

@@ -93,7 +93,7 @@ namespace backend.Logic
                     result = new VOResponseLogin();
                     result.RefreshToken = voTokens.RefreshToken;
                     result.AccessToken = voTokens.AccessToken;
-                    result.voUserLog = new VOUser(usr.Mail, null, usr.Name, usr.LastName, usr.Phone, usr.Rut, usr.RazonSocial, usr.Address, usr.CheckPublisher);
+                    result.voUserLog = new VOUser(usr.Mail, null, usr.Name, usr.LastName, usr.Phone, usr.Rut, usr.RazonSocial, usr.Address, usr.CheckPublisher, usr.PublisherValidated);
                 }
             }
             catch (GeneralException e)
@@ -377,7 +377,7 @@ namespace backend.Logic
                 if (usr != null)
                 {
                     message = EnumMessages.SUCC_USERSOK.ToString();
-                    response.User = new VOUser(usr.Mail, null, usr.Name, usr.LastName, usr.Phone, usr.Rut, usr.RazonSocial, usr.Address, usr.CheckPublisher);
+                    response.User = new VOUser(usr.Mail, null, usr.Name, usr.LastName, usr.Phone, usr.Rut, usr.RazonSocial, usr.Address, usr.CheckPublisher, usr.PublisherValidated);
                 }
                 else
                 {
@@ -435,6 +435,7 @@ namespace backend.Logic
             }
             return response;
         }
+
         public VOResponseGetFacilities GetFacilities()
         {
             VOResponseGetFacilities response = new VOResponseGetFacilities();
@@ -516,21 +517,27 @@ namespace backend.Logic
         {
             VOResponseGetSpace response = new VOResponseGetSpace();
             bool isFavorite = false;
+            User user = null;
             try
             {
-                VOPublication voPublication = spaces.GetSpace(idPublication);
+                if (mail != null)
+                {
+                   user = users.Find(mail);
+                }
+                VOPublication voPublication = spaces.GetSpace(idPublication, user);
 
                 if (voPublication != null)
                 {
                     if (mail != null)
                     {
-                        User user = users.Find(mail);
                         isFavorite = spaces.IsFavourite(idPublication, user.IdUser);
                     }
                     List<VOPublication> related = spaces.GetRelatedSpaces(idPublication, voPublication.Capacity, voPublication.SpaceType, voPublication.City);
                     response.Publication = voPublication;
                     response.Favorite = isFavorite;
                     response.RelatedPublications = related;
+                    List<VOPublicationQuestion> questions = spaces.GetPublicationQuestions(idPublication);
+                    response.Questions = questions;
                     response.responseCode = EnumMessages.SUCC_PUBLICATIONSOK.ToString();
                 }
                 else
@@ -693,25 +700,22 @@ namespace backend.Logic
 
         public VOResponseGetReservationsPublisher GetReservationsPublisher(VORequestGetReservationsPublisher voGetReservationsPublisher)
         {
+            VOResponseGetReservationsPublisher response = new VOResponseGetReservationsPublisher();
+            try
             {
-                VOResponseGetReservationsPublisher response = new VOResponseGetReservationsPublisher();
-                try
+                String message = util.ValidAccessToken(voGetReservationsPublisher.AccessToken, voGetReservationsPublisher.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
                 {
-                    String message = util.ValidAccessToken(voGetReservationsPublisher.AccessToken, voGetReservationsPublisher.Mail);
-                    if (EnumMessages.OK.ToString().Equals(message))
-                    {
-                        User user = users.Find(voGetReservationsPublisher.Mail);
-                        response.Reservations = spaces.GetReservationsPublisher(voGetReservationsPublisher, user.IdUser);
-                        message = EnumMessages.SUCC_RESERVATIONSOK.ToString();
-                    }
-                    response.responseCode = message;
-                    return response;
+                    User user = users.Find(voGetReservationsPublisher.Mail);
+                    response.Reservations = spaces.GetReservationsPublisher(voGetReservationsPublisher, user.IdUser);
+                    message = EnumMessages.SUCC_RESERVATIONSOK.ToString();
                 }
-                catch (GeneralException e)
-                {
-                    throw e;
-                }
-
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
             }
         }
 
@@ -773,5 +777,252 @@ namespace backend.Logic
             }
         }
 
+        public VOResponseCreateReview CreateReview(VORequestCreateReview voCreateReview)
+        {
+            try
+            {
+                VOResponseCreateReview response = new VOResponseCreateReview();
+                String message = util.ValidAccessToken(voCreateReview.AccessToken, voCreateReview.VOReview.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    User user = users.Find(voCreateReview.VOReview.Mail);
+                    spaces.CreateReview(voCreateReview, user.IdUser);
+                    message = EnumMessages.SUCC_REVIEWCREATED.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+
+        public VOResponseCreatePublicationQuestion CreatePublicationQuestion(VORequestCreatePublicationQuestion voCreatePublicationQuestion)
+        {
+            try
+            {
+                VOResponseCreatePublicationQuestion response = new VOResponseCreatePublicationQuestion();
+                String message = util.ValidAccessToken(voCreatePublicationQuestion.AccessToken, voCreatePublicationQuestion.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    User user = users.Find(voCreatePublicationQuestion.Mail);
+                    spaces.CreatePublicationQuestion(voCreatePublicationQuestion, user.IdUser);
+                    message = EnumMessages.SUCC_QUESTIONCREATED.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+        public VOResponseCreatePublicationAnswer CreatePublicationAnswer(VORequestCreatePublicationAnswer voCreatePublicationAnswer)
+        {
+            try
+            {
+                VOResponseCreatePublicationAnswer response = new VOResponseCreatePublicationAnswer();
+                String message = util.ValidAccessToken(voCreatePublicationAnswer.AccessToken, voCreatePublicationAnswer.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    User user = users.Find(voCreatePublicationAnswer.Mail);
+                    spaces.CreatePublicationAnswer(voCreatePublicationAnswer, user.IdUser);
+                    message = EnumMessages.SUCC_ANSWERCREATED.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+
+        public VOResponseGetPublicationPlans GetPublicationPlans()
+        {
+            VOResponseGetPublicationPlans response = new VOResponseGetPublicationPlans();
+            List<VOPublicationPlan> plans;
+            try
+            {
+                plans = spaces.GetPublicationPlans();
+                response.Plans = plans;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+            return response;
+        }
+
+        public async Task<VOResponseUpdatePreferentialPayment> UpdatePreferentialPayment(VORequestUpdatePreferentialPayment voUpdatePayment)
+        {
+            bool isAdmin = false;
+            try
+            {
+                VOResponseUpdatePreferentialPayment response = new VOResponseUpdatePreferentialPayment();
+                String message = util.ValidAccessToken(voUpdatePayment.AccessToken, voUpdatePayment.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    if (users.AdminMember(voUpdatePayment.Mail))
+                    {
+                        isAdmin = true;
+                    }
+                    await spaces.UpdatePreferentialPayment(voUpdatePayment, isAdmin);
+                    message = EnumMessages.SUCC_PAYMENTUPDATED.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+
+        public async Task<VOResponsePayReservationCustomer> PayReservationCustomer(VORequestPayReservationCustomer voPayReservationCustomer)
+        {
+            try
+            {
+                VOResponsePayReservationCustomer response = new VOResponsePayReservationCustomer();
+                String message = util.ValidAccessToken(voPayReservationCustomer.AccessToken, voPayReservationCustomer.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    User user = users.Find(voPayReservationCustomer.Mail);
+                    await spaces.PayReservationCustomer(voPayReservationCustomer, user.IdUser);
+                    message = EnumMessages.SUCC_PAYMENTUPDATED.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+
+        public async Task<VOResponsePayReservationPublisher> PayReservationPublisher(VORequestPayReservationPublisher voPayReservationPublisher)
+        {
+            VOResponsePayReservationPublisher response = new VOResponsePayReservationPublisher();
+            bool isAdmin = false;
+            try
+            {
+                
+                String message = util.ValidAccessToken(voPayReservationPublisher.AccessToken, voPayReservationPublisher.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    if (users.AdminMember(voPayReservationPublisher.Mail))
+                    {
+                        isAdmin = true;
+                    }
+                    User user = users.Find(voPayReservationPublisher.Mail);
+                    await spaces.PayReservationPublisher(voPayReservationPublisher, user.IdUser, isAdmin);
+                    message = EnumMessages.SUCC_PAYMENTUPDATED.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+
+        public VOResponseApprovePaymentCustomer ApprovePaymentCustomer(VORequestApprovePaymentCustomer voApprovePayment)
+        {
+            try
+            {
+                VOResponseApprovePaymentCustomer response = new VOResponseApprovePaymentCustomer();
+                String message = util.ValidAccessToken(voApprovePayment.AccessToken, voApprovePayment.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    spaces.ApprovePaymentCustomer(voApprovePayment);
+                    message = EnumMessages.SUCC_PAYMENTUPDATED.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+
+        public VOResponseGetPublicationPlanPayments GetPublicationPlanPayments(VORequestGetPublicationPlanPayments voGetPayment)
+        {
+            VOResponseGetPublicationPlanPayments response = new VOResponseGetPublicationPlanPayments();
+            try
+            {
+                String message = util.ValidAccessToken(voGetPayment.AccessToken, voGetPayment.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    response.Payments = spaces.GetPublicationPlanPayments();
+                    message = EnumMessages.SUCC_PUBLICATIONPLANSOK.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+
+        public VOResponseGetCommissionPayments GetCommissionPayments(VORequestGetCommissionPayments voGetPayment)
+        {
+            VOResponseGetCommissionPayments response = new VOResponseGetCommissionPayments();
+            try
+            {
+                String message = util.ValidAccessToken(voGetPayment.AccessToken, voGetPayment.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    response.Commissions = spaces.GetCommissionPaymentsAdmin();
+                    message = EnumMessages.SUCC_COMMISSIONSSOK.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+
+        public VOResponseGetFavorites GetFavorites(VORequestGetFavorite voGetFavorite)
+        {
+            VOResponseGetFavorites response = new VOResponseGetFavorites();
+            try
+            {
+                String message = util.ValidAccessToken(voGetFavorite.AccessToken, voGetFavorite.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    User usr = users.Find(voGetFavorite.Mail);
+                    response.Publications = spaces.GetFavorites(usr.IdUser);
+                    message = EnumMessages.SUCC_FAVORITESOK.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
+
+        public VOResponseGetRecommendedPublications GetRecommendedPublications()
+        {
+            VOResponseGetRecommendedPublications response = new VOResponseGetRecommendedPublications();
+            try
+            {
+                response.Recommended = spaces.GetRecommendedPublications();
+                String message = EnumMessages.SUCC_FAVORITESOK.ToString();
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
     }
 }

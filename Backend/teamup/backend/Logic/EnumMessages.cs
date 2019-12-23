@@ -42,7 +42,11 @@ namespace backend.Logic
         SUCC_PUBLICATIONUPDATED,
         ERR_INVALIDUPDATE,
         ERR_SPACENOTFOUND,
+        //Publication plans
+        SUCC_PUBLICATIONPLANSOK,
+        SUCC_PAYMENTUPDATED,
         //Favorites
+        SUCC_FAVORITESOK,
         SUCC_FAVORITEUPDATED,
         //Tokens
         ERR_ACCESSTOKENEXPIRED,
@@ -53,7 +57,16 @@ namespace backend.Logic
         //Reservations
         SUCC_RESERVATIONCREATED,
         SUCC_RESERVATIONSOK,
-        SUCC_RESERVATIONUPDATED
+        SUCC_RESERVATIONUPDATED,
+        //Reviews
+        SUCC_REVIEWCREATED,
+        //Questions
+        SUCC_QUESTIONCREATED,
+        SUCC_ANSWERCREATED,
+        //Commissions
+        SUCC_COMMISSIONSSOK,
+        //Recommended
+        SUCC_RECOMMENDEDOK
     }
     
 }

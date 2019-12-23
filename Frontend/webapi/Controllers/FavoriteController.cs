@@ -29,5 +29,23 @@ namespace webapi.Controllers
                 return InternalServerError(new Exception(e.Codigo));
             }
         }
+
+        [EnableCors(origins: "*", headers: "*", methods: "*")]
+        [HttpPut]
+        [Route("api/favorite")]
+        public IHttpActionResult Put([FromBody] VORequestGetFavorite voGetFavorite)
+        {
+            try
+            {
+                VOResponseGetFavorites voResp = new VOResponseGetFavorites();
+                voResp = fach.GetFavorites(voGetFavorite);
+                return Ok(voResp);
+            }
+            catch (GeneralException e)
+            {
+
+                return InternalServerError(new Exception(e.Codigo));
+            }
+        }
     }
 }

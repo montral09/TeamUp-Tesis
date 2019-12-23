@@ -6,18 +6,20 @@ namespace backend.Data_Access.VO.Data
 {
     public class VOReview
     {
-        public int IdUser { get; set; }
+        public string Mail { get; set; }
         public string Name { get; set; }
         public int Rating { get; set; }
         public string Review { get; set; }
+        public int IdReservation { get; set; }
 
         public VOReview() { }
-        public VOReview(int idUser, string name, int rating, string review)
+        public VOReview(string mail, string name, int rating, string review, int idReservation)
         {
-            IdUser = idUser;
+            Mail = mail;
             Name = name;
             Rating = rating;
             Review = review;
+            IdReservation = idReservation;
         }
     }
 }

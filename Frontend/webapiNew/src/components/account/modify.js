@@ -88,11 +88,9 @@ class Modify extends React.Component {
             message='Rut debe tener 12 números';
             returnValue = true;
         } else if (this.state.razonSocial && this.state.razonSocial < 3) {
-            console.log ('entre a razon social');
             message='Razon social demasiada corta';
             returnValue = true;
         } else if (this.state.address && this.state.address < 10) {
-            console.log ('entre a address');
             message='Direccion demasiado corta';
             returnValue = true;
         }
@@ -112,7 +110,7 @@ class Modify extends React.Component {
     }
 
     modify() {
-        if (this.checkRequiredInputs()) {
+        if (!this.checkRequiredInputs()) {
             console.log("Token OBJ: ");
             console.log(this.state.tokenObj);
             fetch('https://localhost:44372/api/user', {

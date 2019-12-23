@@ -20,36 +20,60 @@ class ModifyReservationModal extends React.Component {
             dateFrom: null,
             hoursAvailable      : ["00", '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13'
                                     , '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
+            pricePlanChosen: null,
+            isLoading : false,
+            buttonIsDisabled: false
         };
 
         this.toggle = this.toggle.bind(this);
         this.save = this.save.bind(this);
+        this.changeModalLoadingState = this.changeModalLoadingState.bind(this);      
     }
 
     toggle(resData, tokenObj, userData) {
-        var dateConverted = this.splitDate (resData.DateFromString)
-        var dateFormated = new Date(dateConverted[2], dateConverted[1], dateConverted[0])
+        console.log('toggle')
+        console.log(resData)
+        if (resData != null) {
+            if(resData.DateFromString) {
+                var dateConverted = this.splitDate (resData.DateFromString)
+                var dateFormated = new Date(dateConverted[2], dateConverted[1], dateConverted[0])
+                this.setState({
+                    modal: !this.state.modal,
+                    resData: resData,
+                    resDataChanged: resData,
+                    tokenObj: tokenObj,
+                    userData: userData,
+                    dateFrom: dateFormated,
+                    pricePlanChosen: this.getPricePlanChosen(resData)
+                }, () => {
+                    if((parseInt(resData.HourFrom)) <= 9){
+                        resData.HourFrom = "0"+(parseInt(resData.HourFrom));
+                    }
+                    if((parseInt(resData.HourTo)) <= 9){
+                        resData.HourTo = "0"+(parseInt(resData.HourTo));
+                    }
+                    this.changeHour({target : {value : resData.HourFrom, id: "hourFromSelect" }})
+                    this.changeHour({target : {value : resData.HourTo, id: "hourToSelect" }})});
+            }
+        }
         this.setState({
-            modal: !this.state.modal,
-            resData: resData,
-            resDataChanged: resData,
-            tokenObj: tokenObj,
-            userData: userData,
-            dateFrom : dateFormated
-        }, () => {
-            if((parseInt(resData.HourFrom)) <= 9){
-                resData.HourFrom = "0"+(parseInt(resData.HourFrom));
-            }
-            if((parseInt(resData.HourTo)) <= 9){
-                 resData.HourTo = "0"+(parseInt(resData.HourTo));
-            }
-            this.changeHour({target : {value : resData.HourFrom, id: "hourFromSelect" }})
-            this.changeHour({target : {value : resData.HourTo, id: "hourToSelect" }})});
-        
+            modal: !this.state.modal
+        })
     }
 
-    splitDate (date) {
+    splitDate (date) {      
       return  date.split('-')
+    }
+
+    getPricePlanChosen(resData) {   
+        var price;
+        switch (resData.PlanSelected) {
+            case "Hour" : price = resData.HourPrice; break;
+            case "Daily" : price = resData.DailyPrice; break;
+            case "Weekly" : price = resData.WeeklyPrice; break;
+            case "Monthly" : price = resData.MonthlyPrice; break;
+        }
+        return price;
     }
 
     handleChange = (e) => {
@@ -96,104 +120,61 @@ class ModifyReservationModal extends React.Component {
                 HourFrom: newHourFromSelect,
                 HourTo: newHourToSelect
             }
-        });
+        }, () => this.calculatePrice());
+        
     }
 
     calculatePrice = () => {
-        console.log('state')
-        console.log(this.state)
-    }
-
-    increaseQuantityPeople() {
-        this.setState({ 
-            resDataChanged: {
-                ...this.state.resDataChanged,
-                People: parseInt(this.state.resDataChanged.People + 1 )}
-    })}
-
-    decreaseQuantityPeople() {
-        this.setState({ 
-            resDataChanged: {
-                ...this.state.resDataChanged,
-                People: parseInt(this.state.resDataChanged.People - 1 )}
-    })}
-
-    changeQuantityPeople(value) {
-        if (parseInt(value) > 0) {
-            this.setState({ 
-                resDataChanged: {
-                    ...this.state.resDataChanged,
-                    People: parseInt(value)}
-        })}
-    }
-
-    save() {
-        console.log("save - this.state: ");
-        console.log(this.state);
-        let {IdReservation, HourFrom, HourTo, TotalPrice} = this.state.resDataChanged;
-        let objRes = {
-            AccessToken: this.state.tokenObj.accesToken,
-            Mail: this.state.userData.Mail,
-            IdReservation: IdReservation,
-            DateFrom: this.state.dateFrom,
-            HourFrom: HourFrom,
-            HourTo: HourTo,
-            TotalPrice: TotalPrice,            
+        var tmpHfs = 0;
+        var tmpHts = 1;
+        if (this.state.resData.PlanSelected === 'Hour') {
+            tmpHfs = this.state.resDataChanged.HourFrom; 
+            tmpHts = this.state.resDataChanged.HourTo == 0 ? 24 : this.state.resDataChanged.HourTo; 
         }
-        fetch('https://localhost:44372/api/reservationCustomer', {
-            method: 'PUT',
-            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify(objRes)
-        }).then(response => response.json()).then(data => {
-            console.log("data:" + JSON.stringify(data));
-            if (data.responseCode == "SUCC_RESERVATIONUPDATED") {
-                toast.success('Reserva actualizada correctamente ', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                this.setState({
-                    modal: !this.state.modal,
-                    resData: this.state.resData,
-                    resDataChanged: this.state.resData
-                });
-                //this.props.updateTable();
-            } else if (data.Message) {
-                    toast.error('Hubo un error', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                }
-        }
-        ).catch(error => {
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-            console.log(error);
-        }
-        )
+
+        var totalPrice = (parseInt(tmpHts-tmpHfs) * parseInt(this.state.pricePlanChosen));
+        if(this.state.resData.IndividualRent == true && this.state.resDataChanged.People != null){
+            totalPrice = totalPrice * parseInt(this.state.resDataChanged.People);
+        }        
+        this.setState({
+            resDataChanged : {
+                ...this.state.resDataChanged,                
+                TotalPrice : totalPrice
+            }
+        });
     }
 
     onChange = (e) => {
         var valueToUpdate = e.target.value;
+        if (e.target.name == 'People' && (valueToUpdate == '' || isNaN(valueToUpdate) || parseInt(valueToUpdate) <= 0)) {
+            valueToUpdate = 1
+        }
         this.setState({
             resDataChanged: {
               ...this.state.resDataChanged,
               [e.target.name] : valueToUpdate
             }
-          })
+          }, () => {this.calculatePrice()})
+    }
+
+    changeModalLoadingState(closeModal){
+        if(closeModal){
+            this.setState({
+                modal: !this.state.modal,
+                isLoading: !this.state.isLoading,
+                buttonIsDisabled: !this.state.buttonIsDisabled
+            })
+        }else{
+            this.setState({
+                isLoading: !this.state.isLoading,
+                buttonIsDisabled: !this.state.buttonIsDisabled
+            })
+        }
+    }
+
+    save() {
+        this.changeModalLoadingState();
+        this.props.confirmEditReservation(this.state);
     }
 
     render() {
@@ -213,7 +194,7 @@ class ModifyReservationModal extends React.Component {
                             onChange={this.handleChange} //only when value has changed
                         />
                         </FormGroup>
-                        {this.state.resData.PlanSelected == 1 ? (
+                        {this.state.resData.PlanSelected == 'Hour' ? (
                             <FormGroup>
                             <div className="cart">
                                 <div className="add-to-cart d-flex">
@@ -253,16 +234,20 @@ class ModifyReservationModal extends React.Component {
                         <FormGroup row>
                             <Label for="TotalPrice" sm={8}>Monto</Label>
                             <Col sm={10}>
-                                <Input type="text" name="TotalPrice" id="TotalPrice"
-                                        value={this.state.resDataChanged.TotalPrice} onChange={this.onChange}/>
+                                <Input disabled type="text" name="TotalPrice" id="TotalPrice"
+                                        value={this.state.resDataChanged.TotalPrice} />
                             </Col>
-                        </FormGroup>
-                        <Button color="link" onClick={this.calculatePrice}>Calcular monto</Button>
+                        </FormGroup>                        
                     </Form>
                     </ModalBody>
                     <ModalFooter>
                         <Button color="link" onClick={this.toggle}>Cancel</Button>
-                        <Button color="primary" onClick={this.save}>Guardar</Button>
+                        <Button color="primary" onClick={this.save} disabled= {this.state.buttonIsDisabled}>Guardar
+                        &nbsp;&nbsp;
+                            {this.state.isLoading &&  
+                                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            }
+                        </Button>
                     </ModalFooter>
                 </Modal>
             </span>

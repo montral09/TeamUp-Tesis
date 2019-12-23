@@ -1,55 +1,35 @@
 import React from 'react';
 import { toast } from 'react-toastify';
-import {Form, FormGroup, Label, Input} from 'reactstrap';
+import {Form, FormGroup, Label, Input, CustomInput, Table} from 'reactstrap';
 
 
 class CreatePublicationStep3 extends React.Component {
 
     constructor(props) {
       super(props);
+      var isDisabled = false, premOptionSelected = null;
+      if(this.props.parentState.premiumOptionSelected){
+        isDisabled = true;
+        premOptionSelected = this.props.parentState.premiumOptionSelected;
+      }
       this.state = {
         totalToPay: 0,
         totalToPayText: "Total a pagar $0",
-        premOptionsSelected: []
+        premOptionSelected: premOptionSelected,
+        isDisabled: isDisabled
       }
     }
 
-    totalToPay = (e) => {
-      const premOpcion = this.state.premOptionsSelected.filter(premOpc => {
-        return premOpc.Code === e.target.id
-      });
-      // if the option is in the array --> remove it
-      if(premOpcion.length != 0){
-        const premOptionsSelectedNew = this.state.premOptionsSelected.filter(premOpc => {
-          return premOpc.Code != e.target.id
+      onChange = (e) => {
+        const optionSelected = this.props.parentState.premiumOptions.filter(premOpc => {
+          return premOpc.IdPlan == e.target.value
         });
-        const totalToPayNew = this.state.totalToPay-parseInt(premOpcion[0].Price);
-        const totalToPayTextNew = "Total a pagar $"+totalToPayNew;
         this.setState({
-          premOptionsSelected: premOptionsSelectedNew,
-          totalToPay: totalToPayNew,
-          totalToPayText: totalToPayTextNew
-        }, () => {      
-          this.props.onChange({target :{value:this.state.premOptionsSelected,id:"premiumOptionsSelected"}});
+            premOptionSelected: e.target.value,
+            totalToPay : optionSelected[0].Price,
+            totalToPayText : "Total a pagar $"+optionSelected[0].Price,
         });
-      }else{
-        // if the option is not in the array -> add it
-        const premOption = this.props.parentState.premiumOptions.filter(premOpc => {
-          return premOpc.Code === e.target.id
-        });
-        const premOptionsSelectedNew = this.state.premOptionsSelected;
-        premOptionsSelectedNew.push(premOption[0]);
-        const totalToPayNew = this.state.totalToPay+parseInt(premOption[0].Price);
-        const totalToPayTextNew = "Total a pagar $"+totalToPayNew;
-        this.setState({
-          premOptionsSelected: premOptionsSelectedNew,
-          totalToPay: totalToPayNew,
-          totalToPayText: totalToPayTextNew
-        }, () => {      
-          this.props.onChange({target :{value:this.state.premOptionsSelected,id:"premiumOptionsSelected"}});
-        });
-      }
-
+        this.props.onChange({target :{value:this.state.premOptionSelected,id:"premiumOptionSelected"}});
     }
 
     render() {
@@ -60,20 +40,28 @@ class CreatePublicationStep3 extends React.Component {
       return(
         <Form className="border border-light p-6">
             <p className="h4 mb-4 text-center">¿Aumentar visibilidad? (Opcional)</p>
-            <FormGroup>
-                <Label for="prices">Valores en Pesos Uruguayos</Label>
-            </FormGroup>
-
-            {this.props.parentState.premiumOptions.map((premOpc, key) => {
-                let premText = premOpc.Description + " - $"+premOpc.Price;
-                return (
-                  <FormGroup>
-                    <Input type="checkbox" name={premOpc.Code} id={premOpc.Code} onChange={this.totalToPay}/>
-                    <Label for={premOpc.Code}>{premText}</Label>
-                  </FormGroup>
-                )
-            })}
-
+            <Table hover striped bordered size="lg" responsive className = "center">
+              <thead>
+                <tr>
+                  <th>Plan</th>
+                  <th>Precio</th>
+                  <th>Dias</th>
+                </tr>
+              </thead>
+              <tbody>
+                {this.props.parentState.premiumOptions.map((premOpc, key) => {
+                      return (
+                        <tr key={premOpc.IdPlan}>
+                          <td><CustomInput onChange={this.onChange} value={premOpc.IdPlan} type="radio" id={"premiumSelect_"+premOpc.IdPlan} 
+                            name="premiumSelect" label={premOpc.Name} disabled={this.state.isDisabled} /></td>
+                          <td>{premOpc.Price}</td>
+                          <td>{premOpc.Days}</td>
+                        </tr>
+                      )
+                  })}
+              </tbody>
+            </Table>
+            <Label for="payTotal">Total en Pesos Uruguayos</Label>
             <Input type="text" name="payTotal" id="payTotal" placeholder={this.state.totalToPayText} readOnly/>
         </Form>
       )

@@ -11,11 +11,11 @@ import {Button} from 'react-bootstrap';
 const SignedInLinks = (props) =>{
     console.log("SignedInLinks - props");
     console.log(props);
-    var CheckPublisher = false;
+    var PublisherValidated = false;
     var Mail = false;
     var tokenObj = false;
     if(props.userData){
-        var { CheckPublisher, Mail } = props.userData;
+        var { PublisherValidated, Mail } = props.userData;
         var { tokenObj } = props;
     }
 
@@ -74,14 +74,7 @@ const SignedInLinks = (props) =>{
     return(
 
         <React.Fragment>
-            <li className="">
-                <a href="#my-account" title="My Account" data-hover="dropdown" className="dropdown-toggle" data-toggle="dropdown">Mi Cuenta <b className="caret"></b></a>
-                <ul className="dropdown-menu dropdown-menu-right">
-                    <li><NavLink to="/account/modify">Modificar Datos</NavLink></li>
-                    <li><a onClick = { () => (props.logOut())}>Log out</a></li>
-                </ul>
-            </li>
-            {!CheckPublisher ? (
+            {!PublisherValidated ? (
             <>
                 <li><a onClick = { () => (handleShow())}>Quiero publicar</a></li>
         
@@ -106,13 +99,17 @@ const SignedInLinks = (props) =>{
                 <a href="#publications" title="Publicaciones" data-hover="dropdown" className="dropdown-toggle" data-toggle="dropdown">Publicaciones <b className="caret"></b></a>
                 <ul className="dropdown-menu dropdown-menu-right">
                     <li><NavLink to="/publications/createPublication/createPublicationMaster">Crear publicación</NavLink></li>
-                    <li><NavLink to="/publications/myPublishedPublications/myPublicationsList">Mis publicaciones</NavLink></li>                    
+                    <li><NavLink to="/publications/myPublishedPublications/myPublicationsList">Mis publicaciones</NavLink></li>     
+                    <li><NavLink to="/publications/reservedPublications/reservedPublications">Mis espacios reservados</NavLink></li>
                 </ul>
             </li>)}
+            <li><NavLink to="/reservations/myReservedSpaces/myReservedSpacesList">Mis reservas</NavLink></li>   
+            <li><NavLink to="/publications/favPublications">Favoritos</NavLink></li>
             <li className="">
-                <a href="#reservations" title="Reservas" data-hover="dropdown" className="dropdown-toggle" data-toggle="dropdown">Reservas <b className="caret"></b></a>
+                <a href="#my-account" title="My Account" data-hover="dropdown" className="dropdown-toggle" data-toggle="dropdown">Mi Cuenta <b className="caret"></b></a>
                 <ul className="dropdown-menu dropdown-menu-right">
-                    <li><NavLink to="/reservations/myReservedSpaces/myReservedSpacesList">Mis sitios reservados</NavLink></li>                    
+                    <li><NavLink to="/account/modify">Modificar Datos</NavLink></li>
+                    <li><a onClick = { () => (props.logOut())}>Log out</a></li>
                 </ul>
             </li>
         </React.Fragment>

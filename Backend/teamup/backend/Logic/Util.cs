@@ -130,7 +130,7 @@ namespace backend.Logic
         {
             MailMessage mm = new MailMessage(SENDER_MAIL, to);
             string body = "Hello " + name + ",";
-            string subject = "";
+            string subject;
             if (statusCode == 2)
             //Active
             {                
@@ -233,6 +233,57 @@ namespace backend.Logic
             body += "<br /><br />Una de tus reservas ha sido modificada";            
             body += "<br /><br />Gracias";
             return body;
+        }
+
+        public static string CreateBodyEmailPayReservationCustomer(String name)
+        {
+            string body = "Hola, " + name;
+            body += "<br /><br />Una de tus reservas ha sido pagada";
+            body += "<br /><br />Gracias";
+            return body;
+        }
+
+        public static string ConvertDateToString(DateTime date)
+        {
+            return date.ToString("dd/MM/yyyy");
+        }
+
+        public static string CreateBodyEmailPayCommissionToAdmin(string publisherMail)
+        {
+            string body = "Hola,";
+            body += "<br /><br />Se ha efectuado el pago de una comision del cliente " + publisherMail + ".";
+            body += "<br /><br />Gracias";
+            return body;
+        }
+
+        public static string CreateBodyEmailUpdatePaymentCustomer(String name)
+        {
+            string body = "Hola, " + name;
+            body += "<br /><br />Han confirmado el pago de tu reserva.";
+            body += "<br /><br />Gracias";
+            return body;
+        }
+
+        public static string CreateBodyEmailApproveCommissionToPublisher(String name)
+        {
+            string body = "Hola, " + name;
+            body += "<br /><br />Se ha aprobado el pago de la comision de la reserva";
+            body += "<br /><br />Gracias";
+            return body;
+        }
+
+        public static List<T> ShuffleRecommended<T>(IList<T> recommended)
+        {
+            List<T> randomRecommended = new List<T>();
+            Random randomNumber = new Random();            
+            while (recommended.Count() > 0)
+            {                
+                var nextIndex = randomNumber.Next(0, recommended.Count());                
+                T value = recommended[nextIndex];                
+                randomRecommended.Add(value);
+                recommended.RemoveAt(nextIndex);
+            }
+            return randomRecommended;
         }
     }
 }

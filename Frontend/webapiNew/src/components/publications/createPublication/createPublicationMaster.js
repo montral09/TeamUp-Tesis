@@ -46,7 +46,7 @@ class CreatePublication extends React.Component {
             spaceImages: [],
             reservationTypes: [],
             premiumOptions: [],
-            premiumOptionsSelected: [],
+            premiumOptionSelected: null,
             HourPrice: 0,
             DailyPrice: 0,
             WeeklyPrice: 0,
@@ -58,8 +58,14 @@ class CreatePublication extends React.Component {
         this.validateStep = this.validateStep.bind(this);
         this._nextStep = this._nextStep.bind(this);
         this._previousStep = this._previousStep.bind(this);
+        this.handleErrors  = this.handleErrors.bind(this);
         
     }
+
+    handleErrors(error) {
+        this.setState({ generalError: true });
+    }
+
     loadPublication(pubID){
         try{
             this.setState({ pubIsLoading: true});
@@ -151,7 +157,9 @@ class CreatePublication extends React.Component {
                     }
                 break;
                 case 4:
-                    isValid = true;
+                    if(this.state.premiumOptionSelected != null){
+                        isValid = true;
+                    }
                 break;
                 case 5:
                     isValid = true;
@@ -274,124 +282,109 @@ class CreatePublication extends React.Component {
 
 
     loadSpaceTypes() {
-        try {
-            fetch('https://localhost:44372/api/spaceTypes'
-            ).then(response => response.json()).then(data => {
-                if (data.responseCode == "SUCC_SPACETYPESOK") {
-                    console.log(data);
-                    this.setState({ spaceTypes: data.spaceTypes })
-                } else {
-                    toast.error('Hubo un error', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                }
-            }
-            ).catch(error => {
-                toast.error('Internal error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                console.log(error);
-            }
-            )
-        } catch (error) {
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-        }
+        var objApi = {};
+        objApi.objToSend = {}
+        objApi.fetchUrl = "https://localhost:44372/api/spaceTypes";
+        objApi.method = "GET";
+        objApi.responseSuccess = "SUCC_SPACETYPESOK";
+        objApi.successMessage = "";
+        objApi.functionAfterSuccess = "loadSpaceTypes";
+        this.callAPI(objApi);
     }
 
     loadInfraestructure() {
-        try {
-            fetch('https://localhost:44372/api/facilities').then(response => response.json()).then(data => {
-                console.log("data:" + JSON.stringify(data));
-                if (data.responseCode == "SUCC_FACILITIESOK") {
-                    this.setState({ facilities: data.facilities });
-                } else {
-                    toast.error('Internal error', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                }
-            }
-            ).catch(error => {
-                toast.error('Internal error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                console.log(error);
-            }
-            )
-        } catch (error) {
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-        }
+        var objApi = {};
+        objApi.objToSend = {}
+        objApi.fetchUrl = "https://localhost:44372/api/facilities";
+        objApi.method = "GET";
+        objApi.responseSuccess = "SUCC_FACILITIESOK";
+        objApi.successMessage = "";
+        objApi.functionAfterSuccess = "loadInfraestructure";
+        this.callAPI(objApi);
     }
 
     loadPremiumOptions() {
-        try {
-            // call API
-            var dummyData = {
-                premiumOptions: [
-                    {
-                        "Code": "premium1",
-                        "Description": "Premium 1",
-                        "Price": 100
-                    },
-                    {
-                        "Code": "premium2",
-                        "Description": "Premium 2",
-                        "Price": 150
-                    },
-                    {
-                        "Code": "premium3",
-                        "Description": "Premium 3",
-                        "Price": 200
-                    }
-                ],
-                "responseCode": "SUCC_premiumOptionsOK"
-            };
-            this.setState({ premiumOptions: dummyData.premiumOptions });
+        var objApi = {};
+        objApi.objToSend = {}
+        objApi.fetchUrl = "https://localhost:44372/api/publicationPlan";
+        objApi.method = "GET";
+        objApi.responseSuccess = "SUCC_PUBLICATIONPLANSOK";
+        objApi.successMessage = "";
+        objApi.functionAfterSuccess = "loadPremiumOptions";
+        this.callAPI(objApi);
+    }
 
-        } catch (error) {
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
+
+    callAPI(objApi){
+        if(objApi.method == "GET"){
+            fetch(objApi.fetchUrl).then(response => response.json()).then(data => {
+                if (data.responseCode == objApi.responseSuccess) {
+                    if(objApi.successMessage != ""){
+                        toast.success(objApi.successMessage, {
+                            position: "top-right",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                        });
+                    }
+                    this.callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data);
+                } else {
+                    this.handleErrors("Internal error");
+                }
+            }
+            ).catch(error => {
+                alert(error)
+                this.handleErrors(error);
+            }
+            )
+        }else{
+            fetch(objApi.fetchUrl, {
+                method: objApi.method,
+                header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify(objApi.objToSend)
+            }).then(response => response.json()).then(data => {
+                if (data.responseCode == objApi.responseSuccess) {
+                    if(objApi.successMessage != ""){
+                        toast.success(objApi.successMessage, {
+                            position: "top-right",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: true,
+                            pauseOnHover: true,
+                            draggable: true,
+                        });
+                    }
+                    this.callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data);
+                } else {
+                    this.handleErrors("Internal error");
+                }
+            }
+            ).catch(error => {
+                alert(error)
+                this.handleErrors(error);
+            }
+            )
+        }
+        
+    }
+
+    callFunctionAfterApiSuccess(trigger, objData){
+        switch(trigger){
+            case "loadPremiumOptions":
+                this.setState({ premiumOptions: objData.Plans });
+            break;
+            case "loadInfraestructure":
+                this.setState({ facilities: objData.facilities });
+            break;
+            case "loadSpaceTypes":
+                this.setState({ spaceTypes: objData.spaceTypes })
+            break;
+
         }
     }
+
     // Validate if all the required inputs are inputted, returns true or false
     checkRequiredInputs() {
         let returnValue = true;
@@ -427,6 +420,7 @@ class CreatePublication extends React.Component {
                     "DailyPrice": parseFloat(this.state.DailyPrice),
                     "WeeklyPrice": parseFloat(this.state.WeeklyPrice),
                     "MonthlyPrice": parseFloat(this.state.MonthlyPrice),
+                    "IdPlan": parseInt(this.state.premiumOptionSelected),
                     "Availability": this.state.availability,
                     "Facilities": this.state.facilitiesSelect,
                 },
@@ -457,6 +451,7 @@ class CreatePublication extends React.Component {
                     "DailyPrice": parseFloat(this.state.DailyPrice),
                     "WeeklyPrice": parseFloat(this.state.WeeklyPrice),
                     "MonthlyPrice": parseFloat(this.state.MonthlyPrice),
+                    "IdPlan": parseInt(this.state.premiumOptionSelected),
                     "Availability": this.state.availability,
                     "Facilities": this.state.facilitiesSelect,
                 },
@@ -522,8 +517,9 @@ class CreatePublication extends React.Component {
     }
 
     render() {
-        const { login_status } = this.props;
+        const { login_status , userData} = this.props;
         if (login_status != 'LOGGED_IN') return <Redirect to='/' />
+        if (userData.PublisherValidated != true) return <Redirect to='/' />
         return (
             <>
                 {this.state.pubIsLoading == false ? (
