@@ -5,12 +5,16 @@ import { Helmet } from 'react-helmet';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
 import MyReservedSpacesTable from '../../reservations/myReservedSpaces/myReservedSpacesTable'
 import LoadingOverlay from 'react-loading-overlay';
 import ModalReqInfo from '../viewPublication/modalReqInfo';
 import ModalResCustPay from './modalResCustPay'
 import ModalResComPay from './modalResComPay';
 import { logOut, updateToken } from '../../../services/login/actions';
+
+// Multilanguage
+import { withTranslate } from 'react-redux-multilingual'
 
 class MyReservedPublications extends React.Component {
 
@@ -315,6 +319,7 @@ class MyReservedPublications extends React.Component {
             /* END OF API FUNCTIONS */
 
     render() {
+        const { translate } = this.props;
                     /* START SECURITY VALIDATIONS */
         if (this.props.login_status != 'LOGGED_IN') return <Redirect to='/' />
         // THIS ONE ONLY FOR PUBLISHER PAGES
@@ -324,20 +329,20 @@ class MyReservedPublications extends React.Component {
         <>
             {/*SEO Support*/}
             <Helmet>
-                <title>TeamUp | Publicaciones reservadas</title>
+                <title>TeamUp | {translate('res_publications_title')}</title>
                 <meta name="description" content="---" />
             </Helmet>
             {/*SEO Support End */}
             <LoadingOverlay
                 active={this.state.loadingReservations || this.state.loadingStatusChange ? true : false}
                 spinner
-                text='Cargando...'
+                text={translate('loading_text_small')}
             >     
                 <Header />
                 <div className="main-content  full-width  home">
                     <div className="pattern" >
                         <div className="col-md-12 center-column">
-                            <h1>Publicaciones reservadas</h1>
+                            <h1>{translate('res_publications_title')}</h1>
                             <ModalResComPay ref={this.ModalResComPay} saveComissionPayment={this.saveComissionPayment}/>
                             <ModalResCustPay ref={this.ModalResCustPay} confirmPayment={this.confirmPayment} rejetPayment={this.rejetPayment}/>
                             <ModalReqInfo ref={this.modalReqInfo} modalSave={this.modalSave}
@@ -367,4 +372,8 @@ const mapDispatchToProps = (dispatch) =>{
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(MyReservedPublications);
+const enhance = compose(
+    connect(mapStateToProps, mapDispatchToProps),
+    withTranslate
+)
+export default enhance(MyReservedPublications);

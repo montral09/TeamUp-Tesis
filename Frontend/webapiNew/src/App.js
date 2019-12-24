@@ -12,13 +12,15 @@ import './App.css';
 import Page from './components/layout';
 
 // Redux
-import store from './services/store'
-import { Provider } from 'react-redux'
-
+import store from './services/store';
+import { Provider } from 'react-redux';
 
 // Notify
 import { ToastContainer } from 'react-toastify';
 
+// Multilanguage
+import translations from './constants/translations';
+import { IntlReducer as Intl, IntlProvider } from 'react-redux-multilingual';
 
 class App extends React.Component {
 
@@ -26,6 +28,7 @@ class App extends React.Component {
 
       return (
          <Provider store={store}>
+            <IntlProvider translations={translations} locale='es'>
                <Router basename={process.env.PUBLIC_URL}> 
                   <div className="standard-body">
                      <div id="main">
@@ -34,6 +37,7 @@ class App extends React.Component {
                      </div>
                   </div>
                </Router>
+            </IntlProvider>
          </Provider>
       );
    }
