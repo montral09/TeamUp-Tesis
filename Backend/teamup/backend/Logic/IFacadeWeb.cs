@@ -52,10 +52,13 @@ namespace backend.Logic
         Task<VOResponseUpdatePreferentialPayment> UpdatePreferentialPayment(VORequestUpdatePreferentialPayment voUpdatePayment);
         Task<VOResponsePayReservationCustomer> PayReservationCustomer(VORequestPayReservationCustomer voPayReservationCustomer);
         Task<VOResponsePayReservationPublisher> PayReservationPublisher(VORequestPayReservationPublisher voPayReservationPublisher);
-        VOResponseApprovePaymentCustomer ApprovePaymentCustomer(VORequestApprovePaymentCustomer voApprovePayment);
+        VOResponseUpdatePaymentCustomer UpdatePaymentCustomer(VORequestUpdatePaymentCustomer voApprovePayment);
         VOResponseGetPublicationPlanPayments GetPublicationPlanPayments(VORequestGetPublicationPlanPayments voGetPayment);
         VOResponseGetCommissionPayments GetCommissionPayments(VORequestGetCommissionPayments voGetPayment);
         VOResponseGetFavorites GetFavorites(VORequestGetFavorite voGetFavorite);
-        VOResponseGetRecommendedPublications GetRecommendedPublications(); 
+        VOResponseGetRecommendedPublications GetRecommendedPublications();
+        VOResponseUpdatePreferentialPaymentAdmin UpdatePreferentialPaymentAdmin(VORequestUpdatePreferentialPaymentAdmin voUpdatePayment);
+        VOResponseUpdatePaymentCommissionAdmin UpdatePaymentCommissionAdmin(VORequestUpdatePaymentCommissionAdmin voUpdatePayment);
+        VOResponseGetMessages GetMessages(VORequestGetMessages voGetMessages);
     }
 }

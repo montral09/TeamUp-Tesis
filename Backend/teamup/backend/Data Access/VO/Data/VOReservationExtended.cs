@@ -17,11 +17,12 @@ namespace backend.Data_Access.VO.Data
         public bool Reviewed { get; set; }
         public VOPayment CustomerPayment { get; set; }
         public VOPayment CommissionPayment { get; set; }
+        public string CustomerName { get; set; }
 
         public VOReservationExtended() { }
 
         public VOReservationExtended(int idReservation, string title, int idPublication, String mailCustomer, String planSelected, int reservedQuantity, DateTime dateFrom, string dateFromString, string hourFrom, string hourTo,
-            int people, string comment, int totalPrice, int state, string stateDescription, bool individualRent, int hourPrice, int dailyPrice, int weeklyPrice, int monthlyPrice, bool reviewed, VOPayment customerPayment, VOPayment commissionPayment)  : base (idPublication, mailCustomer, planSelected, reservedQuantity, dateFrom, dateFromString, hourFrom, hourTo,
+            int people, string comment, int totalPrice, int state, string stateDescription, bool individualRent, int hourPrice, int dailyPrice, int weeklyPrice, int monthlyPrice, bool reviewed, VOPayment customerPayment, VOPayment commissionPayment, string customerName)  : base (idPublication, mailCustomer, planSelected, reservedQuantity, dateFrom, dateFromString, hourFrom, hourTo,
              people, comment, totalPrice, state)       
         {
             IdReservation = idReservation;
@@ -47,6 +48,7 @@ namespace backend.Data_Access.VO.Data
             Reviewed = reviewed;
             CustomerPayment = customerPayment;
             CommissionPayment = commissionPayment;
+            CustomerName = customerName;
         }
     }
 }
