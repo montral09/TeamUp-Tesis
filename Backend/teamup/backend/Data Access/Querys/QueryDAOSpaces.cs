@@ -476,7 +476,7 @@ namespace backend.Data_Access.Query
             String query = "select p.idPublication, p.title, u.mail, u.name, u.lastName, u.phone, ppl.name as planName, ps.description, " +
                 "ppl.price, pp.comment, pp.evidence, pp.paymentDate from PUBLICATIONS p, USERS u, PUBLICATION_PLANS ppl, PREFERENTIAL_PAYMENTS pp, " +
                 "PAYMENT_STATES ps where pp.idPublication = p.idPublication and p.idUser = u.idUser and " +
-                "ppl.idPlan = pp.idPlan and pp.state = ps.idPaymentState ORDER BY CASE pp.state when 2 THEN 1 when 3 THEN 2 when 1 THEN 3 end";
+                "ppl.idPlan = pp.idPlan and pp.state = ps.idPaymentState and pp.state = 2 order by pp.paymentDate desc";
             return query;
 
         }
@@ -493,8 +493,7 @@ namespace backend.Data_Access.Query
         {
             String query = "select r.idReservation, p.title, u.mail, u.name, u.lastName, u.phone, r.commission, ps.description, " +
                 "r.commissionComment, r.commissionEvidence, r.paymentCommissionDate from RESERVATIONS r, PUBLICATIONS p, USERS u, " +
-                "PAYMENT_STATES ps where r.commissionPaymentState = ps.idPaymentState and r.idPublication = p.idPublication and p.idUser = u.idUser " +
-                "ORDER BY CASE r.commissionPaymentState when 2 THEN 1 when 3 THEN 2 when 1 THEN 3 end";
+                "PAYMENT_STATES ps where r.commissionPaymentState = 2 and r.commissionPaymentState = ps.idPaymentState and r.idPublication = p.idPublication and p.idUser = u.idUser ";
             return query;
         }
 
