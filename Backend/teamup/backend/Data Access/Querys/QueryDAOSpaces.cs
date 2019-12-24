@@ -565,5 +565,12 @@ namespace backend.Data_Access.Query
                 "q.idUser = @idUser and p.idPublication = q.idPublication and p.state = 2 and u.idUser = q.idUser order by q.creationDate desc";
             return query;
         }
+
+        public String GetQuestionsByPublication()
+        {
+            String query = "select q.idQuestion, u.name, q.question, q.creationDate, p.idPublication, p.title from PUBLICATION_QUESTIONS q, PUBLICATIONS p, USERS u where " +
+                "q.idPublication = @idPublication and q.idPublication = p.idPublication and p.state = 2 and u.idUser = q.idUser order by q.creationDate desc";
+            return query;
+        }
     }
 }

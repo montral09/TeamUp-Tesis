@@ -1,6 +1,8 @@
-﻿namespace backend.Data_Access.VO.Data
+﻿using System;
+
+namespace backend.Data_Access.VO.Data
 {
-    public class VOMessage : VOPublicationQuestion
+    public class VOMessage : VOPublicationQuestion, IComparable<VOMessage>
     {
         public int IdPublication { get; set; }
         public string PublicationTitle { get; set; }
@@ -20,5 +22,9 @@
             Answer = answer;
         }
 
+        public int CompareTo(VOMessage other)
+        {
+            return other.CreationDate.CompareTo(CreationDate);
+        }
     }
 }

@@ -2508,38 +2508,83 @@ namespace backend.Data_Access
                   VOMessage question;
                   while (dr.Read())
                   {
-                   // 2: get answers for each question, if any
-                      VOAnswer answer = null; ;
-                      String queryAnswers = cns.GetAnswers();
-                      SqlCommand selectCommandAnswers = new SqlCommand(queryAnswers, con);
-                      SqlParameter paramAnswers = new SqlParameter()
-                      {
-                          ParameterName = "@idQuestion",
-                          Value = Convert.ToInt32(dr["idQuestion"]),
-                          SqlDbType = SqlDbType.Int
-                      };
-                      selectCommandAnswers.Parameters.Add(paramAnswers);
-                      SqlDataReader drAnswer = selectCommandAnswers.ExecuteReader();
-                      while (drAnswer.Read())
-                      {
-                          string creationDateAnswer = Util.ConvertDateToString(Convert.ToDateTime(drAnswer["creationDate"]));
-                          answer = new VOAnswer(Convert.ToString(drAnswer["answer"]), creationDateAnswer);
-                      }
-                      drAnswer.Close();
+                      // 2: get answer for each question, if any
+                      VOAnswer answer = GetAnswer(con, Convert.ToInt32(dr["idQuestion"]));
                       string creationDate = Util.ConvertDateToString(Convert.ToDateTime(dr["creationDate"]));
                       question = new VOMessage(Convert.ToInt32(dr["idPublication"]), Convert.ToString(dr["title"]), false, Convert.ToInt32(dr["idQuestion"]), Convert.ToString(dr["name"]), Convert.ToString(dr["question"]), creationDate, answer);
                       messages.Add(question);
                   }
                   dr.Close();
-
-                //3: If is a publisher, check for questions made in every publication 
-                // Use GetPublicationsPublisher
+                //3: If is a publisher, check for questions made in every publication
+                if (isPublisher)
+                {
+                    String queryPub = cns.GetPublicationsPublisher();
+                    SqlCommand selectCommandPub = new SqlCommand(queryPub, con);
+                    SqlParameter paramPub= new SqlParameter()
+                    {
+                        ParameterName = "@idUser",
+                        Value = idUser,
+                        SqlDbType = SqlDbType.Int
+                    };
+                    selectCommandPub.Parameters.Add(paramPub);
+                    int idPublication;
+                    SqlDataReader drPub = selectCommandPub.ExecuteReader();
+                    while (drPub.Read())
+                    {
+                        idPublication = Convert.ToInt32(drPub["idPublication"]);
+                        String queryQuestions = cns.GetQuestionsByPublication();
+                        SqlCommand selectCommandQuestion = new SqlCommand(queryQuestions, con);
+                        SqlParameter paramQuestion = new SqlParameter()
+                        {
+                            ParameterName = "@idPublication",
+                            Value = idPublication,
+                            SqlDbType = SqlDbType.Int
+                        };
+                        selectCommandQuestion.Parameters.Add(paramQuestion);
+                        SqlDataReader drQuestion = selectCommandQuestion.ExecuteReader();
+                        while (drQuestion.Read())
+                        {
+                            int idQuestion = Convert.ToInt32(drQuestion["idQuestion"]);
+                            VOAnswer answer = GetAnswer (con, idQuestion);
+                            string creationDate = Util.ConvertDateToString(Convert.ToDateTime(drQuestion["creationDate"]));
+                            question = new VOMessage(Convert.ToInt32(drPub["idPublication"]), Convert.ToString(drQuestion["title"]), true, Convert.ToInt32(drQuestion["idQuestion"]), Convert.ToString(drQuestion["name"]), Convert.ToString(drQuestion["question"]), creationDate, answer);
+                            messages.Add(question);
+                        }
+                        drQuestion.Close();
+                    }
+                    dr.Close();
+                }
+                messages.Sort();
             }
             catch (Exception e)
               {
                   throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
               }
-              return messages;
+            return messages;
         }
+
+
+        private VOAnswer GetAnswer(SqlConnection con, int idQuestion)
+        {
+            VOAnswer answer = null;
+            String queryAnswers = cns.GetAnswers();
+            SqlCommand selectCommandAnswers = new SqlCommand(queryAnswers, con);
+            SqlParameter paramAnswers = new SqlParameter()
+            {
+                ParameterName = "@idQuestion",
+                Value = idQuestion,
+                SqlDbType = SqlDbType.Int
+            };
+            selectCommandAnswers.Parameters.Add(paramAnswers);
+            SqlDataReader drAnswer = selectCommandAnswers.ExecuteReader();
+            while (drAnswer.Read())
+            {
+                string creationDateAnswer = Util.ConvertDateToString(Convert.ToDateTime(drAnswer["creationDate"]));
+                answer = new VOAnswer(Convert.ToString(drAnswer["answer"]), creationDateAnswer);
+            }
+            drAnswer.Close();
+            return answer;
+        }
+
     }
 }
