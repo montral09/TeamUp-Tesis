@@ -1,6 +1,8 @@
 import React from 'react';
 import Select from 'react-select';
 import {Form, FormGroup, Label, Input} from 'reactstrap';
+import 'react-quill/dist/quill.snow.css'; 
+import ReactQuill from 'react-quill';
 
 class CreatePublicationStep1 extends React.Component {
     constructor(props) {
@@ -17,13 +19,16 @@ class CreatePublicationStep1 extends React.Component {
             value: facilitiesSelectTemp
         }
         this.handleSelectChange = this.handleSelectChange.bind(this)
-
+        this.handleRichTextChange = this.handleRichTextChange.bind(this)
     }
 
+    handleRichTextChange(value){
+        this.props.onChange({target :{value:value, id:"description", options : value}})
+    }
 
     handleSelectChange(value){
         this.setState({ value });
-        this.props.onChange({target :{value:value, id:"facilitiesSelect", options : this.props.parentState.facilities}})		
+        this.props.onChange({target :{value:value, id:"facilitiesSelect", options : this.props.parentState.facilities}})
     }
     
     render() {
@@ -53,8 +58,11 @@ class CreatePublicationStep1 extends React.Component {
             </FormGroup>
             <FormGroup>
                 <Label for="description">Descripción</Label>
-                <Input type="textarea" name="description" id="description" onChange={this.props.onChange} maxLength="2000"
-                    value ={this.props.parentState.description}/>
+                {//<Input type="textarea" name="description" id="description" onChange={this.props.onChange} maxLength="2000"
+                    //value ={this.props.parentState.description}/>
+                }
+                <ReactQuill  name="description" id="description" value={this.props.parentState.description}
+                  onChange={this.handleRichTextChange} />
             </FormGroup>
             <FormGroup>
                 <Label for="capacity">Capacidad (*)</Label>

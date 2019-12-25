@@ -6,7 +6,7 @@ import { Table } from 'reactstrap';
 const MyPublicationTable = (props) =>{
     let publications = props.publications;
     let spaceTypes = props.spaceTypes;
-    const columnsName = ['ID Pub','Tipo de Espacio','Fecha Creado','Title','Estado','Pago premium','Preguntas sin responder','Acción'];
+    const columnsName = ['#Ref','Tipo de Espacio','Fecha Creado','Title','Estado','Pago premium','Preguntas sin responder','Total visitas','Acción'];
     const columnsTable = columnsName.map( colName => {
         var valToRet = <th className="text-center" key={colName}>{colName}</th>;
         switch(colName){
@@ -43,8 +43,8 @@ const MyPublicationTable = (props) =>{
                     <td><a href="#" className = "col-md-12" onClick={() => props.triggerModalDetailPayment(objPayment)}> <span><i className="col-md-1 fa fa-align-justify"></i></span> Detalles</a></td> 
                     </>
                 )}
-
                 <td>{obj.QuestionsWithoutAnswer}</td>
+                <td>{obj.TotalViews}</td>
                 <td>
                     <a href={url}><span><i className="col-md-3 fa fa-eye"></i></span> Ver</a>
                 </td>

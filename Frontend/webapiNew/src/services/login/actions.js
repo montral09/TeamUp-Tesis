@@ -5,7 +5,8 @@ import {
     CHECK_LOGIN,
     MODIFY_DATA,
     LOG_IN_ERROR,
-    TOKEN_UPDATED } 
+    TOKEN_UPDATED,
+    LOCALE_UPDATED } 
 from "./actionTypes";
 
 // Here are all of the actions for account process, this is going to be called on login/logout page
@@ -68,5 +69,12 @@ export const updateToken = (tokenObj) =>{
     return {
         type: TOKEN_UPDATED, 
         tokenObj: tokenObj
+   }
+}
+
+export const updateLocale = (locale) =>{
+    return {
+        type: LOCALE_UPDATED, 
+        locale: locale
    }
 }

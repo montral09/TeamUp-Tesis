@@ -7,21 +7,19 @@ const MyReservedSpacesTable = (props) =>{
     
     let reservations = props.reservations;
     const isPublisher = props.isPublisher || false;
-    const columnsName = ['ID','Publicacion', 'Mail cliente', 'Personas', 'Fecha', 'Estadía', 'Monto', 'Pago reserva','Pago comisión', 'Estado reserva', 'Acción'];
+    const columnsName = ['#Ref','Publicacion', 'Mail cliente', 'Personas', 'Fecha', 'Estadía', 'Monto', 'Pago reserva','Pago comisión', 'Estado reserva', 'Acción'];
     const columnsTable = columnsName.map( colName => {
         var valToRet = <th className="text-center" key={colName}>{colName}</th>;
         switch(colName){
             case "Pago reserva"  : valToRet = <th className="text-center" colSpan='2' key={colName}>{colName}</th>; break;
             case "Pago comisión" : isPublisher ? valToRet = <th className="text-center" colSpan='2' key={colName}>{colName}</th> : valToRet = null; break;
             case "Mail cliente"  : isPublisher ? valToRet = <th className="text-center" key={colName}>{colName}</th> : valToRet = null; break;
+            case "Personas"  : valToRet = <th className="text-center" key={colName}><i className="fa fa-users" aria-hidden="true" title={colName}></i></th>; break;
         }
         return valToRet;
     });
     const arrDataList = reservations.length ? (
         reservations.map( obj => {
-            console.log("MyReservedSpacesTable - obj:")
-            console.log(obj)
-
             var objReservationCustomerPayment = {
                 reservationPaymentState: obj.CustomerPayment.PaymentDescription,
                 reservationPaymentStateText: obj.CustomerPayment.PaymentDescription,
@@ -51,7 +49,11 @@ const MyReservedSpacesTable = (props) =>{
                 <td>{obj.PlanSelected == 'Hour' ? ("Desde "+obj.HourFrom+" a "+obj.HourTo+" hs") : ("1 "+ obj.PlanSelected)}</td>
                 <td>{obj.TotalPrice}</td>
                 <td>{objReservationCustomerPayment.reservationPaymentStateText}</td>
-                <td><a href="#" className = "col-md-12" onClick={() => props.triggerModal("PAYRESCUST", obj.IdReservation, objReservationCustomerPayment)}> <span><i className="col-md-1 fa fa-align-justify"></i></span> Detalles</a></td> 
+                <td>
+                    {obj.StateDescription === 'PENDING' ? (<p>Reserva pendiente de confirmar</p>) : (
+                        <a href="#" className = "col-md-12" onClick={() => props.triggerModal("PAYRESCUST", obj.IdReservation, objReservationCustomerPayment)}> <span><i className="col-md-1 fa fa-align-justify"></i></span> Detalles</a>
+                    )}
+                </td> 
                 {isPublisher ? <td>{objCommisionPayment.paymentStatusText}</td> : null}
                 {isPublisher ? <td><a href="#" className = "col-md-12" onClick={() => props.triggerModal("PAYRESCOM", obj.IdReservation, objCommisionPayment)}> <span><i className="col-md-1 fa fa-align-justify"></i></span> Detalles</a></td> : null}
                 <td>{obj.StateDescription}</td>
@@ -72,7 +74,7 @@ const MyReservedSpacesTable = (props) =>{
                             </div>
                             ) :(
                                 <div>
-                                {!isPublisher && obj.StateDescription != 'FINISHED' && obj.StateDescription != 'CANCELED'  && obj.StateDescription != 'RESERVED' ? (
+                                {!isPublisher && obj.StateDescription == 'PENDING'  ? (
                                         <a href="#" onClick={() => {props.editReservation(obj.IdReservation)}}><span><i className="col-md-1 fa fa-pencil-alt"></i></span> Editar</a>                            
                                     ) : (null)}
                                 </div>
