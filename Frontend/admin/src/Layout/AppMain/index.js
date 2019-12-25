@@ -17,6 +17,7 @@ const Tables = lazy(() => import('../../DemoPages/Tables'));
 const Publications = lazy(() => import('../../DemoPages/Publications'));
 const Publishers = lazy(() => import('../../DemoPages/Publishers'));
 const Users = lazy(() => import('../../DemoPages/Users'));
+const Payments = lazy(() => import('../../DemoPages/Payments'));
 
 const AppMain = () => {
 
@@ -65,6 +66,20 @@ const AppMain = () => {
                 </div>
             }>
                 <Route path="/users" component={Users}/>
+            </Suspense>
+
+            {/* Payments */}
+            <Suspense fallback={
+                <div className="loader-container">
+                    <div className="loader-container-inner">
+                        <h6 className="mt-5">
+                            Please wait while we load payment data
+                            <small>Because this is a demonstration we load at once all the payment data. This wouldn't happen in a real live app!</small>
+                        </h6>
+                    </div>
+                </div>
+            }>
+                <Route path="/payments" component={Payments}/>
             </Suspense>
 
             {/* Components */}

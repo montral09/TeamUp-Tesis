@@ -8,7 +8,7 @@ export const PublNav = [
 
 export const AllPublNav = [
     {
-        icon: 'pe-7s-up-arrow',
+        icon: 'pe-7s-display2',
         label: 'Publicaciones',
         to: '#/publications/AllPublications',
     },
@@ -33,6 +33,20 @@ export const UsrNav = [
         icon: 'pe-7s-users',
         label: 'Usuarios',
         to: '#/users/allusers',
+    },
+];
+export const PrefPaymentNav = [
+    {
+        icon: 'pe-7s-cash',
+        label: 'Pagos Preferenciales',        
+        to: '#/payments/PreferentialPayments',
+    },
+];
+export const CommissionPaymentNav = [
+    {
+        icon: 'pe-7s-cash',
+        label: 'Pagos Comisiones',        
+        to: '#/payments/CommissionPayments',
     },
 ];
 export const ComponentsNav = [
