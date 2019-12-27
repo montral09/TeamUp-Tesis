@@ -17,7 +17,7 @@ class Header extends React.Component {
 									<div className="container">
 									    <div className="row">
 									        <div className="col-md-4">
-												<LanguageForm localLocale='es'/>
+												<LanguageForm/>
 									        </div>
 									        <div className="col-md-8" id="top-bar-right">
 									        	<TopBarMenu />

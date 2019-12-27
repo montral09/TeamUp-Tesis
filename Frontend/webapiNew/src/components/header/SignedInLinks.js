@@ -4,9 +4,11 @@ import { connect } from 'react-redux';
 import { logOut } from '../../services/login/actions';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 import Modal from 'react-bootstrap/Modal';
 import {Button} from 'react-bootstrap';
+// Multilanguage
+import { withTranslate } from 'react-redux-multilingual'
+import { compose } from 'redux';
 
 const SignedInLinks = (props) =>{
     console.log("SignedInLinks - props");
@@ -70,25 +72,25 @@ const SignedInLinks = (props) =>{
       )
       
     }
-
+    const { translate } = this.props;
     return(
 
         <React.Fragment>
             {!PublisherValidated ? (
             <>
-                <li><a onClick = { () => (handleShow())}>Quiero publicar</a></li>
+                <li><a onClick = { () => (handleShow())}>{translate('singInLinks_wantToPublish')}</a></li>
         
                 <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Quiero publicar</Modal.Title>
+                    <Modal.Title>{translate('singInLinks_wantToPublish')}</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>Si quieres ser uno de nuestros colaboradores, pudiendo realizar publicaciones en el sito, haz click en el boton 'Quiero!'. Se enviara una solicitud y uno de nuestros representantes se comunicara contigo a la brevedad.</Modal.Body>
+                <Modal.Body>{translate('singInLinks_wantToPublishBody')}</Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={handleClose}>
-                    Me lo pierdo
+                    {translate('singInLinks_notwantToPublishBody')}
                     </Button>
                     <Button variant="primary" onClick={requestBePublisher}>
-                    Quiero!
+                    {translate('singInLinks_wantToPublishBody')}
                     </Button>
                 </Modal.Footer>
                 </Modal>
@@ -96,19 +98,19 @@ const SignedInLinks = (props) =>{
             </>
             ) : (                
             <li className="">
-                <a href="#publications" title="Publicaciones" data-hover="dropdown" className="dropdown-toggle" data-toggle="dropdown">Publicaciones <b className="caret"></b></a>
+                <a href="#publications" title="Publicaciones" data-hover="dropdown" className="dropdown-toggle" data-toggle="dropdown">{translate('singInLinks_head_publications')} <b className="caret"></b></a>
                 <ul className="dropdown-menu dropdown-menu-right">
-                    <li><NavLink to="/publications/createPublication/createPublicationMaster">Crear publicación</NavLink></li>
-                    <li><NavLink to="/publications/myPublishedPublications/myPublicationsList">Mis publicaciones</NavLink></li>     
-                    <li><NavLink to="/publications/reservedPublications/reservedPublications">Mis espacios reservados</NavLink></li>
+                    <li><NavLink to="/publications/createPublication/createPublicationMaster">{translate('singInLinks_head_createPublication')}</NavLink></li>
+                    <li><NavLink to="/publications/myPublishedPublications/myPublicationsList">{translate('singInLinks_head_myPublications')}</NavLink></li>     
+                    <li><NavLink to="/publications/reservedPublications/reservedPublications">{translate('singInLinks_head_myResSpaces')}</NavLink></li>
                 </ul>
             </li>)}
-            <li><NavLink to="/reservations/myReservedSpaces/myReservedSpacesList">Mis reservas</NavLink></li>   
-            <li><NavLink to="/publications/favPublications">Favoritos</NavLink></li>
+            <li><NavLink to="/reservations/myReservedSpaces/myReservedSpacesList">{translate('singInLinks_head_myReservations')}</NavLink></li>   
+            <li><NavLink to="/publications/favPublications">{translate('singInLinks_head_favorites')}</NavLink></li>
             <li className="">
-                <a href="#my-account" title="My Account" data-hover="dropdown" className="dropdown-toggle" data-toggle="dropdown">Mi Cuenta <b className="caret"></b></a>
+                <a href="#my-account" title="My Account" data-hover="dropdown" className="dropdown-toggle" data-toggle="dropdown">{translate('singInLinks_head_myAccount')}<b className="caret"></b></a>
                 <ul className="dropdown-menu dropdown-menu-right">
-                    <li><NavLink to="/account/modify">Modificar Datos</NavLink></li>
+                    <li><NavLink to="/account/modify">{translate('singInLinks_head_updateUserData')}</NavLink></li>
                     <li><a onClick = { () => (props.logOut())}>Log out</a></li>
                 </ul>
             </li>
@@ -128,5 +130,8 @@ const mapDispatchToProps = (dispatch) =>{
         logOut: () => dispatch(logOut())
     }
 }
-
-export default connect(mapStateToProps,mapDispatchToProps)(SignedInLinks);
+const enhance = compose(
+    connect(mapStateToProps,mapDispatchToProps),
+    withTranslate
+)
+export default enhance(SignedInLinks);

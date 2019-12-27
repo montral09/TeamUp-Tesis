@@ -2,6 +2,9 @@ import React from 'react';
 import RelatedPublications from '../publications/viewPublication/relatedPublications'
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+// Multilanguage
+import { withTranslate } from 'react-redux-multilingual'
+import { compose } from 'redux';
 
 class RecommendedPublications extends React.Component {
     constructor(props) {
@@ -123,9 +126,10 @@ class RecommendedPublications extends React.Component {
         }
     }
     render() {
+        const { translate } = this.props;
         return (
             <React.Fragment>
-                <h3>Publicaciones recomendadas!</h3>
+                <h3>{translate('recPubs_recommendedPubls')}</h3>
                 {this.state.recommendedPublications.map((relPubs) => {
                     if(relPubs.Publications.length == 0){
                         return null;
@@ -141,6 +145,4 @@ class RecommendedPublications extends React.Component {
         );
     }
 }
-
-
-export default RecommendedPublications;
+export default withTranslate(RecommendedPublications);

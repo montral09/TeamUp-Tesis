@@ -8,34 +8,43 @@ import languages  from '../../api/languages'
 import { updateLocale } from '../../services/login/actions';
 
 class LanguageForm extends React.Component {
+	_isMounted = false;
 	constructor(props) {
-        super(props);
-		const serializedState = localStorage.getItem('state');
-		if (serializedState === null) {
-		  return undefined;
+		super(props);
+		var langToUse = this.props.locale;
+		var localLang = localStorage.getItem('lang');
+		if(localLang  ){
+			langToUse = localLang;
 		}
-		var loginData = JSON.parse(serializedState);
-		if(loginData && loginData.locale ){
-			// update locale
-			store.dispatch(IntlActions.setLocale(loginData.locale))
+		this.state = {
+			lang: langToUse
 		}
+		
+		store.dispatch(IntlActions.setLocale(langToUse))
 	}
 	componentDidMount(){
-
+		this._isMounted = true;
+		if(this._isMounted){
+			//store.dispatch(IntlActions.setLocale(this.state.lang))
+		}
+		
 	}
     changeLang(lang) {
 		store.dispatch(IntlActions.setLocale(lang))
 		this.props.updateLocale(lang)
-    }
+		localStorage.setItem("lang", lang);
+		this.setState({lang:lang});
+	}
+	componentWillUnmount() {
+		this._isMounted = false;
+	  }
     render() {
-		const { locale } = this.props;
-
 	    return (
 			<form method="post" id="language_form">
 				<div className="dropdown">
 					<a href="#language" className="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">
 						{languages.map((language, index) => {
-							if(language.code === locale) return language.title;
+							if(language.code === this.state.lang) return language.title;
 							return null;
 						})}
 					</a>
