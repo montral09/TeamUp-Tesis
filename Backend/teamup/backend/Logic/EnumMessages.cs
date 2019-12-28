@@ -26,7 +26,6 @@ namespace backend.Logic
         SUCC_EMAILVALIDATED,
         ERR_ACTIVATIONCODENOTEXIST,
         SUCC_VERIFICATIONMAILSENT,
-        ERR_PENDINGPROCESSES,
         //SpaceTypes
         SUCC_SPACETYPESOK,
         //Locations
@@ -68,7 +67,14 @@ namespace backend.Logic
         //Recommended
         SUCC_RECOMMENDEDOK,
         //Messages
-        SUCC_MESSAGESOK
+        SUCC_MESSAGESOK,
+        // Messages for deletion validations
+        ERR_PENDINGRESERVATIONCUSTOMER,
+        ERR_PENDINGRESERVATIONPAYMENT,
+        ERR_PENDINGPUBLICATION,
+        ERR_PENDINGRESERVATIONPUBLISHER,
+        ERR_PENDINGPREFERENTIALPAYMENT,
+        ERR_PENDINGCOMMISSIONPAYMENT
     }
     
 }

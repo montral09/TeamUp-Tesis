@@ -15,7 +15,7 @@ namespace backend.Data_Access.Query
         User Find(string mail);
         Task InsertUser(User user);
         Task UpdateUser(User user, String newMail);
-        bool ValidateDeletion(String mail);
+        String ValidateDeletion(String mail);
         void DeleteUser(String mail);
         List<VOPublisher> GetPublishers();
         List<VOCustomer> GetCustomers();

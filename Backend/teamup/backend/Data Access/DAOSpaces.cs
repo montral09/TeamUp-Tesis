@@ -1134,7 +1134,7 @@ namespace backend.Data_Access
                     idReservation = Convert.ToInt32(dr["idReservation"]);
                     wasReviewed = ReservationWasReviewed(idReservation, con);
                     VOPayment payment = GetReservationPaymentInfo(idReservation, con);
-                    String dateConverted = Convert.ToDateTime(dr["dateFrom"]).ToString("dd-MM-yyyy");
+                    String dateConverted = Util.ConvertDateToString(Convert.ToDateTime(dr["dateFrom"]));
                     voReservation = new VOReservationExtended(idReservation, Convert.ToString(dr["title"]), Convert.ToInt32(dr["idPublication"]),
                         Convert.ToString(voGetReservationsCustomer.Mail), Convert.ToString(dr["planSelected"]),
                         Convert.ToInt32(dr["reservedQty"] is DBNull ? 0 : dr["reservedQty"]), Convert.ToDateTime(dr["dateFrom"]), dateConverted,  Convert.ToString(dr["hourFrom"]),
@@ -1217,8 +1217,8 @@ namespace backend.Data_Access
                 {
                     idReservation = Convert.ToInt32(dr["idReservation"]);
                     wasReviewed = ReservationWasReviewed(Convert.ToInt32(dr["idReservation"]), con);
-                    payment = GetReservationPaymentInfo(idReservation, con);
-                    dateConverted = Convert.ToDateTime(dr["dateFrom"]).ToString("dd-MM-yyyy");
+                    payment = GetReservationPaymentInfo(idReservation, con);                    
+                    dateConverted = Util.ConvertDateToString(Convert.ToDateTime(dr["dateFrom"]));
                     paymentCommission = GetCommissionPayment(idReservation, con);
                     voReservation = new VOReservationExtended(Convert.ToInt32(dr["idReservation"]), Convert.ToString(dr["title"]), Convert.ToInt32(dr["idPublication"]),
                         Convert.ToString(voGetReservationsPublisher.Mail), Convert.ToString(dr["planSelected"]),
