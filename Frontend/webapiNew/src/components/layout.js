@@ -16,6 +16,7 @@ import MyReservedSpacesList from './reservations/myReservedSpaces/myReservedSpac
 import MyReservedPublications from './publications/reservedPublications/reservedPublications';
 import FavPublications from './publications/favPublications/favPublications';
 import NotFoundPage from './pages/404';
+import DeleteUser from './account/deleteUser';
 
 const Page = () => {
   return (
@@ -23,6 +24,7 @@ const Page = () => {
       <Switch>
         <Route path="/" exact component={HomePage} />
         <Route path="/account/login" component={LoginPage} />
+        <Route path="/account/deleteUser" component={DeleteUser} />
         <Route path="/account/register" component={Register} />
         <Route path="/account/modify" component={Modify} />
         <Route path="/account/forgotPassword" component={ForgotPassword} />

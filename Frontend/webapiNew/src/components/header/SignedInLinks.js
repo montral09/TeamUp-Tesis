@@ -72,7 +72,7 @@ const SignedInLinks = (props) =>{
       )
       
     }
-    const { translate } = this.props;
+    const { translate } = props;
     return(
 
         <React.Fragment>
@@ -111,6 +111,7 @@ const SignedInLinks = (props) =>{
                 <a href="#my-account" title="My Account" data-hover="dropdown" className="dropdown-toggle" data-toggle="dropdown">{translate('singInLinks_head_myAccount')}<b className="caret"></b></a>
                 <ul className="dropdown-menu dropdown-menu-right">
                     <li><NavLink to="/account/modify">{translate('singInLinks_head_updateUserData')}</NavLink></li>
+                    <li><NavLink to="/account/deleteUser">{translate('singInLinks_head_deleteUser')}</NavLink></li>
                     <li><a onClick = { () => (props.logOut())}>Log out</a></li>
                 </ul>
             </li>

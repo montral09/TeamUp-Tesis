@@ -28,8 +28,8 @@ class CreatePublicationStep3 extends React.Component {
             premOptionSelected: e.target.value,
             totalToPay : optionSelected[0].Price,
             totalToPayText : "Total a pagar $"+optionSelected[0].Price,
-        });
-        this.props.onChange({target :{value:this.state.premOptionSelected,id:"premiumOptionSelected"}});
+        },  () => {});
+        this.props.onChange({target :{value:e.target.value ,id:"premiumOptionSelected"}});
     }
 
     render() {

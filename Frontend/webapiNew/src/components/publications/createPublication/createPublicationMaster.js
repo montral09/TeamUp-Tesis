@@ -53,20 +53,13 @@ class CreatePublication extends React.Component {
             MonthlyPrice: 0,
             maxSteps: 5
         }
-        this.submitPublication = this.submitPublication.bind(this);
-        this.onChange = this.onChange.bind(this);
-        this.validateStep = this.validateStep.bind(this);
-        this._nextStep = this._nextStep.bind(this);
-        this._previousStep = this._previousStep.bind(this);
-        this.handleErrors  = this.handleErrors.bind(this);
-        
     }
 
-    handleErrors(error) {
+    handleErrors = (error) => {
         this.setState({ generalError: true });
     }
 
-    loadPublication(pubID){
+    loadPublication = (pubID) => {
         try{
             this.setState({ pubIsLoading: true});
             fetch('https://localhost:44372/api/publication?idPublication='+pubID+'&mail=').then(response => response.json()).then(data => {
@@ -136,7 +129,7 @@ class CreatePublication extends React.Component {
         }
     }
 
-    validateStep(){
+    validateStep = () =>{
         var isValid = false;
         try{
             switch(this.state.currentStep){
@@ -171,7 +164,7 @@ class CreatePublication extends React.Component {
         return isValid;
     }
 
-    _nextStep() {
+    _nextStep = () => {
         if(this.validateStep() == true){
             let currentStep = this.state.currentStep;
             // If the current step is not the last one, then add one on "next" button click
@@ -192,7 +185,7 @@ class CreatePublication extends React.Component {
 
     }
 
-    _previousStep() {
+    _previousStep = () => {
         let currentStep = this.state.currentStep
         // If the current step is 2 or 3, then subtract one on "previous" button click
         currentStep = currentStep <= 1 ? 1 : currentStep - 1
@@ -209,7 +202,7 @@ class CreatePublication extends React.Component {
             return (
                 <button
                     className="btn btn-secondary"
-                    type="button" onClick={this._previousStep}>
+                    type="button" onClick={this._previousStep} disabled={this.state.buttonIsDisable}>
                     Atras
             </button>
             )
@@ -241,7 +234,7 @@ class CreatePublication extends React.Component {
             return (
                 <button
                     className="btn btn-primary float-right"
-                    type="button" onClick={this.submitPublication} disabled= {this.state.buttonIsDisable}>
+                    type="button" onClick={this.submitPublication} disabled={this.state.buttonIsDisable}>
                     Finalizar&nbsp;&nbsp;
                     { this.state.isLoading &&  
                     <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -279,7 +272,6 @@ class CreatePublication extends React.Component {
             [e.target.id]: targetValue
         });
     }
-
 
     loadSpaceTypes() {
         var objApi = {};
@@ -331,7 +323,7 @@ class CreatePublication extends React.Component {
                     }
                     this.callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data);
                 } else {
-                    this.handleErrors("Internal error");
+                    this.callFunctionAfterApiError(objApi.functionAfterError, data, objApi);
                 }
             }
             ).catch(error => {
@@ -358,7 +350,7 @@ class CreatePublication extends React.Component {
                     }
                     this.callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data);
                 } else {
-                    this.handleErrors("Internal error");
+                    this.callFunctionAfterApiError(objApi.functionAfterError, data, objApi);
                 }
             }
             ).catch(error => {
@@ -370,7 +362,7 @@ class CreatePublication extends React.Component {
         
     }
 
-    callFunctionAfterApiSuccess(trigger, objData){
+    callFunctionAfterApiSuccess = (trigger, objData) =>{
         switch(trigger){
             case "loadPremiumOptions":
                 this.setState({ premiumOptions: objData.Plans });
@@ -385,15 +377,58 @@ class CreatePublication extends React.Component {
         }
     }
 
+    callFunctionAfterApiError = (trigger, objData, objApi) =>{
+
+        //Check for expired TOKEN
+        switch(objData.responseCode){
+            case "ERR_INVALIDACCESSTOKEN":
+            case "ERR_ACCESSTOKENEXPIRED":
+            case "ERR_INVALIDREFRESHTOKEN":
+                this.handleExpiredToken(objApi)
+                break;
+        }
+        
+        switch(trigger){
+            default: this.handleErrors("Internal error");
+        }
+    }
+    handleExpiredToken = (retryObjApi) =>{
+        if(retryObjApi.functionAfterSuccess == "updateExpiredToken"){
+            // This is the second attempt -> Log off
+            //this.props.logOut();
+            toast.error("Su sesión expiró, por favor inicie sesión nuevamente", {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            });
+        }else{
+            var objApi = {};
+            objApi.objToSend = {
+                "RefreshToken": this.props.tokenObj.refreshToken,
+                "Mail": this.props.userData.Mail
+            }
+            objApi.fetchUrl = "https://localhost:44372/api/tokens";
+            objApi.method = "PUT";
+            objApi.responseSuccess = "SUCC_TOKENSUPDATED";
+            objApi.successMessage = "";
+            objApi.functionAfterSuccess = "updateExpiredToken";
+            objApi.retryObjApi = retryObjApi;
+            this.callAPI(objApi);
+        }
+
+    }
     // Validate if all the required inputs are inputted, returns true or false
-    checkRequiredInputs() {
+    checkRequiredInputs = () => {
         let returnValue = true;
         let message = "";
 
         return returnValue;
     }
 
-    submitPublication() {
+    submitPublication = () => {
         var objToSend = {}
         var fetchUrl = '';
         var method = "";
@@ -511,15 +546,16 @@ class CreatePublication extends React.Component {
                 pauseOnHover: true,
                 draggable: true,
             });
-            console.log(error);
         }
         )
     }
 
     render() {
-        const { login_status , userData} = this.props;
-        if (login_status != 'LOGGED_IN') return <Redirect to='/' />
-        if (userData.PublisherValidated != true) return <Redirect to='/' />
+        /* START SECURITY VALIDATIONS */
+        if (this.props.login_status != 'LOGGED_IN') return <Redirect to='/' />
+        // THIS ONE ONLY FOR PUBLISHER PAGES
+        if (this.props.userData.PublisherValidated != true) return <Redirect to='/' />
+                    /* END SECURITY VALIDATIONS */
         return (
             <>
                 {this.state.pubIsLoading == false ? (
