@@ -16,6 +16,8 @@ namespace backend.Logic
         private IDAOUsers users;
         private IDAOSpaces spaces;
         private IDAOUtil util;
+        private EmailUtil emailUtil = new EmailUtil();
+
         public Facade()
         {
             users = new DAOUsers();
@@ -93,7 +95,7 @@ namespace backend.Logic
                     result = new VOResponseLogin();
                     result.RefreshToken = voTokens.RefreshToken;
                     result.AccessToken = voTokens.AccessToken;
-                    result.voUserLog = new VOUser(usr.Mail, null, usr.Name, usr.LastName, usr.Phone, usr.Rut, usr.RazonSocial, usr.Address, usr.CheckPublisher, usr.PublisherValidated);
+                    result.voUserLog = new VOUser(usr.Mail, null, usr.Name, usr.LastName, usr.Phone, usr.Rut, usr.RazonSocial, usr.Address, usr.CheckPublisher, usr.PublisherValidated, usr.LanguageDescription);
                 }
             }
             catch (GeneralException e)
@@ -108,7 +110,7 @@ namespace backend.Logic
         {
             try
             {
-                User u = new User(voUser.Mail, voUser.Password, voUser.Name, voUser.LastName, voUser.Phone, voUser.CheckPublisher, voUser.Rut, voUser.RazonSocial, voUser.Address, false, false, true);
+                User u = new User(voUser.Mail, voUser.Password, voUser.Name, voUser.LastName, voUser.Phone, voUser.CheckPublisher, voUser.Rut, voUser.RazonSocial, voUser.Address, false, false, true, voUser.Language, 0);
                 users.InsertUser(u);
 
             }
@@ -126,7 +128,7 @@ namespace backend.Logic
                 String message = util.ValidAccessToken(voUser.AccessToken, voUser.Mail);
                 if (EnumMessages.OK.ToString().Equals(message))
                 {
-                    User u = new User(voUser.Mail, voUser.Password, voUser.Name, voUser.LastName, voUser.Phone, voUser.CheckPublisher, voUser.Rut, voUser.RazonSocial, voUser.Address, false, false, true);
+                    User u = new User(voUser.Mail, voUser.Password, voUser.Name, voUser.LastName, voUser.Phone, voUser.CheckPublisher, voUser.Rut, voUser.RazonSocial, voUser.Address, false, false, true, voUser.Language, 0);
                     users.UpdateUser(u, voUser.NewMail);
                     message = EnumMessages.SUCC_USRUPDATED.ToString();
                 }
@@ -214,7 +216,17 @@ namespace backend.Logic
                 {
                     users.ApprovePublishers(voPublishers.Mails);
                     message = EnumMessages.SUCC_PUBLISHERSOK.ToString();
+                    User user;
+                    Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
+                    foreach (var mail in voPublishers.Mails)
+                    {                        
+                        user = users.Find(mail);
+                        keyValuePairs[ParamCodes.USER_NAME] = user.Name;
+                        EmailDataGeneric mailData = emailUtil.GetFormatMail(EmailFormatCodes.CODE_APPROVE_PUBLISHER, user.LanguageCode, keyValuePairs);
+                        emailUtil.SendEmailAsync(mail, mailData.Body, mailData.Subject);
+                    }
                 }
+                
                 response.responseCode = message;
                 return response;
             }
@@ -378,7 +390,7 @@ namespace backend.Logic
                 if (usr != null)
                 {
                     message = EnumMessages.SUCC_USERSOK.ToString();
-                    response.User = new VOUser(usr.Mail, null, usr.Name, usr.LastName, usr.Phone, usr.Rut, usr.RazonSocial, usr.Address, usr.CheckPublisher, usr.PublisherValidated);
+                    response.User = new VOUser(usr.Mail, null, usr.Name, usr.LastName, usr.Phone, usr.Rut, usr.RazonSocial, usr.Address, usr.CheckPublisher, usr.PublisherValidated, usr.LanguageDescription);
                 }
                 else
                 {
