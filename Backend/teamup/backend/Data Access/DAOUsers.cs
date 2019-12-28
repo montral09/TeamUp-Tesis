@@ -259,16 +259,6 @@ namespace backend.Data_Access.Query
                 }
             }
         }
-        /* Before delete an user, check if its possible by:
-         * 1 - Checking active publications
-         * 2 - Checking pending payments
-         */
-        public bool ValidateDeletion(String mail)
-        {
-            //TODO
-            return true;
-
-        }
 
         public void DeleteUser(String mail)
         {
@@ -300,6 +290,144 @@ namespace backend.Data_Access.Query
                 }
             }
         }
+
+        public String ValidateDeletion(String mail)
+        {
+            SqlConnection con = null;
+            bool isPublisher = IsPublisher(mail);
+            User user = Find(mail);
+            String result = null;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query;
+                //1: Check for pending reservations
+                query = cns.CheckPendingReservation();
+                SqlCommand pendingReservationCommand = new SqlCommand(query, con);
+                SqlParameter pendingReservationParam = new SqlParameter()
+                {
+                    ParameterName = "@idCustomer",
+                    Value = user.IdUser,
+                    SqlDbType = SqlDbType.Int
+                };
+                pendingReservationCommand.Parameters.Add(pendingReservationParam);
+                SqlDataReader dr;
+                dr = pendingReservationCommand.ExecuteReader();
+                if (dr.HasRows)
+                {
+                    result = EnumMessages.ERR_PENDINGRESERVATIONCUSTOMER.ToString();
+                }
+                else
+                {
+                    //2: Check for pending reservations payments
+                    query = cns.CheckPendingReservationPayment();
+                    SqlCommand pendingReservationPaymentCommand = new SqlCommand(query, con);
+                    SqlParameter pendingReservationPaymentParam = new SqlParameter()
+                    {
+                        ParameterName = "@idCustomer",
+                        Value = user.IdUser,
+                        SqlDbType = SqlDbType.Int
+                    };
+                    pendingReservationPaymentCommand.Parameters.Add(pendingReservationPaymentParam);
+                    dr = pendingReservationPaymentCommand.ExecuteReader();
+                    if (dr.HasRows)
+                    {
+                        result = EnumMessages.ERR_PENDINGRESERVATIONPAYMENT.ToString();
+                    }
+                    else
+                    {
+                        // 3: If user is publisher 
+                        if (isPublisher)
+                        {
+                            //3.1 check for pending publications
+                            query = cns.CheckPendingPublications();
+                            SqlCommand pendingPublicationCommand = new SqlCommand(query, con);
+                            SqlParameter pendingPublicationParam = new SqlParameter()
+                            {
+                                ParameterName = "@idUser",
+                                Value = user.IdUser,
+                                SqlDbType = SqlDbType.Int
+                            };
+                            pendingPublicationCommand.Parameters.Add(pendingPublicationParam);
+                            dr = pendingPublicationCommand.ExecuteReader();
+                            if (dr.HasRows)
+                            {
+                                result = EnumMessages.ERR_PENDINGPUBLICATION.ToString();
+                            }
+                            else
+                            {
+                                // 3.2 check for pending reservations of one of publisher's publication
+                                query = cns.CheckPendingReservationPublisher();
+                                SqlCommand pendingReservationPublisherCommand = new SqlCommand(query, con);
+                                SqlParameter pendingReservationPublisherParam = new SqlParameter()
+                                {
+                                    ParameterName = "@idUser",
+                                    Value = user.IdUser,
+                                    SqlDbType = SqlDbType.Int
+                                };
+                                pendingReservationPublisherCommand.Parameters.Add(pendingReservationPublisherParam);
+                                dr = pendingReservationPublisherCommand.ExecuteReader();
+                                if (dr.HasRows)
+                                {
+                                    result = EnumMessages.ERR_PENDINGRESERVATIONPUBLISHER.ToString();
+                                }
+                                else
+                                {
+                                    // 3.3 check for pending preferential payment
+                                    query = cns.CheckPendingPreferentialPayment();
+                                    SqlCommand pendingPreferntialPaymentCommand = new SqlCommand(query, con);
+                                    SqlParameter pendingPreferntialPaymentParam = new SqlParameter()
+                                    {
+                                        ParameterName = "@idUser",
+                                        Value = user.IdUser,
+                                        SqlDbType = SqlDbType.Int
+                                    };
+                                    pendingPreferntialPaymentCommand.Parameters.Add(pendingPreferntialPaymentParam);
+                                    dr = pendingPreferntialPaymentCommand.ExecuteReader();
+                                    if (dr.HasRows)
+                                    {
+                                        result = EnumMessages.ERR_PENDINGPREFERENTIALPAYMENT.ToString();
+                                    }
+                                    else
+                                    {
+                                        // 3.4 check for pending commission payment
+                                        query = cns.CheckPendingCommissionPayment();
+                                        SqlCommand pendingCommissionPaymentCommand = new SqlCommand(query, con);
+                                        SqlParameter pendingCommissionPaymentParam = new SqlParameter()
+                                        {
+                                            ParameterName = "@idUser",
+                                            Value = user.IdUser,
+                                            SqlDbType = SqlDbType.Int
+                                        };
+                                        pendingCommissionPaymentCommand.Parameters.Add(pendingCommissionPaymentParam);
+                                        dr = pendingCommissionPaymentCommand.ExecuteReader();
+                                        if (dr.HasRows)
+                                        {
+                                            result = EnumMessages.ERR_PENDINGCOMMISSIONPAYMENT.ToString();
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                }
+                dr.Close();
+            } catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+            return result;
+        }
+
 
         public List<VOPublisher> GetPublishers()
         {

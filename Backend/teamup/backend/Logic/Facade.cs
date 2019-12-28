@@ -148,14 +148,15 @@ namespace backend.Logic
                 String message = util.ValidAccessToken(voUserDelete.AccessToken, voUserDelete.Mail);
                 if (EnumMessages.OK.ToString().Equals(message))
                 {
-                    if (users.ValidateDeletion(voUserDelete.Mail))
+                    String resultValidateDeletion = users.ValidateDeletion(voUserDelete.Mail);
+                    if (resultValidateDeletion == null)
                     {
                         users.DeleteUser(voUserDelete.Mail);
                         message = EnumMessages.SUCC_USRDELETED.ToString();
                     }
                     else
                     {
-                        message = EnumMessages.ERR_PENDINGPROCESSES.ToString();
+                        message = resultValidateDeletion;
                     }
                 }
                 response.responseCode = message;

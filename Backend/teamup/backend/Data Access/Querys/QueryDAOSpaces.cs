@@ -236,10 +236,10 @@ namespace backend.Data_Access.Query
                 " r.people, r.comment, r.totalPrice, r.state, rs.description, s.individualRent, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, r.paymentCustomerState, ps.description as customerPaymentDesc, u.name from RESERVATIONS r, PUBLICATIONS p, RESERVATION_STATES rs, SPACE_TYPES s, PAYMENT_STATES ps");
             if (idCustomer != 0)
             {
-                query.Append(" , USERS U where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) and rs.idReservationState = r.state and p.spaceType = s.idSpaceType and r.idCustomer = @idCustomer and ps.idPaymentState = paymentCustomerState and u.idUser = r.idCustomer");
+                query.Append(" , USERS U where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) and rs.idReservationState = r.state and p.spaceType = s.idSpaceType and r.idCustomer = @idCustomer and ps.idPaymentState = paymentCustomerState and u.idUser = r.idCustomer order by r.idReservation desc");
             } else if (idPublisher != 0)
             {
-                query.Append(", USERS u where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) and rs.idReservationState = r.state and p.spaceType = s.idSpaceType and p.idUser = u.idUser and u.idUser = @idPublisher and ps.idPaymentState = paymentCustomerState");
+                query.Append(", USERS u where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) and rs.idReservationState = r.state and p.spaceType = s.idSpaceType and p.idUser = u.idUser and u.idUser = @idPublisher and ps.idPaymentState = paymentCustomerState order by r.idReservation desc");
             }
             return query.ToString();
         }
@@ -399,7 +399,7 @@ namespace backend.Data_Access.Query
 
         public String GetPreferentialPlanInfo()
         {
-            String query = "select pp.idPlan, ppl.name as planDescription, pp.state, ps.description as paymentDescription, ppl.price, pp.paymentDate from PAYMENT_STATES ps, PUBLICATIONS p, PREFERENTIAL_PAYMENTS pp, PUBLICATION_PLANS ppl where p.idPublication = @idPublication and " +
+            String query = "select pp.idPlan, ppl.name as planDescription, pp.state, ps.description as paymentDescription, ppl.price, pp.paymentDate, pp.comment, pp.evidence from PAYMENT_STATES ps, PUBLICATIONS p, PREFERENTIAL_PAYMENTS pp, PUBLICATION_PLANS ppl where p.idPublication = @idPublication and " +
                 "pp.idPlan = ppl.idPlan and pp.idPublication = p.idPublication and pp.state = ps.idPaymentState";
             return query;
         }
@@ -476,7 +476,7 @@ namespace backend.Data_Access.Query
             String query = "select p.idPublication, p.title, u.mail, u.name, u.lastName, u.phone, ppl.name as planName, ps.description, " +
                 "ppl.price, pp.comment, pp.evidence, pp.paymentDate from PUBLICATIONS p, USERS u, PUBLICATION_PLANS ppl, PREFERENTIAL_PAYMENTS pp, " +
                 "PAYMENT_STATES ps where pp.idPublication = p.idPublication and p.idUser = u.idUser and " +
-                "ppl.idPlan = pp.idPlan and pp.state = ps.idPaymentState ORDER BY CASE pp.state when 2 THEN 1 when 3 THEN 2 when 1 THEN 3 end";
+                "ppl.idPlan = pp.idPlan and pp.state = ps.idPaymentState and pp.state = 2 order by pp.paymentDate desc";
             return query;
 
         }
@@ -493,8 +493,7 @@ namespace backend.Data_Access.Query
         {
             String query = "select r.idReservation, p.title, u.mail, u.name, u.lastName, u.phone, r.commission, ps.description, " +
                 "r.commissionComment, r.commissionEvidence, r.paymentCommissionDate from RESERVATIONS r, PUBLICATIONS p, USERS u, " +
-                "PAYMENT_STATES ps where r.commissionPaymentState = ps.idPaymentState and r.idPublication = p.idPublication and p.idUser = u.idUser " +
-                "ORDER BY CASE r.commissionPaymentState when 2 THEN 1 when 3 THEN 2 when 1 THEN 3 end";
+                "PAYMENT_STATES ps where r.commissionPaymentState = 2 and r.commissionPaymentState = ps.idPaymentState and r.idPublication = p.idPublication and p.idUser = u.idUser ";
             return query;
         }
 
@@ -563,6 +562,13 @@ namespace backend.Data_Access.Query
         {
             String query = "select q.idQuestion, u.name, q.question, q.creationDate, p.idPublication, p.title from PUBLICATION_QUESTIONS q, PUBLICATIONS p, USERS u where " +
                 "q.idUser = @idUser and p.idPublication = q.idPublication and p.state = 2 and u.idUser = q.idUser order by q.creationDate desc";
+            return query;
+        }
+
+        public String GetQuestionsByPublication()
+        {
+            String query = "select q.idQuestion, u.name, q.question, q.creationDate, p.idPublication, p.title from PUBLICATION_QUESTIONS q, PUBLICATIONS p, USERS u where " +
+                "q.idPublication = @idPublication and q.idPublication = p.idPublication and p.state = 2 and u.idUser = q.idUser order by q.creationDate desc";
             return query;
         }
     }

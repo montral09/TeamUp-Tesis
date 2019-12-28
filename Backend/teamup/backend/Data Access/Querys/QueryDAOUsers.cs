@@ -137,6 +137,45 @@ namespace backend.Data_Access.Query
             String query = "select idUser from USERS where mail = @mail and publisherValidated = 1 and active = 1";
             return query;
         }
+
+        public String CheckPendingReservation()
+        {
+            String query = "select idReservation from RESERVATIONS where idCustomer = @idCustomer and state in (1,2,3)";
+            return query;
+        }
+
+        public String CheckPendingReservationPayment()
+        {
+            String query = "select idReservation from RESERVATIONS where idCustomer = @idCustomer and paymentCustomerState in (1,2)";
+            return query;
+        }
+
+        public String CheckPendingPublications()
+        {
+            String query = "select idPublication from PUBLICATIONS where idUser = @idUser and state in (1,2,3,4)";
+            return query;
+        }
+
+        public String CheckPendingReservationPublisher()
+        {
+            String query = "select r.idPublication from RESERVATIONS r, PUBLICATIONS p where r.state in (1,2,3) and " +
+                "r.idPublication = p.idPublication and p.idUser = @idUser";
+            return query;
+        }
+
+        public String CheckPendingPreferentialPayment()
+        {
+            String query = "select pp.idPrefPayments from PREFERENTIAL_PAYMENTS pp, PUBLICATIONS P where " +
+                "pp.state in (1,2) and pp.idPublication = p.idPublication and p.idUser = @idUser";
+            return query;
+        }
+
+        public String CheckPendingCommissionPayment()
+        {
+            String query = "select r.idReservation from RESERVATIONS r, PUBLICATIONS p where " +
+                "r.idPublication = p.idPublication and p.idUser = @idUser and r.commissionPaymentState in (1,2)";
+            return query;
+        }
     }
      
 }

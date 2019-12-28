@@ -383,7 +383,7 @@ namespace backend.Data_Access
                     creationDateString = Util.ConvertDateToString(creationDate);
                     voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), null, null, null, null, Convert.ToInt32(dr["spaceType"]), creationDateString, Convert.ToString(dr["title"]), Convert.ToString(dr["description"]), Convert.ToString(dr["address"]), Convert.ToString(dr["city"]),
                         voLocation, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
-                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, Convert.ToString(dr["state"]), Convert.ToInt32(dr["totalViews"]), reviews, ranking, 0, false, questionsWithoutAnswer, false, idPlan, voPreferentialPlan);
+                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, Convert.ToString(dr["state"]), 0, reviews, ranking, Convert.ToInt32(dr["totalViews"]), false, questionsWithoutAnswer, false, idPlan, voPreferentialPlan);
                     publications.Add(voPublication);                   
                 }
                 dr.Close();
@@ -465,7 +465,7 @@ namespace backend.Data_Access
                             paymentDateString = Util.ConvertDateToString(paymentDate);
                         }
                         voPreferentialPlan = new VOPreferentialPlan(Convert.ToInt32(dr["idPlan"]), Convert.ToString(dr["planDescription"]), Convert.ToInt32(dr["state"]),
-                                Convert.ToString(dr["paymentDescription"]), Convert.ToInt32(dr["price"]), paymentDateString);
+                                Convert.ToString(dr["paymentDescription"]), Convert.ToInt32(dr["price"]), paymentDateString, Convert.ToString(dr["comment"]), Convert.ToString(dr["evidence"]));
                     }
                     dr.Close();
                 } else
@@ -487,7 +487,7 @@ namespace backend.Data_Access
                         plan = Convert.ToString(drPlan["name"]);
                     }
                     drPlan.Close();
-                    voPreferentialPlan = new VOPreferentialPlan(idPlan, plan, 0, null, 0, null);                
+                    voPreferentialPlan = new VOPreferentialPlan(idPlan, plan, 0, null, 0, null, null, null);                
                 }
             }
             catch (Exception e)
@@ -1134,7 +1134,7 @@ namespace backend.Data_Access
                     idReservation = Convert.ToInt32(dr["idReservation"]);
                     wasReviewed = ReservationWasReviewed(idReservation, con);
                     VOPayment payment = GetReservationPaymentInfo(idReservation, con);
-                    String dateConverted = Convert.ToDateTime(dr["dateFrom"]).ToString("dd-MM-yyyy");
+                    String dateConverted = Util.ConvertDateToString(Convert.ToDateTime(dr["dateFrom"]));
                     voReservation = new VOReservationExtended(idReservation, Convert.ToString(dr["title"]), Convert.ToInt32(dr["idPublication"]),
                         Convert.ToString(voGetReservationsCustomer.Mail), Convert.ToString(dr["planSelected"]),
                         Convert.ToInt32(dr["reservedQty"] is DBNull ? 0 : dr["reservedQty"]), Convert.ToDateTime(dr["dateFrom"]), dateConverted,  Convert.ToString(dr["hourFrom"]),
@@ -1217,8 +1217,8 @@ namespace backend.Data_Access
                 {
                     idReservation = Convert.ToInt32(dr["idReservation"]);
                     wasReviewed = ReservationWasReviewed(Convert.ToInt32(dr["idReservation"]), con);
-                    payment = GetReservationPaymentInfo(idReservation, con);
-                    dateConverted = Convert.ToDateTime(dr["dateFrom"]).ToString("dd-MM-yyyy");
+                    payment = GetReservationPaymentInfo(idReservation, con);                    
+                    dateConverted = Util.ConvertDateToString(Convert.ToDateTime(dr["dateFrom"]));
                     paymentCommission = GetCommissionPayment(idReservation, con);
                     voReservation = new VOReservationExtended(Convert.ToInt32(dr["idReservation"]), Convert.ToString(dr["title"]), Convert.ToInt32(dr["idPublication"]),
                         Convert.ToString(voGetReservationsPublisher.Mail), Convert.ToString(dr["planSelected"]),
@@ -2508,38 +2508,83 @@ namespace backend.Data_Access
                   VOMessage question;
                   while (dr.Read())
                   {
-                   // 2: get answers for each question, if any
-                      VOAnswer answer = null; ;
-                      String queryAnswers = cns.GetAnswers();
-                      SqlCommand selectCommandAnswers = new SqlCommand(queryAnswers, con);
-                      SqlParameter paramAnswers = new SqlParameter()
-                      {
-                          ParameterName = "@idQuestion",
-                          Value = Convert.ToInt32(dr["idQuestion"]),
-                          SqlDbType = SqlDbType.Int
-                      };
-                      selectCommandAnswers.Parameters.Add(paramAnswers);
-                      SqlDataReader drAnswer = selectCommandAnswers.ExecuteReader();
-                      while (drAnswer.Read())
-                      {
-                          string creationDateAnswer = Util.ConvertDateToString(Convert.ToDateTime(drAnswer["creationDate"]));
-                          answer = new VOAnswer(Convert.ToString(drAnswer["answer"]), creationDateAnswer);
-                      }
-                      drAnswer.Close();
+                      // 2: get answer for each question, if any
+                      VOAnswer answer = GetAnswer(con, Convert.ToInt32(dr["idQuestion"]));
                       string creationDate = Util.ConvertDateToString(Convert.ToDateTime(dr["creationDate"]));
                       question = new VOMessage(Convert.ToInt32(dr["idPublication"]), Convert.ToString(dr["title"]), false, Convert.ToInt32(dr["idQuestion"]), Convert.ToString(dr["name"]), Convert.ToString(dr["question"]), creationDate, answer);
                       messages.Add(question);
                   }
                   dr.Close();
-
-                //3: If is a publisher, check for questions made in every publication 
-                // Use GetPublicationsPublisher
+                //3: If is a publisher, check for questions made in every publication
+                if (isPublisher)
+                {
+                    String queryPub = cns.GetPublicationsPublisher();
+                    SqlCommand selectCommandPub = new SqlCommand(queryPub, con);
+                    SqlParameter paramPub= new SqlParameter()
+                    {
+                        ParameterName = "@idUser",
+                        Value = idUser,
+                        SqlDbType = SqlDbType.Int
+                    };
+                    selectCommandPub.Parameters.Add(paramPub);
+                    int idPublication;
+                    SqlDataReader drPub = selectCommandPub.ExecuteReader();
+                    while (drPub.Read())
+                    {
+                        idPublication = Convert.ToInt32(drPub["idPublication"]);
+                        String queryQuestions = cns.GetQuestionsByPublication();
+                        SqlCommand selectCommandQuestion = new SqlCommand(queryQuestions, con);
+                        SqlParameter paramQuestion = new SqlParameter()
+                        {
+                            ParameterName = "@idPublication",
+                            Value = idPublication,
+                            SqlDbType = SqlDbType.Int
+                        };
+                        selectCommandQuestion.Parameters.Add(paramQuestion);
+                        SqlDataReader drQuestion = selectCommandQuestion.ExecuteReader();
+                        while (drQuestion.Read())
+                        {
+                            int idQuestion = Convert.ToInt32(drQuestion["idQuestion"]);
+                            VOAnswer answer = GetAnswer (con, idQuestion);
+                            string creationDate = Util.ConvertDateToString(Convert.ToDateTime(drQuestion["creationDate"]));
+                            question = new VOMessage(Convert.ToInt32(drPub["idPublication"]), Convert.ToString(drQuestion["title"]), true, Convert.ToInt32(drQuestion["idQuestion"]), Convert.ToString(drQuestion["name"]), Convert.ToString(drQuestion["question"]), creationDate, answer);
+                            messages.Add(question);
+                        }
+                        drQuestion.Close();
+                    }
+                    dr.Close();
+                }
+                messages.Sort();
             }
             catch (Exception e)
               {
                   throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
               }
-              return messages;
+            return messages;
         }
+
+
+        private VOAnswer GetAnswer(SqlConnection con, int idQuestion)
+        {
+            VOAnswer answer = null;
+            String queryAnswers = cns.GetAnswers();
+            SqlCommand selectCommandAnswers = new SqlCommand(queryAnswers, con);
+            SqlParameter paramAnswers = new SqlParameter()
+            {
+                ParameterName = "@idQuestion",
+                Value = idQuestion,
+                SqlDbType = SqlDbType.Int
+            };
+            selectCommandAnswers.Parameters.Add(paramAnswers);
+            SqlDataReader drAnswer = selectCommandAnswers.ExecuteReader();
+            while (drAnswer.Read())
+            {
+                string creationDateAnswer = Util.ConvertDateToString(Convert.ToDateTime(drAnswer["creationDate"]));
+                answer = new VOAnswer(Convert.ToString(drAnswer["answer"]), creationDateAnswer);
+            }
+            drAnswer.Close();
+            return answer;
+        }
+
     }
 }
