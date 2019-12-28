@@ -158,7 +158,19 @@ class MyReservedPublications extends React.Component {
         this.callAPI(objApi);
     }
     rejetPayment(objPaymentDetails){
-        alert("rejetPayment")
+        var objApi = {};
+        objApi.objToSend = {
+            "AccessToken": this.props.tokenObj.accesToken,
+            "Mail": this.props.userData.Mail,
+            "IdReservation": objPaymentDetails.IdReservation,
+            "Approved": false
+        }
+        objApi.fetchUrl = "https://localhost:44372/api/reservationPaymentCustomer";
+        objApi.method = "PUT";
+        objApi.responseSuccess = "SUCC_PAYMENTUPDATED";
+        objApi.successMessage = "Se ha rechazado el envío de pago";
+        objApi.functionAfterSuccess = "confirmPayment";
+        this.callAPI(objApi);
     }
     
     confirmPayment(objPaymentDetails){

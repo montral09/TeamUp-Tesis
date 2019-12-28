@@ -4,6 +4,10 @@ import './browser.css';
 import LocationSearchInput from './../publications/createPublication/LocationSearchInput';
 import { withRouter } from "react-router";
 import { toast } from 'react-toastify';
+// Multilanguage
+import { withTranslate } from 'react-redux-multilingual'
+import { compose } from 'redux';
+
 
 class Browser extends React.Component {
     componentDidMount() {
@@ -14,7 +18,7 @@ class Browser extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            dropDownValue: "Tipo de espacio",
+            dropDownValue: "Select",
             spaceTypes : [],
             spaceTypeSelected : "",
             city : "",
@@ -82,9 +86,10 @@ class Browser extends React.Component {
         });
     }
     render() {
+        const { translate } = this.props;
         return (
             <div>
-                <h1 style = {{ color: 'white', marginTop: '15%', marginBottom: '30px', marginLeft: '20px'}}>Encuentre el espacio que mas se adecue a su necesidad</h1>
+                <h1 style = {{ color: 'white', marginTop: '15%', marginBottom: '30px', marginLeft: '20px'}}>{translate('home_findSpaceText')}</h1>
                 <div style = {{ marginLeft: '5%', marginBottom: '30%'}}> 
 					<select id="spaceTypeSelected" onChange={this.onChange} className="browser">
                         {this.state.spaceTypes.map((space, key) => {
@@ -95,10 +100,10 @@ class Browser extends React.Component {
                         <LocationSearchInput id="city" onChange={this.onChange}/>
                     </label>
                     <label className="browser">
-                        <input type="text" id="capacity" placeholder="Capacidad" maxLength="3" onChange={this.onChange}></input>
+                        <input type="text" id="capacity" placeholder={translate('capacity_w')} maxLength="3" onChange={this.onChange}></input>
                     </label>
-                    <button className="btn btn-primary browser" disabled= {this.state.buttonIsDisabled} type="button" value='Registrarse' onClick={() => { this.startSearch() }} >
-                        Buscar
+                    <button className="btn btn-primary browser" disabled= {this.state.buttonIsDisabled} type="button" value={translate('registerYourself_w')} onClick={() => { this.startSearch() }} >
+                        {translate('home_findButton')}
                         { this.state.isLoading && 
                             <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                         }
@@ -108,4 +113,8 @@ class Browser extends React.Component {
         );
     }
 }
-export default withRouter(Browser);
+const enhance = compose(
+    withRouter,
+    withTranslate
+)
+export default enhance(Browser);

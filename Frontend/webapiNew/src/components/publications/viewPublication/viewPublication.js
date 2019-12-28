@@ -17,6 +17,8 @@ import Map from '../map/Map';
 import ModalReqInfo from './modalReqInfo';
 import ModalSummary from './modalSummary';
 import TabQuestions from './tabQuestions';
+import TabYoutube from './tabYoutube';
+
 
 class ViewPublication extends React.Component {
 
@@ -719,6 +721,8 @@ class ViewPublication extends React.Component {
                                                                                 <a href="#tab-description" onClick={() => this.goToTab(1)} {...(this.state.tabDisplayed == 1 ? { className: "selected" } : {})} >Descripción</a>
                                                                                 <a href="#tab-questions" onClick={() => this.goToTab(3)} {...(this.state.tabDisplayed == 3 ? { className: "selected" } : {})} >Preguntas ({this.state.arrQA.length})</a>
                                                                                 <a href="#tab-review" onClick={() => this.goToTab(2)} {...(this.state.tabDisplayed == 2 ? { className: "selected" } : {})} >Reviews ({this.state.pubObj.Reviews.length})</a>
+                                                                                <a href="#tab-youtube" onClick={() => this.goToTab(4)} {...(this.state.tabDisplayed == 4 ? { className: "selected" } : {})} >Video</a>
+
                                                                             </div>
                                                                             {this.state.tabDisplayed === 1 ? (
                                                                                 <>
@@ -755,6 +759,12 @@ class ViewPublication extends React.Component {
                                                                                     userData={this.props.userData} isMyPublication={this.state.pubObj.IsMyPublication} triggerModal={this.triggerModal} />
                                                                                 </div>
                                                                             ) : (null)}
+                                                                            {this.state.tabDisplayed === 4 ? (
+                                                                                <div id="tab-youtube" className="tab-content">
+                                                                                    <TabYoutube youtubeUrl={this.state.pubObj.VideoURL}/>
+                                                                                </div>
+                                                                            ) : (null)}
+                                                                            
                                                                             <span><h5>Ubicación</h5><br /></span>
                                                                             {
                                                                                 this.state.pubObj &&
