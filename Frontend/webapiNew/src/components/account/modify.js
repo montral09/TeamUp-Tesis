@@ -6,18 +6,19 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { modifyData, updateToken } from '../../services/login/actions';
 import { logOut } from '../../services/login/actions';
+import languages from '../../api/languages'
 
 import { connect } from 'react-redux';
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual'
+import { compose } from 'redux';
+import { callAPI } from '../../services/common/genericFunctions';
 
 class Modify extends React.Component {
 
     constructor(props) {
         super(props);
-        console.log("Modify - props:")
-        console.log(props);
-        const { Address, LastName, Mail, Name, Phone, RazonSocial, Rut } = props.userData;
+        const { Address, LastName, Mail, Name, Phone, RazonSocial, Rut, Language } = props.userData;
         const tokenObj = props.tokenObj;
         this.state = {
             firstName: Name,
@@ -29,11 +30,11 @@ class Modify extends React.Component {
             passwordConfirm: "",
             rut: Rut,
             razonSocial: RazonSocial,
+            Language: Language,
             address: Address,
             anyChange: false,
             tokenObj: tokenObj
         }
-        this.modify = this.modify.bind(this);
     }
 
     componentDidMount() {
@@ -108,15 +109,10 @@ class Modify extends React.Component {
         
         return returnValue;
     }
-
-    modify() {
+    modifyUser = () => {
         if (!this.checkRequiredInputs()) {
-            console.log("Token OBJ: ");
-            console.log(this.state.tokenObj);
-            fetch('https://localhost:44372/api/user', {
-            method: 'PUT',
-            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify({
+            var objApi = {};
+            objApi.objToSend = {
                 Password: this.state.password || "",
                 Mail: this.state.originalEmail,
                 Name: this.state.firstName,
@@ -126,137 +122,24 @@ class Modify extends React.Component {
                 RazonSocial: this.state.razonSocial,
                 Address: this.state.address,
                 NewMail: this.state.email,
-                AccessToken: this.state.tokenObj.accesToken
-            })
-        }).then(response => response.json()).then(data => {
-            console.log("data:" + JSON.stringify(data));
-            switch(data.responseCode){
-                case "SUCC_USRUPDATED":
-                    if(this.state.email != this.state.originalEmail){
-                        toast.success('Usuario actualizado correctamente, se ha enviado un correo de verificacion a su nueva casilla ', {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                        });
-                        this.props.logOut();
-                        this.props.history.push('/account/login');
-                    }else{
-                        this.props.modifyData({
-                            Mail: this.state.originalEmail,
-                            Name: this.state.firstName,
-                            LastName: this.state.lastName,
-                            Phone: this.state.phone,
-                            Rut: this.state.rut,
-                            RazonSocial: this.state.razonSocial,
-                            Address: this.state.address,
-                        }); // this is calling the reducer to store the data on redux Store
-                        toast.success('Usuario actualizado correctamente', {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                        });
-                        this.props.history.push('/');
-                    }
-                break;
-                case "ERR_MAILALREADYEXIST":
-                    toast.error('Ese correo ya esta en uso, por favor elija otro.', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                break;
-                case "ERR_INVALIDACCESSTOKEN":
-                    fetch('https://localhost:44372/api/tokens', {
-                        method: 'PUT',
-                        header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        
-                        body: JSON.stringify({
-                            Mail: this.state.email,
-                            RefreshToken: this.state.tokenObj.refreshToken
-                        })
-                    }).then(response => response.json()).then(data => {
-                        this.setState({isLoading: false, buttonIsDisable:false});
-                        console.log("data:" + JSON.stringify(data));
-                        
-                        switch(data.responseCode){
-                            case "SUCC_TOKENSUPDATED":
-                                let newTokenObj = {
-                                    accesToken: data.AccessToken,
-                                    refreshToken: data.RefreshToken
-                                };
-                                this.props.updateToken(newTokenObj);
-                                this.setState({tokenObj: newTokenObj}, () => this.modify());                            
-                            break;
-                            case "ERR_INVALIDREFRESHTOKEN":
-                                console.log(data.responseCode);
-                            break;
-                            case "ERR_REFRESHTOKENEXPIRED":
-                                    console.log(data.responseCode);
-                            break;
-                            default:
-                            case "ERR_SYSTEM":
-                                    console.log(data.responseCode);
-                            break;
-                        }
-                    }
-                    ).catch(error => {
-                        this.setState({isLoading: false, buttonIsDisable:false});
-                        toast.error('Internal error', {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                        });
-                        console.log(error);
-                    }
-                    )
-                break;
-
-                case "ERR_ACCESSTOKENEXPIRED":
-                        console.log(data.responseCode);
-                break;
-
-                default:
-                    toast.error('Hubo un error', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                break;
+                AccessToken: this.state.tokenObj.accesToken,
+                Language : this.state.Language
             }
+            objApi.fetchUrl = "api/user";
+            objApi.method = "PUT";
+            objApi.successMSG = {
+                SUCC_USRUPDATED : this.state.email == this.state.originalEmail ? this.props.translate('SUCC_USRUPDATED') : this.props.translate('SUCC_USRUPDATED2'),
+            };
+            objApi.functionAfterSuccess = "modifyUser";
+            objApi.callFunctionAfterApiError = "modifyUser";
+            objApi.errorMSG= {
+                ERR_MAILALREADYEXIST : this.props.translate('ERR_MAILALREADYEXIST')
+            }
+            // Custom
+            objApi.emailChanged = this.state.email != this.state.originalEmail;
+            objApi.logOut = this.props.logOut;
+            callAPI(objApi, this);
         }
-        ).catch(error => {
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-            console.log(error);
-        }
-        )
-            
-        }
-
-    }
-
-    refreshToken(){
 
     }
 
@@ -298,8 +181,17 @@ class Modify extends React.Component {
                                                         <input type="text" id="rut" className="form-control mb-4" placeholder="Rut" aria-describedby="rut" maxLength="50" onChange={this.onChange} value={this.state.rut} readOnly></input>
                                                         <input type="text" id="razonSocial" className="form-control mb-4" placeholder="Razón Social" aria-describedby="razonSocial" maxLength="50" onChange={this.onChange} value={this.state.razonSocial} readOnly></input>
                                                         <input type="text" id="address" className="form-control mb-4" placeholder="Dirección" aria-describedby="address" maxLength="100" onChange={this.onChange} value={this.state.address}></input>
+                                                        <small id="languageHelper" className="form-text text-muted mb-2">Idioma de los correos electrónnicos:</small>
+                                                        <select className="browser" id="Language" 
+                                                            value={this.state.Language} onChange={this.onChange}>
+                                                            {languages.map((language) => {
+                                                                return (
+                                                                    <option key={language.code} value={language.code}>{language.title}</option>
+                                                                );
+                                                            })}
+                                                        </select>
                                                         <div className="text-center">
-                                                            <input readOnly defaultValue='Guardar' className="btn btn-primary" onClick={() => { this.modify() }} />
+                                                            <input readOnly defaultValue='Guardar' className="btn btn-primary" onClick={() => { this.modifyUser() }} />
                                                             <div className="mb-5" ></div>
                                                         </div>
                                                     </form>
@@ -333,4 +225,9 @@ const mapDispatchToProps = (dispatch) =>{
         updateToken: (tokenObj) => dispatch(updateToken(tokenObj))
     }
 }
-export default connect(mapStateToProps,mapDispatchToProps)(Modify);
+
+const enhance = compose(
+    connect(mapStateToProps, mapDispatchToProps),
+    withTranslate
+)
+export default enhance(Modify);

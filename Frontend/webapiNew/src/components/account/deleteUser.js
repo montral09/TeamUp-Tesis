@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { connect } from 'react-redux';
 import { logOut } from '../../services/login/actions';
 
-import { callAPI } from '../generic/genericFunctions';
+import { callAPI } from '../../services/common/genericFunctions';
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual'
 import { compose } from 'redux';
@@ -37,9 +37,8 @@ class DeleteUser extends React.Component {
         objApi.objToSend = {
             mail : ""
         }
-        objApi.fetchUrl = "https://localhost:44372/api/user";
-        objApi.method = "GET";
-        objApi.responseSuccess = "SUCC_USRDELETED";
+        objApi.fetchUrl = "api/user";
+        objApi.method = "DELETE";
         objApi.successMSG = {
             SUCC_USRDELETED : this.props.translate('SUCC_USRDELETED'),
         };

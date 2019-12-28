@@ -1,10 +1,10 @@
 export default [
     {
-        title: 'English',
-        code: 'en'
-    },
-    {
         title: 'Español',
         code: 'es'
     },
+    {
+        title: 'English',
+        code: 'en'
+    }
 ];

@@ -1,13 +1,15 @@
 ﻿import React from 'react';
 import Header from "../header/header";
-import { Link, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { connect } from 'react-redux';
+import { callAPI } from '../../services/common/genericFunctions';
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual'
+import { compose } from 'redux';
 
 class Register extends React.Component {
 
@@ -25,7 +27,8 @@ class Register extends React.Component {
             razonSocial : '',
             address : '',
             isLoading : false,
-            buttonIsDisable: false
+            buttonIsDisable: false,
+            Language : 'es'
         }
         this.register = this.register.bind(this);
     }
@@ -104,80 +107,33 @@ class Register extends React.Component {
         
         return returnValue;
     }
-
-    register() {
-        if(this.state.gestorCheckbox =='on'){
-            this.state.gestorCheckbox = true;
-        }else{
-            this.state.gestorCheckbox = false;
-        }
+    registerUser = () => {
         if (!this.checkRequiredInputs()) {
             this.setState({isLoading: true, buttonIsDisable:true});
-            fetch('https://localhost:44372/api/user', {
-                method: 'POST',
-                header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-
-                body: JSON.stringify({
-                    Password: this.state.password,
-                    Mail: this.state.email,
-                    Name: this.state.firstName,
-                    LastName: this.state.lastName,
-                    Phone: this.state.phone,
-                    CheckPublisher: this.state.gestorCheckbox,
-                    Rut: this.state.rut,
-                    RazonSocial: this.state.razonSocial,
-                    Address: this.state.address,
-                })
-            }).then(response => response.json()).then(data => {
-                this.setState({isLoading: false, buttonIsDisable:false});
-                console.log("data:" + JSON.stringify(data));
-                if (data.responseCode == "SUCC_USRCREATED") {
-                    toast.success('Usuario creado correctamente, por favor revise su correo para activar la cuenta ', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                    this.props.history.push('/account/login')
-                } else {
-                    if(data.Message){
-                        toast.error('Hubo un error: '+data.Message, {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                        });
-                    }else{
-                        toast.error('Ese correo ya esta en uso, por favor elija otro.', {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                        });
-                    }
-
-
-                }
+            var objApi = {};
+            objApi.objToSend = {
+                Password: this.state.password,
+                Mail: this.state.email,
+                Name: this.state.firstName,
+                LastName: this.state.lastName,
+                Phone: this.state.phone,
+                CheckPublisher: this.state.gestorCheckbox =='on' ? true : false,
+                Rut: this.state.rut,
+                RazonSocial: this.state.razonSocial,
+                Address: this.state.address,
+                Language : this.state.Language
             }
-            ).catch(error => {
-                this.setState({isLoading: false, buttonIsDisable:false});
-                toast.error('Internal error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                console.log(error);
+            objApi.fetchUrl = "api/user";
+            objApi.method = "POST";
+            objApi.successMSG = {
+                SUCC_USRCREATED : this.props.translate('SUCC_USRCREATED'),
+            };
+            objApi.functionAfterSuccess = "registerUser";
+            objApi.callFunctionAfterApiError = "registerUser";
+            objApi.errorMSG= {
+                ERR_MAILALREADYEXIST : this.props.translate('ERR_MAILALREADYEXIST')
             }
-            )
+            callAPI(objApi, this);
         }
 
     }
@@ -260,5 +216,8 @@ const mapStateToProps = (state) =>{
         login_status: state.loginData.login_status
     }
 }
-
-export default connect(mapStateToProps)(Register);
+const enhance = compose(
+    connect(mapStateToProps, null),
+    withTranslate
+)
+export default enhance(Register);

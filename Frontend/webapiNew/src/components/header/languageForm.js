@@ -4,7 +4,7 @@ import { connect } from "react-redux";
 import store from '../../services/store';
 import { withTranslate } from 'react-redux-multilingual'
 import { IntlActions } from 'react-redux-multilingual'
-import languages  from '../../api/languages'
+import languages from '../../api/languages'
 import { updateLocale } from '../../services/login/actions';
 
 class LanguageForm extends React.Component {
