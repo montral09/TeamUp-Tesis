@@ -19,6 +19,10 @@ import ModalSummary from './modalSummary';
 import TabQuestions from './tabQuestions';
 import TabYoutube from './tabYoutube';
 
+import { callAPI } from '../../../services/common/genericFunctions';
+// Multilanguage
+import { withTranslate } from 'react-redux-multilingual'
+import { compose } from 'redux';
 
 class ViewPublication extends React.Component {
 
@@ -51,24 +55,18 @@ class ViewPublication extends React.Component {
         this.modalReqInfo           = React.createRef(); // Connects the reference to the modal
         this.modalSummaryElement    = React.createRef(); // Connects the reference to the modal
         this.bindFunctions();
-        this.loadPublication(pubID);
+        this.loadPublicationVP(pubID);
     }
 
     bindFunctions(){
-        this.loadPublication        = this.loadPublication.bind(this);
         this.redirectToPub          = this.redirectToPub.bind(this);
-        this.submitFavorite         = this.submitFavorite.bind(this);
-        this.handleErrors           = this.handleErrors.bind(this);
         this.reservationSuccess     = this.reservationSuccess.bind(this);
-        this.confirmReservation     = this.confirmReservation.bind(this);
         this.triggerModal           = this.triggerModal.bind(this);
         this.triggerSaveModal       = this.triggerSaveModal.bind(this);
-        this.saveAnswer             = this.saveAnswer.bind(this);
-        this.saveQuestion           = this.saveQuestion.bind(this);
     }
 
     componentDidMount() {
-        this.loadInfraestructure();
+        this.loadInfraestructureVP();
         this.setInitialHour();
         window.scrollTo(0, 0);
     }
@@ -78,10 +76,6 @@ class ViewPublication extends React.Component {
         var hourFromSelect = today.getHours();
         this.changeHour({target : {value : hourFromSelect, id: "hourFromSelect" }})
 
-    }
-
-    handleErrors(error) {
-        this.setState({ generalError: true });
     }
 
     onChange = (e) => {
@@ -127,120 +121,59 @@ class ViewPublication extends React.Component {
             this.setState({ quantityPeople: parseInt(value) });
         }
     }
-
-    loadInfraestructure() {
-        try {
-            fetch('https://localhost:44372/api/facilities').then(response => response.json()).then(data => {
-                console.log("data:" + JSON.stringify(data));
-                if (data.responseCode == "SUCC_FACILITIESOK") {
-                    this.setState({ facilities: data.facilities, infIsLoading: false });
-                } else {
-                    this.setState({ infIsLoading: false });
-
-                    toast.error('Internal error', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                }
-            }
-            ).catch(error => {
-                this.handleErrors(error);
-            }
-            )
-        } catch (error) {
-            this.handleErrors(error);
+    loadInfraestructureVP = () => {
+        var objApi = {};
+        objApi.objToSend = {}
+        objApi.fetchUrl = "api/facilities";
+        objApi.method = "GET";
+        objApi.successMSG = {
+            SUCC_FACILITIESOK : "",
+        };
+        objApi.functionAfterSuccess = "loadInfraestructureVP";
+        objApi.callFunctionAfterApiError = "loadInfraestructureVP";
+        objApi.errorMSG= {}
+        callAPI(objApi, this);
+    }
+    loadPublicationVP = (pubID) => {
+        var objApi = {};
+        objApi.objToSend = {}
+        var url = 'api/publication?idPublication=' + pubID + '&mail';
+        if (this.props.userData.Mail != null) {
+            url = url + '=' + this.props.userData.Mail;
         }
+        objApi.fetchUrl = url;
+        objApi.method = "GET";
+        objApi.successMSG = {
+            SUCC_PUBLICATIONSOK : "",
+        };
+        objApi.functionAfterSuccess = "loadPublicationVP";
+        objApi.callFunctionAfterApiError = "loadPublicationVP";
+        objApi.errorMSG= {}
+        if(this.state.pubIsLoading == false) this.setState({ pubIsLoading: true });
+
+        callAPI(objApi, this);
     }
 
-    loadPublication(pubID) {
-        try {
-            var url = 'https://localhost:44372/api/publication?idPublication=' + pubID + '&mail';
-            if (this.props.userData.Mail != null) {
-                url = url + '=' + this.props.userData.Mail;
-            }
-            this.setState({ pubIsLoading: true });
-            fetch(url).then(response => response.json()).then(data => {
-                console.log("loadPublication:");
-                console.log(data);
-                if (data.responseCode == "SUCC_PUBLICATIONSOK") {
-                    var pubObj = data.Publication;
-                    pubObj.Favorite = data.Favorite;
-                    var defaultPlanSelected = "";
-                    if (pubObj.HourPrice > 0) { defaultPlanSelected = "HourPrice"; } else if (pubObj.DailyPrice > 0) { defaultPlanSelected = "DailyPrice" } else if (pubObj.WeeklyPrice > 0) { defaultPlanSelected = "WeeklyPrice"; } else if (pubObj.MonthlyPrice > 0) { defaultPlanSelected = "MonthlyPrice"; }
-                    this.setState({
-                        pubIsLoading: false, pubObj: pubObj, activeImage: { index: 0, src: pubObj.ImagesURL[0] },
-                        relatedPublications: data.RelatedPublications, planChosen: defaultPlanSelected, arrQA : data.Questions
-                    });
-                } else {
-                    this.setState({ pubIsLoading: false });
-                    if (data.responseCode == 'ERR_SPACENOTFOUND') {
-                        this.handleErrors(data.responseCode);
-                    }
-                    if (data.Message) {
-                        this.handleErrors(data.Message);
-
-                    } else {
-                        this.handleErrors("Generic error");
-                    }
-                }
-            }
-            ).catch(error => {
-                this.handleErrors(error);
-            }
-            )
-        } catch (error) {
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-        }
-    }
-
-    submitFavorite() {
+    submitFavoriteVP = () => {
+        var objApi = {};
         var code = this.state.pubObj.Favorite === false ? 1 : 2;
-        var fetchUrl = '';
-        var method = "";
-
-        var objToSend = {
+        objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,
             "Mail": this.props.userData.Mail,
             "IdPublication": this.state.pubObj.IdPublication,
             "Code": code
         }
-        fetchUrl = "https://localhost:44372/api/favorite";
-        method = "POST";
-        fetch(fetchUrl, {
-            method: method,
-            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify(objToSend)
-        }).then(response => response.json()).then(data => {
-            console.log("data:" + JSON.stringify(data));
-            if (data.responseCode == "SUCC_FAVORITEUPDATED") {
-                this.setState({ pubObj: { ...this.state.pubObj, Favorite: code === 1 ? true : false } })
-                toast.success(code === 1 ? 'Agregado a favoritos' : 'Quitado de favoritos', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-            } else {
-                this.handleErrors("Generic error");
-            }
-        }
-        ).catch(error => {
-            this.handleErrors(error);
-        }
-        )
+
+        objApi.fetchUrl = 'api/favorite';
+        objApi.method = "POST";
+        objApi.successMSG = {
+            SUCC_FAVORITEUPDATED : code === 1 ? this.props.translate('viewPub_addedToFav') : this.props.translate('viewPub_removedFromFav'),
+        };
+        objApi.functionAfterSuccess = "submitFavoriteVP";
+        objApi.callFunctionAfterApiError = "submitFavoriteVP";
+        objApi.errorMSG= {}
+        this.setState({ pubIsLoading: true });
+        callAPI(objApi, this);
     }
 
     redirectToPub(id) {
@@ -259,20 +192,15 @@ class ViewPublication extends React.Component {
     reservationSuccess(textboxValue, modalRef) {
         this.modalReqInfo.current.changeModalLoadingState(true);
     }
-
-    confirmReservation(comment){
-        var objToSend = {}
-        var fetchUrl = 'https://localhost:44372/api/reservation';
-        var method = "POST";
-        var PlanSelected = "";
+    confirmReservationVP = (comment) => {
+        var objApi = {};var PlanSelected="";
         switch(this.state.planChosen){
             case "HourPrice": PlanSelected ="Hour";break;
             case "DailyPrice": PlanSelected ="Day";break;
             case "WeeklyPrice" : PlanSelected ="Week";break;
             case "MonthlyPrice": PlanSelected ="Month";break;
         }
-
-        var objToSend = {
+        objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,
             "VOReservation": {
                 "IdPublication": this.state.pubID,
@@ -287,27 +215,19 @@ class ViewPublication extends React.Component {
                 "TotalPrice": this.state.totalPrice
             }
         }
+
+        objApi.fetchUrl = 'api/reservation';
+        objApi.method = "POST";
+        objApi.successMSG = {
+            SUCC_RESERVATIONCREATED : "",
+        };
+        objApi.functionAfterSuccess = "submitFavoriteVP";
+        objApi.callFunctionAfterApiError = "submitFavoriteVP";
+        objApi.errorMSG= {}
         this.modalSummaryElement.current.changeModalLoadingState(false);
-        fetch(fetchUrl, {
-            method: method,
-            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify(objToSend)
-        }).then(response => response.json()).then(data => {
-            this.setState({ isLoading: false, buttonIsDisable: false });
-            console.log("data:" + JSON.stringify(data));
-            if (data.responseCode == "SUCC_RESERVATIONCREATED") {
-                this.modalSummaryElement.current.changeModalLoadingState(true);
-                this.triggerModal({mode:'"RESSUCC"'});
-            } else {
-                this.modalSummaryElement.current.changeModalLoadingState(true);
-                this.handleErrors(data.responseCode);
-            }
-        }
-        ).catch(error => {
-            this.handleErrors(error);
-        }
-        )
+        callAPI(objApi, this);
     }
+
 
     triggerSummaryModal(){
         var validObj = this.validateReservation();
@@ -419,7 +339,7 @@ class ViewPublication extends React.Component {
         var modalConfigObj = {};
         if(objTrigger.mode === "ANSWER"){
             modalConfigObj ={
-                title: 'Responder', mainText: <><strong>Pregunta:</strong><em>{' "'+objTrigger.questionObj.Question+'"'}</em></>, mode : objTrigger.mode, saveFunction : "saveAnswer", textboxLabel: 'Respuesta',
+                title: 'Responder', mainText: <><strong>Pregunta:</strong><em>{' "'+objTrigger.questionObj.Question+'"'}</em></>, mode : objTrigger.mode, saveFunction : "saveAnswerVP", textboxLabel: 'Respuesta',
                 textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :'Cancelar', confirmText :'Responder' , login_status: this.props.login_status, IdQuestion : objTrigger.questionObj.IdQuestion
             };
         }else{
@@ -434,11 +354,11 @@ class ViewPublication extends React.Component {
     triggerSaveModal(saveFunction, objData){
         switch(saveFunction){
             case "reservationSuccess": this.reservationSuccess();break;
-            case "saveAnswer": this.saveAnswer(objData.textboxValue);break;
+            case "saveAnswerVP": this.saveAnswerVP(objData.textboxValue);break;
         }
     }
 
-    saveAnswer(answer){
+    saveAnswerVP = (answer) => {
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,
@@ -446,16 +366,19 @@ class ViewPublication extends React.Component {
             "IdQuestion": this.state.modalConfigObj.IdQuestion,
             "Answer": answer
         }
-        objApi.fetchUrl = "https://localhost:44372/api/publicationQuestions";
+        objApi.fetchUrl = 'api/publicationQuestions';
         objApi.method = "PUT";
-        objApi.responseSuccess = "SUCC_ANSWERCREATED";
-        objApi.successMessage = "Respuesta enviada correctamente";
-        objApi.functionAfterSuccess = "saveAnswer";
+        objApi.successMSG = {
+            SUCC_ANSWERCREATED : this.props.translate('SUCC_ANSWERCREATED'),
+        };
+        objApi.functionAfterSuccess = "saveAnswerVP";
+        objApi.callFunctionAfterApiError = "saveAnswerVP";
+        objApi.errorMSG= {}
         this.modalReqInfo.current.changeModalLoadingState(false);
-        this.callAPI(objApi);
+        callAPI(objApi, this);
     }
 
-    saveQuestion(question){
+    saveQuestionVP = (question) => {
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,
@@ -463,53 +386,18 @@ class ViewPublication extends React.Component {
             "IdPublication": this.state.pubID,
             "Question": question
         }
-        objApi.fetchUrl = "https://localhost:44372/api/publicationQuestions";
+        objApi.fetchUrl = 'api/publicationQuestions';
         objApi.method = "POST";
-        objApi.responseSuccess = "SUCC_QUESTIONCREATED";
-        objApi.successMessage = "Consulta enviada correctamente";
-        objApi.functionAfterSuccess = "saveQuestion";
+        objApi.successMSG = {
+            SUCC_QUESTIONCREATED : this.props.translate('SUCC_QUESTIONCREATED'),
+        };
+        objApi.functionAfterSuccess = "saveQuestionVP";
+        objApi.callFunctionAfterApiError = "saveQuestionVP";
+        objApi.errorMSG= {}
         this.modalReqInfo.current.changeModalLoadingState(false);
-        this.callAPI(objApi);
+        callAPI(objApi, this);
     }
 
-    callAPI(objApi){
-        fetch(objApi.fetchUrl, {
-            method: objApi.method,
-            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify(objApi.objToSend)
-        }).then(response => response.json()).then(data => {
-            if (data.responseCode == objApi.responseSuccess) {
-                if(objApi.successMessage != ""){
-                    toast.success(objApi.successMessage, {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                }
-                this.callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data);
-            } else {
-                this.handleErrors("Internal error");
-            }
-        }
-        ).catch(error => {
-            alert(error)
-            this.handleErrors(error);
-        }
-        )
-    }
-
-    callFunctionAfterApiSuccess(trigger, objData){
-        switch(trigger){
-            case "saveAnswer":
-            case "saveQuestion":
-                this.modalReqInfo.current.changeModalLoadingState(true);
-                this.loadPublication(this.state.pubID);
-            break;
-        }
-    }
     render() {
         const { login_status } = this.props;
         const options = {
@@ -532,6 +420,7 @@ class ViewPublication extends React.Component {
         };
         var loadStatus = !this.state.pubIsLoading && !this.state.infIsLoading ? false : true;
         if (this.state.generalError) return <Redirect to='/error' />
+        const { translate } = this.props;
         return (
             <>
                 <LoadingOverlay
@@ -553,7 +442,7 @@ class ViewPublication extends React.Component {
                                     modalConfigObj={this.state.modalConfigObj} />
 
                                 <ModalSummary ref={this.modalSummaryElement} login_status={this.props.login_status} 
-                                    confirmReservation={this.confirmReservation} onChange ={this.onChange}/>
+                                    confirmReservation={this.confirmReservationVP} onChange ={this.onChange}/>
 
                                 <div className="pattern" >
                                     <div>
@@ -575,7 +464,7 @@ class ViewPublication extends React.Component {
                                                                                             <div className="col-md-7 popup-gallery">
                                                                                                 <div className="product-image cloud-zoom">
                                                                                                     {true === true &&
-                                                                                                        <div className="sale">Recomendado!</div>
+                                                                                                        <div className="sale">{translate('recommended_w')}</div>
                                                                                                     }
                                                                                                     {<InnerImageZoom src={this.state.activeImage.src} />}
                                                                                                 </div>
@@ -593,39 +482,39 @@ class ViewPublication extends React.Component {
                                                                                                 <h1 className="product-name">{this.state.pubObj.Title}</h1>
                                                                                                 {this.state.pubObj.Favorite === false && login_status == 'LOGGED_IN' ? (
                                                                                                     <div>
-                                                                                                        <a href="#add_to_wishlist" onClick={this.submitFavorite}><span><i className="fas fa-heart"></i></span> Agregar a favoritos</a>
+                                                                                                        <a href="#add_to_wishlist" onClick={this.submitFavoriteVP}><span><i className="fas fa-heart"></i></span> {translate('viewPub_addToFav')}</a>
                                                                                                     </div>
                                                                                                 ) : (
                                                                                                         <div>
                                                                                                             {this.state.pubObj.Favorite === true ? (
                                                                                                                 <div>
-                                                                                                                    <a href="#remove_from_wishlist" onClick={this.submitFavorite}><span><i className="fas fa-heart"></i></span> Quitar de favoritos</a>
+                                                                                                                    <a href="#remove_from_wishlist" onClick={this.submitFavoriteVP}><span><i className="fas fa-heart"></i></span>  {translate('viewPub_remToFav')}</a>
                                                                                                                 </div>
                                                                                                             ) : (null)}
                                                                                                         </div>)}
 
-                                                                                                <div className="description">{this.state.pubObj.QuantityRented} veces alquilado</div>
+                                                                                                <div className="description">{this.state.pubObj.QuantityRented} {translate('viewPub_timesRented')}</div>
 
                                                                                                 <div className="review">
                                                                                                     <div className="rating"><i className={this.state.pubObj.Ranking > 0 ? 'fa fa-star active' : 'fa fa-star'}></i><i className={this.state.pubObj.Ranking > 1 ? 'fa fa-star active' : 'fa fa-star'}></i><i className={this.state.pubObj.Ranking > 2 ? 'fa fa-star active' : 'fa fa-star'}></i><i className={this.state.pubObj.Ranking > 3 ? 'fa fa-star active' : 'fa fa-star'}></i><i className={this.state.pubObj.Ranking > 4 ? 'fa fa-star active' : 'fa fa-star'}></i>&nbsp;&nbsp;&nbsp;</div>
                                                                                                 </div>
                                                                                                 <div className="review">
-                                                                                                    <span> <b>Capacidad: </b></span>{this.state.pubObj.Capacity} personas <br />
+                                                                                                    <span> <b>{translate('capacity_w')}: </b></span>{this.state.pubObj.Capacity} {translate('people_w')} <br />
                                                                                                 </div>
                                                                                                 <div className="review">
-                                                                                                    <span><b>Precios</b><br /></span>
+                                                                                                    <span><b>{translate('prices_w')}</b><br /></span>
                                                                                                 </div>
                                                                                                 <div className="price">
                                                                                                     <span className="col-md-9 center-column">
-                                                                                                        {this.state.pubObj.HourPrice > 0 && "Por Hora : $" + this.state.pubObj.HourPrice + " - "}
-                                                                                                        {this.state.pubObj.DailyPrice > 0 && "Por Día : $" + this.state.pubObj.DailyPrice + " - "}
-                                                                                                        {this.state.pubObj.WeeklyPrice > 0 && "Por Semana : $" + this.state.pubObj.WeeklyPrice + " - "}
-                                                                                                        {this.state.pubObj.MonthlyPrice > 0 && "Por Mes : $" + this.state.pubObj.MonthlyPrice}
+                                                                                                        {this.state.pubObj.HourPrice > 0 && translate('hourlyPrice_w')+": $" + this.state.pubObj.HourPrice + " - "}
+                                                                                                        {this.state.pubObj.DailyPrice > 0 && translate('dailyPrice_w')+" : $" + this.state.pubObj.DailyPrice + " - "}
+                                                                                                        {this.state.pubObj.WeeklyPrice > 0 && translate('weeklyPrice_w')+" : $" + this.state.pubObj.WeeklyPrice + " - "}
+                                                                                                        {this.state.pubObj.MonthlyPrice > 0 && translate('monthlyPrice_w')+" : $" + this.state.pubObj.MonthlyPrice}
                                                                                                     </span>
                                                                                                 </div>
                                                                                                 <div className="review">
                                                                                                     <div className="title-page" >
-                                                                                                        <span><b>Disponibilidad</b></span>
+                                                                                                        <span><b>{translate('availability_w')}</b></span>
                                                                                                     </div>
                                                                                                     <div >
                                                                                                         <span>{this.state.pubObj.Availability}<br /></span>
@@ -635,21 +524,21 @@ class ViewPublication extends React.Component {
                                                                                             </div>
                                                                                             <div className="review col-md-4" style={{ marginLeft: '60%' }}>
                                                                                                 <div className="title-page">
-                                                                                                    <span style={{ marginLeft: '20%' }}><b>Haga su reserva ahora!</b></span>
+                                                                                                    <span style={{ marginLeft: '20%' }}><b>{translate('viewPub_rentNow')}</b></span>
                                                                                                 </div>
 
                                                                                                 <div className="col-md-12" style={{ border: '1px solid dodgerBlue' }}>
                                                                                                     <span><b>Plan</b></span>
                                                                                                     <select style={{ marginLeft: '10%' }} className="browser" id="planChosen" onChange={this.onChange} >
-                                                                                                        {this.state.pubObj.HourPrice > 0 && <option value="HourPrice"> {"Por Hora : $" + this.state.pubObj.HourPrice}</option>}
-                                                                                                        {this.state.pubObj.DailyPrice > 0 && <option value="DailyPrice"> {"Por Día : $" + this.state.pubObj.DailyPrice}</option>}
-                                                                                                        {this.state.pubObj.WeeklyPrice > 0 && <option value="WeeklyPrice"> {"Por Semana : $" + this.state.pubObj.WeeklyPrice}</option>}
-                                                                                                        {this.state.pubObj.MonthlyPrice > 0 && <option value="MonthlyPrice"> {"Por Mes : $" + this.state.pubObj.MonthlyPrice}</option>}
+                                                                                                        {this.state.pubObj.HourPrice > 0 && <option value="HourPrice"> {translate('hourlyPrice_w')+": $" + this.state.pubObj.HourPrice}</option>}
+                                                                                                        {this.state.pubObj.DailyPrice > 0 && <option value="DailyPrice"> {translate('dailyPrice_w')+": $" +this.state.pubObj.DailyPrice}</option>}
+                                                                                                        {this.state.pubObj.WeeklyPrice > 0 && <option value="WeeklyPrice"> {translate('weeklyPrice_w')+": $" + this.state.pubObj.WeeklyPrice}</option>}
+                                                                                                        {this.state.pubObj.MonthlyPrice > 0 && <option value="MonthlyPrice"> {translate('monthlyPrice_w')+": $" + this.state.pubObj.MonthlyPrice}</option>}
                                                                                                     </select>
                                                                                                     {this.state.planChosen == "HourPrice" ? (
                                                                                                         <div className="cart">
                                                                                                             <div className="add-to-cart d-flex">
-                                                                                                                <span><b>Hora</b></span>
+                                                                                                                <span><b>{translate('hour_w')}</b></span>
                                                                                                                 <div style={{ marginLeft: '8%' }} className="browser">
                                                                                                                     <select style={{ marginLeft: '8%' }} className="browser" id="hourFromSelect" 
                                                                                                                         value={this.state.hourFromSelect} onChange={this.changeHour}>
@@ -660,7 +549,7 @@ class ViewPublication extends React.Component {
                                                                                                                         })}
                                                                                                                     </select>
                                                                                                                 </div>
-                                                                                                                <b style={{ marginLeft: '8%' }}>a</b>
+                                                                                                                <b style={{ marginLeft: '8%' }}>{translate('to_w')}</b>
                                                                                                                 <div className="browser">
                                                                                                                     <select className="browser" id="hourToSelect" 
                                                                                                                     value={this.state.hourToSelect} onChange={this.changeHour}>
@@ -676,9 +565,9 @@ class ViewPublication extends React.Component {
                                                                                                     ) : (null)}
                                                                                                     <div className="cart">
                                                                                                         <div className="add-to-cart d-flex">
-                                                                                                            <span><b>Fecha</b></span>
+                                                                                                            <span><b>{translate('date_w')}</b></span>
                                                                                                                 <div style={{ marginLeft: '7%' }} className="browser">
-                                                                                                                    <DatePicker placeholderText="Fecha"
+                                                                                                                    <DatePicker placeholderText={translate('date_w')}
                                                                                                                         dateFormat="dd/MM/yyyy"
                                                                                                                         selected={this.state.date}
                                                                                                                         minDate={new Date()}
@@ -692,7 +581,7 @@ class ViewPublication extends React.Component {
                                                                                                     <div className={this.state.pubObj.state === 3 ? 'hidden' : 'shown'}>
                                                                                                         <div className="cart">
                                                                                                             <div className="add-to-cart d-flex">
-                                                                                                                <span><b>Personas</b></span>
+                                                                                                                <span><b>{translate('people_w')}</b></span>
                                                                                                                 <div style={{ marginLeft: '2%' }} className="quantity">
                                                                                                                     <input type="text" name="quantityPeople" id="quantityPeople" size="2" value={this.state.quantityPeople} onChange={(event) => this.changeQuantityPeople(event.target.value)} />
                                                                                                                     <a id="q_up" onClick={() => this.increaseQuantityPeople()}><i className="fa fa-plus"></i></a>
@@ -707,7 +596,7 @@ class ViewPublication extends React.Component {
                                                                                                             </div>
                                                                                                         ) : (
                                                                                                         <div style={{ marginLeft: '20%' }} className="description add-to-cart d-flex">
-                                                                                                            <p>Reserva disponible para clientes</p>
+                                                                                                            <p>{translate('viewPub_resAvToCustomers')}</p>
                                                                                                         </div>
                                                                                                         )}
                                                                                                 </div>
@@ -718,10 +607,10 @@ class ViewPublication extends React.Component {
                                                                             </div>
 
                                                                             <div id="tabs" className="htabs">
-                                                                                <a href="#tab-description" onClick={() => this.goToTab(1)} {...(this.state.tabDisplayed == 1 ? { className: "selected" } : {})} >Descripción</a>
-                                                                                <a href="#tab-questions" onClick={() => this.goToTab(3)} {...(this.state.tabDisplayed == 3 ? { className: "selected" } : {})} >Preguntas ({this.state.arrQA.length})</a>
-                                                                                <a href="#tab-review" onClick={() => this.goToTab(2)} {...(this.state.tabDisplayed == 2 ? { className: "selected" } : {})} >Reviews ({this.state.pubObj.Reviews.length})</a>
-                                                                                <a href="#tab-youtube" onClick={() => this.goToTab(4)} {...(this.state.tabDisplayed == 4 ? { className: "selected" } : {})} >Video</a>
+                                                                                <a href="#tab-description" onClick={() => this.goToTab(1)} {...(this.state.tabDisplayed == 1 ? { className: "selected" } : {})} >{translate('desription_w')}</a>
+                                                                                <a href="#tab-questions" onClick={() => this.goToTab(3)} {...(this.state.tabDisplayed == 3 ? { className: "selected" } : {})} >{translate('questions_w')} ({this.state.arrQA.length})</a>
+                                                                                <a href="#tab-review" onClick={() => this.goToTab(2)} {...(this.state.tabDisplayed == 2 ? { className: "selected" } : {})} >{translate('reviews_w')} ({this.state.pubObj.Reviews.length})</a>
+                                                                                <a href="#tab-youtube" onClick={() => this.goToTab(4)} {...(this.state.tabDisplayed == 4 ? { className: "selected" } : {})} >{translate('video_w')}</a>
 
                                                                             </div>
                                                                             {this.state.tabDisplayed === 1 ? (
@@ -730,8 +619,8 @@ class ViewPublication extends React.Component {
 
                                                                                         <div dangerouslySetInnerHTML={{ __html: this.state.pubObj.Description }} /><br />
 
-                                                                                        <h5>Dirección</h5>{this.state.pubObj.Address}<br /><br />
-                                                                                        <h5>Servicios<br /><br /></h5>
+                                                                                        <h5>{translate('address_w')}</h5>{this.state.pubObj.Address}<br /><br />
+                                                                                        <h5>{translate('services_w')}<br /><br /></h5>
 
                                                                                         <div className="review">
                                                                                             <span>{this.state.pubObj.Facilities.map((inf, index) => {
@@ -755,7 +644,7 @@ class ViewPublication extends React.Component {
                                                                             ) : (null)}
                                                                             {this.state.tabDisplayed === 3 ? (
                                                                                 <div id="tab-questions" className="tab-content">
-                                                                                    <TabQuestions arrQA={this.state.arrQA} login_status={this.props.login_status} saveQuestion={this.saveQuestion}
+                                                                                    <TabQuestions arrQA={this.state.arrQA} login_status={this.props.login_status} saveQuestion={this.saveQuestionVP}
                                                                                     userData={this.props.userData} isMyPublication={this.state.pubObj.IsMyPublication} triggerModal={this.triggerModal} />
                                                                                 </div>
                                                                             ) : (null)}
@@ -765,7 +654,7 @@ class ViewPublication extends React.Component {
                                                                                 </div>
                                                                             ) : (null)}
                                                                             
-                                                                            <span><h5>Ubicación</h5><br /></span>
+                                                                            <span><h5>{translate('location_w')}</h5><br /></span>
                                                                             {
                                                                                 this.state.pubObj &&
                                                                                 <Map objGoogleMaps={{ zoom: 17, latitude: this.state.pubObj.Location.Latitude, longitude: this.state.pubObj.Location.Longitude }} />
@@ -804,5 +693,8 @@ const mapStateToProps = (state) => {
         userData: state.loginData.userData
     }
 }
-
-export default connect(mapStateToProps)(ViewPublication);
+const enhance = compose(
+    connect(mapStateToProps, null),
+    withTranslate
+)
+export default enhance(ViewPublication);
