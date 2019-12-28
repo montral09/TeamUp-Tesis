@@ -465,7 +465,7 @@ namespace backend.Data_Access
                             paymentDateString = Util.ConvertDateToString(paymentDate);
                         }
                         voPreferentialPlan = new VOPreferentialPlan(Convert.ToInt32(dr["idPlan"]), Convert.ToString(dr["planDescription"]), Convert.ToInt32(dr["state"]),
-                                Convert.ToString(dr["paymentDescription"]), Convert.ToInt32(dr["price"]), paymentDateString);
+                                Convert.ToString(dr["paymentDescription"]), Convert.ToInt32(dr["price"]), paymentDateString, Convert.ToString(dr["comment"]), Convert.ToString(dr["evidence"]));
                     }
                     dr.Close();
                 } else
@@ -487,7 +487,7 @@ namespace backend.Data_Access
                         plan = Convert.ToString(drPlan["name"]);
                     }
                     drPlan.Close();
-                    voPreferentialPlan = new VOPreferentialPlan(idPlan, plan, 0, null, 0, null);                
+                    voPreferentialPlan = new VOPreferentialPlan(idPlan, plan, 0, null, 0, null, null, null);                
                 }
             }
             catch (Exception e)
