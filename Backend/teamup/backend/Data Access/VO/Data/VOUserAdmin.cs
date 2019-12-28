@@ -13,7 +13,7 @@ namespace backend.Data_Access.VO.Data
         public VOUserAdmin() { }
 
         public VOUserAdmin(String mail, String password, String name, String lastName, String phone, String rut, String razonSocial, String address, bool checkPublisher, bool mailValidated, bool publisherValidated, bool active)
-            : base (mail, password, name, lastName, phone, rut, razonSocial, address, checkPublisher, publisherValidated)
+            : base (mail, password, name, lastName, phone, rut, razonSocial, address, checkPublisher, publisherValidated, null)
         {
             Mail = mail;
             Password = password;

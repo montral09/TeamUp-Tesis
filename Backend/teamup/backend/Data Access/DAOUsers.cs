@@ -9,7 +9,6 @@ using backend.Data_Access.VO;
 using backend.Data_Access.VO.Data;
 using backend.Exceptions;
 using backend.Logic;
-using webapi.Controllers;
 
 namespace backend.Data_Access.Query
 {
@@ -84,7 +83,7 @@ namespace backend.Data_Access.Query
                 SqlDataReader dr = selectCommand.ExecuteReader();
                 while (dr.Read())
                 {
-                    user = new User(Convert.ToInt64(dr["idUser"]), Convert.ToString(dr["mail"]), Convert.ToString(dr["password"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToBoolean(dr["checkPublisher"]), Convert.ToString(dr["rut"]), Convert.ToString(dr["razonSocial"]), Convert.ToString(dr["address"]), Convert.ToBoolean(dr["mailValidated"]), Convert.ToBoolean(dr["publisherValidated"]), Convert.ToBoolean(dr["active"]));
+                    user = new User(Convert.ToInt64(dr["idUser"]), Convert.ToString(dr["mail"]), Convert.ToString(dr["password"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToBoolean(dr["checkPublisher"]), Convert.ToString(dr["rut"]), Convert.ToString(dr["razonSocial"]), Convert.ToString(dr["address"]), Convert.ToBoolean(dr["mailValidated"]), Convert.ToBoolean(dr["publisherValidated"]), Convert.ToBoolean(dr["active"]), Convert.ToString(dr["description"]), Convert.ToInt32(dr["idLanguage"]));
                 }
                 dr.Close();
             }
@@ -109,13 +108,13 @@ namespace backend.Data_Access.Query
             const string URL = "http://localhost:3000/account/validateemail/";
             try
             {
-
                 // Create secure password
                 PasswordHasher passwordHasher = new PasswordHasher();
-                string hashPassword = passwordHasher.HashPassword(user.Password);
+                string hashPassword = passwordHasher.HashPassword(user.Password);                
                 con = new SqlConnection(GetConnectionString());
                 con.Open();
                 objTrans = con.BeginTransaction();
+                int language = GetIdLanguageByDescription(user.LanguageDescription, con, objTrans);
                 String query = cns.InsertUser();
                 SqlCommand insertCommand = new SqlCommand(query, con);
                 List<SqlParameter> prm = new List<SqlParameter>()
@@ -129,6 +128,7 @@ namespace backend.Data_Access.Query
                         new SqlParameter("@rut", SqlDbType.VarChar) {Value = user.Rut},
                         new SqlParameter("@razonSocial", SqlDbType.VarChar) {Value = user.RazonSocial},
                         new SqlParameter("@address", SqlDbType.VarChar) { Value = user.Address},
+                        new SqlParameter("@language", SqlDbType.Int) { Value = language},
                     };
                 insertCommand.Parameters.AddRange(prm.ToArray());
                 insertCommand.Transaction = objTrans;
@@ -156,10 +156,13 @@ namespace backend.Data_Access.Query
                 util.SendEmailAsync(user.Mail, body, subject);
                 objTrans.Commit();
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                objTrans.Rollback();
-                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+                if (objTrans.Connection != null)
+                {
+                    objTrans.Rollback();
+                }
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());                                             
             }
             finally
             {
@@ -231,6 +234,7 @@ namespace backend.Data_Access.Query
                     idUser = Convert.ToInt32(dr["idUser"]);
                 }
                 dr.Close();
+                int language = GetIdLanguageByDescription(user.LanguageDescription, con, null);
                 String query = cns.UpdateUser();
                 SqlCommand updateCommand = new SqlCommand(query, con);
                 List<SqlParameter> prm = new List<SqlParameter>()
@@ -243,6 +247,7 @@ namespace backend.Data_Access.Query
                     new SqlParameter("@rut", SqlDbType.VarChar) {Value = user.Rut},
                     new SqlParameter("@razonSocial", SqlDbType.VarChar) {Value = user.RazonSocial},
                     new SqlParameter("@address", SqlDbType.VarChar) { Value = user.Address},
+                    new SqlParameter("@language", SqlDbType.Int) { Value = language},
                 };
                 updateCommand.Parameters.AddRange(prm.ToArray());
                 updateCommand.ExecuteNonQuery();
@@ -918,7 +923,7 @@ namespace backend.Data_Access.Query
                 SqlDataReader dr = selectCommand.ExecuteReader();
                 while (dr.Read())
                 {
-                    user = new User(Convert.ToInt64(dr["idUser"]), Convert.ToString(dr["mail"]), Convert.ToString(dr["password"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToBoolean(dr["checkPublisher"]), Convert.ToString(dr["rut"]), Convert.ToString(dr["razonSocial"]), Convert.ToString(dr["address"]), Convert.ToBoolean(dr["mailValidated"]), Convert.ToBoolean(dr["publisherValidated"]), Convert.ToBoolean(dr["active"]));
+                    user = new User(Convert.ToInt64(dr["idUser"]), Convert.ToString(dr["mail"]), Convert.ToString(dr["password"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToBoolean(dr["checkPublisher"]), Convert.ToString(dr["rut"]), Convert.ToString(dr["razonSocial"]), Convert.ToString(dr["address"]), Convert.ToBoolean(dr["mailValidated"]), Convert.ToBoolean(dr["publisherValidated"]), Convert.ToBoolean(dr["active"]), null, 0);
                 }
                 dr.Close();
             }
@@ -972,6 +977,35 @@ namespace backend.Data_Access.Query
                 }
             }
             return member;
+        }
+
+        public int GetIdLanguageByDescription(String descLanguage, SqlConnection con, SqlTransaction trans)
+        {
+            int id = 0;
+            try
+            {
+                String query = cns.GetIdLanguageByDescription();
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                SqlParameter param = new SqlParameter()
+                {
+                    ParameterName = "@description",
+                    Value = descLanguage,
+                    SqlDbType = SqlDbType.VarChar
+                };
+                selectCommand.Parameters.Add(param);
+                selectCommand.Transaction = trans;
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                while (dr.Read())
+                {
+                    id = Convert.ToInt32(dr["idLanguage"]);
+                }
+                dr.Close();
+            }
+            catch (Exception)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }            
+            return id;
         }
     }
 }

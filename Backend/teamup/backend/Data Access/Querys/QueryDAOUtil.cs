@@ -51,5 +51,11 @@ namespace backend.Data_Access.Query
             String query = "select refreshTokenExpiration from ADMIN where mail=@mail";
             return query;
         }
+
+        public String GetEmailDataGeneric()
+        {
+            String query = "select subject, body from EMAIL_FORMAT where code = @code and language = @language";
+            return query;
+        }
     }     
 }

@@ -163,5 +163,42 @@ namespace backend.Data_Access
                 }
             }
         }
+
+        public EmailDataGeneric GetEmailDataGeneric(string code, int language)
+        {
+            SqlConnection con = null;
+            EmailDataGeneric data = null;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.GetEmailDataGeneric();
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                List<SqlParameter> param = new List<SqlParameter>()
+                {
+                    new SqlParameter("@code", SqlDbType.VarChar) {Value = code},
+                    new SqlParameter("@language", SqlDbType.Int) {Value = language},
+                };
+                selectCommand.Parameters.AddRange(param.ToArray());
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                while (dr.Read())
+                {
+                    data = new EmailDataGeneric(Convert.ToString(dr["subject"]), Convert.ToString(dr["body"]));
+                }
+                dr.Close();
+                return data;
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+        }
     }
 }

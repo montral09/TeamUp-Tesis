@@ -16,6 +16,7 @@ namespace backend.Data_Access.VO.Data
         public String Address { get; set; }          
         public bool CheckPublisher { get; set; }
         public bool PublisherValidated { get; set; }
+        public String Language { get; set; }
 
         public VOUser() { }
 
@@ -31,7 +32,7 @@ namespace backend.Data_Access.VO.Data
             Address = address;
         }
 
-        public VOUser(String mail, String password, String name, String lastName, String phone, String rut, String razonSocial, String address, bool checkPublisher, bool publisherValidated)
+        public VOUser(String mail, String password, String name, String lastName, String phone, String rut, String razonSocial, String address, bool checkPublisher, bool publisherValidated, string language)
         {
             Mail = mail;
             Password = password;
@@ -43,6 +44,7 @@ namespace backend.Data_Access.VO.Data
             Address = address;
             CheckPublisher = checkPublisher;
             PublisherValidated = publisherValidated;
+            Language = language;
         }
     }
 }
