@@ -61,6 +61,8 @@ var module = {
             SUCC_USRUPDATED2: 'Usuario actualizado correctamente, se ha enviado un correo de verificacion a su nueva casilla',
             ERR_MAILALREADYEXIST : 'Ese correo ya esta en uso, por favor elija otro.',
             SUCC_USRCREATED: 'Usuario creado correctamente, por favor revise su correo para activar la cuenta ',
+            SUCC_EMAILVALIDATED: 'Correo validado correctamente',
+            ERR_ACTIVATIONCODENOTEXIST: 'Codigo de activacion no existe',
 
             viewPub_timesRented: 'veces alquilado',
             viewPub_rentNow: 'Haga su reserva ahora!',
@@ -100,9 +102,9 @@ var module = {
             availability_w: 'Disponibilidad',
             recPubs_recommendedPubls: 'Recommended publications',
             singInLinks_wantToPublish: 'I want to publish',
-            singInLinks_wantToPublishBody: 'If you want to colaborate with us, and want to publish publications on the site, click on "I want!" button. This will send a request and one of our representative will contat you as soon as posible',
+            singInLinks_wantToPublishBody: 'If you want to colaborate with us, and want to publish publications on the site, click on "I want!" button. This will send a request and one of our representative will contact you as soon as posible',
             singInLinks_wantToPublishButton: 'I want!',
-            singInLinks_notwantToPublishBody: 'I miss it',
+            singInLinks_notwantToPublishBody: 'miss it',
             singInLinks_head_myPublications: 'My publications',
             singInLinks_head_createPublication: 'Create publication',
             singInLinks_head_myResSpaces: 'My reserved spaces',
@@ -134,7 +136,8 @@ var module = {
             SUCC_USRUPDATED2: 'Usuario actualizado correctamente, se ha enviado un correo de verificacion a su nueva casilla',
             ERR_MAILALREADYEXIST : 'Ese correo ya esta en uso, por favor elija otro.',
             SUCC_USRCREATED: 'Usuario creado correctamente, por favor revise su correo para activar la cuenta ',
-
+            SUCC_EMAILVALIDATED: 'Correo validado correctamente',
+            ERR_ACTIVATIONCODENOTEXIST: 'Codigo de activacion no existe',
             loading_text_small: 'Loading...',
         }
     }

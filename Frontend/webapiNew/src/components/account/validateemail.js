@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet';
 import Header from "../header/header";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { callAPI } from '../../services/common/genericFunctions';
 
 class ValidateEmail extends React.Component {
     constructor(props) {
@@ -15,53 +16,27 @@ class ValidateEmail extends React.Component {
         }
 
     }
-
     componentDidMount() {
+        this.validateEmail();
+    }
+
+    validateEmail = () => {
         if(this.state.emailtoken){
-            fetch('https://localhost:44372/api/validateEmail', {
-                method: 'POST',
-                header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                body: JSON.stringify({
-                    ActivationCode: this.state.emailtoken
-                })
-            }).then(response => response.json()).then(data => {
-                console.log("data:" + JSON.stringify(data));
-                if (data.responseCode == "SUCC_EMAILVALIDATED") {
-                    toast.success('Correo validado correctamente ', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                    this.setState({
-                        isLoading: false
-                    });
-                    this.props.history.push('/account/login');
-                } else {
-                    toast.error('Hubo un error', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                }
+            var objApi = {};
+            objApi.objToSend = {
+                ActivationCode: this.state.emailtoken
             }
-            ).catch(error => {
-                toast.error('Internal error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                console.log(error);
+            objApi.fetchUrl = "api/validateEmail";
+            objApi.method = "POST";
+            objApi.successMSG = {
+                SUCC_EMAILVALIDATED : this.props.translate('SUCC_EMAILVALIDATED'),
+            };
+            objApi.functionAfterSuccess = "validateEmail";
+            objApi.callFunctionAfterApiError = "validateEmail";
+            objApi.errorMSG= {
+                ERR_ACTIVATIONCODENOTEXIST : this.props.translate('ERR_ACTIVATIONCODENOTEXIST')
             }
-            )
+            callAPI(objApi, this);
         }
     }
 

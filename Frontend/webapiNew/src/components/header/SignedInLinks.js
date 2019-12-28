@@ -90,7 +90,7 @@ const SignedInLinks = (props) =>{
                     {translate('singInLinks_notwantToPublishBody')}
                     </Button>
                     <Button variant="primary" onClick={requestBePublisher}>
-                    {translate('singInLinks_wantToPublishBody')}
+                    {translate('singInLinks_wantToPublishButton')}
                     </Button>
                 </Modal.Footer>
                 </Modal>
