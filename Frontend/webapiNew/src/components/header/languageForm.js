@@ -15,6 +15,8 @@ class LanguageForm extends React.Component {
 		var localLang = localStorage.getItem('lang');
 		if(localLang  ){
 			langToUse = localLang;
+		}else{
+			langToUse = 'es';
 		}
 		this.state = {
 			lang: langToUse

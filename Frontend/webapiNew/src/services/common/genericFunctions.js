@@ -111,7 +111,12 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             }
         break;
         case "registerUser":
+            bindThis.props.history.push('/account/login')
+        break;
 
+        case "validateEmail":
+            bindThis.setState({isLoading: false});
+            bindThis.props.history.push('/account/login');
         break;
     }
 }

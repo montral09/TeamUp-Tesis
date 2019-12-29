@@ -117,7 +117,7 @@ class Register extends React.Component {
                 Name: this.state.firstName,
                 LastName: this.state.lastName,
                 Phone: this.state.phone,
-                CheckPublisher: this.state.gestorCheckbox =='on' ? true : false,
+                CheckPublisher: this.state.gestorCheckbox == 'on' ? true : false,
                 Rut: this.state.rut,
                 RazonSocial: this.state.razonSocial,
                 Address: this.state.address,
