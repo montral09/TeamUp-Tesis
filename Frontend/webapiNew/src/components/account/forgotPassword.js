@@ -2,15 +2,13 @@ import React from 'react';
 import Header from "../header/header";
 import { Link, Redirect } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 import { connect } from 'react-redux';
-import { logIn } from '../../services/login/actions';
 
-
+import { callAPI, displayErrorMessage } from '../../services/common/genericFunctions';
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual'
+import { compose } from 'redux';
 
 class ForgotPassword extends React.Component {
 
@@ -18,13 +16,12 @@ class ForgotPassword extends React.Component {
         super(props);
         this.state = {
             email: '',
+            generalError: false
         }
-        this.restore = this.restore.bind(this);
     }
 
     componentDidMount() {
         window.scrollTo(0, 0);
-
     }
 
     onChange = (e) => {
@@ -32,74 +29,40 @@ class ForgotPassword extends React.Component {
             [e.target.name]: e.target.value
         })
     }
-
-    restore() {
+    restoreUser = () => {
         if(this.state.email){
-            fetch('https://localhost:44372/api/passwordRecovery', {
-                method: 'POST',
-                header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                body: JSON.stringify({
-                    Mail: this.state.email
-                })
-            }).then(response => response.json()).then(data => {
-                console.log("data:" + JSON.stringify(data));
-                if (data.responseCode == "SUCC_PASSWORDUPDATED") {
-                    toast.success('Se ha enviado un correo con su nueva password ', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                    this.setState({
-                        isLoading: false
-                    });
-                    this.props.history.push('/account/login');
-                } else {
-                    toast.error('Hubo un error', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                }
+            var objApi = {};
+            objApi.objToSend = {
+                Mail: this.state.email
             }
-            ).catch(error => {
-                toast.error('Internal error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                console.log(error);
+            objApi.fetchUrl = "api/passwordRecovery";
+            objApi.method = "POST";
+            objApi.successMSG = {
+                SUCC_PASSWORDUPDATED : this.props.translate('SUCC_PASSWORDUPDATED'),
+            };
+            objApi.functionAfterSuccess = "restoreUser";
+            objApi.functionAfterError = "restoreUser";
+            objApi.errorMSG= {
+                ERR_USRMAILNOTEXIST : this.props.translate('ERR_USRMAILNOTEXIST')
             }
-            )
+            objApi.logOut = this.props.logOut;
+            callAPI(objApi, this);
         }else{
-            toast.error('Por favor ingrese un correo', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
+            displayErrorMessage('Por favor ingrese un correo');
         }
+        
     }
 
     render() {
         const { login_status } = this.props;
         if(login_status == 'LOGGED_IN') return <Redirect to='/'/>
+        const { translate } = this.props;
 
         return (
             <>
                 {/*SEO Support*/}
                 <Helmet>
-                    <title>TeamUp | Recuperar contraseña</title>
+                    <title>TeamUp | {translate('forgotPassword_header')}</title>
                     <meta name="description" content="---" />
                 </Helmet>
                 {/*SEO Support End */}
@@ -119,9 +82,9 @@ class ForgotPassword extends React.Component {
                                                     <div className="col-md-5">
                                                         <div className="well">
                                                         <form className="text-center border border-light p-5" action="#!">
-                                                            <p className="h4 mb-4">Recuperar Contraseña</p>
-                                                            <input type="email" name="email" id="input-email" className="form-control mb-4" placeholder="Correo" onChange={this.onChange}></input>
-                                                            <input readOnly defaultValue='Recuperar' className="btn btn-primary" onClick={() => { this.restore() }} />
+                                                            <p className="h4 mb-4">{translate('forgotPassword_header')}</p>
+                                                            <input type="email" name="email" id="input-email" className="form-control mb-4" placeholder={translate('email_w')} onChange={this.onChange}></input>
+                                                            <input readOnly defaultValue={translate('recover_w')} className="btn btn-primary" onClick={() => { this.restoreUser() }} />
                                                         </form>
                                                     </div>
                                                 </div>
@@ -147,10 +110,8 @@ const mapStateToProps = (state) =>{
     }
 }
 
-const mapDispatchToProps = (dispatch) =>{
-    return{
-        logIn : (userData) => { dispatch (logIn(userData))}
-    }
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(ForgotPassword);
+const enhance = compose(
+    connect(mapStateToProps, null),
+    withTranslate
+)
+export default enhance(ForgotPassword);

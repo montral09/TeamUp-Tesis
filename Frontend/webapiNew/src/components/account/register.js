@@ -30,7 +30,6 @@ class Register extends React.Component {
             buttonIsDisable: false,
             Language : 'es'
         }
-        this.register = this.register.bind(this);
     }
 
     componentDidMount() {
@@ -129,7 +128,7 @@ class Register extends React.Component {
                 SUCC_USRCREATED : this.props.translate('SUCC_USRCREATED'),
             };
             objApi.functionAfterSuccess = "registerUser";
-            objApi.callFunctionAfterApiError = "registerUser";
+            objApi.functionAfterError = "registerUser";
             objApi.errorMSG= {
                 ERR_MAILALREADYEXIST : this.props.translate('ERR_MAILALREADYEXIST')
             }
@@ -141,11 +140,13 @@ class Register extends React.Component {
     render() {
         const { login_status } = this.props;
         if(login_status == 'LOGGED_IN') return <Redirect to='/'/>
+        const { translate } = this.props;
+
         return (
             <>
                 {/*SEO Support*/}
                 <Helmet>
-                    <title>TeamUp | Registrarse</title>
+                    <title>TeamUp | {translate('registerYourself_w')}</title>
                     <meta name="description" content="---" />
                 </Helmet>
                 {/*SEO Support End */}
@@ -164,34 +165,34 @@ class Register extends React.Component {
                                                 </div>
                                                 <div className="col-md-6">
                                                     <form className="border border-light p-6">
-                                                        <p className="h4 mb-4 text-center">Registrarse</p>
-                                                        <input type="text" id="firstName" className="form-control mb-4" placeholder="Nombre (*)" maxLength="50" pattern="[a-z][A-Z]" onChange={this.onChange}></input>
-                                                        <input type="text" id="lastName" className="form-control mb-3" placeholder="Apellido (*)" maxLength="50" onChange={this.onChange}></input>
-                                                        <small id="emailHelper" className="form-text text-muted mb-2">Este va a ser su usuario</small>
-                                                        <input type="email" id="email" className="form-control mb-4" placeholder="Correo (*)" maxLength="50" onChange={this.onChange}></input>                                                        
-                                                        <input type="text" id="phone" className="form-control mb-4" placeholder="Numero telefónico (*)" aria-describedby="phone" maxLength="15" onChange={this.onChange}></input>
-                                                        <small id="passwordHelper" className="form-text text-muted mb-2">La contraseña debe contener al menos 6 caracteres</small>
-                                                        <input type="password" name="password" id="password" className="form-control mb-4" placeholder="Contraseña (*)" maxLength="100" onChange={this.onChange}></input>
-                                                        <input type="password" name="passwordConfirm" id="passwordConfirm" className="form-control mb-4" placeholder="Repetir contraseña (*)" maxLength="100" onChange={this.onChange}></input>
+                                                        <p className="h4 mb-4 text-center">{translate('registerYourself_w')}</p>
+                                                        <input type="text" id="firstName" className="form-control mb-4" placeholder={translate('name_w')+" (*)"} maxLength="50" pattern="[a-z][A-Z]" onChange={this.onChange}></input>
+                                                        <input type="text" id="lastName" className="form-control mb-3" placeholder={translate('lastName_w')+" (*)"} maxLength="50" onChange={this.onChange}></input>
+                                                        <small id="emailHelper" className="form-text text-muted mb-2">{translate('register_helper_thisIsYourUser')}</small>
+                                                        <input type="email" id="email" className="form-control mb-4" placeholder={translate('email_w')+" (*)"} maxLength="50" onChange={this.onChange}></input>                                                        
+                                                        <input type="text" id="phone" className="form-control mb-4" placeholder={translate('phoneNumber_w')+" (*)"} aria-describedby="phone" maxLength="15" onChange={this.onChange}></input>
+                                                        <small id="passwordHelper" className="form-text text-muted mb-2">{translate('register_helper_password')}</small>
+                                                        <input type="password" name="password" id="password" className="form-control mb-4" placeholder={translate('password_w')+" (*)"} maxLength="100" onChange={this.onChange}></input>
+                                                        <input type="password" name="passwordConfirm" id="passwordConfirm" className="form-control mb-4" placeholder={translate('register_repeatPassword')+" (*)"} maxLength="100" onChange={this.onChange}></input>
                                                         <div className="custom-control custom-checkbox">
                                                             <input type="checkbox" className="custom-control-input mb-4" id="gestorCheckbox" onChange={this.onChange}></input>
-                                                            <label className="custom-control-label mb-4" htmlFor="gestorCheckbox">Desea aplicar para ser gestor?</label>
+                                                            <label className="custom-control-label mb-4" htmlFor="gestorCheckbox">{translate('register_helper_publisherApply')}</label>
                                                         </div>
-                                                        <small id="emailHelper" className="form-text text-muted mb-2">Si es empresa, por favor llene lo siguiente:</small>
+                                                        <small id="emailHelper" className="form-text text-muted mb-2">{translate('register_helper_companyMessage')}:</small>
                                                         <input type="text" id="rut" className="form-control mb-4" placeholder="Rut" aria-describedby="rut" maxLength="12" onChange={this.onChange}></input>
                                                         <input type="text" id="razonSocial" className="form-control mb-4" placeholder="Razón Social" aria-describedby="razonSocial" maxLength="50" onChange={this.onChange}></input>
-                                                        <input type="text" id="address" className="form-control mb-4" placeholder="Dirección" aria-describedby="address" maxLength="100" onChange={this.onChange}></input>
+                                                        <input type="text" id="address" className="form-control mb-4" placeholder={translate('address_w')} aria-describedby="address" maxLength="100" onChange={this.onChange}></input>
                                                         <div className="text-center">
-                                                        <button className="btn btn-primary" disabled= {this.state.buttonIsDisable} type="button" value='Registrarse' onClick={() => { this.register() }} >
-                                                            Registrarse&nbsp;&nbsp;
+                                                        <button className="btn btn-primary" disabled= {this.state.buttonIsDisable} type="button" value={translate('registerYourself_w')} onClick={() => { this.registerUser() }} >
+                                                            {translate('registerYourself_w')}&nbsp;&nbsp;
                                                             { this.state.isLoading && 
                                                             <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                                                             }
                                                         </button>
                                                             <hr></hr>
-                                                            <p>Al hacer click en  
-                                                                <em> Registrarse</em> usted acepta nuestros
-                                                                <a href="" target="_blank"> terminos y condiciones</a>
+                                                            <p>{translate('register_termsMsg1')}
+                                                                <em> {translate('registerYourself_w')}</em> {translate('register_termsMsg2')}
+                                                                <a href="" target="_blank"> {translate('register_termsMsg3')}</a>
                                                             </p>
                                                             <div className="mb-5" ></div>
                                                         </div>

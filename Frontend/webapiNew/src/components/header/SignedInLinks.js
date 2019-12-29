@@ -107,6 +107,7 @@ const SignedInLinks = (props) =>{
             </li>)}
             <li><NavLink to="/reservations/myReservedSpaces/myReservedSpacesList">{translate('singInLinks_head_myReservations')}</NavLink></li>   
             <li><NavLink to="/publications/favPublications">{translate('singInLinks_head_favorites')}</NavLink></li>
+            <li><NavLink to="/messages">{translate('myMessages_title')}</NavLink></li>
             <li className="">
                 <a href="#my-account" title="My Account" data-hover="dropdown" className="dropdown-toggle" data-toggle="dropdown">{translate('singInLinks_head_myAccount')}<b className="caret"></b></a>
                 <ul className="dropdown-menu dropdown-menu-right">

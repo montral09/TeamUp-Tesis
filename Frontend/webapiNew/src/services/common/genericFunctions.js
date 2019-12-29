@@ -1,4 +1,5 @@
 import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const handleErrors = (error, bindThis) => {
     bindThis.setState({ generalError: true });
@@ -9,16 +10,9 @@ export const callAPI = (objApi, bindThis) => {
         fetch("https://localhost:44372/"+objApi.fetchUrl).then(response => response.json()).then(data => {
             console.log("data.responseCode "+data.responseCode)
             console.log(data)   
-            if (data.responseCode in objApi.successMSG) {
+            if (data.responseCode && data.responseCode in objApi.successMSG) {
                 if(objApi.successMSG[data.responseCode] && objApi.successMSG[data.responseCode] != ""){
-                    toast.success(objApi.successMSG[data.responseCode ], {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
+                    displaySuccessMessage(objApi.successMSG[data.responseCode]);
                 }
                 callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data, objApi, bindThis);
             } else {
@@ -40,14 +34,7 @@ export const callAPI = (objApi, bindThis) => {
             console.log(data)
             if (data.responseCode in objApi.successMSG) {
                 if(objApi.successMSG[data.responseCode] && objApi.successMSG[data.responseCode] != ""){
-                    toast.success(objApi.successMSG[data.responseCode ], {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
+                    displaySuccessMessage(objApi.successMSG[data.responseCode]);
                 }
                 callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data, objApi, bindThis);
             } else {
@@ -118,6 +105,19 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             bindThis.setState({isLoading: false});
             bindThis.props.history.push('/account/login');
         break;
+
+        case "loadMessages":
+            bindThis.setState({messages: objData.Messages, loadingMessages: false});
+        break;
+        
+        case "saveAnswerMSG":
+            bindThis.modalReqInfo.current.changeModalLoadingState(true);
+            bindThis.loadMessages();
+        break;
+        case "restoreUser":
+            bindThis.setState({isLoading: false});
+            bindThis.props.history.push('/account/login');
+        break;
     }
 }
 
@@ -131,17 +131,20 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
             bindThis.handleExpiredToken(objApi, bindThis)
             break;
     }
+
+    switch(trigger){
+        case "registerUser":
+            bindThis.setState({isLoading: false, buttonIsDisable: false});
+        break;
+        case "restoreUser":
+            bindThis.setState({isLoading: false});
+        break;
+        default:
+    }
     if(objData.responseCode in objApi.errorMSG && objApi.errorMSG[objData.responseCode] && objApi.errorMSG[objData.responseCode] != ""){
-        toast.error(objApi.errorMSG[objData.responseCode], {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-        });
+        displayErrorMessage(objApi.errorMSG[objData.responseCode]);
     }else{
-        bindThis.handleErrors("Internal error")
+        handleErrors("Internal error", bindThis)
     }
 }
 
@@ -149,14 +152,7 @@ export const handleExpiredToken = (retryObjApi, bindThis) =>{
     if(retryObjApi.functionAfterSuccess == "updateExpiredToken"){
         // This is the second attempt -> Log off
         //this.props.logOut();
-        toast.error("Su sesión expiró, por favor inicie sesión nuevamente", {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-        });
+        displayErrorMessage("Su sesión expiró, por favor inicie sesión nuevamente");
     }else{
         var objApi = {};
         objApi.objToSend = {
@@ -172,4 +168,26 @@ export const handleExpiredToken = (retryObjApi, bindThis) =>{
         bindThis.callAPI(objApi, bindThis);
     }
 
+}
+
+export const displayErrorMessage = (message) =>{
+    toast.error(message, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+    });
+}
+
+export const displaySuccessMessage = (message) =>{
+    toast.success(message, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+    });
 }

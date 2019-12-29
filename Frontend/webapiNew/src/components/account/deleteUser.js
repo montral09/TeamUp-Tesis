@@ -35,7 +35,8 @@ class DeleteUser extends React.Component {
     deleteUser = () => {
         var objApi = {};
         objApi.objToSend = {
-            mail : ""
+            "AccessToken": this.props.tokenObj.accesToken,
+            "Mail": this.props.userData.Mail,
         }
         objApi.fetchUrl = "api/user";
         objApi.method = "DELETE";
@@ -43,7 +44,7 @@ class DeleteUser extends React.Component {
             SUCC_USRDELETED : this.props.translate('SUCC_USRDELETED'),
         };
         objApi.functionAfterSuccess = "deleteUser";
-        objApi.callFunctionAfterApiError = "deleteUser";
+        objApi.functionAfterError = "deleteUser";
         objApi.errorMSG= {
             ERR_PENDINGRESERVATIONCUSTOMER : this.props.translate('ERR_PENDINGRESERVATIONCUSTOMER'),
             ERR_PENDINGRESERVATIONPAYMENT : this.props.translate('ERR_PENDINGRESERVATIONPAYMENT'),

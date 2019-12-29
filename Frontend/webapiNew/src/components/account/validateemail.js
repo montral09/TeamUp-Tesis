@@ -4,6 +4,7 @@ import Header from "../header/header";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { callAPI } from '../../services/common/genericFunctions';
+import { withTranslate } from 'react-redux-multilingual'
 
 class ValidateEmail extends React.Component {
     constructor(props) {
@@ -32,7 +33,7 @@ class ValidateEmail extends React.Component {
                 SUCC_EMAILVALIDATED : this.props.translate('SUCC_EMAILVALIDATED'),
             };
             objApi.functionAfterSuccess = "validateEmail";
-            objApi.callFunctionAfterApiError = "validateEmail";
+            objApi.functionAfterError = "validateEmail";
             objApi.errorMSG= {
                 ERR_ACTIVATIONCODENOTEXIST : this.props.translate('ERR_ACTIVATIONCODENOTEXIST')
             }
@@ -61,4 +62,4 @@ class ValidateEmail extends React.Component {
     }
 }
 
-export default ValidateEmail;
+export default withTranslate(ValidateEmail);
