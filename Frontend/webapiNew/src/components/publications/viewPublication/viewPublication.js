@@ -130,7 +130,7 @@ class ViewPublication extends React.Component {
             SUCC_FACILITIESOK : "",
         };
         objApi.functionAfterSuccess = "loadInfraestructureVP";
-        objApi.callFunctionAfterApiError = "loadInfraestructureVP";
+        objApi.functionAfterError = "loadInfraestructureVP";
         objApi.errorMSG= {}
         callAPI(objApi, this);
     }
@@ -147,7 +147,7 @@ class ViewPublication extends React.Component {
             SUCC_PUBLICATIONSOK : "",
         };
         objApi.functionAfterSuccess = "loadPublicationVP";
-        objApi.callFunctionAfterApiError = "loadPublicationVP";
+        objApi.functionAfterError = "loadPublicationVP";
         objApi.errorMSG= {}
         if(this.state.pubIsLoading == false) this.setState({ pubIsLoading: true });
 
@@ -170,7 +170,7 @@ class ViewPublication extends React.Component {
             SUCC_FAVORITEUPDATED : code === 1 ? this.props.translate('viewPub_addedToFav') : this.props.translate('viewPub_removedFromFav'),
         };
         objApi.functionAfterSuccess = "submitFavoriteVP";
-        objApi.callFunctionAfterApiError = "submitFavoriteVP";
+        objApi.functionAfterError = "submitFavoriteVP";
         objApi.errorMSG= {}
         this.setState({ pubIsLoading: true });
         callAPI(objApi, this);
@@ -222,7 +222,7 @@ class ViewPublication extends React.Component {
             SUCC_RESERVATIONCREATED : "",
         };
         objApi.functionAfterSuccess = "submitFavoriteVP";
-        objApi.callFunctionAfterApiError = "submitFavoriteVP";
+        objApi.functionAfterError = "submitFavoriteVP";
         objApi.errorMSG= {}
         this.modalSummaryElement.current.changeModalLoadingState(false);
         callAPI(objApi, this);
@@ -372,7 +372,7 @@ class ViewPublication extends React.Component {
             SUCC_ANSWERCREATED : this.props.translate('SUCC_ANSWERCREATED'),
         };
         objApi.functionAfterSuccess = "saveAnswerVP";
-        objApi.callFunctionAfterApiError = "saveAnswerVP";
+        objApi.functionAfterError = "saveAnswerVP";
         objApi.errorMSG= {}
         this.modalReqInfo.current.changeModalLoadingState(false);
         callAPI(objApi, this);
@@ -392,7 +392,7 @@ class ViewPublication extends React.Component {
             SUCC_QUESTIONCREATED : this.props.translate('SUCC_QUESTIONCREATED'),
         };
         objApi.functionAfterSuccess = "saveQuestionVP";
-        objApi.callFunctionAfterApiError = "saveQuestionVP";
+        objApi.functionAfterError = "saveQuestionVP";
         objApi.errorMSG= {}
         this.modalReqInfo.current.changeModalLoadingState(false);
         callAPI(objApi, this);

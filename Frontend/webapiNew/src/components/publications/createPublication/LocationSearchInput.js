@@ -3,12 +3,12 @@ import PlacesAutocomplete, {
   geocodeByAddress,
   getLatLng,
 } from 'react-places-autocomplete';
- 
+import './LocationSearchInput.css';
+
 class LocationSearchInput extends React.Component {
   constructor(props) {
-    console.log("city:"+props.city)
     super(props);
-      this.state = { city: props.city || "" ,address: props.city || ""};
+      this.state = {address: props.city || ""};
   }
  
   handleChange = address => {
@@ -17,9 +17,11 @@ class LocationSearchInput extends React.Component {
  
   handleSelect = address => {
     let city = address.split(",")[0];
+    console.log("city:"+city)
+
     this.props.onChange({target :{value:city,id:"city"}});
     this.setState({
-      city: city
+      address : city
   })};
  
   render() {
@@ -30,31 +32,31 @@ class LocationSearchInput extends React.Component {
         onSelect={this.handleSelect}
       >
         {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
-          <div>
+            <div className="Demo__search-input-container">
             <input
               {...getInputProps({
                 placeholder: 'Ej: Pocitos ...',
                 className: 'location-search-input',
               })}
             />
-            <div className="autocomplete-dropdown-container ">
+            <div >
               {loading && <div>Loading...</div>}
               {suggestions.map(suggestion => {
                 const className = suggestion.active
-                  ? 'suggestion-item--active'
-                  : 'suggestion-item';
-                // inline style for demonstration purpose
-                const style = suggestion.active
-                  ? { backgroundColor: '#bbc0fa', cursor: 'pointer'}
-                  : { backgroundColor: '#bbc0fa', cursor: 'pointer'};
+                  ? 'Demo__suggestion-item--active'
+                  : 'Demo__suggestion-item';
                 return (
                   <div
                     {...getSuggestionItemProps(suggestion, {
                       className,
-                      style,
                     })}
                   >
-                    <span>{suggestion.description}</span>
+                    <strong>
+                      {suggestion.formattedSuggestion.mainText}
+                    </strong>{' '}
+                    <small>
+                      {suggestion.formattedSuggestion.secondaryText}
+                    </small>
                   </div>
                 );
               })}

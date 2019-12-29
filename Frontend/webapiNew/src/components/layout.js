@@ -17,6 +17,7 @@ import MyReservedPublications from './publications/reservedPublications/reserved
 import FavPublications from './publications/favPublications/favPublications';
 import NotFoundPage from './pages/404';
 import DeleteUser from './account/deleteUser';
+import MyMessagesList from './messages/myMessagesList';
 
 const Page = () => {
   return (
@@ -37,6 +38,8 @@ const Page = () => {
         <Route path="/reservations/myReservedSpaces/myReservedSpacesList" component={MyReservedSpacesList} />
         <Route path="/publications/reservedPublications/reservedPublications" component={MyReservedPublications} />
         <Route path="/publications/favPublications" component={FavPublications} />
+        <Route path="/messages" component={MyMessagesList} />
+        
         <Route component={NotFoundPage} />
       </Switch>
     </>

@@ -9,6 +9,7 @@
     "eslint": "5.16.0",
     "google-maps-react": "^2.0.2",
     "jquery": "^3.4.1",
+    "material-ui-search-bar": "^0.4.2",
     "node-sass": "^4.12.0",
     "owl.carousel": "^2.3.4",
     "react": "^16.9.0",

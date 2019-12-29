@@ -131,7 +131,7 @@ class Modify extends React.Component {
                 SUCC_USRUPDATED : this.state.email == this.state.originalEmail ? this.props.translate('SUCC_USRUPDATED') : this.props.translate('SUCC_USRUPDATED2'),
             };
             objApi.functionAfterSuccess = "modifyUser";
-            objApi.callFunctionAfterApiError = "modifyUser";
+            objApi.functionAfterError = "modifyUser";
             objApi.errorMSG= {
                 ERR_MAILALREADYEXIST : this.props.translate('ERR_MAILALREADYEXIST')
             }

@@ -8,6 +8,7 @@ import { logIn } from '../../services/login/actions';
 
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual'
+import { compose } from 'redux';
 
 class Login extends React.Component {
 
@@ -78,26 +79,28 @@ class Login extends React.Component {
     render() {
         let { login_status, redirectToMain } = this.props;
         if (login_status == 'LOGGED_IN' && redirectToMain) return <Redirect to='/' />
+        const { translate } = this.props;
+
         return (
             <div className="well">
                 <form className="text-center border border-light p-5" action="#!">
-                    <p className="h4 mb-4">Iniciar sesión</p>
-                    <input type="email" name="email" id="input-email" className="form-control mb-4" placeholder="Correo" maxLength="50" onChange={this.onChange}></input>
-                    <input type="password" name="password" id="input-password" className="form-control mb-4" placeholder="Password" maxLength="100" onChange={this.onChange}></input>
+                    <p className="h4 mb-4">{translate('login_login')}</p>
+                    <input type="email" name="email" id="input-email" className="form-control mb-4" placeholder={translate('email_w')}maxLength="50" onChange={this.onChange}></input>
+                    <input type="password" name="password" id="input-password" className="form-control mb-4" placeholder={translate('password_w')} maxLength="100" onChange={this.onChange}></input>
                     <div className="d-flex justify-content-around mb-2">
                         <div>
-                            <Link target="_blank" to="/account/forgotPassword">Olvido su contraseña?</Link>
+                            <Link target="_blank" to="/account/forgotPassword">{translate('login_forgotPassword')}</Link>
                         </div>
                     </div>
-                    <button className="btn btn-primary" disabled={this.state.buttonIsDisable} type="button" value='Registrarse' onClick={() => { this.login() }} >
+                    <button className="btn btn-primary" disabled={this.state.buttonIsDisable} type="button" value={translate('registerYourself_w')} onClick={() => { this.login() }} >
 
-                        Login&nbsp;&nbsp;
+                        {translate('login_login')}&nbsp;&nbsp;
                                         {this.state.isLoading &&
                             <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                         }
                     </button>
-                    <p>No tiene cuenta?
-                                        <Link target="_blank" to="/account/register"> Registrarse</Link>
+                    <p>{translate('login_dontHaveAccount')}
+                        <Link target="_blank" to="/account/register"> {translate('registerYourself_w')}</Link>
                     </p>
                 </form>
             </div>
@@ -117,5 +120,8 @@ const mapDispatchToProps = (dispatch) => {
         logIn: (userData) => { dispatch(logIn(userData)) }
     }
 }
-
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+const enhance = compose(
+    connect(mapStateToProps, mapDispatchToProps),
+    withTranslate
+)
+export default enhance(Login);
