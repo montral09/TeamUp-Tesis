@@ -101,11 +101,11 @@ namespace backend.Data_Access.Query
             return user;
         }
 
-        public async Task InsertUser(User user)
+        public string InsertUser(User user)
         {
+            string activationCode = "";
             SqlConnection con = null;
-            SqlTransaction objTrans = null;
-            const string URL = "http://localhost:3000/account/validateemail/";
+            SqlTransaction objTrans = null;            
             try
             {
                 // Create secure password
@@ -114,7 +114,7 @@ namespace backend.Data_Access.Query
                 con = new SqlConnection(GetConnectionString());
                 con.Open();
                 objTrans = con.BeginTransaction();
-                int language = GetIdLanguageByDescription(user.LanguageDescription, con, objTrans);
+                int language = GetIdLanguageByDescription(user.LanguageDescription);
                 String query = cns.InsertUser();
                 SqlCommand insertCommand = new SqlCommand(query, con);
                 List<SqlParameter> prm = new List<SqlParameter>()
@@ -135,7 +135,7 @@ namespace backend.Data_Access.Query
                 insertCommand.ExecuteNonQuery();
                 // Generate activation code
                 String queryActivation = cns.InsertActivationCode();
-                string activationCode = Guid.NewGuid().ToString();
+                activationCode = Guid.NewGuid().ToString();
                 SqlCommand updateCommand = new SqlCommand(queryActivation, con);
                 List<SqlParameter> parameters = new List<SqlParameter>()
                     {
@@ -145,16 +145,8 @@ namespace backend.Data_Access.Query
                 updateCommand.Parameters.AddRange(parameters.ToArray());
                 updateCommand.Transaction = objTrans;
                 updateCommand.ExecuteNonQuery();
-                // Generate body
-                string subject = "Account Activation";
-                string body = "Hello " + user.Name + ",";
-                body += "<br /><br />Please click the following link to activate your account";
-                string activationLink = URL + activationCode;
-                body += "<br /><a href = '" + activationLink + "'>Click here to activate your account.</a>";
-                body += "<br /><br />Thanks";
-                Util util = new Util();
-                util.SendEmailAsync(user.Mail, body, subject);
                 objTrans.Commit();
+                return activationCode;
             }
             catch (Exception e)
             {
@@ -173,17 +165,17 @@ namespace backend.Data_Access.Query
             }
         }
 
-        public async Task UpdateUser(User user, String newMail)
+        public string UpdateUser(User user, String newMail)
         {
             SqlConnection con = null;
+            string activationCode = "";
             try
             {
-                const string URL = "http://localhost:3000/account/validateemail/";
                 con = new SqlConnection(GetConnectionString());
                 con.Open();
                 if (!user.Mail.Equals(newMail))
                 {
-                    string activationCode = Guid.NewGuid().ToString();
+                    activationCode = Guid.NewGuid().ToString();
                     string queryInvalidateMail = cns.InvalidateMail();
                     SqlCommand invalidateMailCommand = new SqlCommand(queryInvalidateMail, con);
                     List<SqlParameter> parameterInvalidate = new List<SqlParameter>()
@@ -193,15 +185,7 @@ namespace backend.Data_Access.Query
                     };
   
                     invalidateMailCommand.Parameters.AddRange(parameterInvalidate.ToArray());
-                    invalidateMailCommand.ExecuteNonQuery();
-                    string subject = "Account Activation";
-                    string body = "Hello " + user.Name + ",";
-                    body += "<br /><br />Please click the following link to activate your account";
-                    string activationLink = URL + activationCode;
-                    body += "<br /><a href = '" + activationLink + "'>Click here to activate your account.</a>";
-                    body += "<br /><br />Thanks";
-                    Util util = new Util();
-                    util.SendEmailAsync(newMail, body, subject);
+                    invalidateMailCommand.ExecuteNonQuery();                    
                 }
                 if (user.Password != "")
                 {
@@ -234,7 +218,7 @@ namespace backend.Data_Access.Query
                     idUser = Convert.ToInt32(dr["idUser"]);
                 }
                 dr.Close();
-                int language = GetIdLanguageByDescription(user.LanguageDescription, con, null);
+                int language = GetIdLanguageByDescription(user.LanguageDescription);
                 String query = cns.UpdateUser();
                 SqlCommand updateCommand = new SqlCommand(query, con);
                 List<SqlParameter> prm = new List<SqlParameter>()
@@ -251,6 +235,7 @@ namespace backend.Data_Access.Query
                 };
                 updateCommand.Parameters.AddRange(prm.ToArray());
                 updateCommand.ExecuteNonQuery();
+                return activationCode;
             }
             catch (Exception)
             {
@@ -690,11 +675,11 @@ namespace backend.Data_Access.Query
             return true;
         }
 
-        public async Task UpdatePassword(String mail)
+        public string UpdatePassword(String mail)
         {
             SqlConnection con = null;
             SqlTransaction objTrans = null;
-            const string URL = "http://localhost:3000/account/login/";
+            string randomPassword = "";
             Util util = new Util();
             try
             {
@@ -704,30 +689,21 @@ namespace backend.Data_Access.Query
                 User user = Find(mail);
                 string queryPassword = cns.UpdatePassword();
                 // Generate random password
-                string randomPassword = Path.GetRandomFileName().Replace(".", "").Substring(0, 8);
+                randomPassword = Path.GetRandomFileName().Replace(".", "").Substring(0, 8);
                 // Encrypted password
                 PasswordHasher passwordHasher = new PasswordHasher();
                 string hashPassword = passwordHasher.HashPassword(randomPassword);
                 SqlCommand updatePassword = new SqlCommand(queryPassword, con);
                 List<SqlParameter> parameterPassword = new List<SqlParameter>()
-                        {
-                            new SqlParameter("@password", SqlDbType.VarChar) {Value = hashPassword},
-                            new SqlParameter("@mail", SqlDbType.VarChar) {Value = mail},
-                        };
+                {
+                    new SqlParameter("@password", SqlDbType.VarChar) {Value = hashPassword},
+                    new SqlParameter("@mail", SqlDbType.VarChar) {Value = mail},
+                };
                 updatePassword.Parameters.AddRange(parameterPassword.ToArray());
                 updatePassword.Transaction = objTrans;
                 updatePassword.ExecuteNonQuery();
-
-                // Generate body
-                string subject = "Your password was reset";
-                string body = "Hello " + user.Name + ",";
-                body += "<br /><br />Your account has been updated and a new random password has been generated. Your new password is " + randomPassword;
-                body += "<br /><br />We strongly recommend to change it";
-                string activationLink = URL;
-                body += "<br /><a href = '" + activationLink + "'>You can log in from here.</a>";
-                body += "<br /><br />Thanks";
-                util.SendEmailAsync(mail, body, subject);
                 objTrans.Commit();
+                return randomPassword;
             }
             catch (Exception)
             {
@@ -979,11 +955,14 @@ namespace backend.Data_Access.Query
             return member;
         }
 
-        public int GetIdLanguageByDescription(String descLanguage, SqlConnection con, SqlTransaction trans)
+        public int GetIdLanguageByDescription(String descLanguage)
         {
             int id = 0;
+            SqlConnection con = null;
             try
             {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
                 String query = cns.GetIdLanguageByDescription();
                 SqlCommand selectCommand = new SqlCommand(query, con);
                 SqlParameter param = new SqlParameter()
@@ -993,7 +972,6 @@ namespace backend.Data_Access.Query
                     SqlDbType = SqlDbType.VarChar
                 };
                 selectCommand.Parameters.Add(param);
-                selectCommand.Transaction = trans;
                 SqlDataReader dr = selectCommand.ExecuteReader();
                 while (dr.Read())
                 {
@@ -1004,7 +982,14 @@ namespace backend.Data_Access.Query
             catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
-            }            
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
             return id;
         }
     }

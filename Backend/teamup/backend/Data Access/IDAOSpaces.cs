@@ -12,7 +12,7 @@ namespace backend.Data_Access
         List<VOSpaceType> GetSpaceTypes();
         List<VOReservationType> GetReservationTypes();
         List<VOFacility> GetFacilities();
-        Task CreatePublicationAsync(VORequestCreatePublication voCreatePublication, User user);
+        Task<string> CreatePublicationAsync(VORequestCreatePublication voCreatePublication, User user);
         List<VOPublicationAdmin> GetPublicationsPendingApproval(VORequestPublicationPendindApproval voPublicationPendingApproval);
         List<VOPublication> GetPublisherSpaces(string mail);
         VOPublication GetSpace(int idSpace, User user);
@@ -43,5 +43,7 @@ namespace backend.Data_Access
         void UpdatePreferentialPaymentAdmin(VORequestUpdatePreferentialPaymentAdmin voUpdatePayment);
         void UpdatePaymentCommissionAdmin(VORequestUpdatePaymentCommissionAdmin voUpdatePayment);
         List<VOMessage> GetMessages(VORequestGetMessages voGetMessages, bool isPublisher, long idUser);
+        string GetPublicationPlanById(int idPlan);
+        User GetPublisherByPublication(int idPublication);
     }
 }
