@@ -1,6 +1,6 @@
-import React, {Suspense} from 'react';
+import React from 'react';
 import Header from "../../header/header";
-import { Link, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -73,10 +73,10 @@ class MyPublicationsList extends React.Component {
 
     changePubState(pubState, pubId){
         var message = "";var nextState = "";
-        if(pubState == "ACTIVE"){
+        if(pubState === "ACTIVE"){
             message = "Desea pausar la publicacion?";
             nextState = "PAUSED P";
-        }else if(pubState == "PAUSED P"){
+        }else if(pubState === "PAUSED P"){
             message = "Desea reanudar la publicacion?";
             nextState = "ACTIVE";
         }
@@ -101,10 +101,10 @@ class MyPublicationsList extends React.Component {
     }
 
     callAPI(objApi){
-        if(objApi.method == "GET"){
+        if(objApi.method === "GET"){
             fetch(objApi.fetchUrl).then(response => response.json()).then(data => {
-                if (data.responseCode == objApi.responseSuccess) {
-                    if(objApi.successMessage != ""){
+                if (data.responseCode === objApi.responseSuccess) {
+                    if(objApi.successMessage !== ""){
                         toast.success(objApi.successMessage, {
                             position: "top-right",
                             autoClose: 5000,

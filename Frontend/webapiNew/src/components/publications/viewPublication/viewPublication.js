@@ -90,22 +90,6 @@ class ViewPublication extends React.Component {
         });
     }
 
-    increaseQuantityPlan() {
-        this.setState({ quantityPlan: parseInt(this.state.quantityPlan) + 1 });
-    }
-
-    decreaseQuantityPlan() {
-        if (parseInt(this.state.quantityPlan) > 1) {
-            this.setState({ quantityPlan: parseInt(this.state.quantityPlan) - 1 });
-        }
-    }
-
-    changeQuantityPlan(value) {
-        if (parseInt(value) > 0) {
-            this.setState({ quantityPlan: parseInt(value) });
-        }
-    }
-
     increaseQuantityPeople() {
         this.setState({ quantityPeople: parseInt(this.state.quantityPeople) + 1 });
     }
@@ -583,7 +567,7 @@ class ViewPublication extends React.Component {
                                                                                                             <div className="add-to-cart d-flex">
                                                                                                                 <span><b>{translate('people_w')}</b></span>
                                                                                                                 <div style={{ marginLeft: '2%' }} className="quantity">
-                                                                                                                    <input type="text" name="quantityPeople" id="quantityPeople" size="2" value={this.state.quantityPeople} onChange={(event) => this.changeQuantityPeople(event.target.value)} />
+                                                                                                                    <input type="text" name="quantityPeople" id="quantityPeople" size="4" value={this.state.quantityPeople} onChange={(event) => this.changeQuantityPeople(event.target.value)} />
                                                                                                                     <a id="q_up" onClick={() => this.increaseQuantityPeople()}><i className="fa fa-plus"></i></a>
                                                                                                                     <a id="q_down" onClick={() => this.decreaseQuantityPeople()}><i className="fa fa-minus"></i></a>
                                                                                                                 </div>

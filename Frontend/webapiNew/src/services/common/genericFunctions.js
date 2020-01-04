@@ -1,16 +1,20 @@
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { logOut, updateToken } from '../../services/login/actions';
+import store from '../../services/store'
 
 export const handleErrors = (error, bindThis) => {
     bindThis.setState({ generalError: true });
 }
 
 export const callAPI = (objApi, bindThis) => {
+    console.log("objApi ")
+    console.log(objApi)   
     if(objApi.method == "GET"){
-        fetch("https://localhost:44372/"+objApi.fetchUrl).then(response => response.json()).then(data => {
+        fetch("http://teamup-001-site1.itempurl.com/"+objApi.fetchUrl).then(response => response.json()).then(data => {
             console.log("data.responseCode "+data.responseCode)
             console.log(data)   
-            if (data.responseCode && data.responseCode in objApi.successMSG) {
+            if (data.responseCode && objApi.successMSG && data.responseCode in objApi.successMSG) {
                 if(objApi.successMSG[data.responseCode] && objApi.successMSG[data.responseCode] != ""){
                     displaySuccessMessage(objApi.successMSG[data.responseCode]);
                 }
@@ -25,14 +29,14 @@ export const callAPI = (objApi, bindThis) => {
         }
         )
     }else{
-        fetch("https://localhost:44372/"+objApi.fetchUrl, {
+        fetch("http://teamup-001-site1.itempurl.com/"+objApi.fetchUrl, {
             method: objApi.method,
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify(objApi.objToSend)
         }).then(response => response.json()).then(data => {
             console.log("data.responseCode "+data.responseCode)
             console.log(data)
-            if (data.responseCode in objApi.successMSG) {
+            if (data.responseCode && objApi.successMSG && data.responseCode in objApi.successMSG) {
                 if(objApi.successMSG[data.responseCode] && objApi.successMSG[data.responseCode] != ""){
                     displaySuccessMessage(objApi.successMSG[data.responseCode]);
                 }
@@ -52,6 +56,11 @@ export const callAPI = (objApi, bindThis) => {
 
 export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) =>{
     switch(trigger){
+        case "updateExpiredToken" : 
+            store.dispatch(updateToken({AccessToken: objData.AccessToken, RefreshToken: objData.RefreshToken}));
+            objApi.retryObjApi.objToSend.AccessToken = objData.AccessToken;
+            callAPI(objApi.retryObjApi, bindThis);
+        break;
         case "deleteUser":objApi.logOut();break;
         case "loadInfraestructureVP": bindThis.setState({ facilities: objData.facilities, infIsLoading: false }); break;
 
@@ -118,17 +127,52 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             bindThis.setState({isLoading: false});
             bindThis.props.history.push('/account/login');
         break;
+        case "loadPublicationCP":
+            var pubObj = objData.Publication;
+            bindThis.setState({ pubIsLoading: false, spaceName:pubObj.Title, description:pubObj.Description,locationText:pubObj.Address,
+                            DailyPrice:pubObj.DailyPrice,HourPrice:pubObj.HourPrice,WeeklyPrice:pubObj.WeeklyPrice,MonthlyPrice:pubObj.MonthlyPrice,
+                            city:pubObj.City,geoLat:pubObj.Location.Latitude, geoLng:pubObj.Location.Longitude,facilitiesSelect:pubObj.Facilities,
+                            imagesURL:pubObj.ImagesURL,capacity:pubObj.Capacity,availability:pubObj.Availability,youtubeURL:pubObj.VideoURL});
+        break;
+        case "loadSpaceTypesCP":
+            bindThis.setState({ spaceTypes: objData.spaceTypes })
+        break;
+        case "loadInfraestructureCP":
+            bindThis.setState({ facilities: objData.facilities });
+        break;
+        case "loadPremiumOptionsCP":
+            bindThis.setState({ premiumOptions: objData.Plans });
+        break;
+        case "submitPublicationCP":
+            bindThis.props.history.push('/');
+        break;
+        case "loadMyReservationsMRSL":
+            bindThis.setState({ reservations: objData.Reservations, loadingReservations: false })
+        break;
+        case "confirmEditReservationMRSL":
+            bindThis.modalElement.current.changeModalLoadingState(true);                               
+            bindThis.loadMyReservationsMRSL();
+        break;
+        case "saveCancelMRSL":
+        case "saveRateMRSL":
+            bindThis.modalReqInfo.current.changeModalLoadingState(true);
+            bindThis.loadMyReservationsMRSL();
+            break;
+        case "saveCustReservationPayment":
+            bindThis.ModalCustResPay.current.changeModalLoadingState(true);
+            bindThis.loadMyReservationsMRSL();
+            break;
     }
 }
 
 export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>{
-
     //Check for expired TOKEN
     switch(objData.responseCode){
         case "ERR_INVALIDACCESSTOKEN":
         case "ERR_ACCESSTOKENEXPIRED":
+        case "ERR_REFRESHTOKENEXPIRED":
         case "ERR_INVALIDREFRESHTOKEN":
-            bindThis.handleExpiredToken(objApi, bindThis)
+            handleExpiredToken(objApi, bindThis)
             break;
     }
 
@@ -141,7 +185,7 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
         break;
         default:
     }
-    if(objData.responseCode in objApi.errorMSG && objApi.errorMSG[objData.responseCode] && objApi.errorMSG[objData.responseCode] != ""){
+    if(objData.responseCode && objData.responseCode in objApi.errorMSG && objApi.errorMSG[objData.responseCode] && objApi.errorMSG[objData.responseCode] != ""){
         displayErrorMessage(objApi.errorMSG[objData.responseCode]);
     }else{
         handleErrors("Internal error", bindThis)
@@ -151,21 +195,21 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
 export const handleExpiredToken = (retryObjApi, bindThis) =>{
     if(retryObjApi.functionAfterSuccess == "updateExpiredToken"){
         // This is the second attempt -> Log off
-        //this.props.logOut();
         displayErrorMessage("Su sesión expiró, por favor inicie sesión nuevamente");
+        store.dispatch(logOut());
     }else{
         var objApi = {};
+        objApi.retryObjApi = retryObjApi;
         objApi.objToSend = {
-            "RefreshToken": this.props.tokenObj.refreshToken,
-            "Mail": this.props.userData.Mail
+            "RefreshToken": bindThis.props.tokenObj.refreshToken,
+            "Mail": bindThis.props.userData.Mail
         }
-        objApi.fetchUrl = "https://localhost:44372/api/tokens";
+        objApi.fetchUrl = "api/tokens";
         objApi.method = "PUT";
         objApi.responseSuccess = "SUCC_TOKENSUPDATED";
         objApi.successMessage = "";
         objApi.functionAfterSuccess = "updateExpiredToken";
-        objApi.retryObjApi = retryObjApi;
-        bindThis.callAPI(objApi, bindThis);
+        callAPI(objApi, bindThis);
     }
 
 }
