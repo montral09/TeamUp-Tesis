@@ -116,7 +116,6 @@ namespace backend.Logic
         {
             try
             {
-                
                 User u = new User(voUser.Mail, voUser.Password, voUser.Name, voUser.LastName, voUser.Phone, voUser.CheckPublisher, voUser.Rut, voUser.RazonSocial, voUser.Address, false, false, true, voUser.Language, 0);
                 string activationCode = users.InsertUser(u);
                 int languageCode = users.GetIdLanguageByDescription(voUser.Language);
@@ -131,7 +130,7 @@ namespace backend.Logic
             catch (GeneralException e)
             {
                 throw e;
-            }
+            }            
         }
         /* This function updates data from an specific user  */
         public VOResponseUserUpdate UpdateUser(VORequestUserUpdate voUser)

@@ -105,7 +105,8 @@ namespace backend.Data_Access.Query
         {
             string activationCode = "";
             SqlConnection con = null;
-            SqlTransaction objTrans = null;            
+            SqlTransaction objTrans = null;       
+            
             try
             {
                 // Create secure password
@@ -150,9 +151,10 @@ namespace backend.Data_Access.Query
             }
             catch (Exception e)
             {
-                if (objTrans.Connection != null)
+                if (objTrans != null && objTrans.Connection != null)
                 {
                     objTrans.Rollback();
+                    objTrans.Dispose();
                 }
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());                                             
             }
@@ -161,7 +163,7 @@ namespace backend.Data_Access.Query
                 if (con != null)
                 {
                     con.Close();
-                }
+                }                              
             }
         }
 
@@ -707,7 +709,11 @@ namespace backend.Data_Access.Query
             }
             catch (Exception)
             {
-                objTrans.Rollback();
+                if (objTrans != null && objTrans.Connection != null)
+                {
+                    objTrans.Rollback();
+                    objTrans.Dispose();
+                }
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             finally

@@ -194,7 +194,7 @@ namespace backend.Data_Access
             }
             catch (Exception e)
             {
-                if (objTrans.Connection != null)
+                if (objTrans != null && objTrans.Connection != null)
                 {
                     objTrans.Rollback();
                     objTrans.Dispose();
@@ -1052,7 +1052,7 @@ namespace backend.Data_Access
             }
             catch (Exception e)
             {
-                if (objTrans.Connection != null)
+                if (objTrans != null && objTrans.Connection != null)
                 {
                     objTrans.Rollback();
                     objTrans.Dispose();
@@ -1101,7 +1101,7 @@ namespace backend.Data_Access
             }
             catch (Exception e)
             {
-                if (objTrans.Connection != null)
+                if (objTrans != null && objTrans.Connection != null)
                 {
                     objTrans.Rollback();
                     objTrans.Dispose();
@@ -1417,7 +1417,7 @@ namespace backend.Data_Access
             }
             catch (Exception e)
             {
-                if (objTrans.Connection != null)
+                if (objTrans != null && objTrans.Connection != null)
                 {
                     objTrans.Rollback();
                     objTrans.Dispose();
@@ -1728,7 +1728,7 @@ namespace backend.Data_Access
             }
             catch (Exception e)
             {
-                if (objTrans.Connection != null)
+                if (objTrans != null && objTrans.Connection != null)
                 {
                     objTrans.Rollback();
                     objTrans.Dispose();
@@ -2439,7 +2439,7 @@ namespace backend.Data_Access
             }
             catch (Exception e)
             {
-                if (objTrans.Connection != null)
+                if (objTrans != null && objTrans.Connection != null)
                 {
                     objTrans.Rollback();
                     objTrans.Dispose();
