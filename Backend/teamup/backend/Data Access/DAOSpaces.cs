@@ -26,7 +26,6 @@ namespace backend.Data_Access
         private const int PLAN_GOLD = 4;
         private const int PLAN_SILVER = 3;
         private const int PLAN_BRONZE = 2;
-        private const int PLAN_FREE = 1;
         private const int MAX_GOLD = 10;
         private const int MAX_SILVER = 5;
         private const int MAX_TOTAL = 15;
@@ -179,8 +178,9 @@ namespace backend.Data_Access
                 insertCommand.Parameters.AddRange(prm.ToArray());                
                 insertCommand.Transaction = objTrans;
                 int idPublication = Convert.ToInt32(insertCommand.ExecuteScalar());
+                bool isFreePreferentialPlan = IsFreePreferentialPlan(voCreatePublication.VOPublication.IdPlan);
                 // If Plan <> FREE, insert preferential payment
-                if (voCreatePublication.VOPublication.IdPlan != 1)
+                if (!isFreePreferentialPlan)
                 {
                     CreatePreferentialPayment(idPublication, voCreatePublication.VOPublication.IdPlan, con, objTrans);
                 }
@@ -196,6 +196,44 @@ namespace backend.Data_Access
             {
                 objTrans.Rollback();
                 objTrans.Dispose();
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        private bool IsFreePreferentialPlan(int idPlan)
+        {
+            SqlConnection con = null;
+            bool isFree = false;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.GetFreePlan();
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                SqlParameter param = new SqlParameter()
+                {
+                    ParameterName = "@idPlan",
+                    Value = idPlan,
+                    SqlDbType = SqlDbType.Int
+                };
+                selectCommand.Parameters.Add(param);
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                if (dr.HasRows)
+                {
+                    isFree = true;
+                }
+                dr.Close();
+                return isFree;
+            }
+            catch (Exception e)
+            {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             finally

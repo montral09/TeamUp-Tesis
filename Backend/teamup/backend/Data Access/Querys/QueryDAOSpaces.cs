@@ -589,5 +589,11 @@ namespace backend.Data_Access.Query
             String query = "select p.title from PUBLICATIONS p, RESERVATIONS r where r.idReservation = @idReservation and r.idPublication = p.idPublication";
             return query;
         }
+
+        public String GetFreePlan()
+        {
+            String query = "select pt.idPlan FROM PUBLICATION_PLAN_TYPES pt, PUBLICATION_PLANS pp where pp.idPlan = @idPlan and pt.idPlan = pp.idPlan and pt.idPlan = 1";
+            return query;
+        }
     }
 }
