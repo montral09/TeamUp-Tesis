@@ -1,7 +1,7 @@
 import React from 'react';
-import { toast } from 'react-toastify';
-import {Form, FormGroup, Label, Input, CustomInput, Table} from 'reactstrap';
-
+import {Form, Label, Input, CustomInput, Table} from 'reactstrap';
+// Multilanguage
+import { withTranslate } from 'react-redux-multilingual';
 
 class CreatePublicationStep3 extends React.Component {
 
@@ -36,16 +36,18 @@ class CreatePublicationStep3 extends React.Component {
       if (this.props.parentState.currentStep !== 4) { // Prop: The current step
         return null
       }
+      const { translate } = this.props;
+
       // Step 4 UI
       return(
         <Form className="border border-light p-6">
-            <p className="h4 mb-4 text-center">¿Aumentar visibilidad? (Opcional)</p>
+            <p className="h4 mb-4 text-center">{translate('createPub_step4_header')}</p>
             <Table hover striped bordered size="lg" responsive className = "center">
               <thead>
                 <tr>
-                  <th>Plan</th>
-                  <th>Precio</th>
-                  <th>Dias</th>
+                  <th>{translate('plan_w')}</th> 
+                  <th>{translate('price_w')}</th> 
+                  <th>{translate('days_w')}</th> 
                 </tr>
               </thead>
               <tbody>
@@ -61,11 +63,11 @@ class CreatePublicationStep3 extends React.Component {
                   })}
               </tbody>
             </Table>
-            <Label for="payTotal">Total en Pesos Uruguayos</Label>
+            <Label for="payTotal">{translate('total_w')} {translate('in_w')} {translate('currency_UY')}</Label>
             <Input type="text" name="payTotal" id="payTotal" placeholder={this.state.totalToPayText} readOnly/>
         </Form>
       )
     }
   }
 
-  export default CreatePublicationStep3;
+  export default withTranslate(CreatePublicationStep3);
