@@ -43,9 +43,14 @@ namespace backend.Logic
 
         private string CompleteEmailBodyUsers(string emailBodyGeneric, Dictionary<string, string> keyValuePairs)
         {
+
             if (emailBodyGeneric.Contains(ParamCodes.USER_NAME))
             {
                 emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.USER_NAME, keyValuePairs[ParamCodes.USER_NAME]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.PROJECT_NAME))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.PROJECT_NAME, keyValuePairs[ParamCodes.PROJECT_NAME]);
             }
             if (emailBodyGeneric.Contains(ParamCodes.ACTIVATION_LINK))
             {
@@ -78,6 +83,10 @@ namespace backend.Logic
             if (emailBodyGeneric.Contains(ParamCodes.PUBLICATION_TITLE))
             {
                 emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.PUBLICATION_TITLE, keyValuePairs[ParamCodes.PUBLICATION_TITLE]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.PROJECT_NAME))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.PROJECT_NAME, keyValuePairs[ParamCodes.PROJECT_NAME]);
             }
             if (emailBodyGeneric.Contains(ParamCodes.PUBLISHER_EMAIL))
             {
@@ -118,6 +127,10 @@ namespace backend.Logic
             if (emailBodyGeneric.Contains(ParamCodes.PUBLICATION_TITLE))
             {
                 emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.PUBLICATION_TITLE, keyValuePairs[ParamCodes.PUBLICATION_TITLE]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.PROJECT_NAME))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.PROJECT_NAME, keyValuePairs[ParamCodes.PROJECT_NAME]);
             }
             if (emailBodyGeneric.Contains(ParamCodes.DATE_FROM))
             {

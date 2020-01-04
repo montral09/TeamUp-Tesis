@@ -3,6 +3,7 @@ namespace backend.Logic
 {
     public static class ParamCodes
     {
+        public static string PROJECT_NAME { get { return "[projectName]"; } }
         //Users
         public static string USER_NAME { get { return "[userName]"; } }
         public static string ACTIVATION_LINK { get { return "[activationLink]"; } }

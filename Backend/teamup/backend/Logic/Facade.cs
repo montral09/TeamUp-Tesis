@@ -22,6 +22,7 @@ namespace backend.Logic
         private const int RESERVATION_RESERVED_STATE = 2;
         private const int PUBLICATION_APPROVED = 2;
         private const int PUBLICATION_REJECTED = 6;
+        private string projectName = ConfigurationManager.AppSettings["PROJECT_NAME"];
 
         public Facade()
         {
@@ -123,6 +124,7 @@ namespace backend.Logic
                 string activationLink = ConfigurationManager.AppSettings["ACTIVATION_LINK"] + activationCode;
                 keyValuePairs[ParamCodes.USER_NAME] = voUser.Name;
                 keyValuePairs[ParamCodes.ACTIVATION_LINK] = activationLink;
+                keyValuePairs[ParamCodes.PROJECT_NAME] = projectName;
                 EmailDataGeneric mailData = emailUtil.GetFormatMailUsers(EmailFormatCodes.CODE_USER_CREATED, languageCode, keyValuePairs);
                 emailUtil.SendEmailAsync(voUser.Mail, mailData.Body, mailData.Subject);
             }
@@ -249,6 +251,7 @@ namespace backend.Logic
                     {                        
                         user = users.Find(mail);
                         keyValuePairs[ParamCodes.USER_NAME] = user.Name;
+                        keyValuePairs[ParamCodes.PROJECT_NAME] = projectName;
                         EmailDataGeneric mailData = emailUtil.GetFormatMailUsers(EmailFormatCodes.CODE_APPROVE_PUBLISHER, user.LanguageCode, keyValuePairs);
                         emailUtil.SendEmailAsync(mail, mailData.Body, mailData.Subject);
                     }
@@ -517,6 +520,7 @@ namespace backend.Logic
                     keyValuePairs[ParamCodes.DATE_TO] = expirationDate;
                     keyValuePairs[ParamCodes.AVAILABILITY] = voCreatePublication.VOPublication.Availability;
                     keyValuePairs[ParamCodes.PREFERENTIAL_PLAN] = publicationPlan;
+
                     // Send email to publisher
                     mailData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_PUBLICATION_CREATED, user.LanguageCode, keyValuePairs);
                     emailUtil.SendEmailAsync(voCreatePublication.VOPublication.Mail, mailData.Body, mailData.Subject);
@@ -641,14 +645,13 @@ namespace backend.Logic
                             Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
                             EmailDataGeneric mailData;
                             User user = users.Find(publisherData.Mail);
-                            if (newCodeState == PUBLICATION_APPROVED) {                                
-                                keyValuePairs[ParamCodes.USER_NAME] = publisherData.NamePublisher;
-                                keyValuePairs[ParamCodes.PUBLICATION_TITLE] = publisherData.Title;
+                            keyValuePairs[ParamCodes.USER_NAME] = publisherData.NamePublisher;
+                            keyValuePairs[ParamCodes.PUBLICATION_TITLE] = publisherData.Title;
+                            if (newCodeState == PUBLICATION_APPROVED) {
                                 mailData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_PUBLICATION_APPROVED, user.LanguageCode, keyValuePairs);
                                 emailUtil.SendEmailAsync(user.Mail, mailData.Body, mailData.Subject);                                
                             } else if (newCodeState == PUBLICATION_REJECTED) {
-                                keyValuePairs[ParamCodes.USER_NAME] = publisherData.NamePublisher;
-                                keyValuePairs[ParamCodes.PUBLICATION_TITLE] = publisherData.Title;
+                                keyValuePairs[ParamCodes.PROJECT_NAME] = projectName;
                                 keyValuePairs[ParamCodes.REJECTED_REASON] = voUpdateStatePublication.RejectedReason;                                
                                 mailData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_PUBLICATION_REJECTED, user.LanguageCode, keyValuePairs);
                                 emailUtil.SendEmailAsync(user.Mail, mailData.Body, mailData.Subject);
@@ -865,6 +868,7 @@ namespace backend.Logic
                         keyValuePairs[ParamCodes.PUBLICATION_TITLE] = publicationTitle;
                         //Send mail to customer
                         keyValuePairs[ParamCodes.USER_NAME] = usersData.CustomerName;
+                        keyValuePairs[ParamCodes.PROJECT_NAME] = projectName;
                         mailData = emailUtil.GetFormatMailReservations(EmailFormatCodes.CODE_RESERVATION_CANCELLED_CUSTOMER, usersData.CustomerLanguage, keyValuePairs);
                         emailUtil.SendEmailAsync(usersData.CustomerMail, mailData.Body, mailData.Subject);
                         if (isAdmin)
@@ -1113,6 +1117,7 @@ namespace backend.Logic
                     else
                     {
                         keyValuePairs[ParamCodes.REJECTED_REASON] = voUpdatePayment.RejectedReason;
+                        keyValuePairs[ParamCodes.PROJECT_NAME] = projectName;
                         mailData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_PAYMENT_RESERVATION_REJECTED, customer.Language, keyValuePairs);
                     }
                     emailUtil.SendEmailAsync(customer.Mail, mailData.Body, mailData.Subject);
@@ -1217,6 +1222,7 @@ namespace backend.Logic
                     keyValuePairs[ParamCodes.USER_NAME] = publisher.Name;
                     VOPublication publication = spaces.GetSpace(voUpdatePayment.IdPublication, null);
                     keyValuePairs[ParamCodes.PUBLICATION_TITLE] = publication.Title;
+                    keyValuePairs[ParamCodes.PROJECT_NAME] = projectName;
                     EmailDataGeneric mailData;
                     if (voUpdatePayment.Approved)
                     {
@@ -1259,6 +1265,7 @@ namespace backend.Logic
                     else
                     {
                         keyValuePairs[ParamCodes.REJECTED_REASON] = voUpdatePayment.RejectedReason;
+                        keyValuePairs[ParamCodes.PROJECT_NAME] = projectName;
                         mailData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_PAYMENT_COMMISSION_REJECTED, publisher.Language, keyValuePairs);
                     }
                     emailUtil.SendEmailAsync(publisher.Mail, mailData.Body, mailData.Subject);

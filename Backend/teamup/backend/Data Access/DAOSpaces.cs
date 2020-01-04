@@ -194,8 +194,11 @@ namespace backend.Data_Access
             }
             catch (Exception e)
             {
-                objTrans.Rollback();
-                objTrans.Dispose();
+                if (objTrans.Connection != null)
+                {
+                    objTrans.Rollback();
+                    objTrans.Dispose();
+                }                
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             finally
@@ -1049,15 +1052,18 @@ namespace backend.Data_Access
             }
             catch (Exception e)
             {
-                objTrans.Rollback();
+                if (objTrans.Connection != null)
+                {
+                    objTrans.Rollback();
+                    objTrans.Dispose();
+                }
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             finally
             {
                 if (con != null)
                 {
-                    con.Close();
-                    objTrans.Dispose();
+                    con.Close();                    
                 }
             }
         }
@@ -1095,7 +1101,11 @@ namespace backend.Data_Access
             }
             catch (Exception e)
             {
-                objTrans.Rollback();
+                if (objTrans.Connection != null)
+                {
+                    objTrans.Rollback();
+                    objTrans.Dispose();
+                }
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             finally
@@ -1407,7 +1417,11 @@ namespace backend.Data_Access
             }
             catch (Exception e)
             {
-                objTrans.Rollback();
+                if (objTrans.Connection != null)
+                {
+                    objTrans.Rollback();
+                    objTrans.Dispose();
+                }
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             finally
@@ -1415,7 +1429,6 @@ namespace backend.Data_Access
                 if (con != null)
                 {
                     con.Close();
-                    objTrans.Dispose();
                 }
             }
         }
@@ -1715,7 +1728,11 @@ namespace backend.Data_Access
             }
             catch (Exception e)
             {
-                objTrans.Rollback();
+                if (objTrans.Connection != null)
+                {
+                    objTrans.Rollback();
+                    objTrans.Dispose();
+                }                
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             finally
@@ -1723,7 +1740,6 @@ namespace backend.Data_Access
                 if (con != null)
                 {
                     con.Close();
-                    objTrans.Dispose();
                 }
             } 
         }
@@ -2423,7 +2439,11 @@ namespace backend.Data_Access
             }
             catch (Exception e)
             {
-                objTrans.Rollback();
+                if (objTrans.Connection != null)
+                {
+                    objTrans.Rollback();
+                    objTrans.Dispose();
+                }
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             finally
@@ -2431,7 +2451,6 @@ namespace backend.Data_Access
                 if (con != null)
                 {
                     con.Close();
-                    objTrans.Dispose();
                 }
             } 
         }
