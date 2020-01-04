@@ -102,6 +102,50 @@ namespace backend.Logic
             return emailBodyGeneric;
         }
 
+        public EmailDataGeneric GetFormatMailReservations(String code, int language, Dictionary<string, string> keyValuePairs)
+        {
+            EmailDataGeneric emailBodyGeneric = daoUtil.GetEmailDataGeneric(code, language);
+            emailBodyGeneric.Body = CompleteEmailBodyReservations(emailBodyGeneric.Body, keyValuePairs);
+            return emailBodyGeneric;
+        }
+
+        private string CompleteEmailBodyReservations(string emailBodyGeneric, Dictionary<string, string> keyValuePairs)
+        {
+            if (emailBodyGeneric.Contains(ParamCodes.USER_NAME))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.USER_NAME, keyValuePairs[ParamCodes.USER_NAME]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.PUBLICATION_TITLE))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.PUBLICATION_TITLE, keyValuePairs[ParamCodes.PUBLICATION_TITLE]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.DATE_FROM))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.DATE_FROM, keyValuePairs[ParamCodes.DATE_FROM]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.RESERVATION_PLAN))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.RESERVATION_PLAN, keyValuePairs[ParamCodes.RESERVATION_PLAN]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.RESERVED_QUANTITY))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.RESERVED_QUANTITY, keyValuePairs[ParamCodes.RESERVED_QUANTITY]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.QUANTITY_PEOPLE))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.QUANTITY_PEOPLE, keyValuePairs[ParamCodes.QUANTITY_PEOPLE]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.PRICE))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.PRICE, keyValuePairs[ParamCodes.PRICE]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.REJECTED_REASON))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.REJECTED_REASON, keyValuePairs[ParamCodes.REJECTED_REASON]);
+            }
+            return emailBodyGeneric;
+        }
+
         public static string CreateBodyEmailNewPublicationToPublisher(String name)
         {
             string body = "Hello, " + name;

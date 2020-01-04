@@ -224,7 +224,7 @@ namespace backend.Data_Access.Query
 
         public String GetPublisherByPublication()
         {
-            String query = "select u.idUser, u.mail, u.name, u.lastName, u.checkPublisher, u.mailValidated, u.publisherValidated, u.active " +
+            String query = "select u.idUser, u.mail, u.name, u.lastName, u.checkPublisher, u.mailValidated, u.publisherValidated, u.active, u.language " +
                 "from USERS u, PUBLICATIONS p where p.idPublication = @idPublication and u.idUser = p.idUser";
             return query;
         }
@@ -264,7 +264,7 @@ namespace backend.Data_Access.Query
 
         public String GetUsersByReservation()
         {
-            String query = "select u1.mail as cMail, u1.name as cName, u2.mail as pMail, u2.name as pName " +
+            String query = "select u1.mail as cMail, u1.name as cName, u1.language as cLanguage, u2.mail as pMail, u2.name as pName, u2.language as pLanguage " +
                 "from USERS u1, USERS u2, PUBLICATIONS p, RESERVATIONS r where r.idReservation = @idReservation and p.idPublication = r.idPublication and u1.idUser = r.idCustomer and u2.idUser = p.idUser";
             return query;
         }
@@ -430,7 +430,7 @@ namespace backend.Data_Access.Query
 
         public String GetPublisherFromReservation()
         {
-            String query = "select u.name, u.lastName, u.mail from USERS u, RESERVATIONS r, PUBLICATIONS p " +
+            String query = "select u.name, u.lastName, u.mail, u.language from USERS u, RESERVATIONS r, PUBLICATIONS p " +
                 "where r.idReservation = @idReservation and r.idPublication = p.idPublication and p.idUser = u.idUser";                
             return query;
         }
@@ -466,7 +466,7 @@ namespace backend.Data_Access.Query
 
         public String GetCustomerFromReservation()
         {
-            String query = "select u.name, u.lastName, u.mail from USERS u, RESERVATIONS r " +
+            String query = "select u.name, u.lastName, u.mail, u.language from USERS u, RESERVATIONS r " +
                 "where r.idReservation = @idReservation and r.idCustomer = u.idUser";
             return query;
         }
@@ -541,7 +541,7 @@ namespace backend.Data_Access.Query
 
         public String GetPublisherFromPublication()
         {
-            String query = "select u.name, u.lastName, u.mail from USERS u, PUBLICATIONS p " +
+            String query = "select u.name, u.lastName, u.mail, u.language from USERS u, PUBLICATIONS p " +
                 "where p.idPublication = @idPublication and p.idUser = u.idUser";
             return query;
         }
@@ -569,6 +569,24 @@ namespace backend.Data_Access.Query
         {
             String query = "select q.idQuestion, u.name, q.question, q.creationDate, p.idPublication, p.title from PUBLICATION_QUESTIONS q, PUBLICATIONS p, USERS u where " +
                 "q.idPublication = @idPublication and q.idPublication = p.idPublication and p.state = 2 and u.idUser = q.idUser order by q.creationDate desc";
+            return query;
+        }
+
+        public String GetUserByQuestion()
+        {
+            String query = "select u.idUser, u.mail, u.name, u.lastName, u.checkPublisher, u.mailValidated, u.publisherValidated, u.active, u.language from PUBLICATION_QUESTIONS p, USERS u where p.idQuestion = @idQuestion and p.idUser = u.idUser";
+            return query;
+        }
+
+        public String GetPublicationByQuestionId()
+        {
+            String query = "select p.title from PUBLICATIONS p, PUBLICATION_QUESTIONS q where q.idPublication = p.idPublication and q.idQuestion = @idQuestion";
+            return query;
+        }
+
+        public String GetPublicationTitleByReservationId()
+        {
+            String query = "select p.title from PUBLICATIONS p, RESERVATIONS r where r.idReservation = @idReservation and r.idPublication = p.idPublication";
             return query;
         }
     }

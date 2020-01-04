@@ -16,8 +16,27 @@ namespace backend.Logic
         public static string CODE_PUBLICATION_REJECTED { get { return "PUBLICATIONREJECTED"; } }
         public static string CODE_PUBLICATION_MODIFIED { get { return "PUBLICATIONMODIFIED"; } }
         public static string CODE_PUBLICATION_MODIFIED_ADMIN { get { return "PUBLICATIONMODIFIEDADMIN"; } }
+        public static string CODE_PUBLICATION_NEW_QUESTION { get { return "PUBLICATIONNEWQUESTION"; } }
+        public static string CODE_PUBLICATION_NEW_ANSWER { get { return "PUBLICATIONNEWANSWER"; } }
+        //Payments
+        public static string CODE_PAYMENT_PREFERENTIAL_PLAN { get { return "PAYMENTPREFERENTIALPLAN"; } }
+        public static string CODE_PAYMENT_COMMISSION { get { return "PAYMENTCOMMISSION"; } }
+        public static string CODE_PAYMENT_PREFERENTIAL_PLAN_APPROVED { get { return "PAYMENTPREFERENTIALPLANAPPROVED"; } }
+        public static string CODE_PAYMENT_PREFERENTIAL_PLAN_REJECTED { get { return "PAYMENTPREFERENTIALPLANREJECTED"; } }
+        public static string CODE_PAYMENT_RESERVATION_APPROVED { get { return "RESERVATIONPAYMENTAPPROVED"; } }
+        public static string CODE_PAYMENT_RESERVATION_REJECTED { get { return "RESERVATIONPAYMENTREJECTED"; } }
+        public static string CODE_PAYMENT_COMMISSION_APPROVED { get { return "COMMISSIONPAYMENTAPPROVED"; } }
+        public static string CODE_PAYMENT_COMMISSION_REJECTED { get { return "COMMISSIONPAYMENTREJECTED"; } }
         //Reservations
-
+        public static string CODE_RESERVATION_CREATED_PUBLISHER { get { return "NEWRESERVATIONPUBLISHER"; } }
+        public static string CODE_RESERVATION_CREATED_CUSTOMER { get { return "NEWRESERVATIONCUSTOMER"; } }
+        public static string CODE_RESERVATION_CONFIRMED_CUSTOMER { get { return "RESERVATIONCONFIRMEDCUSTOMER"; } }
+        public static string CODE_RESERVATION_CANCELLED_CUSTOMER { get { return "RESERVATIONCANCELLEDCUSTOMER"; } }
+        public static string CODE_RESERVATION_CANCELLED_PUBLISHER { get { return "RESERVATIONCANCELLEDPUBLISHER"; } }
+        public static string CODE_RESERVATION_MODIFIED_CUSTOMER { get { return "RESERVATIONMODIFIEDCUSTOMER"; } }
+        public static string CODE_RESERVATION_MODIFIED_PUBLISHER { get { return "RESERVATIONMODIFIEDPUBLISHER"; } }
+        public static string CODE_RESERVATION_PAID { get { return "RESERVATIONPAID"; } }
+        
 
     }
 }

@@ -18,6 +18,10 @@ namespace backend.Logic
         private IDAOSpaces spaces;
         private IDAOUtil util;
         private EmailUtil emailUtil = new EmailUtil();
+        private const int RESERVATION_CANCELED_STATE = 5;
+        private const int RESERVATION_RESERVED_STATE = 2;
+        private const int PUBLICATION_APPROVED = 2;
+        private const int PUBLICATION_REJECTED = 6;
 
         public Facade()
         {
@@ -637,12 +641,12 @@ namespace backend.Logic
                             Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
                             EmailDataGeneric mailData;
                             User user = users.Find(publisherData.Mail);
-                            if (newCodeState == 2) {                                
+                            if (newCodeState == PUBLICATION_APPROVED) {                                
                                 keyValuePairs[ParamCodes.USER_NAME] = publisherData.NamePublisher;
                                 keyValuePairs[ParamCodes.PUBLICATION_TITLE] = publisherData.Title;
                                 mailData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_PUBLICATION_APPROVED, user.LanguageCode, keyValuePairs);
                                 emailUtil.SendEmailAsync(user.Mail, mailData.Body, mailData.Subject);                                
-                            } else if (newCodeState == 6) {
+                            } else if (newCodeState == PUBLICATION_REJECTED) {
                                 keyValuePairs[ParamCodes.USER_NAME] = publisherData.NamePublisher;
                                 keyValuePairs[ParamCodes.PUBLICATION_TITLE] = publisherData.Title;
                                 keyValuePairs[ParamCodes.REJECTED_REASON] = voUpdateStatePublication.RejectedReason;                                
@@ -754,6 +758,26 @@ namespace backend.Logic
                 {
                     User user = users.Find(voCreateReservation.VOReservation.MailCustomer);
                     spaces.CreateReservation(voCreateReservation, user);
+                    Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
+                    //Send mail to publisher
+                    User publisher = spaces.GetPublisherByPublication(voCreateReservation.VOReservation.IdPublication);
+                    keyValuePairs[ParamCodes.USER_NAME] = publisher.Name;
+                    VOResponseGetSpace publication = GetSpace(voCreateReservation.VOReservation.IdPublication, voCreateReservation.VOReservation.MailCustomer);
+                    keyValuePairs[ParamCodes.PUBLICATION_TITLE] = publication.Publication.Title;
+                    EmailDataGeneric mailData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_RESERVATION_CREATED_PUBLISHER, publisher.LanguageCode, keyValuePairs);
+                    emailUtil.SendEmailAsync(publisher.Mail, mailData.Body, mailData.Subject);
+                    //Send mail to customer
+                    String dateFromString = Util.ConvertDateToString(voCreateReservation.VOReservation.DateFrom);
+                    keyValuePairs[ParamCodes.DATE_FROM] = dateFromString;                    
+                    if (voCreateReservation.VOReservation.ReservedQuantity != 0)
+                    {
+                        keyValuePairs[ParamCodes.RESERVED_QUANTITY] = voCreateReservation.VOReservation.ReservedQuantity.ToString();
+                    }
+                    keyValuePairs[ParamCodes.RESERVATION_PLAN] = voCreateReservation.VOReservation.PlanSelected;
+                    keyValuePairs[ParamCodes.QUANTITY_PEOPLE] = voCreateReservation.VOReservation.People.ToString();
+                    keyValuePairs[ParamCodes.PRICE] = voCreateReservation.VOReservation.TotalPrice.ToString();
+                    EmailDataGeneric mailDataReservation = emailUtil.GetFormatMailReservations(EmailFormatCodes.CODE_RESERVATION_CREATED_CUSTOMER, publisher.LanguageCode, keyValuePairs);
+                    emailUtil.SendEmailAsync(voCreateReservation.VOReservation.MailCustomer, mailDataReservation.Body, mailDataReservation.Subject);
                     message = EnumMessages.SUCC_RESERVATIONCREATED.ToString();
                 }
                 response.responseCode = message;
@@ -813,31 +837,46 @@ namespace backend.Logic
         public VOResponseUpdateStateReservation UpdateStateReservation(VORequestUpdateStateReservation voUpdateStateReservation)
         {
             VOResponseUpdateStateReservation response = new VOResponseUpdateStateReservation();
-            bool isAdmin = false;
-            bool updateValid = true;
+            bool isAdmin;
             try
             {
                 String message = util.ValidAccessToken(voUpdateStateReservation.AccessToken, voUpdateStateReservation.Mail);
                 if (EnumMessages.OK.ToString().Equals(message))
                 {
-                    if (users.AdminMember(voUpdateStateReservation.Mail))
-                    {
-                        isAdmin = true;
-                    }
                     Util util = new Util();
                     int oldCodeRservation = util.ConvertStateReservation(voUpdateStateReservation.OldState);
                     int newCodeReservation = util.ConvertStateReservation(voUpdateStateReservation.NewState);
-                    updateValid = util.UpdateValidReservation(isAdmin, oldCodeRservation, newCodeReservation);
-                    if (updateValid)
+                    UsersReservationBasicData usersData = spaces.UpdateStateReservation(voUpdateStateReservation.IdReservation, voUpdateStateReservation.CanceledReason, newCodeReservation, voUpdateStateReservation.NewState);
+                    EmailDataGeneric mailData;
+                    isAdmin = users.AdminMember(voUpdateStateReservation.Mail);
+                    string publicationTitle = spaces.GetPublicationTitleByReservationId(voUpdateStateReservation.IdReservation);
+                    Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
+                    if (newCodeReservation == RESERVATION_RESERVED_STATE)
                     {
-                        spaces.UpdateStateReservation(voUpdateStateReservation.IdReservation, voUpdateStateReservation.CanceledReason, newCodeReservation, voUpdateStateReservation.NewState, isAdmin);
-                        message = EnumMessages.SUCC_RESERVATIONUPDATED.ToString();
-                        
+                        //Send mail to customer
+                        keyValuePairs[ParamCodes.USER_NAME] = usersData.CustomerName;
+                        keyValuePairs[ParamCodes.PUBLICATION_TITLE] = publicationTitle;
+                        mailData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_RESERVATION_CONFIRMED_CUSTOMER, usersData.CustomerLanguage, keyValuePairs);
+                        emailUtil.SendEmailAsync(usersData.CustomerMail, mailData.Body, mailData.Subject);
                     }
-                    else
+                    else if (newCodeReservation == RESERVATION_CANCELED_STATE)
                     {
-                        message = EnumMessages.ERR_INVALIDUPDATE.ToString();
+                        keyValuePairs[ParamCodes.REJECTED_REASON] = voUpdateStateReservation.CanceledReason;
+                        keyValuePairs[ParamCodes.PUBLICATION_TITLE] = publicationTitle;
+                        //Send mail to customer
+                        keyValuePairs[ParamCodes.USER_NAME] = usersData.CustomerName;
+                        mailData = emailUtil.GetFormatMailReservations(EmailFormatCodes.CODE_RESERVATION_CANCELLED_CUSTOMER, usersData.CustomerLanguage, keyValuePairs);
+                        emailUtil.SendEmailAsync(usersData.CustomerMail, mailData.Body, mailData.Subject);
+                        if (isAdmin)
+                        {
+                            //Send mail to publisher
+                            keyValuePairs[ParamCodes.USER_NAME] = usersData.PublisherName;
+                            mailData = emailUtil.GetFormatMailReservations(EmailFormatCodes.CODE_RESERVATION_CANCELLED_PUBLISHER, usersData.PublisherLanguage, keyValuePairs);
+                            emailUtil.SendEmailAsync(usersData.PublisherMail, mailData.Body, mailData.Subject);
+                        }
+
                     }
+                    message = EnumMessages.SUCC_RESERVATIONUPDATED.ToString();  
                 }
                 response.responseCode = message;
                 return response;
@@ -856,7 +895,22 @@ namespace backend.Logic
                 String message = util.ValidAccessToken(voUpdateReservation.AccessToken, voUpdateReservation.Mail);
                 if (EnumMessages.OK.ToString().Equals(message))
                 {
-                    spaces.UpdateReservation(voUpdateReservation);
+                    UsersReservationBasicData usersData = spaces.UpdateReservation(voUpdateReservation);
+                    EmailDataGeneric mailData;
+                    string publicationTitle = spaces.GetPublicationTitleByReservationId(voUpdateReservation.IdReservation);
+                    Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
+                    keyValuePairs[ParamCodes.USER_NAME] = usersData.CustomerName;
+                    keyValuePairs[ParamCodes.PUBLICATION_TITLE] = publicationTitle;
+                    String dateFromString = Util.ConvertDateToString(voUpdateReservation.DateFrom);
+                    keyValuePairs[ParamCodes.DATE_FROM] = dateFromString;
+                    keyValuePairs[ParamCodes.QUANTITY_PEOPLE] = voUpdateReservation.People.ToString();
+                    keyValuePairs[ParamCodes.PRICE] = voUpdateReservation.TotalPrice.ToString();
+                    //Send mail to customer
+                    mailData = emailUtil.GetFormatMailReservations(EmailFormatCodes.CODE_RESERVATION_MODIFIED_CUSTOMER, usersData.CustomerLanguage, keyValuePairs);
+                    emailUtil.SendEmailAsync(usersData.CustomerMail, mailData.Body, mailData.Subject);
+                    //Send mail to publisher
+                    mailData = emailUtil.GetFormatMailReservations(EmailFormatCodes.CODE_RESERVATION_MODIFIED_PUBLISHER, usersData.PublisherLanguage, keyValuePairs);
+                    emailUtil.SendEmailAsync(usersData.PublisherMail, mailData.Body, mailData.Subject);
                     message = EnumMessages.SUCC_RESERVATIONUPDATED.ToString();
                 }
                 response.responseCode = message;
@@ -899,6 +953,13 @@ namespace backend.Logic
                 {
                     User user = users.Find(voCreatePublicationQuestion.Mail);
                     spaces.CreatePublicationQuestion(voCreatePublicationQuestion, user.IdUser);
+                    User publisher = spaces.GetPublisherByPublication(voCreatePublicationQuestion.IdPublication);
+                    VOResponseGetSpace publication = GetSpace(voCreatePublicationQuestion.IdPublication, voCreatePublicationQuestion.Mail);
+                    Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
+                    keyValuePairs[ParamCodes.USER_NAME] = publisher.Name;
+                    keyValuePairs[ParamCodes.PUBLICATION_TITLE] = publication.Publication.Title;
+                    EmailDataGeneric mailData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_PUBLICATION_NEW_QUESTION, publisher.LanguageCode, keyValuePairs);
+                    emailUtil.SendEmailAsync(publisher.Mail, mailData.Body, mailData.Subject);
                     message = EnumMessages.SUCC_QUESTIONCREATED.ToString();
                 }
                 response.responseCode = message;
@@ -917,8 +978,13 @@ namespace backend.Logic
                 String message = util.ValidAccessToken(voCreatePublicationAnswer.AccessToken, voCreatePublicationAnswer.Mail);
                 if (EnumMessages.OK.ToString().Equals(message))
                 {
-                    User user = users.Find(voCreatePublicationAnswer.Mail);
-                    spaces.CreatePublicationAnswer(voCreatePublicationAnswer, user.IdUser);
+                    User customer = spaces.CreatePublicationAnswer(voCreatePublicationAnswer);
+                    String publicationTitle = spaces.GetPublicationTitleByQuestionId(voCreatePublicationAnswer.IdQuestion);
+                    Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
+                    keyValuePairs[ParamCodes.USER_NAME] = customer.Name;
+                    keyValuePairs[ParamCodes.PUBLICATION_TITLE] = publicationTitle;
+                    EmailDataGeneric mailData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_PUBLICATION_NEW_ANSWER, customer.LanguageCode, keyValuePairs);
+                    emailUtil.SendEmailAsync(customer.Mail, mailData.Body, mailData.Subject);
                     message = EnumMessages.SUCC_ANSWERCREATED.ToString();
                 }
                 response.responseCode = message;
@@ -948,7 +1014,6 @@ namespace backend.Logic
 
         public async Task<VOResponseUpdatePreferentialPayment> UpdatePreferentialPayment(VORequestUpdatePreferentialPayment voUpdatePayment)
         {
-            bool isAdmin = false;
             try
             {
                 VOResponseUpdatePreferentialPayment response = new VOResponseUpdatePreferentialPayment();
@@ -956,6 +1021,12 @@ namespace backend.Logic
                 if (EnumMessages.OK.ToString().Equals(message))
                 {
                     await spaces.UpdatePreferentialPayment(voUpdatePayment);
+                    Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
+                    keyValuePairs[ParamCodes.PUBLISHER_EMAIL] = voUpdatePayment.Mail;
+                    string mailAdmin = ConfigurationManager.AppSettings["EMAIL_ADMIN"];
+                    User admin = users.Find(mailAdmin);
+                    EmailDataGeneric mailData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_PAYMENT_PREFERENTIAL_PLAN, admin.LanguageCode, keyValuePairs);
+                    emailUtil.SendEmailAsync(mailAdmin, mailData.Body, mailData.Subject);
                     message = EnumMessages.SUCC_PAYMENTUPDATED.ToString();
                 }
                 response.responseCode = message;
@@ -976,7 +1047,13 @@ namespace backend.Logic
                 if (EnumMessages.OK.ToString().Equals(message))
                 {
                     User user = users.Find(voPayReservationCustomer.Mail);
-                    await spaces.PayReservationCustomer(voPayReservationCustomer, user.IdUser);
+                    UserBasicData publisher = await spaces.PayReservationCustomer(voPayReservationCustomer, user.IdUser);
+                    Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();                    
+                    string publicationTitle = spaces.GetPublicationTitleByReservationId(voPayReservationCustomer.IdReservation);
+                    keyValuePairs[ParamCodes.USER_NAME] = publisher.Name;
+                    keyValuePairs[ParamCodes.PUBLICATION_TITLE] = publicationTitle;
+                    EmailDataGeneric mailData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_RESERVATION_PAID, publisher.Language, keyValuePairs);
+                    emailUtil.SendEmailAsync(publisher.Mail, mailData.Body, mailData.Subject);
                     message = EnumMessages.SUCC_PAYMENTUPDATED.ToString();
                 }
                 response.responseCode = message;
@@ -992,13 +1069,18 @@ namespace backend.Logic
         {
             VOResponsePayReservationPublisher response = new VOResponsePayReservationPublisher();
             try
-            {
-                
+            {                
                 String message = util.ValidAccessToken(voPayReservationPublisher.AccessToken, voPayReservationPublisher.Mail);
                 if (EnumMessages.OK.ToString().Equals(message))
                 {                   
                     User user = users.Find(voPayReservationPublisher.Mail);
                     await spaces.PayReservationPublisher(voPayReservationPublisher, user.IdUser);
+                    Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
+                    keyValuePairs[ParamCodes.PUBLISHER_EMAIL] = voPayReservationPublisher.Mail;
+                    string mailAdmin = ConfigurationManager.AppSettings["EMAIL_ADMIN"];
+                    User admin = users.Find(mailAdmin);
+                    EmailDataGeneric mailData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_PAYMENT_COMMISSION, admin.LanguageCode, keyValuePairs);
+                    emailUtil.SendEmailAsync(mailAdmin, mailData.Body, mailData.Subject);
                     message = EnumMessages.SUCC_PAYMENTUPDATED.ToString();
                 }
                 response.responseCode = message;
@@ -1018,7 +1100,22 @@ namespace backend.Logic
                 String message = util.ValidAccessToken(voUpdatePayment.AccessToken, voUpdatePayment.Mail);
                 if (EnumMessages.OK.ToString().Equals(message))
                 {
-                    spaces.UpdatePaymentCustomer(voUpdatePayment);
+                    UserBasicData customer = spaces.UpdatePaymentCustomer(voUpdatePayment);
+                    Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
+                    keyValuePairs[ParamCodes.USER_NAME] = customer.Name;
+                    String title = spaces.GetPublicationTitleByReservationId(voUpdatePayment.IdReservation);
+                    keyValuePairs[ParamCodes.PUBLICATION_TITLE] = title;
+                    EmailDataGeneric mailData;
+                    if (voUpdatePayment.Approved)
+                    {
+                        mailData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_PAYMENT_RESERVATION_APPROVED, customer.Language, keyValuePairs);
+                    }
+                    else
+                    {
+                        keyValuePairs[ParamCodes.REJECTED_REASON] = voUpdatePayment.RejectedReason;
+                        mailData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_PAYMENT_RESERVATION_REJECTED, customer.Language, keyValuePairs);
+                    }
+                    emailUtil.SendEmailAsync(customer.Mail, mailData.Body, mailData.Subject);
                     message = EnumMessages.SUCC_PAYMENTUPDATED.ToString();
                 }
                 response.responseCode = message;
@@ -1115,7 +1212,21 @@ namespace backend.Logic
                 String message = util.ValidAccessToken(voUpdatePayment.AccessToken, voUpdatePayment.Mail);
                 if (EnumMessages.OK.ToString().Equals(message))
                 {
-                    spaces.UpdatePreferentialPaymentAdmin(voUpdatePayment);
+                    UserBasicData publisher = spaces.UpdatePreferentialPaymentAdmin(voUpdatePayment);
+                    Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
+                    keyValuePairs[ParamCodes.USER_NAME] = publisher.Name;
+                    VOPublication publication = spaces.GetSpace(voUpdatePayment.IdPublication, null);
+                    keyValuePairs[ParamCodes.PUBLICATION_TITLE] = publication.Title;
+                    EmailDataGeneric mailData;
+                    if (voUpdatePayment.Approved)
+                    {
+                        mailData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_PAYMENT_PREFERENTIAL_PLAN_APPROVED, publisher.Language, keyValuePairs);
+                    } else
+                    {
+                        keyValuePairs[ParamCodes.REJECTED_REASON] = voUpdatePayment.RejectedReason;
+                        mailData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_PAYMENT_PREFERENTIAL_PLAN_REJECTED, publisher.Language, keyValuePairs);
+                    }
+                    emailUtil.SendEmailAsync(publisher.Mail, mailData.Body, mailData.Subject);
                     message = EnumMessages.SUCC_PAYMENTUPDATED.ToString();
                 }
                 response.responseCode = message;
@@ -1135,7 +1246,22 @@ namespace backend.Logic
                 String message = util.ValidAccessToken(voUpdatePayment.AccessToken, voUpdatePayment.Mail);
                 if (EnumMessages.OK.ToString().Equals(message))
                 {
-                    spaces.UpdatePaymentCommissionAdmin(voUpdatePayment);
+                    UserBasicData publisher = spaces.UpdatePaymentCommissionAdmin(voUpdatePayment);
+                    Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
+                    keyValuePairs[ParamCodes.USER_NAME] = publisher.Name;
+                    string title = spaces.GetPublicationTitleByReservationId(voUpdatePayment.IdReservation);
+                    keyValuePairs[ParamCodes.PUBLICATION_TITLE] = title;
+                    EmailDataGeneric mailData;
+                    if (voUpdatePayment.Approved)
+                    {
+                        mailData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_PAYMENT_COMMISSION_APPROVED, publisher.Language, keyValuePairs);
+                    }
+                    else
+                    {
+                        keyValuePairs[ParamCodes.REJECTED_REASON] = voUpdatePayment.RejectedReason;
+                        mailData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_PAYMENT_COMMISSION_REJECTED, publisher.Language, keyValuePairs);
+                    }
+                    emailUtil.SendEmailAsync(publisher.Mail, mailData.Body, mailData.Subject);
                     message = EnumMessages.SUCC_PAYMENTUPDATED.ToString();
                 }
                 response.responseCode = message;
