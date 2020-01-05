@@ -1,10 +1,8 @@
 import React from 'react';
 import Header from "../../header/header";
-import { Link, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { withRouter } from "react-router";
 import { Helmet } from 'react-helmet';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { connect } from 'react-redux';
 import Footer from "../../footer/footer";
 import CreatePublicationStep1 from './createPublicationStep1';
@@ -13,7 +11,10 @@ import CreatePublicationStep3 from './createPublicationStep3';
 import CreatePublicationStep4 from './createPublicationStep4';
 import CreatePublicationStep5 from './createPublicationStep5';
 import LoadingOverlay from 'react-loading-overlay';
-
+import { callAPI, displayErrorMessage } from '../../../services/common/genericFunctions';
+// Multilanguage
+import { withTranslate } from 'react-redux-multilingual'
+import { compose } from 'redux';
 
 class CreatePublication extends React.Component {
 
@@ -51,82 +52,23 @@ class CreatePublication extends React.Component {
             DailyPrice: 0,
             WeeklyPrice: 0,
             MonthlyPrice: 0,
-            maxSteps: 5
+            maxSteps: 5,
+            generalError : false
         }
     }
 
-    handleErrors = (error) => {
-        this.setState({ generalError: true });
-    }
-
-    loadPublication = (pubID) => {
-        try{
-            this.setState({ pubIsLoading: true});
-            fetch('https://localhost:44372/api/publication?idPublication='+pubID+'&mail=').then(response => response.json()).then(data => {
-                console.log("loadPublication data:");
-                console.log(data);
-                if (data.responseCode == "SUCC_PUBLICATIONSOK") {
-                    var pubObj = data.Publication;
-                    this.setState({ pubIsLoading: false, spaceName:pubObj.Title, description:pubObj.Description,locationText:pubObj.Address,
-                                    DailyPrice:pubObj.DailyPrice,HourPrice:pubObj.HourPrice,WeeklyPrice:pubObj.WeeklyPrice,MonthlyPrice:pubObj.MonthlyPrice,
-                                    city:pubObj.City,geoLat:pubObj.Location.Latitude, geoLng:pubObj.Location.Longitude,facilitiesSelect:pubObj.Facilities,
-                                    imagesURL:pubObj.ImagesURL,capacity:pubObj.Capacity,availability:pubObj.Availability,youtubeURL:pubObj.VideoURL});
-                } else {
-                    this.setState({ pubIsLoading: false});
-                    if(data.responseCode == 'ERR_SPACENOTFOUND'){
-                        toast.error('espacio no encontrado', {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                        });
-                    }
-                    if (data.Message) {
-                        toast.error('Hubo un error: ' + data.Message, {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                        });
-                    } else {
-                        toast.error('Internal error', {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                        });
-                    }
-                }
-            }
-            ).catch(error => {
-                this.setState({ pubIsLoading: false, buttonIsDisable: false });
-                toast.error('Internal error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                console.log(error);
-            }
-            )
-        }catch(error){
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-        }
+    loadPublicationCP = (pubID) => {
+        var objApi = {};
+        objApi.objToSend = {}
+        objApi.fetchUrl = 'api/publication?idPublication='+pubID+'&mail=';
+        objApi.method = "GET";
+        objApi.successMSG = {
+            SUCC_PUBLICATIONSOK : '',
+        };
+        objApi.functionAfterSuccess = "loadPublicationCP";
+        objApi.errorMSG= {}
+        this.setState({ pubIsLoading: true});
+        callAPI(objApi, this);
     }
 
     validateStep = () =>{
@@ -173,14 +115,7 @@ class CreatePublication extends React.Component {
                 currentStep: currentStep
             })
         }else{
-            toast.error('Por favor complete los campos obligatorios ', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
+            displayErrorMessage('Por favor complete los campos obligatorios ');
         }
 
     }
@@ -234,7 +169,7 @@ class CreatePublication extends React.Component {
             return (
                 <button
                     className="btn btn-primary float-right"
-                    type="button" onClick={this.submitPublication} disabled={this.state.buttonIsDisable}>
+                    type="button" onClick={this.submitPublicationCP} disabled={this.state.buttonIsDisable}>
                     Finalizar&nbsp;&nbsp;
                     { this.state.isLoading &&  
                     <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -248,11 +183,11 @@ class CreatePublication extends React.Component {
 
     componentDidMount() {
         window.scrollTo(0, 0);
-        this.loadSpaceTypes();
-        this.loadInfraestructure();
-        this.loadPremiumOptions();
+        this.loadSpaceTypesCP();
+        this.loadInfraestructureCP();
+        this.loadPremiumOptionsCP();
         if(this.state.publicationID){
-            this.loadPublication(this.state.publicationID);
+            this.loadPublicationCP(this.state.publicationID);
         }
     }
     
@@ -273,169 +208,54 @@ class CreatePublication extends React.Component {
         });
     }
 
-    loadSpaceTypes() {
+    loadSpaceTypesCP() {
         var objApi = {};
         objApi.objToSend = {}
-        objApi.fetchUrl = "https://localhost:44372/api/spaceTypes";
+        objApi.fetchUrl = 'api/spaceTypes';
         objApi.method = "GET";
-        objApi.responseSuccess = "SUCC_SPACETYPESOK";
-        objApi.successMessage = "";
-        objApi.functionAfterSuccess = "loadSpaceTypes";
-        this.callAPI(objApi);
+        objApi.successMSG = {
+            SUCC_SPACETYPESOK : '',
+        };
+        objApi.functionAfterSuccess = "loadSpaceTypesCP";
+        objApi.errorMSG= {}
+        callAPI(objApi, this);
     }
 
-    loadInfraestructure() {
+    loadInfraestructureCP() {
         var objApi = {};
         objApi.objToSend = {}
-        objApi.fetchUrl = "https://localhost:44372/api/facilities";
+        objApi.fetchUrl = 'api/facilities';
         objApi.method = "GET";
-        objApi.responseSuccess = "SUCC_FACILITIESOK";
-        objApi.successMessage = "";
-        objApi.functionAfterSuccess = "loadInfraestructure";
-        this.callAPI(objApi);
+        objApi.successMSG = {
+            SUCC_FACILITIESOK : '',
+        };
+        objApi.functionAfterSuccess = "loadInfraestructureCP";
+        objApi.errorMSG= {}
+        callAPI(objApi, this);
     }
 
-    loadPremiumOptions() {
+    loadPremiumOptionsCP() {
         var objApi = {};
         objApi.objToSend = {}
-        objApi.fetchUrl = "https://localhost:44372/api/publicationPlan";
+        objApi.fetchUrl = 'api/publicationPlan';
         objApi.method = "GET";
-        objApi.responseSuccess = "SUCC_PUBLICATIONPLANSOK";
-        objApi.successMessage = "";
-        objApi.functionAfterSuccess = "loadPremiumOptions";
-        this.callAPI(objApi);
+        objApi.successMSG = {
+            SUCC_PUBLICATIONPLANSOK : '',
+        };
+        objApi.functionAfterSuccess = "loadPremiumOptionsCP";
+        objApi.errorMSG= {}
+        callAPI(objApi, this);
     }
 
-
-    callAPI(objApi){
-        if(objApi.method == "GET"){
-            fetch(objApi.fetchUrl).then(response => response.json()).then(data => {
-                if (data.responseCode == objApi.responseSuccess) {
-                    if(objApi.successMessage != ""){
-                        toast.success(objApi.successMessage, {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                        });
-                    }
-                    this.callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data);
-                } else {
-                    this.callFunctionAfterApiError(objApi.functionAfterError, data, objApi);
-                }
-            }
-            ).catch(error => {
-                alert(error)
-                this.handleErrors(error);
-            }
-            )
-        }else{
-            fetch(objApi.fetchUrl, {
-                method: objApi.method,
-                header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                body: JSON.stringify(objApi.objToSend)
-            }).then(response => response.json()).then(data => {
-                if (data.responseCode == objApi.responseSuccess) {
-                    if(objApi.successMessage != ""){
-                        toast.success(objApi.successMessage, {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                        });
-                    }
-                    this.callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data);
-                } else {
-                    this.callFunctionAfterApiError(objApi.functionAfterError, data, objApi);
-                }
-            }
-            ).catch(error => {
-                alert(error)
-                this.handleErrors(error);
-            }
-            )
-        }
-        
-    }
-
-    callFunctionAfterApiSuccess = (trigger, objData) =>{
-        switch(trigger){
-            case "loadPremiumOptions":
-                this.setState({ premiumOptions: objData.Plans });
-            break;
-            case "loadInfraestructure":
-                this.setState({ facilities: objData.facilities });
-            break;
-            case "loadSpaceTypes":
-                this.setState({ spaceTypes: objData.spaceTypes })
-            break;
-
-        }
-    }
-
-    callFunctionAfterApiError = (trigger, objData, objApi) =>{
-
-        //Check for expired TOKEN
-        switch(objData.responseCode){
-            case "ERR_INVALIDACCESSTOKEN":
-            case "ERR_ACCESSTOKENEXPIRED":
-            case "ERR_INVALIDREFRESHTOKEN":
-                this.handleExpiredToken(objApi)
-                break;
-        }
-        
-        switch(trigger){
-            default: this.handleErrors("Internal error");
-        }
-    }
-    handleExpiredToken = (retryObjApi) =>{
-        if(retryObjApi.functionAfterSuccess == "updateExpiredToken"){
-            // This is the second attempt -> Log off
-            //this.props.logOut();
-            toast.error("Su sesión expiró, por favor inicie sesión nuevamente", {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-        }else{
-            var objApi = {};
-            objApi.objToSend = {
-                "RefreshToken": this.props.tokenObj.refreshToken,
-                "Mail": this.props.userData.Mail
-            }
-            objApi.fetchUrl = "https://localhost:44372/api/tokens";
-            objApi.method = "PUT";
-            objApi.responseSuccess = "SUCC_TOKENSUPDATED";
-            objApi.successMessage = "";
-            objApi.functionAfterSuccess = "updateExpiredToken";
-            objApi.retryObjApi = retryObjApi;
-            this.callAPI(objApi);
-        }
-
-    }
-    // Validate if all the required inputs are inputted, returns true or false
-    checkRequiredInputs = () => {
-        let returnValue = true;
-        let message = "";
-
-        return returnValue;
-    }
-
-    submitPublication = () => {
-        var objToSend = {}
-        var fetchUrl = '';
-        var method = "";
-
+    submitPublicationCP = () => {
+        var objApi = {};
+        objApi.fetchUrl = "api/publications";
+        objApi.functionAfterSuccess = "submitPublicationCP";
+        objApi.functionAfterError = "submitPublicationCP";
+        objApi.errorMSG= {}
         if(this.state.publicationID){
             // this is an edit
-            var objToSend = {
+            objApi.objToSend = {
                 "AccessToken": this.props.tokenObj.accesToken,
                 "Publication": {
                     "IdPublication": this.state.publicationID,
@@ -462,12 +282,12 @@ class CreatePublication extends React.Component {
                 "Base64Images": this.state.spaceImages,
                 "ImagesURL" : this.state.imagesURL
             }
-            fetchUrl = "https://localhost:44372/api/publications";
-            method = "PUT";
+            objApi.method = "PUT";
+            objApi.successMSG = {
+                SUCC_PUBLICATIONUPDATED : this.props.translate('SUCC_PUBLICATIONUPDATED'),
+            };
         }else{
-            fetchUrl = 'https://localhost:44372/api/publication';
-            method = "POST";
-            var objToSend = {
+            objApi.objToSend = {
                 "AccessToken": this.props.tokenObj.accesToken,
                 "VOPublication": {
                     "Mail": this.props.userData.Mail,
@@ -492,77 +312,31 @@ class CreatePublication extends React.Component {
                 },
                 "Images": this.state.spaceImages
             }
+            objApi.method = "POST";
+            objApi.successMSG = {
+                SUCC_PUBLICATIONCREATED : this.props.translate('SUCC_PUBLICATIONCREATED'),
+            };
         }
-
-        console.log(objToSend);
-
         this.setState({ isLoading: true, buttonIsDisable: true });
-        fetch(fetchUrl, {
-            method: method,
-            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify(objToSend)
-        }).then(response => response.json()).then(data => {
-            this.setState({ isLoading: false, buttonIsDisable: false });
-            console.log("data:" + JSON.stringify(data));
-            if (data.responseCode == "SUCC_PUBLICATIONCREATED" || data.responseCode == "SUCC_PUBLICATIONUPDATED" ) {
-                toast.success('Su publicación ha sido enviada correctamente, revise su casilla de correo para más informacion. ', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                this.props.history.push('/');
-            } else {
-                if (data.Message) {
-                    toast.error('Hubo un error: ' + data.Message, {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                } else {
-                    toast.error('Internal error', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                }
-            }
-        }
-        ).catch(error => {
-            this.setState({ isLoading: false, buttonIsDisable: false });
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-        }
-        )
+        callAPI(objApi, this);
     }
 
     render() {
+        const { translate, userData, login_status } = this.props;
+ 
         /* START SECURITY VALIDATIONS */
-        if (this.props.login_status != 'LOGGED_IN') return <Redirect to='/' />
+        if (login_status != 'LOGGED_IN') return <Redirect to='/' />
+        if (this.state.generalError) return <Redirect to='/error' />
         // THIS ONE ONLY FOR PUBLISHER PAGES
-        if (this.props.userData.PublisherValidated != true) return <Redirect to='/' />
-                    /* END SECURITY VALIDATIONS */
+        if (userData.PublisherValidated != true) return <Redirect to='/' />
+        /* END SECURITY VALIDATIONS */     
         return (
             <>
                 {this.state.pubIsLoading == false ? (
                     <>
                     {/*SEO Support*/}
                     <Helmet>
-                        <title>TeamUp | Crear Espacio</title>
+                        <title>TeamUp | {translate('createPub_main_header')}</title>
                         <meta name="description" content="---" />
                     </Helmet>
                     {/*SEO Support End */}
@@ -593,7 +367,7 @@ class CreatePublication extends React.Component {
                 <LoadingOverlay
                     active={!this.state.pubIsLoading}
                     spinner
-                    text='Cargando...'
+                    text={translate('loading_text_small')}
                 >
                     <div className="col-md-9 center-column" id="content"></div>
                 </LoadingOverlay>)}
@@ -609,5 +383,9 @@ const mapStateToProps = (state) => {
         userData: state.loginData.userData,
     }
 }
-
-export default withRouter(connect(mapStateToProps)(CreatePublication));
+const enhance = compose(
+    connect(mapStateToProps, null),
+    withRouter,
+    withTranslate
+)
+export default enhance(CreatePublication);

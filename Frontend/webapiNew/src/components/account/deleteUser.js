@@ -1,13 +1,9 @@
 import React from 'react';
 import Header from "../header/header";
-import { Link, Redirect } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
 import { connect } from 'react-redux';
 import { logOut } from '../../services/login/actions';
-
 import { callAPI } from '../../services/common/genericFunctions';
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual'

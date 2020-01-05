@@ -1,14 +1,16 @@
-import React, {Suspense} from 'react';
+import React from 'react';
 import Header from "../../header/header";
 import { Redirect } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { connect } from 'react-redux';
 import MyReservedSpacesTable from './myReservedSpacesTable';
 import ModifyReservationModal from './modifyReservationModal';
 import ModalReqInfo from '../../publications/viewPublication/modalReqInfo';
 import ModalCustResPay from './modalCustResPay'
+import { callAPI } from '../../../services/common/genericFunctions';
+// Multilanguage
+import { withTranslate } from 'react-redux-multilingual'
+import { compose } from 'redux';
 
 class MyReservedSpacesList extends React.Component {
 
@@ -26,73 +28,27 @@ class MyReservedSpacesList extends React.Component {
         this.modalElement = React.createRef();
         this.modalReqInfo = React.createRef();
         this.ModalCustResPay = React.createRef();
-        this.bindFunctions();
     }
 
-    bindFunctions(){
-        this.loadMyReservations = this.loadMyReservations.bind(this);    
-        this.confirmEditReservation = this.confirmEditReservation.bind(this);
-        this.triggerModal = this.triggerModal.bind(this);
-        this.saveRate = this.saveRate.bind(this);
-        this.saveCancel = this.saveCancel.bind(this);
-        this.saveCustReservationPayment = this.saveCustReservationPayment.bind(this);
-        this.triggerSaveModal = this.triggerSaveModal.bind(this);
-    }
-
-    handleErrors(error) {
-        this.setState({ generalError: true });
-    }
     componentDidMount() {
         window.scrollTo(0, 0);
-        this.loadMyReservations();
+        this.loadMyReservationsMRSL();
     }
 
-    loadMyReservations(){
-        try {
-            fetch('https://localhost:44372/api/reservationCustomer', {
-                method: 'POST',
-                header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                body: JSON.stringify({
-                    "AccessToken": this.props.tokenObj.accesToken,
-                    "Mail": this.props.userData.Mail                   
-                })
-            }).then(response => response.json()).then(data => {
-                if (data.responseCode == "SUCC_RESERVATIONSOK") {
-                    this.setState({ reservations: data.Reservations, loadingReservations: false })
-                } else {
-                    toast.error('Hubo un error', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                }
-            }
-            ).catch(error => {
-                toast.error('Internal error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                console.log(error);
-            }
-        )
-        }catch(error){
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-            console.log(error);
+    loadMyReservationsMRSL = () => {
+        var objApi = {};
+        objApi.objToSend = {
+            "AccessToken": this.props.tokenObj.accesToken,
+            "Mail": this.props.userData.Mail                   
         }
+        objApi.fetchUrl = "api/reservationCustomer";
+        objApi.method = "POST";
+        objApi.successMSG = {
+            SUCC_RESERVATIONSOK : '',
+        };
+        objApi.functionAfterSuccess = "loadMyReservationsMRSL";
+        objApi.errorMSG= {}
+        callAPI(objApi, this);
     }
 
     editReservation = (key) => {
@@ -118,9 +74,10 @@ class MyReservedSpacesList extends React.Component {
         return dateConv;
     }
 
-    confirmEditReservation(modalInfo) {
+    confirmEditReservationMRSL=(modalInfo)=> {
         let {IdReservation, HourFrom, HourTo, TotalPrice, People} = modalInfo.resDataChanged;
-        let objRes = {
+        var objApi = {};
+        objApi.objToSend = {
             AccessToken: this.props.tokenObj.accesToken,
             Mail: this.props.userData.Mail,
             IdReservation: IdReservation,
@@ -130,64 +87,33 @@ class MyReservedSpacesList extends React.Component {
             TotalPrice: TotalPrice,
             People : People
         }
+        objApi.fetchUrl = "api/reservationCustomer";
+        objApi.method = "PUT";
+        objApi.successMSG = {
+            SUCC_RESERVATIONUPDATED : this.props.translate('SUCC_RESERVATIONUPDATED'),
+        };
+        objApi.functionAfterSuccess = "confirmEditReservationMRSL";
+        objApi.functionAfterError = "confirmEditReservationMRSL";
+        objApi.errorMSG= {}
         this.modalElement.current.changeModalLoadingState(false);
-        fetch('https://localhost:44372/api/reservationCustomer', {
-            method: 'PUT',
-            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify(objRes)
-        }).then(response => response.json()).then(data => {
-            console.log("data:" + JSON.stringify(data));
-            if (data.responseCode == "SUCC_RESERVATIONUPDATED") {
-                toast.success("Reserva modificada correctamente", {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                this.modalElement.current.changeModalLoadingState(true);                               
-                this.loadMyReservations();
-            } else if (data.Message) {
-                    toast.error('Hubo un error', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                }
-        }
-        ).catch(error => {
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-            console.log(error);
-        }
-        )
+        callAPI(objApi, this);
     }
 
-    triggerModal(mode, IdReservation, auxParam){
+    triggerModal=(mode, IdReservation, auxParam)=>{
         var modalConfigObj = {};
         switch(mode){
             case "CANCEL":
                 modalConfigObj ={
-                    title: 'Cancelar reserva', mainText: 'Desea cancelar la reserva? Por favor indique el motivo ', mode : mode, saveFunction : "saveCancel", textboxLabel: 'Comentario',
-                    textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :'No', confirmText :'Si' , login_status: this.props.login_status
+                    title: this.props.translate('myReservedSpacesList_modalCancel_header'), mainText: this.props.translate('myReservedSpacesList_modalCancel_main'), mode : mode, saveFunction : "saveCancelMRSL", textboxLabel: this.props.translate('comment_w'),
+                    textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :this.props.translate('no_w'), confirmText : this.props.translate('yes_w'), login_status: this.props.login_status
                 };
                 this.setState({modalConfigObj : modalConfigObj, selectedIdRes: IdReservation, selectedResState: auxParam},() => {this.modalReqInfo.current.toggle();})
             break;
             case "RATE":
                 modalConfigObj ={
-                    title: 'Calificar reserva', mainText: 'Por favor, denos su calificación sobre la reserva y el lugar ', mode : mode, saveFunction : "saveRate", textboxLabel: 'Comentario',
-                    textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :'Cancelar', confirmText :'Calificar' , login_status: this.props.login_status,
-                    optionDisplay: true, optionLabel: 'Puntuación', optionDefaultValue:1, optionArray: [5,4,3,2,1]
+                    title: this.props.translate('myReservedSpacesList_modalRate_header'), mainText: this.props.translate('myReservedSpacesList_modalRate_main'), mode : mode, saveFunction : "saveRateMRSL", textboxLabel: this.props.translate('comment_w'),
+                    textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :this.props.translate('cancel_w'), confirmText :this.props.translate('rate_w'), login_status: this.props.login_status,
+                    optionDisplay: true, optionLabel: this.props.translate('score_w'), optionDefaultValue:1, optionArray: [5,4,3,2,1]
                 };
                 this.setState({modalConfigObj : modalConfigObj, selectedIdRes: IdReservation, selectedResState: auxParam},() => {this.modalReqInfo.current.toggle();})
             break;
@@ -197,15 +123,15 @@ class MyReservedSpacesList extends React.Component {
         }
     }
 
-    triggerSaveModal(saveFunction, objData){
+    triggerSaveModal=(saveFunction, objData)=>{
         switch(saveFunction){
-            case "saveCancel": this.saveCancel(objData.textboxValue);break;
-            case "saveRate": this.saveRate(objData.optionValue, objData.textboxValue);break;
+            case "saveCancelMRSL": this.saveCancelMRSL(objData.textboxValue);break;
+            case "saveRateMRSL": this.saveRateMRSL(objData.optionValue, objData.textboxValue);break;
             case "saveConfirm": this.saveConfirm();break;
         }
     }
 
-    saveCancel(commentValue){
+    saveCancelMRSL=(commentValue)=>{
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,
@@ -215,16 +141,18 @@ class MyReservedSpacesList extends React.Component {
             "NewState": "CANCELED",
             "CanceledReason": commentValue
         }
-        objApi.fetchUrl = "https://localhost:44372/api/reservation";
+        objApi.fetchUrl = "api/reservation";
         objApi.method = "PUT";
-        objApi.responseSuccess = "SUCC_RESERVATIONUPDATED";
-        objApi.successMessage = "Se ha cancelado la reserva";
-        objApi.functionAfterSuccess = "saveCancel";
-        this.modalReqInfo.current.changeModalLoadingState(false);
-        this.callAPI(objApi);
+        objApi.successMSG = {
+            SUCC_RESERVATIONUPDATED : this.props.translate('SUCC_RESERVATIONUPDATED'),
+        };
+        objApi.functionAfterSuccess = "saveCancelMRSL";
+        objApi.errorMSG= {}
+        this.modalReqInfo.current.changeModalLoadingState(false);        
+        callAPI(objApi, this);
     }
 
-    saveRate(optionValue, commentValue){
+    saveRateMRSL=(optionValue, commentValue)=>{
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,
@@ -235,16 +163,17 @@ class MyReservedSpacesList extends React.Component {
                 "Mail": this.props.userData.Mail
             }        
         }
-        objApi.fetchUrl = "https://localhost:44372/api/review";
+        objApi.fetchUrl = "api/review";
         objApi.method = "POST";
-        objApi.responseSuccess = "SUCC_REVIEWCREATED";
-        objApi.successMessage = "Calificación realizada correctamente!";
-        objApi.functionAfterSuccess = "saveRate";
+        objApi.successMSG = {
+            SUCC_REVIEWCREATED : this.props.translate('SUCC_REVIEWCREATED'),
+        };
+        objApi.functionAfterSuccess = "saveRateMRSL";
         this.modalReqInfo.current.changeModalLoadingState(false);
-        this.callAPI(objApi);
+        callAPI(objApi, this);
     }
     
-    saveCustReservationPayment(objPaymentDetails){
+    saveCustReservationPayment=(objPaymentDetails)=>{
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,
@@ -256,92 +185,26 @@ class MyReservedSpacesList extends React.Component {
                 "Extension" :  objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Extension : ""
             }
         }
-        console.log("confirmPayment: objToSend")
-        console.log(objApi.objToSend)
-        objApi.fetchUrl = "https://localhost:44372/api/reservationPaymentCustomer";
+        objApi.fetchUrl = "api/reservationPaymentCustomer";
         objApi.method = "POST";
-        objApi.responseSuccess = "SUCC_PAYMENTUPDATED";
-        objApi.successMessage = "Se ha confirmado el envío de pago";
-        objApi.functionAfterSuccess = "confirmPayment";
-        this.callAPI(objApi);
-    }
-    callAPI(objApi){
-        if(objApi.method == "GET"){
-            fetch(objApi.fetchUrl).then(response => response.json()).then(data => {
-                if (data.responseCode == objApi.responseSuccess) {
-                    if(objApi.successMessage != ""){
-                        toast.success(objApi.successMessage, {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                        });
-                    }
-                    this.callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data);
-                } else {
-                    this.handleErrors("Internal error");
-                }
-            }
-            ).catch(error => {
-                this.handleErrors(error);
-            }
-            )
-        }else{
-            fetch(objApi.fetchUrl,{
-                    method: objApi.method,
-                    header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify(objApi.objToSend)
-                }).then(response => response.json()).then(data => {
-                if (data.responseCode == objApi.responseSuccess) {
-                    if(objApi.successMessage != ""){
-                        toast.success(objApi.successMessage, {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                        });
-                    }
-                    this.callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data);
-                } else {
-                    this.handleErrors("Internal error");
-                }
-            }
-            ).catch(error => {
-                this.handleErrors(error);
-            }
-            )
-        }
-
-    }
-
-    callFunctionAfterApiSuccess(trigger, data){
-        switch(trigger){
-            case "saveCancel"   :
-            case "saveRate" : 
-                this.modalReqInfo.current.changeModalLoadingState(true);
-                this.loadMyReservations();
-            break;
-            case "confirmPayment":
-                this.ModalCustResPay.current.changeModalLoadingState(true);
-                this.loadMyReservations();
-            break;
-        }
+        objApi.successMSG = {
+            SUCC_PAYMENTUPDATED : this.props.translate('SUCC_PAYMENTUPDATED'),
+        };
+        objApi.functionAfterSuccess = "saveCustReservationPayment";
+        callAPI(objApi, this);
     }
 
     render() {        
-        const { login_status } = this.props;
+        const { login_status, translate } = this.props;
         if (login_status != 'LOGGED_IN') return <Redirect to='/' />
         if (this.state.generalError) return <Redirect to='/error' />
+
         return (
             <>
                 <>
                 {/*SEO Support*/}
                 <Helmet>
-                    <title>TeamUp | Mis Reservas</title>
+                    <title>TeamUp | {translate('myReservedSpacesList_header')}</title>
                     <meta name="description" content="---" />
                 </Helmet>
                 {/*SEO Support End */}
@@ -349,8 +212,8 @@ class MyReservedSpacesList extends React.Component {
                 <div className="main-content  full-width  home">
                     <div className="pattern" >
                         <div className="col-md-12 center-column">
-                        <h1>Mis Reservas</h1>
-                        <ModifyReservationModal ref = {this.modalElement} confirmEditReservation = {this.confirmEditReservation}/>
+                        <h1>{translate('myReservedSpacesList_header')}</h1>
+                        <ModifyReservationModal ref = {this.modalElement} confirmEditReservation = {this.confirmEditReservationMRSL}/>
                         <ModalCustResPay ref={this.ModalCustResPay} saveCustReservationPayment={this.saveCustReservationPayment}/>
                         <MyReservedSpacesTable editReservation={this.editReservation} reservations={this.state.reservations} triggerModal={this.triggerModal}/>
                         <ModalReqInfo ref={this.modalReqInfo} modalSave={this.modalSave} triggerSaveModal={this.triggerSaveModal}
@@ -370,5 +233,8 @@ const mapStateToProps = (state) => {
         userData: state.loginData.userData,
     }
 }
-
-export default connect(mapStateToProps)(MyReservedSpacesList);
+const enhance = compose(
+    connect(mapStateToProps, null),
+    withTranslate
+)
+export default enhance(MyReservedSpacesList);
