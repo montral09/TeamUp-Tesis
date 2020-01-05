@@ -24,10 +24,23 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "config": {
+        "googleMapsApiKey": "AIzaSyCEj158pfwnqjHz5dN21eNjocfma5ck5Ms"
+      }
     },
     "android": {
-      "package": "com.TeamUpProject.TeamUpProject"
+      "package": "com.TeamUpProject.TeamUpProject",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCEj158pfwnqjHz5dN21eNjocfma5ck5Ms"
+        }
+      },
+      "permissions": [
+        "CAMERA",
+        "WRITE_EXTERNAL_STORAGE",
+        "READ_EXTERNAL_STORAGE"
+      ]
     }
   }
 }

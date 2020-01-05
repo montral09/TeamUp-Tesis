@@ -3,7 +3,6 @@ var module = {
         locale: 'es',
         messages: {
             english: 'Inglés',
-            mainWebsiteName: 'TeamUp!',
             res_publications_title: 'Publicaciones reservadas',
             home_findSpaceText: 'Encuentre el espacio que mas se adecue a su necesidad',
             home_findButton : 'Buscar',
@@ -45,6 +44,7 @@ var module = {
             currency_UY_symbol : '$U',
             view_w: 'Ver',
             spaceType_w: 'Tipo de espacio',
+            selectOne_w : 'Seleccione uno',
             recPubs_recommendedPubls: 'Publicaciones recomendadas',
             singInLinks_wantToPublish: 'Quiero publicar',
             singInLinks_wantToPublishBody: 'Si quieres ser uno de nuestros colaboradores, pudiendo realizar publicaciones en el sito, haz click en el boton "Quiero!". Se enviara una solicitud y uno de nuestros representantes se comunicara contigo a la brevedad.',

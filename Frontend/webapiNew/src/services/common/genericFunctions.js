@@ -62,7 +62,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             objApi.retryObjApi.objToSend.AccessToken = objData.AccessToken;
             callAPI(objApi.retryObjApi, bindThis);
         break;
-        case "deleteUser":objApi.logOut();break;
+        case "deleteUser":bindThis.toggleButton(); objApi.logOut();break;
         case "loadInfraestructureVP": bindThis.setState({ facilities: objData.facilities, infIsLoading: false }); break;
 
         case "loadPublicationVP":
@@ -274,6 +274,7 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
         case "logIn":
             bindThis.toggleButton(); objApi.dispatch({type: objApi.typeError}); 
         break;
+        case "deleteUser":bindThis.toggleButton();break;
         default:
     }
     console.log("objData.responseCode + "+objData.responseCode)

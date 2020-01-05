@@ -1,34 +1,20 @@
 import React, {Component} from 'react';
 import {View,Text,Image,StyleSheet} from 'react-native';
 
-const images = [
-            {
-                source: {
-                    uri: 'https://cdn.pixabay.com/photo/2016/03/28/09/34/bedroom-1285156_960_720.jpg'
-                },
-            },
-            {
-                source: {
-                    uri: 'https://cdn.pixabay.com/photo/2015/05/15/14/22/conference-room-768441_960_720.jpg'
-                },
-            },
-            {
-                source: {
-                    uri: 'https://cdn.pixabay.com/photo/2015/04/20/06/43/meeting-room-730679_960_720.jpg'
-                },
-            },
-        ];
+export default class SpacesScrollView extends Component {
 
-
-export default class Spaces extends Component {
     render (){
+        const { Capacity, Title, IdPublication, ImagesURL, City} = this.props;
+        //const { relatedPublications } = this.props;
         return (
                 <View style={styles.spacesContainer}>
                     <View style={styles.imageView}>
-                        <Image style={styles.image} source={{uri:'https://cdn.pixabay.com/photo/2016/03/28/09/34/bedroom-1285156_960_720.jpg'}}/>
+                        <Image style={styles.image} source={{uri: ImagesURL[0]}}/>
                     </View>
                     <View style={styles.textView}>
-                        <Text style={{color: 'white'}}>{this.props.name}</Text>
+                        <Text style={{color: 'white'}}>{Title}</Text>
+                        <Text style={{color: 'white'}}>{City}</Text>
+                        <Text style={{color: 'white'}}>{Capacity}</Text>
                     </View>
                 </View>    
         );
@@ -39,13 +25,13 @@ export default class Spaces extends Component {
 
 const styles = StyleSheet.create({
     image:{
-        width: 130,
+        width: 160,
         height: 130,  
         borderRadius: 20,
     },
     spacesContainer:{
-        height: 200, 
-        width: 130,
+        //height: 220, 
+        width: 160,
         elevation: 3,
         borderWidth: 0.5,
         borderColor: '#0069c0',
@@ -64,15 +50,5 @@ const styles = StyleSheet.create({
         paddingTop: 10,
         color: 'white',
     },
-    shadow:{
-        shadowColor: 'black',
-        elevation:12,
-        shadowOffset: {
-            width: 0,
-            height: 0,
-        },
-        shadowOpacity: 1,
-        shadowRadius: 20,
-        backgroundColor: "#FFF",
-    },
+
 });

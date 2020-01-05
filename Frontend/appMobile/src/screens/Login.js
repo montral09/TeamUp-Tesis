@@ -11,13 +11,18 @@ import Form from '../components/Form';
 import Home from './Home';
 import SignUp from './SignUp';
 import PasswordRecovery from './PasswordRecovery';
+import PublishSpaceStep2 from './PublishSpaceStep2';
+import SpaceView from './SpaceView';
+import SearchPublications from './SearchPublications';
+import ErrorScreen from './ErrorScreen';
+import ReservationPaymentComDetails from './ReservationPaymentComDetails';
 
 class Login extends Component{
    static navigationOptions = {
      header: null
    };
    render(){
-        //const {navigate} = this.props.navigation;
+
         return (
             <View style={styles.container}>
               <StatusBar backgroundColor="#0069c0" barStyle="light-content"/>
@@ -66,10 +71,28 @@ const StackNavigator = createStackNavigator({
   Home: {screen: Home, navigationOptions: ({ navigation }) => ({
                               header: null,
                        })},
-  SignUp: {screen: SignUp},
+  SignUp: {screen: SignUp, navigationOptions: ({ navigation }) => ({
+                              header: null,
+                       })},
   PasswordRecovery: {screen: PasswordRecovery, navigationOptions: ({ navigation }) => ({
                               header: null,
                     })},
+  /*PublishSpaceStep2: {screen: PublishSpaceStep2, navigationOptions: ({ navigation }) => ({
+                              header: null,
+                      })},*/
+  SpaceView: {screen: SpaceView, navigationOptions: ({ navigation }) => ({
+                              header: null,
+                    })},
+  SearchPublications: {screen: SearchPublications, navigationOptions: ({ navigation }) => ({
+                              header: null,
+                    })},
+  ReservationPaymentComDetails: {screen: ReservationPaymentComDetails, navigationOptions: ({ navigation }) => ({
+                              header: null,
+                    })},
+  ErrorScreen: {screen: ErrorScreen, navigationOptions: ({ navigation }) => ({
+                              header: null,
+                    })},
+  
  });
 
 const AppContainer = createAppContainer(StackNavigator)

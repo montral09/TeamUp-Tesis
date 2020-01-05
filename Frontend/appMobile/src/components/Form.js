@@ -1,23 +1,24 @@
 import React, {Component} from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ToastAndroid} from 'react-native';
 import { withNavigation } from 'react-navigation';
+import { connect } from 'react-redux';
 
+import { logIn } from '../redux/actions/accountActions';
 //import Globals from '../Globals'; 
 
-baseURL = 'http://192.168.0.145:59767/api/';
+baseURL = 'http://192.168.1.2:59767/api/';
 
 class Form extends Component<{}>{
     constructor(){
         super();
         this.state = {
-            password: '',
             email: '',
+            password: '',
             data: null,
             loaded: true,
             error: null,
-            ip: '',
-            conecta: 'desconectado',
         }
+        this.login = this.login.bind(this);
     }
 
     handleChangeEmail = (typedText) => {
@@ -28,21 +29,41 @@ class Form extends Component<{}>{
         this.setState({password: typedText});
     }
 
-    handleChangeIp = (typedText) => {
-        this.setState({ip: typedText});
+    checkRequiredInputs() {
+        let returnValue = false;
+        let message = "";
+        if (!this.state.password || !this.state.email) {
+            message='Por favor ingrese correo y contraseña';
+            returnValue = true;        
+        } else if (!this.state.email.match(/\S+@\S+/)) {
+            message='Formato de email incorrecto';
+            returnValue = true;
+        }
+        
+        if(message){
+            ToastAndroid.showWithGravity(
+                message,
+                ToastAndroid.LONG,
+                ToastAndroid.CENTER,
+            );
+        }
+        
+        return returnValue;
     }
 
-    login = (ev) => {
+    login() {
+        if (!this.checkRequiredInputs()) {
+            this.props.logIn(this.state);
+        } 
+    }
+
+    /*login = (ev) => {
         console.log("Entra: " + this.state.email + " " + this.state.password)
         //Loaded seteada en false para desplegar gif de carga al momento de inciar sesión
         //Se vuelve a poner error en null, para limpiar errores previos de la pantalla
         this.setState({loaded:false, error:null});
-        let url = baseURL + 'login';
+        let url = baseURL + 'Login';
         console.log(url);
-        //let h = new Headers();
-        //Agrego cabezales (Headers)
-        // h.append('Content-Type', 'application/json')
-        // h.append('Accept', 'application/json')
         let req = new Request(url, {
             headers: {'Content-Type': 'application/json',
                       'Accept' : 'application/json',
@@ -77,6 +98,7 @@ class Form extends Component<{}>{
                 this.setState({error:"El mail ingresado se encuentra en espera de validación"})
                 break;   
             case "SUCC_USRLOGSUCCESS":
+                this.props.logIn(data.voUserLog);
                 ToastAndroid.showWithGravity(
                 "Bienvenido, " + data.voUserLog.Name,
                 ToastAndroid.LONG,
@@ -94,9 +116,11 @@ class Form extends Component<{}>{
         //Se saca el gif de carga, ya que para desplegar un error se tiene que haber cargado la información
         this.setState({loaded:true, error: err.message});
         console.log(err)
-    }
-
+    }*/
+    
     render(){
+        const { login_status } = this.props;
+        if(login_status == 'LOGGED_IN') return this.props.navigation.navigate('Home');
         return(
             <View style={styles.container}>
                 {!this.state.loaded && (
@@ -117,31 +141,33 @@ class Form extends Component<{}>{
                            onChangeText={this.handleChangePassword}
                            value={this.state.password}
                 />
-                {/*<TextInput style={styles.inputBox} 
-                           underlineColorAndroid='rgba(0,0,0,0)'
-                           placeholder="Ip"
-                           placeholderTextColor="#ffffff"
-                           onChangeText={this.handleChangeIp}
-                           value={this.state.ip}
-                />*/}
                 <Text style={styles.signupButton} onPress={() => {this.props.navigation.navigate('PasswordRecovery')}}> No recuerdo mi contraseña</Text>
-                <TouchableOpacity style={styles.button} onPress={this.login} > 
-                    <Text style={styles.buttonText}>Iniciar sesión</Text>
-                    
+                <TouchableOpacity style={styles.button} onPress={() => {this.login()}}> 
+                    <Text style={styles.buttonText}>Iniciar sesión</Text>        
                 </TouchableOpacity>
-                {/*<Text style={styles.errorText}>"Debugger"</Text>*/}
                 {this.state.error && (
                         <Text style={styles.errorText}>{this.state.error}</Text>  
                 )}
-                {/*<Text style={styles.errorText}>{this.state.conecta}</Text>*/}
-                {/*<Text style={styles.errorText}> {this.state.error} </Text>*/}
             </View>
         )
     }
 
 }
 
-export default withNavigation(Form);
+const mapStateToProps = (state) =>{
+    return {
+        login_status: state.loginData.login_status,
+        userData: state.loginData.userData,
+    }
+}
+
+const mapDispatchToProps = (dispatch) =>{
+    return {
+        logIn : (userData) => { dispatch (logIn(userData))}
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withNavigation(Form));
 
 const styles = StyleSheet.create({
     container: {
@@ -187,5 +213,3 @@ const styles = StyleSheet.create({
         color:'rgba(255,0,0,1)'
     }
 });
-
-/*onPress={() => {this.props.navigation.navigate('Home')}*/

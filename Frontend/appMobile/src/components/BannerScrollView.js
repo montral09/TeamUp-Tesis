@@ -6,7 +6,7 @@ const {bannerHeight} = winWidth * 0.8;
 const images = [
             {
                 source: {
-                    uri: 'https://cdn.pixabay.com/photo/2016/03/28/09/34/bedroom-1285156_960_720.jpg'
+                    uri: 'https://cdn.pixabay.com/photo/2016/11/07/19/25/meeting-room-1806702_960_720.jpg'
                 },
             },
             {
