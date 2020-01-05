@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import {Form, FormGroup, Label, Input, FormFeedback,
     Row,Col,Button, InputGroupAddon,InputGroup } from 'reactstrap';
 import Geocode from "react-geocode";
-import credentials from '../map/credentials';
+import {API_CREDENTIALS} from '../../../services/common/constants';
 import Upload from './upload/upload';
 import Map from '../map/Map';
 import LocationSearchInput from './LocationSearchInput';
@@ -35,7 +35,7 @@ class CreatePublicationStep2 extends React.Component {
         this.validateLocation = this.validateLocation.bind(this);
         this.functionLoadLocation = this.functionLoadLocation.bind(this);
         this.deleteImage = this.deleteImage.bind(this);
-        Geocode.setApiKey(credentials.mapsKey);
+        Geocode.setApiKey(API_CREDENTIALS);
         Geocode.setRegion("uy");
         Geocode.enableDebug();
     }

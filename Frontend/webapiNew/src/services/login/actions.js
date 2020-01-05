@@ -21,12 +21,14 @@ export const logIn = (userData) =>{
         objApi.fetchUrl = "api/login";
         objApi.method = "POST";
         objApi.successMSG = {
-            SUCC_USRLOGSUCCESS : userData.translate('SUCC_USRLOGSUCCESS')
+            SUCC_USRLOGSUCCESS : ''
         };
         objApi.functionAfterSuccess = "logIn";
         objApi.functionAfterError = "logIn";
+        objApi.successMessage = userData.translate('SUCC_USRLOGSUCCESS');
         objApi.errorMSG= {
             ERR_MAILNOTVALIDATED : userData.translate('ERR_MAILNOTVALIDATED'),
+            ERR_USRMAILNOTEXIST : userData.translate('ERR_USRMAILNOTEXIST'),
             ERR_USRWRONGPASS : userData.translate('ERR_USRWRONGPASS')
         }
         objApi.dispatch = dispatch;
