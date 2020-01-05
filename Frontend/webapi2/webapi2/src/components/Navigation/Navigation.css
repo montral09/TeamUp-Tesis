@@ -1,0 +1,15 @@
+div a.active, ul li.active{
+    font-weight: bold!important;
+    font-style: italic!important;
+    color: #fff!important;
+}
+
+.navBar {
+    width: '100%';
+    background-color: #fff;   
+}
+
+.navElements {
+    margin-right: 30px;
+    color: #000;
+}
