@@ -12,7 +12,7 @@ namespace backend.Data_Access
         List<VOSpaceType> GetSpaceTypes();
         List<VOReservationType> GetReservationTypes();
         List<VOFacility> GetFacilities();
-        Task CreatePublicationAsync(VORequestCreatePublication voCreatePublication, User user);
+        Task<string> CreatePublicationAsync(VORequestCreatePublication voCreatePublication, User user);
         List<VOPublicationAdmin> GetPublicationsPendingApproval(VORequestPublicationPendindApproval voPublicationPendingApproval);
         List<VOPublication> GetPublisherSpaces(string mail);
         VOPublication GetSpace(int idSpace, User user);
@@ -25,23 +25,29 @@ namespace backend.Data_Access
         void CreateReservation(VORequestCreateReservation voCreateReservation, User user);
         List<VOReservationExtended> GetReservationsCustomer(VORequestGetReservationsCustomer voGetReservationsCustomer, long idCustomer);
         List<VOReservationExtended> GetReservationsPublisher(VORequestGetReservationsPublisher voGetReservationsPublisher, long idPublisher);
-        void UpdateStateReservation(int idReservation, string canceledReason, int newCodeState, string newDescriptionState, bool isAdmin);
-        void UpdateReservation(VORequestUpdateReservation voUpdateRservation);
+        UsersReservationBasicData UpdateStateReservation(int idReservation, string canceledReason, int newCodeState, string newDescriptionState);
+        UsersReservationBasicData UpdateReservation(VORequestUpdateReservation voUpdateRservation);
         void CreateReview(VORequestCreateReview voCreateReview, long idUser);
         void CreatePublicationQuestion(VORequestCreatePublicationQuestion voCreatePublicationQuestion, long idUser);
-        void CreatePublicationAnswer(VORequestCreatePublicationAnswer voCreatePublicationAnswer, long idUser);
+        User CreatePublicationAnswer(VORequestCreatePublicationAnswer voCreatePublicationAnswer);
         List<VOPublicationQuestion> GetPublicationQuestions(int idPublication);
         List<VOPublicationPlan> GetPublicationPlans();
         Task UpdatePreferentialPayment(VORequestUpdatePreferentialPayment voUpdatePayment);
-        Task PayReservationCustomer(VORequestPayReservationCustomer voPayReservationCustomer, long idUser);
+        Task<UserBasicData> PayReservationCustomer(VORequestPayReservationCustomer voPayReservationCustomer, long idUser);
         Task PayReservationPublisher(VORequestPayReservationPublisher voPayReservationPublisher, long idUser);
-        void UpdatePaymentCustomer(VORequestUpdatePaymentCustomer voUpdatePayment);
+        UserBasicData UpdatePaymentCustomer(VORequestUpdatePaymentCustomer voUpdatePayment);
         List<VOPublicationPaymentAdmin> GetPublicationPlanPayments();
         List<VOCommissionPaymentAdmin> GetCommissionPaymentsAdmin();
         List<VOPublication> GetFavorites(long idUser);
         List<VOSpaceTypeRecommended> GetRecommendedPublications();
-        void UpdatePreferentialPaymentAdmin(VORequestUpdatePreferentialPaymentAdmin voUpdatePayment);
-        void UpdatePaymentCommissionAdmin(VORequestUpdatePaymentCommissionAdmin voUpdatePayment);
+        UserBasicData UpdatePreferentialPaymentAdmin(VORequestUpdatePreferentialPaymentAdmin voUpdatePayment);
+        UserBasicData UpdatePaymentCommissionAdmin(VORequestUpdatePaymentCommissionAdmin voUpdatePayment);
         List<VOMessage> GetMessages(VORequestGetMessages voGetMessages, bool isPublisher, long idUser);
+        string GetPublicationPlanById(int idPlan);
+        User GetPublisherByPublication(int idPublication);
+        string GetPublicationTitleByQuestionId(int idQuestion);
+        string GetPublicationTitleByReservationId(int idReservation);
+        UsersReservationBasicData GetUsersReservationBasicData(int idReservation);
+        void UpdateCommissionAmountAdmin(VORequestUpdateCommissionAmountAdmin voUpdateAmount);
     }
 }

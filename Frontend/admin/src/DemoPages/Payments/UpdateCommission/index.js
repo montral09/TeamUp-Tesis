@@ -7,8 +7,8 @@ import {toast} from 'react-toastify';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import PageTitle from '../../../Layout/AppMain/PageTitle';
 
-import PreferentialPaymentsTable from './preferentialPaymentsTable';
-import ApproveRejectPreferentialPaymentModal from './approveRejectPreferentialPayment';
+import UpdateCommissionTable from './updateCommissionTable';
+import UpdateCommissionConfirmationModal from './updateCommissionConfirmation'
 
 import { connect } from 'react-redux';
 
@@ -20,40 +20,26 @@ import {
     CardTitle
 } from 'reactstrap';
 
-class PreferentialPayments extends Component {
+class UpdateCommission extends Component {
     constructor(props) {
         super(props);
-        console.log("PreferentialPayments - props:")
+        console.log("CommissionPayment - props:")
         console.log(props);
         const admTokenObj = props.admTokenObj;
         const adminMail = props.adminData.Mail
         this.state = {
-            preferentialPayments: [],
+            paymentsPendingPaid: [],
             admTokenObj: admTokenObj,
             adminMail: adminMail
         }
-        this.modalElement = React.createRef(); // Connects the reference to the modal
-        this.modalElementAppRej = React.createRef(); // Connects the reference to the modal
-        this.approvePreferentialPayment  = this.approvePreferentialPayment.bind(this);
-        this.rejectPreferentialPayment = this.rejectPreferentialPayment.bind(this);
+        this.modalElementUpdate = React.createRef(); // Connects the reference to the modal
         this.updateTable = this.updateTable.bind(this);
-    }
-        
-    // This function will try to approve the payment
-    approvePreferentialPayment (key) {
-        var paymentData = {
-            id: key,
-            approved: true
-        };
-        this.modalElementAppRej.current.toggleAppRej(this.props.admTokenObj, this.props.adminData, paymentData);        
+        this.changeCommission = this.changeCommission.bind(this);
     }
 
-    rejectPreferentialPayment (key) {
-        var paymentData = {
-            id: key,
-            approved: false
-        };
-        this.modalElementAppRej.current.toggleAppRej(this.props.admTokenObj, this.props.adminData, paymentData);  
+    changeCommission (key) {
+        var id = key;
+        this.modalElementUpdate.current.toggleElementUpdate(this.props.admTokenObj, this.props.adminData, id);  
     }
 
     // This function will trigger when the component is mounted, to fill the data from the state
@@ -62,17 +48,23 @@ class PreferentialPayments extends Component {
     }
 
     updateTable(){
-        fetch('https://localhost:44372/api/publicationPlanPaymentAdmin', {
-            method: 'POST',
+        fetch('https://localhost:44372/api/reservationPaymentPublisher', {
+            method: 'PUT',
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify({
                 "AccessToken": this.state.admTokenObj.accesToken,
                 "Mail": this.state.adminMail               
             })
         }).then(response => response.json()).then(data => {
-            if (data.responseCode == "SUCC_PUBLICATIONPLANSOK") {
-                console.log(data.Publications);
-                this.setState({ 'preferentialPayments': data.Payments })
+            console.log (data);
+            if (data.responseCode == "SUCC_COMMISSIONSSOK") {
+                console.log(data.Commissions);
+                var commissions = data.Commissions;
+                var paymentsPendingPaid = commissions.filter(commission => {
+                    console.log (commission.CommissionState);
+                    return commission.CommissionState === 'PENDING PAYMENT'                    
+                });
+                this.setState({ 'paymentsPendingPaid': paymentsPendingPaid })               
             } else {
                 toast.error('Hubo un error', {
                     position: "top-right",
@@ -102,8 +94,8 @@ class PreferentialPayments extends Component {
         return (
             <Fragment>
                 <PageTitle
-                    heading="Pagos pendientes de confirmacion"
-                    subheading="En esta pantalla se mostrarán todos los pagos pendientes de confirmacion de planes preferenciales."
+                    heading="Comisiones pendientes de pago"
+                    subheading="En esta pantalla se mostrarán todos los pagos pendientes de comisiones."
                     icon="pe-7s-drawer icon-gradient bg-happy-itmeo"
                 />
                 <ReactCSSTransitionGroup
@@ -114,12 +106,12 @@ class PreferentialPayments extends Component {
                     transitionEnter={false}
                     transitionLeave={false}>
                     <Row>
-                        <ApproveRejectPreferentialPaymentModal ref = {this.modalElementAppRej} updateTable={this.updateTable}/>
+                        <UpdateCommissionConfirmationModal ref = {this.modalElementUpdate} updateTable={this.updateTable}/>
                         <Col lg="12">
                             <Card className="main-card mb-3">
                                 <CardBody>
-                                    <CardTitle>Pendientes de aprobación</CardTitle>
-                                    <PreferentialPaymentsTable preferentialPayments={this.state.preferentialPayments} rejectPreferentialPayment={this.rejectPreferentialPayment} approvePreferentialPayment={this.approvePreferentialPayment}/>
+                                    <CardTitle>Pendientes de pago</CardTitle>                                    
+                                    <UpdateCommissionTable paymentsPendingPaid={this.state.paymentsPendingPaid} changeCommission={this.changeCommission} />
                                 </CardBody>
                             </Card>
                         </Col>
@@ -137,4 +129,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps)(PreferentialPayments)
+export default connect(mapStateToProps)(UpdateCommission)

@@ -5,6 +5,7 @@ import {Route} from 'react-router-dom';
 
 import PreferentialPayments from './PreferentialPayments/';
 import CommissionPayments from './CommissionPayments/';
+import UpdateCommission from './UpdateCommission/';
 
 // Layout
 
@@ -19,9 +20,9 @@ const Payments = ({match}) => (
             <AppSidebar/>
             <div className="app-main__outer">
                 <div className="app-main__inner">
-                    {/* Pendiente Aprobacion */}
                     <Route path={`${match.url}/PreferentialPayments`} component={PreferentialPayments}/>
-                    <Route path={`${match.url}/CommissionPayments`} component={CommissionPayments}/>                           
+                    <Route path={`${match.url}/CommissionPayments`} component={CommissionPayments}/>
+                    <Route path={`${match.url}/UpdateCommissionPayments`} component={UpdateCommission}/>                    
                 </div>
                 <AppFooter/>
             </div>

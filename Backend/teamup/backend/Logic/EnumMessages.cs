@@ -64,6 +64,7 @@ namespace backend.Logic
         SUCC_ANSWERCREATED,
         //Commissions
         SUCC_COMMISSIONSSOK,
+        SUCC_COMMISSIONUPDATED,
         //Recommended
         SUCC_RECOMMENDEDOK,
         //Messages

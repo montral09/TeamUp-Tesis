@@ -33,19 +33,128 @@ namespace backend.Logic
             smtp.Send(mm);           
         }
 
-        public EmailDataGeneric GetFormatMail(String code, int language, Dictionary<string, string> keyValuePairs)
+        public EmailDataGeneric GetFormatMailUsers(String code, int language, Dictionary<string, string> keyValuePairs)
         {
             //TODO: lo va a buscar en el cache, y el cache se encarga de conectarse a la BD si no tiene el mail cargado
             EmailDataGeneric emailBodyGeneric = daoUtil.GetEmailDataGeneric(code, language);
-            emailBodyGeneric.Body = CompleteEmailBody(emailBodyGeneric.Body, keyValuePairs);
+            emailBodyGeneric.Body = CompleteEmailBodyUsers(emailBodyGeneric.Body, keyValuePairs);
             return emailBodyGeneric;
         }
 
-        private string CompleteEmailBody(string emailBodyGeneric, Dictionary<string, string> keyValuePairs)
+        private string CompleteEmailBodyUsers(string emailBodyGeneric, Dictionary<string, string> keyValuePairs)
+        {
+
+            if (emailBodyGeneric.Contains(ParamCodes.USER_NAME))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.USER_NAME, keyValuePairs[ParamCodes.USER_NAME]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.PROJECT_NAME))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.PROJECT_NAME, keyValuePairs[ParamCodes.PROJECT_NAME]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.ACTIVATION_LINK))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.ACTIVATION_LINK, keyValuePairs[ParamCodes.ACTIVATION_LINK]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.LOGIN_LINK))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.LOGIN_LINK, keyValuePairs[ParamCodes.LOGIN_LINK]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.TEMP_PASSWORD))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.TEMP_PASSWORD, keyValuePairs[ParamCodes.TEMP_PASSWORD]);
+            }
+            return emailBodyGeneric;
+        }
+
+        public EmailDataGeneric GetFormatMailPublications(String code, int language, Dictionary<string, string> keyValuePairs)
+        {            
+            EmailDataGeneric emailBodyGeneric = daoUtil.GetEmailDataGeneric(code, language);
+            emailBodyGeneric.Body = CompleteEmailBodyPublications(emailBodyGeneric.Body, keyValuePairs);
+            return emailBodyGeneric;
+        }
+
+        private string CompleteEmailBodyPublications(string emailBodyGeneric, Dictionary<string, string> keyValuePairs)
         {
             if (emailBodyGeneric.Contains(ParamCodes.USER_NAME))
             {
                 emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.USER_NAME, keyValuePairs[ParamCodes.USER_NAME]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.PUBLICATION_TITLE))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.PUBLICATION_TITLE, keyValuePairs[ParamCodes.PUBLICATION_TITLE]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.PROJECT_NAME))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.PROJECT_NAME, keyValuePairs[ParamCodes.PROJECT_NAME]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.PUBLISHER_EMAIL))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.PUBLISHER_EMAIL, keyValuePairs[ParamCodes.PUBLISHER_EMAIL]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.AVAILABILITY))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.AVAILABILITY, keyValuePairs[ParamCodes.AVAILABILITY]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.DATE_TO))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.DATE_TO, keyValuePairs[ParamCodes.DATE_TO]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.PREFERENTIAL_PLAN))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.PREFERENTIAL_PLAN, keyValuePairs[ParamCodes.PREFERENTIAL_PLAN]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.REJECTED_REASON))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.REJECTED_REASON, keyValuePairs[ParamCodes.REJECTED_REASON]);
+            }
+            return emailBodyGeneric;
+        }
+
+        public EmailDataGeneric GetFormatMailReservations(String code, int language, Dictionary<string, string> keyValuePairs)
+        {
+            EmailDataGeneric emailBodyGeneric = daoUtil.GetEmailDataGeneric(code, language);
+            emailBodyGeneric.Body = CompleteEmailBodyReservations(emailBodyGeneric.Body, keyValuePairs);
+            return emailBodyGeneric;
+        }
+
+        private string CompleteEmailBodyReservations(string emailBodyGeneric, Dictionary<string, string> keyValuePairs)
+        {
+            if (emailBodyGeneric.Contains(ParamCodes.USER_NAME))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.USER_NAME, keyValuePairs[ParamCodes.USER_NAME]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.PUBLICATION_TITLE))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.PUBLICATION_TITLE, keyValuePairs[ParamCodes.PUBLICATION_TITLE]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.PROJECT_NAME))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.PROJECT_NAME, keyValuePairs[ParamCodes.PROJECT_NAME]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.DATE_FROM))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.DATE_FROM, keyValuePairs[ParamCodes.DATE_FROM]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.RESERVATION_PLAN))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.RESERVATION_PLAN, keyValuePairs[ParamCodes.RESERVATION_PLAN]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.RESERVED_QUANTITY))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.RESERVED_QUANTITY, keyValuePairs[ParamCodes.RESERVED_QUANTITY]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.QUANTITY_PEOPLE))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.QUANTITY_PEOPLE, keyValuePairs[ParamCodes.QUANTITY_PEOPLE]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.PRICE))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.PRICE, keyValuePairs[ParamCodes.PRICE]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.REJECTED_REASON))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.REJECTED_REASON, keyValuePairs[ParamCodes.REJECTED_REASON]);
             }
             return emailBodyGeneric;
         }
