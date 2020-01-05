@@ -1301,5 +1301,25 @@ namespace backend.Logic
             }
 
         }
+
+        public VOResponseUpdateCommissionAmountAdmin UpdateCommissionAmountAdmin(VORequestUpdateCommissionAmountAdmin voUpdateAmount)
+        {
+            try
+            {
+                VOResponseUpdateCommissionAmountAdmin response = new VOResponseUpdateCommissionAmountAdmin();
+                String message = util.ValidAccessToken(voUpdateAmount.AccessToken, voUpdateAmount.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    spaces.UpdateCommissionAmountAdmin(voUpdateAmount);                   
+                    message = EnumMessages.SUCC_COMMISSIONUPDATED.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
     }
 }

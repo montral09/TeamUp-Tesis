@@ -14,7 +14,25 @@ namespace webapi.Controllers
 {
     public class ReservationPaymentAdminController : ApiController
     {
-        IFacadeWeb fach = new FacadeFactory().CreateFacadeWeb;      
+        IFacadeWeb fach = new FacadeFactory().CreateFacadeWeb;
+
+        [EnableCors(origins: "*", headers: "*", methods: "*")]
+        [HttpPost]
+        [Route("api/reservationPaymentAdmin")]
+        public IHttpActionResult Post([FromBody]VORequestUpdateCommissionAmountAdmin voUpdateAmount)
+        {
+            try
+            {
+                VOResponseUpdateCommissionAmountAdmin voResp = new VOResponseUpdateCommissionAmountAdmin();
+                voResp = fach.UpdateCommissionAmountAdmin(voUpdateAmount);
+                return Ok(voResp);
+            }
+            catch (GeneralException e)
+            {
+                return InternalServerError(new Exception(e.Codigo));
+            }
+        }
+
         [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpPut]
         [Route("api/reservationPaymentAdmin")]

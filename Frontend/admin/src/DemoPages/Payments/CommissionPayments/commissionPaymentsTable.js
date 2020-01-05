@@ -3,14 +3,14 @@ import { Table, Tooltip } from 'reactstrap';
 
 
 // This component will render the table with the values passed as parameters -props-
-const CommissionPaymentsTable = ({payments, approveCommissionPayment, rejectCommissionPayment}) =>{
+const CommissionPaymentsTable = ({paymentsPendingConfirmation, approveCommissionPayment, rejectCommissionPayment}) =>{
     const columnsName = ['ID Res','Publicacion','Mail','Nombre','Telefono', 'Monto','Comentario','Evidencia', 'Fecha Pago', 'Aprobar','Rechazar'];
 
     const columnsTable = columnsName.map( colName => {
         return (<th key={colName}>{colName}</th>)
     });
-    const arrDataAppList = payments.length ? (
-        payments.map( obj => {
+    const arrDataAppList = paymentsPendingConfirmation.length ? (
+        paymentsPendingConfirmation.map( obj => {
             return(
             <tr key={obj.IdReservation}>
                 <td>{obj.IdReservation}</td>

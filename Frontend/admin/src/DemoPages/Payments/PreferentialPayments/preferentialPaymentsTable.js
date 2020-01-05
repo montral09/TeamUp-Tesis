@@ -3,14 +3,14 @@ import { Table, Tooltip } from 'reactstrap';
 
 
 // This component will render the table with the values passed as parameters -props-
-const PreferentialPaymentsTable = ({payments, approvePreferentialPayment, rejectPreferentialPayment}) =>{
+const PreferentialPaymentsTable = ({preferentialPayments, approvePreferentialPayment, rejectPreferentialPayment}) =>{
     const columnsName = ['ID Pub','Publicacion','Mail','Nombre','Telefono', 'Plan', 'Monto','Comentario','Evidencia','Fecha Pago','Aprobar','Rechazar'];
 
     const columnsTable = columnsName.map( colName => {
         return (<th key={colName}>{colName}</th>)
     });
-    const arrDataAppList = payments.length ? (
-        payments.map( obj => {
+    const arrDataAppList = preferentialPayments.length ? (
+        preferentialPayments.map( obj => {
             return(
             <tr key={obj.IdPublication}>
                 <td>{obj.IdPublication}</td>

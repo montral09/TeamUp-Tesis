@@ -9,7 +9,6 @@ import PageTitle from '../../../Layout/AppMain/PageTitle';
 
 import CommissionPaymentsTable from './commissionPaymentsTable';
 import ApproveRejectCommissionPaymentModal from './approveRejectCommissionPayment';
-
 import { connect } from 'react-redux';
 
 // Table
@@ -28,11 +27,10 @@ class CommissionPayments extends Component {
         const admTokenObj = props.admTokenObj;
         const adminMail = props.adminData.Mail
         this.state = {
-            payments: [],
+            paymentsPendingConfirmation: [],
             admTokenObj: admTokenObj,
             adminMail: adminMail
-        }
-        this.modalElement = React.createRef(); // Connects the reference to the modal
+        }        
         this.modalElementAppRej = React.createRef(); // Connects the reference to the modal
         this.approveCommissionPayment  = this.approveCommissionPayment.bind(this);
         this.rejectCommissionPayment = this.rejectCommissionPayment.bind(this);
@@ -55,7 +53,6 @@ class CommissionPayments extends Component {
         };
         this.modalElementAppRej.current.toggleAppRej(this.props.admTokenObj, this.props.adminData, paymentData);  
     }
-
     // This function will trigger when the component is mounted, to fill the data from the state
     componentDidMount() {
         this.updateTable()
@@ -73,7 +70,11 @@ class CommissionPayments extends Component {
             console.log (data);
             if (data.responseCode == "SUCC_COMMISSIONSSOK") {
                 console.log(data.Commissions);
-                this.setState({ 'payments': data.Commissions })
+                var commissions = data.Commissions;
+                var paymentsPendingConfirmation = commissions.filter(commission => {
+                    return commission.CommissionState === 'PENDING CONFIRMATION'
+                });                
+                this.setState({ 'paymentsPendingConfirmation': paymentsPendingConfirmation })            
             } else {
                 toast.error('Hubo un error', {
                     position: "top-right",
@@ -120,7 +121,7 @@ class CommissionPayments extends Component {
                             <Card className="main-card mb-3">
                                 <CardBody>
                                     <CardTitle>Pendientes de aprobación</CardTitle>
-                                    <CommissionPaymentsTable payments={this.state.payments} rejectCommissionPayment={this.rejectCommissionPayment} approveCommissionPayment={this.approveCommissionPayment}/>
+                                    <CommissionPaymentsTable paymentsPendingConfirmation={this.state.paymentsPendingConfirmation} rejectCommissionPayment={this.rejectCommissionPayment} approveCommissionPayment={this.approveCommissionPayment}/>                                    
                                 </CardBody>
                             </Card>
                         </Col>

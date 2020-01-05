@@ -1675,7 +1675,7 @@ namespace backend.Data_Access
                 }
                 dr.Close();
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -2698,6 +2698,37 @@ namespace backend.Data_Access
             }
             catch (Exception e)
             {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        public void UpdateCommissionAmountAdmin(VORequestUpdateCommissionAmountAdmin voUpdateAmount)
+        {
+            SqlConnection con = null;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                bool isPaid = voUpdateAmount.Price == 0 ? true : false;
+                String query = cns.UpdateCommissionAmountAdmin(isPaid);
+                SqlCommand updateCommand = new SqlCommand(query, con);
+                List<SqlParameter> param = new List<SqlParameter>()
+                {
+                    new SqlParameter("@commission", SqlDbType.Int) {Value =  voUpdateAmount.Price},
+                    new SqlParameter("@idReservation", SqlDbType.Int) {Value = voUpdateAmount.IdReservation}
+                };
+                updateCommand.Parameters.AddRange(param.ToArray());
+                updateCommand.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {                
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             finally

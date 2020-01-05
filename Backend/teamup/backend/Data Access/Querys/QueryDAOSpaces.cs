@@ -493,7 +493,7 @@ namespace backend.Data_Access.Query
         {
             String query = "select r.idReservation, p.title, u.mail, u.name, u.lastName, u.phone, r.commission, ps.description, " +
                 "r.commissionComment, r.commissionEvidence, r.paymentCommissionDate from RESERVATIONS r, PUBLICATIONS p, USERS u, " +
-                "PAYMENT_STATES ps where r.commissionPaymentState = 2 and r.commissionPaymentState = ps.idPaymentState and r.idPublication = p.idPublication and p.idUser = u.idUser ";
+                "PAYMENT_STATES ps where (r.commissionPaymentState = 2 or r.commissionPaymentState = 1) and r.commissionPaymentState = ps.idPaymentState and r.idPublication = p.idPublication and p.idUser = u.idUser ";
             return query;
         }
 
@@ -595,5 +595,18 @@ namespace backend.Data_Access.Query
             String query = "select pt.idPlan FROM PUBLICATION_PLAN_TYPES pt, PUBLICATION_PLANS pp where pp.idPlan = @idPlan and pt.idPlan = pp.idPlan and pt.idPlan = 1";
             return query;
         }
+
+        public String UpdateCommissionAmountAdmin (bool isPaid)
+        {
+            String query = "";
+            if (isPaid)
+            {
+                query = "update RESERVATIONS set commission = @commission, paymentCommissionDate = getdate(), commissionPaymentState = 3 where idReservation = @idReservation";
+            } else
+            {
+                query = "update RESERVATIONS set commission = @commission where idReservation = @idReservation";
+            }
+            return query;
+        }        
     }
 }
