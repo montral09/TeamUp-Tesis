@@ -4,10 +4,6 @@ import { Helmet } from 'react-helmet';
 import 'react-toastify/dist/ReactToastify.css';
 import Login from './login';
 
-
-// Multilanguage
-import { withTranslate } from 'react-redux-multilingual'
-
 class LoginPage extends React.Component {
 
     render() {

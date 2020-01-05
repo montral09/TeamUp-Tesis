@@ -2,17 +2,14 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { logOut } from '../../services/login/actions';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import Modal from 'react-bootstrap/Modal';
 import {Button} from 'react-bootstrap';
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual'
 import { compose } from 'redux';
+import { callAPI } from '../../services/common/genericFunctions';
 
 const SignedInLinks = (props) =>{
-    console.log("SignedInLinks - props");
-    console.log(props);
     var PublisherValidated = false;
     var Mail = false;
     var tokenObj = false;
@@ -27,49 +24,20 @@ const SignedInLinks = (props) =>{
     const handleShow = () => setShow(true);
 
     const requestBePublisher = () =>{
-      fetch('https://localhost:44372/api/customer', {
-          method: 'PUT',
-          header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-
-          body: JSON.stringify({
-              Mail: Mail,
-              AccessToken : tokenObj.accesToken
-          })
-      }).then(response => response.json()).then(data => {
-          console.log("data:" + JSON.stringify(data));
-          if (data.responseCode == "SUCC_USRUPDATED") {
-              toast.success('Solicitud enviada correctamente', {
-                  position: "top-right",
-                  autoClose: 5000,
-                  hideProgressBar: false,
-                  closeOnClick: true,
-                  pauseOnHover: true,
-                  draggable: true,
-              });
-              setShow(false);
-          } else{
-              toast.error('Hubo un error', {
-                  position: "top-right",
-                  autoClose: 5000,
-                  hideProgressBar: false,
-                  closeOnClick: true,
-                  pauseOnHover: true,
-                  draggable: true,
-              });
-          }
-      }
-      ).catch(error => {
-          toast.error('Internal error', {
-              position: "top-right",
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-          });
-          console.log(error);
-      }
-      )
+        var objApi = {};
+        objApi.objToSend = {
+            Mail: Mail,
+            AccessToken : tokenObj.accesToken
+        }
+        objApi.fetchUrl = "api/customer";
+        objApi.method = "PUT";
+        objApi.successMSG = {
+            SUCC_USRUPDATED : this.props.translate('SUCC_USRUPDATED3'),
+        };
+        objApi.functionAfterSuccess = "requestBePublisher";
+        objApi.functionAfterError = "requestBePublisher";
+        objApi.errorMSG= {}
+        callAPI(objApi, this);
       
     }
     const { translate } = props;

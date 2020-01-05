@@ -3,7 +3,10 @@ import {
     Button, Modal, ModalHeader, ModalBody, ModalFooter,
     Form, FormGroup, Label, Input, Col
 } from 'reactstrap';
-import { toast } from 'react-toastify';
+
+import { displayErrorMessage, displaySuccessMessage } from '../../../services/common/genericFunctions';
+// Multilanguage
+import { withTranslate } from 'react-redux-multilingual'
 
 class ModalResComPay extends React.Component {
     constructor(props) {
@@ -55,14 +58,7 @@ class ModalResComPay extends React.Component {
         let files = event.target.files // create file object
         if ( files.length > 1) {
             event.target.value = null // discard selected file
-            toast.error('Solo puede subir un archivo', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
+            displayErrorMessage(this.props.translate('modalResComPay_errMsg1'));
             return false;
         }
         return true;
@@ -80,20 +76,13 @@ class ModalResComPay extends React.Component {
             // compare file type find doesn't matach
             if (types.every(type => files[x].type !== type)) {
                 // create error message and assign to container   
-                err += files[x].type + ' no es un formato soportado\n';
+                err += files[x].type + this.props.translate('myReservedSpacesList_custPay_errorMsg2');
             }
         };
 
         if (err !== '') { // if message not empty that mean has error 
             event.target.value = null // discard selected file
-            toast.error(err, {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
+            displayErrorMessage(err);
             return false;
         }
         return true;
@@ -105,19 +94,12 @@ class ModalResComPay extends React.Component {
         let err = "";
         for (var x = 0; x < files.length; x++) {
             if (files[x].size > size) {
-                err += files[x].type + ' es demasiado grande, por favor elija un archivo de menor tamaño\n';
+                err += files[x].type + this.props.translate('myReservedSpacesList_custPay_errorMsg3');
             }
         };
         if (err !== '') {
             event.target.value = null
-            toast.error(err, {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
+            displayErrorMessage(err);
             return false
         }
 
@@ -136,14 +118,7 @@ class ModalResComPay extends React.Component {
                         this.getBase64(file);
                     }
                 });
-                toast.success('Archivo cargado correctamente. ', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
+                displaySuccessMessage(this.props.translate('myReservedSpacesList_custPay_succMsg1'));
             }
         }else{
             var objPaymentDetails = {
@@ -190,27 +165,29 @@ class ModalResComPay extends React.Component {
     }
 
     render() {
+        const { translate } = this.props;
+
         return (
             <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
-                <ModalHeader toggle={this.toggle}>Detalle pago de la comisión</ModalHeader>
+                <ModalHeader toggle={this.toggle}>{translate('modalResComPay_header')}</ModalHeader>
                 <ModalBody>
                     <Form>
                         <FormGroup row>
-                            <Label for="paymentAmmount" sm={4}>Monto</Label>
+                            <Label for="paymentAmmount" sm={4}>{translate('amount_w')}</Label>
                             <Col sm={8}>
                                 <Input type="text" name="paymentAmmount" id="paymentAmmount"
                                     value={this.state.objPaymentDetails.paymentAmmount} readOnly />
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label for="paymentStatusText" sm={4}>Estatus del pago</Label>
+                            <Label for="paymentStatusText" sm={4}>{translate('myReservedSpacesList_custPay_paymentStatusTxt')}</Label>
                             <Col sm={8}>
                                 <Input type="text" name="paymentStatusText" id="paymentStatusText"
                                     value={this.state.objPaymentDetails.paymentStatusText} readOnly />
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label for="paymentDate" sm={4}>Fecha de pago</Label>
+                            <Label for="paymentDate" sm={4}>{translate('myReservedSpacesList_custPay_paymentDateTxt')}</Label>
                             <Col sm={8}>
                                 <Input type="text" name="paymentDate" id="paymentDate"
                                     value={this.state.objPaymentDetails.paymentDate == null ? "Pendiente" : this.state.objPaymentDetails.paymentDate} readOnly />
@@ -218,15 +195,15 @@ class ModalResComPay extends React.Component {
                         </FormGroup>
                         {this.state.objPaymentDetails.paymentDocument ? (
                             <FormGroup row>
-                                <Label for="paymentDocument" sm={4}>Documento subido</Label>
+                                <Label for="paymentDocument" sm={4}>{translate('myReservedSpacesList_custPay_uploadedDocument')}</Label>
                                 <Col sm={8}>
-                                    <a href={this.state.objPaymentDetails.paymentDocument} target="_blank">Archivo subido</a>
+                                    <a href={this.state.objPaymentDetails.paymentDocument} target="_blank">LINK</a>
                                 </Col>
                             </FormGroup>
                         ) : (null)}
                         {this.state.objPaymentDetails.paymentStatus != "PAID" && this.state.objPaymentDetails.paymentStatus != "CANCELED" ? (
                             <FormGroup row>
-                                <Label for="paymentDocumentNew" sm={4}>Documento prueba</Label>
+                                <Label for="paymentDocumentNew" sm={4}>{translate('myReservedSpacesList_custPay_uploadDocument')}</Label>
                                 <Col sm={8}>
                                     <Input type="file" name="paymentDocumentNew" id="paymentDocumentNew"
                                         value={this.state.objPaymentDetails.paymentDocumentNew} onChange={this.onChange} />
@@ -234,7 +211,7 @@ class ModalResComPay extends React.Component {
                             </FormGroup>
                         ) : (null)}
                         <FormGroup row>
-                            <Label for="paymentComment" sm={6}>Comentario (opcional)</Label>
+                            <Label for="paymentComment" sm={6}>{translate('comment_w')} ({translate('optional_w')})</Label>
                             <Col sm={12}>
                                 <Input type="textarea" name="paymentComment" id="paymentComment"
                                     value={this.state.objPaymentDetails.paymentComment} onChange={this.onChange} readOnly={this.state.objPaymentDetails.paymentStatus != "PAID" || this.state.objPaymentDetails.paymentStatus != "CANCELED" ? false : true} />
@@ -243,10 +220,10 @@ class ModalResComPay extends React.Component {
                         <FormGroup row>
                             <Col sm={12}>
                                 {this.state.objPaymentDetails.paymentStatus != "PAID" && this.state.objPaymentDetails.paymentStatus != "CANCELED" ? (
-                                    "Atencion! El pago deberá ser confirmado por el administrador. " +
-                                    "Puede adjuntar una imagen/pdf y agregar un comentario."
+                                    translate('modalResComPay_txt1') +
+                                    translate('modalResComPay_txt2')
                                 ) : (
-                                        "El pago fue confirmado."
+                                    translate('modalResComPay_txt3')
                                     )}
                             </Col>
                         </FormGroup>
@@ -254,9 +231,9 @@ class ModalResComPay extends React.Component {
                     </Form>
                 </ModalBody>
                 <ModalFooter>
-                    <Button color="link" onClick={this.toggle} disabled={this.state.buttonIsDisabled}>Cerrar</Button>
+                    <Button color="link" onClick={this.toggle} disabled={this.state.buttonIsDisabled}>{translate('close_w')}</Button>
                     {this.state.objPaymentDetails.paymentStatus != "PAID" && this.state.objPaymentDetails.paymentStatus != "CANCELED" ? (
-                        <Button color="primary" onClick={this.save} disabled={this.state.buttonIsDisabled}>Guardar
+                        <Button color="primary" onClick={this.save} disabled={this.state.buttonIsDisabled}>{translate('save_w')}
                             &nbsp;&nbsp;
                             {this.state.isLoading &&
                                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -269,4 +246,4 @@ class ModalResComPay extends React.Component {
     }
 }
 
-export default ModalResComPay;
+export default withTranslate(ModalResComPay);

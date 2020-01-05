@@ -1,11 +1,8 @@
 import React from 'react';
 import { Link, Redirect } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
 import { connect } from 'react-redux';
 import { logIn } from '../../services/login/actions';
-
+import { displayErrorMessage } from '../../services/common/genericFunctions';
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual'
 import { compose } from 'redux';
@@ -18,14 +15,14 @@ class Login extends React.Component {
             email: '',
             password: '',
             isLoading: false,
-            buttonIsDisable: false
+            buttonIsDisable: false,
+            translate : props.translate,
+            bindThis : this
         }
-        this.login = this.login.bind(this);
     }
 
     componentDidMount() {
         window.scrollTo(0, 0);
-
     }
 
     onChange = (e) => {
@@ -38,28 +35,21 @@ class Login extends React.Component {
         let returnValue = false;
         let message = "";
         if (!this.state.password || !this.state.email) {
-            message = 'Por favor ingrese correo y contraseña';
+            message = this.props.translate('login_errorMsg1');
             returnValue = true;
         } else if (!this.state.email.match(/\S+@\S+/)) {
-            message = 'Formato de email incorrecto';
+            message = this.props.translate('login_errorMsg2');
             returnValue = true;
         }
 
         if (message) {
-            toast.error(message, {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
+            displayErrorMessage(message);
         }
 
         return returnValue;
     }
 
-    login() {
+    login = () =>  {
         if (!this.checkRequiredInputs()) {
             this.toggleButton();
             this.props.logIn(this.state);

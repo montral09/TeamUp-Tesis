@@ -2,8 +2,6 @@
 import Header from "../header/header";
 import { Redirect } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { modifyData, updateToken } from '../../services/login/actions';
 import { logOut } from '../../services/login/actions';
 import languages from '../../api/languages'
@@ -12,7 +10,7 @@ import { connect } from 'react-redux';
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual'
 import { compose } from 'redux';
-import { callAPI } from '../../services/common/genericFunctions';
+import { callAPI, displayErrorMessage } from '../../services/common/genericFunctions';
 
 class Modify extends React.Component {
 
@@ -32,7 +30,6 @@ class Modify extends React.Component {
             razonSocial: RazonSocial,
             Language: Language,
             address: Address,
-            anyChange: false,
             tokenObj: tokenObj
         }
     }
@@ -48,65 +45,57 @@ class Modify extends React.Component {
     }
 
     // Validate if all the required inputs are inputted, returns true or false
-    checkRequiredInputs() {
+    checkRequiredInputs = () => {
         let returnValue = false;
         let message = "";
         if (!this.state.password || !this.state.email || !this.state.firstName
             || !this.state.lastName || !this.state.phone) {
-                message='Por favor ingrese los campos obligatorios (*)';
+                message= this.props.translate('register_checkErrorMsg1');
                 returnValue = true;
         } else if (!this.state.firstName.match(/^[A-Za-z]+$/)) {        
             returnValue = true;
-            message = "Su nombre debe contener solo letras";
+            message = this.props.translate('register_checkErrorMsg2');
         } else if (this.state.firstName.length < 2) {        
             returnValue = true;
-            message = "Nombre demasiado corto";            
+            message = this.props.translate('register_checkErrorMsg3');
         } else if (!this.state.lastName.match(/^[A-Za-z]+$/)) {
             returnValue = true;
-            message = "Su apellido debe contener solo letras";
+            message = this.props.translate('register_checkErrorMsg4');
         } else if (this.state.lastName.length < 2) {        
             returnValue = true;
-            message = "Apellido demasiado corto"; 
+            message = this.props.translate('register_checkErrorMsg5');
         } else if (this.state.password != this.state.passwordConfirm) {
             returnValue = true;
-            message = "Ambos campos de contraseña deben ser iguales";
+            message = this.props.translate('register_checkErrorMsg6');
         } else if (this.state.password.length < 6) {
-            message='La contraseña debe tener al menos 6 caracteres';
+            message=this.props.translate('register_checkErrorMsg7');
             returnValue = true;
         } else if (!this.state.email.match(/\S+@\S+.+/)) {
-            message='Formato de email incorrecto';
+            message=this.props.translate('register_checkErrorMsg8');
             returnValue = true;
         } else if (!this.state.phone.match(/^[0-9]+$/) && !this.state.phone.match(/^[+]+[0-9]+$/)) {
-            message='Telefono debe contener solo números o "+" si corresponde a un número internacional';
+            message=this.props.translate('register_checkErrorMsg9');
             returnValue = true;
         } else if (this.state.phone.length < 6) {
-            message='Telefono demasiado corto';
+            message=this.props.translate('register_checkErrorMsg10');
             returnValue = true;
         } else if (this.state.rut && !this.state.rut.match(/^[0-9]+$/)) {
-            message='Rut debe contener solo números';
+            message=this.props.translate('register_checkErrorMsg11');
             returnValue = true;
         } else if (this.state.rut && this.state.rut < 12) {
-            message='Rut debe tener 12 números';
+            message=this.props.translate('register_checkErrorMsg12');
             returnValue = true;
         } else if (this.state.razonSocial && this.state.razonSocial < 3) {
-            message='Razon social demasiada corta';
+            message=this.props.translate('register_checkErrorMsg13');
             returnValue = true;
         } else if (this.state.address && this.state.address < 10) {
-            message='Direccion demasiado corta';
+            message=this.props.translate('register_checkErrorMsg14');
             returnValue = true;
         }
         
         if(message){
-            toast.error(message, {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
+            displayErrorMessage(message);
         }
-        
         return returnValue;
     }
     modifyUser = () => {
@@ -146,11 +135,13 @@ class Modify extends React.Component {
     render() {
         const { login_status } = this.props;
         if (login_status !== 'LOGGED_IN') return <Redirect to='/' />
+        const { translate } = this.props;
+
         return (
             <>
                 {/*SEO Support*/}
                 <Helmet>
-                    <title>TeamUp | Modificar datos</title>
+                    <title>TeamUp | {translate('modify_heaader')} </title>
                     <meta name="description" content="---" />
                 </Helmet>
                 {/*SEO Support End */}
@@ -169,19 +160,19 @@ class Modify extends React.Component {
                                                 </div>
                                                 <div className="col-md-6">
                                                     <form className="border border-light p-6">
-                                                        <p className="h4 mb-4 text-center">Modificar Datos</p>
-                                                        <input type="text" id="firstName" className="form-control mb-4" placeholder="Nombre" maxLength="50" onChange={this.onChange} value={this.state.firstName} readOnly ></input>
-                                                        <input type="text" id="lastName" className="form-control mb-4" placeholder="Apellido" maxLength="50" onChange={this.onChange} value={this.state.lastName} readOnly></input>
-                                                        <input type="email" id="email" className="form-control mb-4" placeholder="Correo (*)" maxLength="50" onChange={this.onChange} value={this.state.email}></input>                                                        
-                                                        <input type="text" id="phone" className="form-control mb-4" placeholder="Numero telefónico" aria-describedby="phone" maxLength="30" onChange={this.onChange} value={this.state.phone}></input>
-                                                        <small id="passwordHelper" className="form-text text-muted mb-2">La contraseña debe contener al menos 6 caracteres</small>
-                                                        <input type="password" name="password" id="password" className="form-control mb-4" placeholder="Contraseña (*)" maxLength="100" onChange={this.onChange}></input>
-                                                        <input type="password" name="passwordConfirm" id="passwordConfirm" className="form-control mb-4" placeholder="Repetir contraseña (*)" maxLength="100" onChange={this.onChange}></input>
-                                                        <small id="emailHelper" className="form-text text-muted mb-2">Estos son los datos de su empresa (si aplica):</small>
+                                                        <p className="h4 mb-4 text-center">{translate('modify_heaader')}</p>
+                                                        <input type="text" id="firstName" className="form-control mb-4" placeholder={translate('name_w')} maxLength="50" onChange={this.onChange} value={this.state.firstName} readOnly ></input>
+                                                        <input type="text" id="lastName" className="form-control mb-4" placeholder={translate('lastName_w')}  maxLength="50" onChange={this.onChange} value={this.state.lastName} readOnly></input>
+                                                        <input type="email" id="email" className="form-control mb-4" placeholder={translate('email_w')+" (*)"} maxLength="50" onChange={this.onChange} value={this.state.email}></input>                                                        
+                                                        <input type="text" id="phone" className="form-control mb-4" placeholder={translate('phoneNumber_w')+" (*)"} aria-describedby="phone" maxLength="30" onChange={this.onChange} value={this.state.phone}></input>
+                                                        <small id="passwordHelper" className="form-text text-muted mb-2">{translate('register_helper_password')}</small>
+                                                        <input type="password" name="password" id="password" className="form-control mb-4" placeholder={translate('password_w')+" (*)"} maxLength="100" onChange={this.onChange}></input>
+                                                        <input type="password" name="passwordConfirm" id="passwordConfirm" className="form-control mb-4" placeholder={translate('register_repeatPassword')+" (*)"} maxLength="100" onChange={this.onChange}></input>
+                                                        <small id="emailHelper" className="form-text text-muted mb-2">{translate('register_helper_companyMessage')}:</small>
                                                         <input type="text" id="rut" className="form-control mb-4" placeholder="Rut" aria-describedby="rut" maxLength="50" onChange={this.onChange} value={this.state.rut} readOnly></input>
-                                                        <input type="text" id="razonSocial" className="form-control mb-4" placeholder="Razón Social" aria-describedby="razonSocial" maxLength="50" onChange={this.onChange} value={this.state.razonSocial} readOnly></input>
-                                                        <input type="text" id="address" className="form-control mb-4" placeholder="Dirección" aria-describedby="address" maxLength="100" onChange={this.onChange} value={this.state.address}></input>
-                                                        <small id="languageHelper" className="form-text text-muted mb-2">Idioma de los correos electrónnicos:</small>
+                                                        <input type="text" id="razonSocial" className="form-control mb-4" placeholder={translate('socialReason')} aria-describedby="razonSocial" maxLength="50" onChange={this.onChange} value={this.state.razonSocial} readOnly></input>
+                                                        <input type="text" id="address" className="form-control mb-4" placeholder={translate('address_w')} aria-describedby="address" maxLength="100" onChange={this.onChange} value={this.state.address}></input>
+                                                        <small id="languageHelper" className="form-text text-muted mb-2">{translate('modify_mailLanguage')}</small>
                                                         <select className="browser" id="Language" 
                                                             value={this.state.Language} onChange={this.onChange}>
                                                             {languages.map((language) => {
@@ -191,7 +182,7 @@ class Modify extends React.Component {
                                                             })}
                                                         </select>
                                                         <div className="text-center">
-                                                            <input readOnly defaultValue='Guardar' className="btn btn-primary" onClick={() => { this.modifyUser() }} />
+                                                            <input readOnly defaultValue={translate('save_w')} className="btn btn-primary" onClick={() => { this.modifyUser() }} />
                                                             <div className="mb-5" ></div>
                                                         </div>
                                                     </form>
