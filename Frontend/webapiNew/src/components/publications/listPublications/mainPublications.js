@@ -3,23 +3,20 @@ import Header from "../../header/header";
 import Footer from "../../footer/footer";
 import { Helmet } from 'react-helmet';
 import { Redirect } from 'react-router-dom';
-//import BlockProducts from '../blocks/blockProducts'
 import Filters from "./filters";
 import './mega_filter.css';
 import PublicationList from "./publicationList";
 import PublicationGrid from "./publicationGrid";
-import { toast } from 'react-toastify';
 import { withRouter } from "react-router";
 import LoadingOverlay from 'react-loading-overlay';
-import ErrorBoundary from '../../generic/ErrorBoundary';
-
+import { callAPI } from '../../../services/common/genericFunctions';
+// Multilanguage
+import { withTranslate } from 'react-redux-multilingual'
+import { compose } from 'redux';
 class MainPublications extends React.Component {
 	constructor(props) {
         super(props);
         let {spacetype, capacity, city} = props.match.params;
-        console.log("props.match.params")
-
-        console.log(props.match.params)
         let grid,list,product_list,product_grid = "";
         if(localStorage.getItem('view') === 'list') {
 			grid= ''; list= 'active'; product_list= 'product-list active'; product_grid= 'product-grid';
@@ -52,24 +49,15 @@ class MainPublications extends React.Component {
             generalError : false,
             facilitiesSelected : []
         };
-        this.loadInfraestructure = this.loadInfraestructure.bind(this);		
-        this.loadSpaceTypes = this.loadSpaceTypes.bind(this);
-        this.startSearch = this.startSearch.bind(this);
-        this.redirectToPub = this.redirectToPub.bind(this);
-        this.handleErrors = this.handleErrors.bind(this);
     }
-    handleErrors(error){
-        this.setState({ generalError: true });
-        console.log("ERROR:");
-        console.log(error);
-    }
+
     onChange = (e) => {
         const targetId = e.target.id;
         this.setState({
             [targetId]: e.target.value
         }, () =>{
             if(targetId == "publicationsPerPage" || targetId == "currentPage" || targetId == "facilitiesSelected" || targetId == "spacetypeSelected"){
-                this.startSearch();
+                this.startSearchMP();
             }
         });
     }
@@ -85,20 +73,17 @@ class MainPublications extends React.Component {
     
     componentDidMount() {
         window.scrollTo(0, 0);
-        this.loadInfraestructure();
-        this.loadSpaceTypes();
+        this.loadInfraestructureMP();
+        this.loadSpaceTypesMP();
     }
 
-    redirectToPub(id){
+    redirectToPub= (id) =>{
         this.props.history.push('/publications/viewPublication/viewPublication/'+id);
     }
 
-    startSearch() {
-        var objToSend = {}
-        var fetchUrl = "https://localhost:44372/api/publications";
-        var method = "POST";
-
-        var objToSend = {
+    startSearchMP= () => {
+        var objApi = {};
+        objApi.objToSend = {
             "SpaceType": this.state.spacetypeSelected,
             "Capacity": this.state.capacity,
             "State": "ACTIVE",
@@ -107,115 +92,61 @@ class MainPublications extends React.Component {
             "PublicationsPerPage": parseInt(this.state.publicationsPerPage)
         }
         if(this.state.facilitiesSelected.length > 0){
-            objToSend.Facilities = this.state.facilitiesSelected;
+            objApi.objToSend.Facilities = this.state.facilitiesSelected;
         }
-        console.log("startSearch:");
-        console.log(objToSend);
+        objApi.fetchUrl = "api/publications";
+        objApi.method = "POST";
+        objApi.successMSG = {
+            SUCC_PUBLICATIONSOK : '',
+        };
+        objApi.functionAfterSuccess = "startSearchMP";
+        objApi.errorMSG= {}
         this.setState({ publicationsLoaded: false });
-        fetch(fetchUrl, {
-            method: method,
-            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify(objToSend)
-        }).then(response => response.json()).then(data => {
-            console.log(data);
-            if (data.responseCode == "SUCC_PUBLICATIONSOK") {
-                let newTotalPages = Math.round(parseFloat(data.TotalPublications/this.state.publicationsPerPage));
-                let newPagination = [];
-                for(var i=1;i<=newTotalPages;i++){
-                    newPagination.push(i);
-                }
-                this.setState({ publicationsLoaded: true, publications:data.Publications, 
-                    totalPublications:data.TotalPublications,totalPages:newTotalPages, pagination: newPagination });
-            } else {
-                this.handleErrors(data.responseCode || "Generic error");
-            }
-        }
-        ).catch(error => {
-            this.handleErrors(error);
-        }
-        )
+        callAPI(objApi, this);
     }
 
-    loadInfraestructure() {
-        try {
-            fetch('https://localhost:44372/api/facilities').then(response => response.json()).then(data => {
-                if (data.responseCode == "SUCC_FACILITIESOK") {
-                    this.setState({ facilities: data.facilities });
-                } else {
-                    toast.error('Internal error', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                }
-            }
-            ).catch(error => {
-                this.handleErrors(error || "Generic error");
-            }
-            )
-        } catch (error) {
-            this.handleErrors(error);
-        }
+    loadInfraestructureMP = () => {
+        var objApi = {};
+        objApi.objToSend = {}
+        objApi.fetchUrl = "api/facilities";
+        objApi.method = "GET";
+        objApi.successMSG = {
+            SUCC_FACILITIESOK : '',
+        };
+        objApi.functionAfterSuccess = "loadInfraestructureMP";
+        objApi.errorMSG= {}
+        callAPI(objApi, this);
     }
 
-    loadSpaceTypes() {
-        try {
-            fetch('https://localhost:44372/api/spaceTypes'
-            ).then(response => response.json()).then(data => {
-                if (data.responseCode == "SUCC_SPACETYPESOK") {
-
-                    if(this.state.spacetypeSelected == ""){
-                        var newSpaceTypeSelected = data.spaceTypes[0].Code;
-                        var spaceTypeSelectedText = data.spaceTypes.filter(function(st){
-                            return parseInt(st.Code) === parseInt(newSpaceTypeSelected);
-                        });
-                        this.setState({ spaceTypes: data.spaceTypes, spacetypeSelected: newSpaceTypeSelected, spaceTypesLoaded: true, spaceTypeSelectedText: spaceTypeSelectedText[0].Description },
-                                        () => {this.startSearch();})
-                    }else{
-                        let sts = this.state.spacetypeSelected;
-                        var spaceTypeSelectedText = data.spaceTypes.filter(function(st){
-                            return parseInt(st.Code) === parseInt(sts);
-                        });
-                        if(!spaceTypeSelectedText){
-                            spaceTypeSelectedText = data.spaceTypes[0].Description;
-                            this.setState({ spacetypeSelected: data.spaceTypes[0].Code})
-                        }
-                        this.setState({ spaceTypes: data.spaceTypes, spaceTypesLoaded: true, spaceTypeSelectedText: spaceTypeSelectedText[0].Description || "" },
-                            () => {this.startSearch();})
-                    }
-                } else {
-                    this.handleErrors(data.responseCode || "Generic error");
-
-                }
-            }
-            ).catch(error => {
-                this.handleErrors(error || "Generic error");
-
-            }
-            )
-        } catch (error) {
-            this.handleErrors(error || "Generic error");
-        }
+    loadSpaceTypesMP = () => {
+        var objApi = {};
+        objApi.objToSend = {}
+        objApi.fetchUrl = "api/spaceTypes";
+        objApi.method = "GET";
+        objApi.successMSG = {
+            SUCC_SPACETYPESOK : '',
+        };
+        objApi.functionAfterSuccess = "loadSpaceTypesMP";
+        objApi.errorMSG= {}
+        callAPI(objApi, this);
     }
 
     render() {
         if (this.state.generalError) return <Redirect to='/error' />
+        const { translate } = this.props;
         return (
-            <ErrorBoundary>
+            <>
                 {/*SEO Support*/}
                 <Helmet>
-                    <title>TeamUp | Lista de publicaciones</title>
-                    <meta name="description" content="Lista de publicaciones" />
+                    <title>TeamUp | {translate('mainPublications_head')}</title>
+                    <meta name="description" content={translate('mainPublications_head')} />
                 </Helmet>
                 {/*SEO Support End */}
                 <Header />
                 <LoadingOverlay
                     active={this.state.spaceTypesLoaded === true && this.state.publicationsLoaded === true ? false : true}
                     spinner
-                    text='Cargando...'
+                    text={translate('loading_text_small')}
                     >
                     <div className="breadcrumb  full-width ">
                         <div className="background-breadcrumb"></div>
@@ -257,15 +188,13 @@ class MainPublications extends React.Component {
                                                         </div>
 													    <div className="list-options">
 													        <div className="sort">
-													            Ordenar por: 
+                                                                {translate('sortBy_w')}: 
 																<select>
-																	<option value="1">Defecto</option>
-																	<option value="2">Menor Precio</option>
-																	<option value="3">Mayor Precio</option>
+																	<option value="1">{translate('default_w')}</option>
 																</select>
 													        </div>
 													        <div className="limit">
-													            Mostrar: 	
+                                                                {translate('show_w')}: 	
 																<select id="publicationsPerPage" onChange={this.onChange}>
                                                                     <option value="10">10</option>
 																	<option value="30">30</option>
@@ -275,7 +204,7 @@ class MainPublications extends React.Component {
 													    </div>
 													</div>
 													{parseInt(this.state.publications.length) === 0 ? (
-														<p>No se encontraron publicaciones</p>
+														<p>{translate('elementsNotFound_w')}</p>
 													) : (
 														<>
 															{this.state.product_list === 'product-list active' &&
@@ -300,7 +229,7 @@ class MainPublications extends React.Component {
 																		})}
 																	</ul>
 																</div>
-																<div className="col-md-6 text-right">Mostrando {this.state.publications.length} publicaciones de {this.state.totalPublications}</div>
+																<div className="col-md-6 text-right">{translate('showing_w')} {this.state.publications.length} {translate('publications_w')} {translate('of_w')} {this.state.totalPublications}</div>
 															</div>
 														</>
 													)}
@@ -315,9 +244,12 @@ class MainPublications extends React.Component {
                 </div>
                 </LoadingOverlay>
                 <Footer />
-            </ErrorBoundary>
+            </>
         );
     }
 }
-
-export default withRouter(MainPublications);
+const enhance = compose(
+    withRouter,
+    withTranslate
+)
+export default enhance(MainPublications);

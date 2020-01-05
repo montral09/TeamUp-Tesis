@@ -2,7 +2,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { logOut, updateToken } from '../../services/login/actions';
 import store from '../../services/store'
-
+import { MAIN_URL} from './constants'
 export const handleErrors = (error, bindThis) => {
     bindThis.setState({ generalError: true });
 }
@@ -11,7 +11,7 @@ export const callAPI = (objApi, bindThis) => {
     console.log("objApi ")
     console.log(objApi)   
     if(objApi.method == "GET"){
-        fetch("http://teamup-001-site1.itempurl.com/"+objApi.fetchUrl).then(response => response.json()).then(data => {
+        fetch(MAIN_URL+objApi.fetchUrl).then(response => response.json()).then(data => {
             console.log("data.responseCode "+data.responseCode)
             console.log(data)   
             if (data.responseCode && objApi.successMSG && data.responseCode in objApi.successMSG) {
@@ -24,12 +24,14 @@ export const callAPI = (objApi, bindThis) => {
             }
         }
         ).catch(error => {
+            throw error;
+
             alert(error)
             handleErrors(error, bindThis);
         }
         )
     }else{
-        fetch("http://teamup-001-site1.itempurl.com/"+objApi.fetchUrl, {
+        fetch(MAIN_URL+objApi.fetchUrl, {
             method: objApi.method,
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify(objApi.objToSend)
@@ -46,6 +48,7 @@ export const callAPI = (objApi, bindThis) => {
             }
         }
         ).catch(error => {
+            throw error;
             alert(error)
             handleErrors(error, bindThis);
         }
@@ -138,6 +141,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             bindThis.setState({ spaceTypes: objData.spaceTypes })
         break;
         case "loadInfraestructureCP":
+        case "loadInfraestructureMP":
             bindThis.setState({ facilities: objData.facilities });
         break;
         case "loadPremiumOptionsCP":
@@ -157,11 +161,92 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         case "saveRateMRSL":
             bindThis.modalReqInfo.current.changeModalLoadingState(true);
             bindThis.loadMyReservationsMRSL();
-            break;
+        break;
         case "saveCustReservationPayment":
             bindThis.ModalCustResPay.current.changeModalLoadingState(true);
             bindThis.loadMyReservationsMRSL();
+        break;
+        case "registerUser":
+            objApi.dispatch({ type: objApi.typeSuccess, userData: objApi.objToSend});
+        break;
+        case "logIn":
+            objApi.dispatch({ type: objApi.typeSuccess, userData: objData.voUserLog, tokenObj: {
+                accesToken : objData.AccessToken,
+                refreshToken : objData.RefreshToken,
+            }});
+        break;
+        case "requestBePublisher":
+            bindThis.handleClose();
+        break;
+        case "loadSpaceTypesBR":
+            bindThis.setState({ spaceTypes: objData.spaceTypes , spaceTypeSelected : objData.spaceTypes[0].Code })
+        break;
+        case "loadSpaceTypesRP" : bindThis.setState({ spaceTypes: objData.spaceTypes }, () => {bindThis.loadRecommendedPubs()}); break;
+        case "loadRecommendedPubs":
+            var finalRecommended = objData.Recommended;
+            const spaceTypes = bindThis.state.spaceTypes;
+            finalRecommended.forEach(element => {
+                const spaceType = spaceTypes.filter(space => {
+                    return space.Code === element.SpaceType
+                });
+                element.SpaceTypeDesc = spaceType[0].Description;    
+            });
+            bindThis.setState({ recommendedPublications: finalRecommended});
+        break;
+        case "loadMyFavoritePublications"   : bindThis.setState({ publications: objData.Publications, loadingPubs: false });   break;
+        case "loadSpaceTypesFP"             : bindThis.setState({ spaceTypes: objData.spaceTypes, loadingSpaceTypes: false }); break;
+        case "startSearchMP":
+            let newTotalPages = Math.round(parseFloat(objData.TotalPublications/bindThis.state.publicationsPerPage));
+            let newPagination = [];
+            for(var i=1;i<=newTotalPages;i++){
+                newPagination.push(i);
+            }
+            bindThis.setState({ publicationsLoaded: true, publications:objData.Publications, 
+                totalPublications:objData.TotalPublications,totalPages:newTotalPages, pagination: newPagination });
+        break;
+        case "loadSpaceTypesMPL"    : bindThis.setState({ spaceTypes: objData.spaceTypes, loadingSpaceTypes: false }); break;
+        case "loadSpaceTypesMP":
+            if(bindThis.state.spacetypeSelected == ""){
+                var newSpaceTypeSelected = objData.spaceTypes[0].Code;
+                var spaceTypeSelectedText = objData.spaceTypes.filter(function(st){
+                    return parseInt(st.Code) === parseInt(newSpaceTypeSelected);
+                });
+                bindThis.setState({ spaceTypes: objData.spaceTypes, spacetypeSelected: newSpaceTypeSelected, spaceTypesLoaded: true, spaceTypeSelectedText: spaceTypeSelectedText[0].Description },
+                                () => {bindThis.startSearchMP();})
+            }else{
+                let sts = bindThis.state.spacetypeSelected;
+                var spaceTypeSelectedText = objData.spaceTypes.filter(function(st){
+                    return parseInt(st.Code) === parseInt(sts);
+                });
+                if(!spaceTypeSelectedText){
+                    spaceTypeSelectedText = objData.spaceTypes[0].Description;
+                    bindThis.setState({ spacetypeSelected: objData.spaceTypes[0].Code})
+                }
+                bindThis.setState({ spaceTypes: objData.spaceTypes, spaceTypesLoaded: true, spaceTypeSelectedText: spaceTypeSelectedText[0].Description || "" },
+                    () => {bindThis.startSearchMP();})
+            }
+        break;
+        case "changePubStateMPL"    : bindThis.loadMyPublications(); break;
+        case "loadMyPublications"   : bindThis.setState({ publications: objData.Publications, loadingPubs: false });   break;
+        case "confirmPayment"       : bindThis.ModalDetailPayment.current.changeModalLoadingState(true); bindThis.loadMyPublications(); break;
+        case "saveComissionPayment":
+            bindThis.ModalResComPay.current.changeModalLoadingState(true);
+            bindThis.loadMyReservationsRP();
             break;
+        case "saveConfirmRP":
+        case "saveCancelRP":
+            bindThis.loadMyReservationsRP();
+            bindThis.modalReqInfo.current.changeModalLoadingState(true);
+            break;
+        case "confirmPaymentRP":
+        case "rejetPayment":
+            bindThis.loadMyReservationsRP();
+            bindThis.ModalResCustPay.current.changeModalLoadingState(true);
+        break;
+
+        case "loadMyReservationsRP":
+            bindThis.setState({ reservations: objData.Reservations, loadingReservations: false })
+        break;
     }
 }
 
@@ -183,9 +268,15 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
         case "restoreUser":
             bindThis.setState({isLoading: false});
         break;
+        case "registerUser":
+            objApi.dispatch({ type: objApi.typeSuccess, messageObj: { responseCode: objData.responseCode, errorMessage: objApi.errorMSG.ERR_MAILALREADYEXIST}});
+        break;
+        case "logIn":
+            objApi.dispatch({ type: objApi.LOG_IN_ERROR});
+        break;
         default:
     }
-    if(objData.responseCode && objData.responseCode in objApi.errorMSG && objApi.errorMSG[objData.responseCode] && objApi.errorMSG[objData.responseCode] != ""){
+    if(objData.responseCode && objApi.errorMSG && objData.responseCode in objApi.errorMSG && objApi.errorMSG[objData.responseCode] && objApi.errorMSG[objData.responseCode] != ""){
         displayErrorMessage(objApi.errorMSG[objData.responseCode]);
     }else{
         handleErrors("Internal error", bindThis)

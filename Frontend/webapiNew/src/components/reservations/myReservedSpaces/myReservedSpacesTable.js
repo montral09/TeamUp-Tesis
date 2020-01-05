@@ -36,6 +36,8 @@ const MyReservedSpacesTable = (props) =>{
                     paymentStatusText: obj.CommissionPayment.PaymentDescription,
                     paymentAmmount: obj.CommissionPayment.Commission,
                     paymentDate: obj.CommissionPayment.PaymentDate,
+                    paymentDocument: obj.CommissionPayment.PaymentEvidence,
+                    paymentComment: obj.CommissionPayment.PaymentComment,
                     IdReservation :obj.IdReservation
                 };
             }

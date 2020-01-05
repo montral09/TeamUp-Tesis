@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { connect } from 'react-redux';
-import { callAPI } from '../../services/common/genericFunctions';
+import { callAPI, displayErrorMessage } from '../../services/common/genericFunctions';
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual'
 import { compose } from 'redux';
@@ -43,67 +43,57 @@ class Register extends React.Component {
     }
     
     // Validate if all the required inputs are inputted, returns true or false
-    checkRequiredInputs() {
+    checkRequiredInputs = () => {
         let returnValue = false;
         let message = "";
         if (!this.state.password || !this.state.email || !this.state.firstName
             || !this.state.lastName || !this.state.phone) {
-                message='Por favor ingrese los campos obligatorios (*)';
+                message= this.props.translate('register_checkErrorMsg1');
                 returnValue = true;
         } else if (!this.state.firstName.match(/^[A-Za-z]+$/)) {        
             returnValue = true;
-            message = "Su nombre debe contener solo letras";
+            message = this.props.translate('register_checkErrorMsg2');
         } else if (this.state.firstName.length < 2) {        
             returnValue = true;
-            message = "Nombre demasiado corto";            
+            message = this.props.translate('register_checkErrorMsg3');
         } else if (!this.state.lastName.match(/^[A-Za-z]+$/)) {
             returnValue = true;
-            message = "Su apellido debe contener solo letras";
+            message = this.props.translate('register_checkErrorMsg4');
         } else if (this.state.lastName.length < 2) {        
             returnValue = true;
-            message = "Apellido demasiado corto"; 
+            message = this.props.translate('register_checkErrorMsg5');
         } else if (this.state.password != this.state.passwordConfirm) {
             returnValue = true;
-            message = "Ambos campos de contraseña deben ser iguales";
+            message = this.props.translate('register_checkErrorMsg6');
         } else if (this.state.password.length < 6) {
-            message='La contraseña debe tener al menos 6 caracteres';
+            message=this.props.translate('register_checkErrorMsg7');
             returnValue = true;
         } else if (!this.state.email.match(/\S+@\S+.+/)) {
-            message='Formato de email incorrecto';
+            message=this.props.translate('register_checkErrorMsg8');
             returnValue = true;
         } else if (!this.state.phone.match(/^[0-9]+$/) && !this.state.phone.match(/^[+]+[0-9]+$/)) {
-            message='Telefono debe contener solo números o "+" si corresponde a un número internacional';
+            message=this.props.translate('register_checkErrorMsg9');
             returnValue = true;
         } else if (this.state.phone.length < 6) {
-            message='Telefono demasiado corto';
+            message=this.props.translate('register_checkErrorMsg10');
             returnValue = true;
         } else if (this.state.rut && !this.state.rut.match(/^[0-9]+$/)) {
-            message='Rut debe contener solo números';
+            message=this.props.translate('register_checkErrorMsg11');
             returnValue = true;
         } else if (this.state.rut && this.state.rut < 12) {
-            message='Rut debe tener 12 números';
+            message=this.props.translate('register_checkErrorMsg12');
             returnValue = true;
         } else if (this.state.razonSocial && this.state.razonSocial < 3) {
-            console.log ('entre a razon social');
-            message='Razon social demasiada corta';
+            message=this.props.translate('register_checkErrorMsg13');
             returnValue = true;
         } else if (this.state.address && this.state.address < 10) {
-            console.log ('entre a address');
-            message='Direccion demasiado corta';
+            message=this.props.translate('register_checkErrorMsg14');
             returnValue = true;
         }
         
         if(message){
-            toast.error(message, {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
+            displayErrorMessage(message);
         }
-        
         return returnValue;
     }
     registerUser = () => {
@@ -180,7 +170,7 @@ class Register extends React.Component {
                                                         </div>
                                                         <small id="emailHelper" className="form-text text-muted mb-2">{translate('register_helper_companyMessage')}:</small>
                                                         <input type="text" id="rut" className="form-control mb-4" placeholder="Rut" aria-describedby="rut" maxLength="12" onChange={this.onChange}></input>
-                                                        <input type="text" id="razonSocial" className="form-control mb-4" placeholder="Razón Social" aria-describedby="razonSocial" maxLength="50" onChange={this.onChange}></input>
+                                                        <input type="text" id="razonSocial" className="form-control mb-4" placeholder={translate('socialReason')} aria-describedby="razonSocial" maxLength="50" onChange={this.onChange}></input>
                                                         <input type="text" id="address" className="form-control mb-4" placeholder={translate('address_w')} aria-describedby="address" maxLength="100" onChange={this.onChange}></input>
                                                         <div className="text-center">
                                                         <button className="btn btn-primary" disabled= {this.state.buttonIsDisable} type="button" value={translate('registerYourself_w')} onClick={() => { this.registerUser() }} >

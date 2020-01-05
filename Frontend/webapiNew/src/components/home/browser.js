@@ -3,16 +3,16 @@ import "react-datepicker/dist/react-datepicker.css";
 import './browser.css';
 import LocationSearchInput from './../publications/createPublication/LocationSearchInput';
 import { withRouter } from "react-router";
-import { toast } from 'react-toastify';
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual'
 import { compose } from 'redux';
+import { callAPI } from '../../services/common/genericFunctions';
 
 
 class Browser extends React.Component {
     componentDidMount() {
         window.scrollTo(0, 0);
-        this.loadSpaceTypes();
+        this.loadSpaceTypesBR();
     }
     
     constructor(props) {
@@ -32,45 +32,18 @@ class Browser extends React.Component {
         this.setState({ dropDownValue: text })
     }
 
-    loadSpaceTypes() {
-        try {
-            fetch('https://localhost:44372/api/spaceTypes'
-            ).then(response => response.json()).then(data => {
-                if (data.responseCode == "SUCC_SPACETYPESOK") {
-                    this.setState({ spaceTypes: data.spaceTypes , spaceTypeSelected : data.spaceTypes[0].Code })
-                } else {
-                    toast.error('Hubo un error', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                }
-            }
-            ).catch(error => {
-                toast.error('Internal error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                console.log(error);
-            }
-            )
-        } catch (error) {
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-        }
+    loadSpaceTypesBR() {
+        var objApi = {};
+        objApi.objToSend = {}
+        objApi.fetchUrl = "api/spaceTypes";
+        objApi.method = "GET";
+        objApi.successMSG = {
+            SUCC_SPACETYPESOK : '',
+        };
+        objApi.functionAfterSuccess = "loadSpaceTypesBR";
+        objApi.functionAfterError = "loadSpaceTypesBR";
+        objApi.errorMSG = {}
+        callAPI(objApi, this);
     }
 
     startSearch() {

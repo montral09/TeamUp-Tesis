@@ -2,14 +2,15 @@ import React from 'react';
 import Header from "../../header/header";
 import { Redirect } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { connect } from 'react-redux';
 import CreatePublication from './../createPublication/createPublicationMaster';
 import MyPublicationTable from './myPublicationTable';
 import LoadingOverlay from 'react-loading-overlay';
 import ModalDetailPayment from './modalDetailPayment';
-
+import { callAPI } from '../../../services/common/genericFunctions';
+// Multilanguage
+import { withTranslate } from 'react-redux-multilingual'
+import { compose } from 'redux';
 class MyPublicationsList extends React.Component {
 
     constructor(props) {
@@ -23,55 +24,49 @@ class MyPublicationsList extends React.Component {
             generalError : false,
             objPaymentDetails : {}
         }
-        this.loadMyPublications = this.loadMyPublications.bind(this);
-        this.editPublication = this.editPublication.bind(this);
-        this.changePubState = this.changePubState.bind(this);
-        this.confirmPayment = this.confirmPayment.bind(this);
         this.ModalDetailPayment    = React.createRef(); // Connects the reference to the modal
-        this.triggerModalDetailPayment = this.triggerModalDetailPayment.bind(this);
-    }
-
-    handleErrors(error) {
-        this.setState({ generalError: true });
     }
 
     componentDidMount() {
         window.scrollTo(0, 0);
-        this.loadSpaceTypes();
+        this.loadSpaceTypesMPL();
         this.loadMyPublications();
     }
 
-    loadSpaceTypes(){
+    loadSpaceTypesMPL=()=>{
         var objApi = {};
         objApi.objToSend = {}
-        objApi.fetchUrl = "https://localhost:44372/api/spaceTypes";
+        objApi.fetchUrl = "api/spaceTypes";
         objApi.method = "GET";
-        objApi.responseSuccess = "SUCC_SPACETYPESOK";
-        objApi.successMessage = "";
-        objApi.functionAfterSuccess = "loadSpaceTypes";
-        this.callAPI(objApi);
+        objApi.successMSG = {
+            SUCC_SPACETYPESOK : '',
+        };
+        objApi.functionAfterSuccess = "loadSpaceTypesMPL";
+        objApi.errorMSG= {}
+        callAPI(objApi, this);
     }
 
-    loadMyPublications(){
+    loadMyPublications=()=>{
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,
             "Mail": this.props.userData.Mail
         }
-        objApi.fetchUrl = "https://localhost:44372/api/publisherSpaces";
+        objApi.fetchUrl = "api/publisherSpaces";
         objApi.method = "POST";
-        objApi.responseSuccess = "SUCC_PUBLICATIONSOK";
-        objApi.successMessage = "";
+        objApi.successMSG = {
+            SUCC_PUBLICATIONSOK : '',
+        };
         objApi.functionAfterSuccess = "loadMyPublications";
-        this.callAPI(objApi);
+        callAPI(objApi, this);
     }
 
 
-    editPublication(pubId){
+    editPublication=(pubId)=>{
         this.setState({ pubId: pubId })
     }
 
-    changePubState(pubState, pubId){
+    changePubStateMPL=(pubState, pubId)=>{
         var message = "";var nextState = "";
         if(pubState === "ACTIVE"){
             message = "Desea pausar la publicacion?";
@@ -82,6 +77,7 @@ class MyPublicationsList extends React.Component {
         }
         if(window.confirm(message)){
             this.setState({loadingPubs: !this.state.loadingPubs});
+
             var objApi = {};
             objApi.objToSend = {
                 Mail: this.props.userData.Mail,
@@ -90,78 +86,18 @@ class MyPublicationsList extends React.Component {
                 NewState: nextState,
                 AccessToken: this.props.tokenObj.accesToken,
                 IdPublication: pubId
-            };
-            objApi.fetchUrl = "https://localhost:44372/api/publication";
+            }
+            objApi.fetchUrl = "api/publication";
             objApi.method = "PUT";
-            objApi.responseSuccess = "SUCC_PUBLICATIONUPDATED";
-            objApi.successMessage = "Publicacion actualizada correctamente";
-            objApi.functionAfterSuccess = "changePubState";
-            this.callAPI(objApi);
+            objApi.successMSG = {
+                SUCC_PUBLICATIONUPDATED : this.props.translate('SUCC_PUBLICATIONUPDATED'),
+            };
+            objApi.functionAfterSuccess = "changePubStateMPL";
+            callAPI(objApi, this);
         }
     }
 
-    callAPI(objApi){
-        if(objApi.method === "GET"){
-            fetch(objApi.fetchUrl).then(response => response.json()).then(data => {
-                if (data.responseCode === objApi.responseSuccess) {
-                    if(objApi.successMessage !== ""){
-                        toast.success(objApi.successMessage, {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                        });
-                    }
-                    this.callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data);
-                } else {
-                    this.handleErrors("Internal error");
-                }
-            }
-            ).catch(error => {
-                this.handleErrors(error);
-            }
-            )
-        }else{
-            fetch(objApi.fetchUrl,{
-                    method: objApi.method,
-                    header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify(objApi.objToSend)
-                }).then(response => response.json()).then(data => {
-                if (data.responseCode == objApi.responseSuccess) {
-                    if(objApi.successMessage != ""){
-                        toast.success(objApi.successMessage, {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                        });
-                    }
-                    this.callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data);
-                } else {
-                    this.handleErrors("Internal error");
-                }
-            }
-            ).catch(error => {
-                this.handleErrors(error);
-            }
-            )
-        }
-
-    }
-
-    callFunctionAfterApiSuccess(trigger, data){
-        switch(trigger){
-            case "loadMyPublications"   : this.setState({ publications: data.Publications, loadingPubs: false });   break;
-            case "loadSpaceTypes"       : this.setState({ spaceTypes: data.spaceTypes, loadingSpaceTypes: false }); break;
-            case "confirmPayment"       : this.ModalDetailPayment.current.changeModalLoadingState(true); this.loadMyPublications(); break;
-        }
-    }
-
-    confirmPayment(objPaymentDetails){
+    confirmPayment=(objPaymentDetails)=>{
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,
@@ -173,23 +109,25 @@ class MyPublicationsList extends React.Component {
                 "Extension" :  objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Extension : ""
             }
         }
-        console.log("confirmPayment: objToSend")
-        console.log(objApi.objToSend)
-        objApi.fetchUrl = "https://localhost:44372/api/publicationPlan";
+        objApi.fetchUrl = "api/publicationPlan";
         objApi.method = "PUT";
-        objApi.responseSuccess = "SUCC_PAYMENTUPDATED";
-        objApi.successMessage = "Se ha confirmado el envío de pago";
+        objApi.successMSG = {
+            SUCC_PAYMENTUPDATED : this.props.translate('SUCC_PAYMENTUPDATED'),
+        };
         objApi.functionAfterSuccess = "confirmPayment";
-        this.callAPI(objApi);
+        callAPI(objApi, this);
     }
 
-    triggerModalDetailPayment(objPaymentDetails){
+    triggerModalDetailPayment=(objPaymentDetails)=>{
         this.ModalDetailPayment.current.toggle(objPaymentDetails);
     }
 
     render() {
-        if (this.props.login_status != 'LOGGED_IN') return <Redirect to='/' />
+        const { translate, userData, login_status } = this.props;
+        if (login_status != 'LOGGED_IN') return <Redirect to='/' />
         if (this.state.generalError) return <Redirect to='/error' />
+        if (userData.PublisherValidated != true) return <Redirect to='/' />
+
         var loadStatus = !this.state.loadingPubs && !this.state.loadingSpaceTypes ? false : true;
         return (
             <>
@@ -197,7 +135,7 @@ class MyPublicationsList extends React.Component {
                 <>
                 {/*SEO Support*/}
                 <Helmet>
-                    <title>TeamUp | Mis Publicaciones</title>
+                    <title>TeamUp | {translate('myPublications_header')} </title>
                     <meta name="description" content="---" />
                 </Helmet>
                 {/*SEO Support End */}
@@ -209,13 +147,13 @@ class MyPublicationsList extends React.Component {
                     <Header />
                     <div className="main-content  full-width  home">
                         <div className="pattern" >
-                            <h1>Mis publicaciones</h1>
+                            <h1>{translate('myPublications_header')}</h1>
                             <div className="col-md-12 center-column">
                                 <ModalDetailPayment ref={this.ModalDetailPayment} confirmPayment={this.confirmPayment} isPublisher={true}/>
                                 {(!this.state.loadingPubs && !this.state.loadingSpaceTypes) ?
-                                (<MyPublicationTable changePubState={this.changePubState} editPublication={this.editPublication} triggerModalDetailPayment={this.triggerModalDetailPayment}
+                                (<MyPublicationTable changePubState={this.changePubStateMPL} editPublication={this.editPublication} triggerModalDetailPayment={this.triggerModalDetailPayment}
                                     publications={this.state.publications} spaceTypes={this.state.spaceTypes} />)
-                                : ( <p>LOADING</p>)
+                                : ( <p>{translate('loading_text_small')}</p>)
                                 }
                             </div>
                         </div>
@@ -237,5 +175,8 @@ const mapStateToProps = (state) => {
         userData: state.loginData.userData,
     }
 }
-
-export default connect(mapStateToProps)(MyPublicationsList);
+const enhance = compose(
+    connect(mapStateToProps, null),
+    withTranslate
+)
+export default enhance(MyPublicationsList);
