@@ -116,12 +116,41 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         });
         bindThis.props.updateTable(); 
         break;
-    }
+        case "getPendingCommissions" :
+            var commissions = objData.Commissions;
+            var paymentsPendingConfirmation = commissions.filter(commission => {
+                return commission.CommissionState === 'PENDING CONFIRMATION'
+            });                
+            bindThis.setState({ 'paymentsPendingConfirmation': paymentsPendingConfirmation });
+            break;
+        case "appRejCommissionPayment" :
+            bindThis.setState({
+                modal: !bindThis.state.modal,
+                isLoading: !bindThis.state.isLoading, 
+                buttonIsDisabled: !bindThis.state.buttonIsDisabled
+            });
+            bindThis.props.updateTable(); 
+            break;
+        case "getCommissionsUnpaid" :
+            var commissions = objData.Commissions;
+            var paymentsPendingPaid = commissions.filter(commission => {
+                return commission.CommissionState === 'PENDING PAYMENT'
+            });                
+            bindThis.setState({ 'paymentsPendingPaid': paymentsPendingPaid });
+            break;
+        case "editCommission" :
+            bindThis.setState({
+                modal: !bindThis.state.modal,
+                isLoading: !bindThis.state.isLoading, 
+                buttonIsDisabled: !bindThis.state.buttonIsDisabled
+            });
+            bindThis.props.updateTable(); 
+            break;
+    } 
 }
 
 export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>{
     //Check for expired TOKEN
-    console.log('callFunctionAfterApiError');
     switch(objData.responseCode){
         case "ERR_INVALIDACCESSTOKEN":
         case "ERR_ACCESSTOKENEXPIRED":
@@ -130,8 +159,6 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
             handleExpiredToken(objApi, bindThis)
             break;
     }
-    console.log('trigger');
-    console.log(trigger);
     switch(trigger){
         case "logIn":
             objApi.dispatch({ type: objApi.LOG_IN_ERROR});
@@ -140,12 +167,16 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
             bindThis.setState({isLoading: false, buttonIsDisable: false});
         break;
         case "appRejPreferentialPayment":
-            console.log('error en appRejPreferentialPayment')
             bindThis.setState({
                 isLoading: !bindThis.state.isLoading, 
                 buttonIsDisabled: !bindThis.state.buttonIsDisabled 
             });
-        break
+        break;
+        case "editCommission":
+            bindThis.setState({
+                isLoading: !bindThis.state.isLoading, 
+                buttonIsDisabled: !bindThis.state.buttonIsDisabled 
+            });
         default:
     }
     console.log(objData);

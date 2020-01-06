@@ -2,8 +2,7 @@ import React from 'react';
 import {Button, Modal, ModalHeader, ModalBody, ModalFooter,
     Form, FormGroup, Label, Input, Col } from 'reactstrap';
 
-import {toast} from 'react-toastify';
-
+import { callAPI } from '../../../config/genericFunctions';
 
 class ApproveRejectCommissionPayment extends React.Component {
     constructor(props) {
@@ -40,71 +39,28 @@ class ApproveRejectCommissionPayment extends React.Component {
     }
 
     saveAppRej() {
-        console.log("save - this.state: ");
-        console.log(this.state);
         this.setState({
             isLoading: !this.state.isLoading, buttonIsDisabled: !this.state.buttonIsDisabled
         });        
-        let {Mail} = this.state.adminData;
-        let objPayment = {
+        let {Mail} = this.state.adminData;        
+        var objApi = {};    
+        objApi.objToSend = {
             Mail: Mail,
             RejectedReason : this.state.rejectedReason,
             Approved: this.state.paymentData.approved,
             AccessToken: this.state.admTokenObj.accesToken,
             IdReservation: this.state.paymentData.id
         }
-        console.log(objPayment);
-        fetch('https://localhost:44372/api/reservationPaymentAdmin', {
-            method: 'PUT',
-            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify(objPayment)
-        }).then(response => response.json()).then(data => {
-            console.log("data:" + JSON.stringify(data));
-            if (data.responseCode == "SUCC_PAYMENTUPDATED") {
-                toast.success('Pago actualizado correctamente ', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                this.setState({
-                    modal: !this.state.modal,isLoading: !this.state.isLoading, buttonIsDisabled: !this.state.buttonIsDisabled
-                });
-                this.props.updateTable();
-            } else{
-                toast.error('Hubo un error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                this.setState({
-                    isLoading: !this.state.isLoading, buttonIsDisabled: !this.state.buttonIsDisabled
-                });
-            }
-        }
-        ).catch(error => {
-            toast.error('Internal error:'+error, {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-            this.setState({
-                isLoading: !this.state.isLoading, buttonIsDisabled: !this.state.buttonIsDisabled
-            });
-        }
-        )
-            
-
-
+        objApi.fetchUrl = "api/reservationPaymentAdmin";
+        objApi.method = "PUT";
+        objApi.successMSG = {
+            SUCC_PAYMENTUPDATED : 'Pago actualizado correctamente',
+        };
+        objApi.functionAfterSuccess = "appRejCommissionPayment";
+        objApi.functionAfterError = "appRejCommissionPayment"
+        callAPI(objApi, this);
     }
+
     onChange = (e) => {
         this.setState({
             rejectedReason: e.target.value
