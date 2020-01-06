@@ -14,7 +14,9 @@ class DeleteUser extends React.Component {
     constructor(props){
         super(props);
         this.state ={
-            generalError: false
+            generalError: false,
+            buttonIsDisable: false,
+            isLoading: false
         }
     }
 
@@ -50,9 +52,15 @@ class DeleteUser extends React.Component {
             ERR_PENDINGCOMMISSIONPAYMENT : this.props.translate('ERR_PENDINGCOMMISSIONPAYMENT'),
         }
         objApi.logOut = this.props.logOut;
+        this.toggleButton();
         callAPI(objApi, this);
     }
-
+    toggleButton = () =>   {
+        this.setState({
+            isLoading: !this.state.isLoading,
+            buttonIsDisable: !this.state.buttonIsDisable
+        })
+    }
     render() {
         if (this.props.login_status != 'LOGGED_IN') return <Redirect to='/' />
         if (this.state.generalError) return <Redirect to='/error' />
@@ -82,7 +90,12 @@ class DeleteUser extends React.Component {
                                                 <form className="text-center border border-light p-5" action="#!">
                                                     <p className="h4 mb-4">{translate('singInLinks_head_deleteUser')}</p>
                                                     <p className="mb-4">{translate('deleteUser_body')}</p>
-                                                    <input readOnly defaultValue={translate('accept_w')} className="btn btn-primary" onClick={() => { this.deleteUser() }} />
+                                                    <button className="btn btn-primary" disabled={this.state.buttonIsDisable} type="button" value={translate('accept_w')} onClick={() => { this.deleteUser() }} >
+                                                        {translate('accept_w')}&nbsp;&nbsp;
+                                                            {this.state.isLoading &&
+                                                            <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                        }
+                                                        </button>
                                                 </form>
                                             </div>
                                         </div>
@@ -103,6 +116,7 @@ const mapStateToProps = (state) => {
     return {
         login_status: state.loginData.login_status,
         userData: state.loginData.userData,
+        tokenObj: state.loginData.tokenObj
     }
 }
 

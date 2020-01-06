@@ -1,10 +1,13 @@
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { logOut, updateToken } from '../../services/login/actions';
-import store from '../../services/store'
-import { MAIN_URL} from './constants'
+import store from '../../services/store';
+import { MAIN_URL, MAIN_URL_WEB} from './constants';
+
 export const handleErrors = (error, bindThis) => {
     bindThis.setState({ generalError: true });
+    window.open(MAIN_URL_WEB+"error", "_self");
+    displayErrorMessage("Hubo un error, intente nuevamente");
 }
 
 export const callAPI = (objApi, bindThis) => {
@@ -24,9 +27,6 @@ export const callAPI = (objApi, bindThis) => {
             }
         }
         ).catch(error => {
-            throw error;
-
-            alert(error)
             handleErrors(error, bindThis);
         }
         )
@@ -48,8 +48,6 @@ export const callAPI = (objApi, bindThis) => {
             }
         }
         ).catch(error => {
-            throw error;
-            alert(error)
             handleErrors(error, bindThis);
         }
         )
@@ -64,7 +62,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             objApi.retryObjApi.objToSend.AccessToken = objData.AccessToken;
             callAPI(objApi.retryObjApi, bindThis);
         break;
-        case "deleteUser":objApi.logOut();break;
+        case "deleteUser":bindThis.toggleButton(); objApi.logOut();break;
         case "loadInfraestructureVP": bindThis.setState({ facilities: objData.facilities, infIsLoading: false }); break;
 
         case "loadPublicationVP":
@@ -170,6 +168,8 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             objApi.dispatch({ type: objApi.typeSuccess, userData: objApi.objToSend});
         break;
         case "logIn":
+            bindThis.toggleButton();
+            displaySuccessMessage(objApi.successMessage + objData.voUserLog.Name)
             objApi.dispatch({ type: objApi.typeSuccess, userData: objData.voUserLog, tokenObj: {
                 accesToken : objData.AccessToken,
                 refreshToken : objData.RefreshToken,
@@ -272,10 +272,14 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
             objApi.dispatch({ type: objApi.typeSuccess, messageObj: { responseCode: objData.responseCode, errorMessage: objApi.errorMSG.ERR_MAILALREADYEXIST}});
         break;
         case "logIn":
-            objApi.dispatch({ type: objApi.LOG_IN_ERROR});
+            bindThis.toggleButton(); objApi.dispatch({type: objApi.typeError}); 
         break;
+        case "deleteUser":bindThis.toggleButton();break;
         default:
     }
+    console.log("objData.responseCode + "+objData.responseCode)
+    console.log("objApi.errorMSG + "+objApi.errorMSG)
+
     if(objData.responseCode && objApi.errorMSG && objData.responseCode in objApi.errorMSG && objApi.errorMSG[objData.responseCode] && objApi.errorMSG[objData.responseCode] != ""){
         displayErrorMessage(objApi.errorMSG[objData.responseCode]);
     }else{

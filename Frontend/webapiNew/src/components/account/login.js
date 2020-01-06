@@ -53,20 +53,16 @@ class Login extends React.Component {
         if (!this.checkRequiredInputs()) {
             this.toggleButton();
             this.props.logIn(this.state);
-            const scopeThis = this;
-            setTimeout(function () {
-                scopeThis.toggleButton();
-            }, 350);
         }
     }
-    toggleButton() {
+    toggleButton = () =>   {
         this.setState({
             isLoading: !this.state.isLoading,
             buttonIsDisable: !this.state.buttonIsDisable
         })
     }
 
-    render() {
+    render () {
         let { login_status, redirectToMain } = this.props;
         if (login_status == 'LOGGED_IN' && redirectToMain) return <Redirect to='/' />
         const { translate } = this.props;

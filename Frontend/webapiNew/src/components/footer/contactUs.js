@@ -2,7 +2,6 @@ import React from 'react';
 
 class ContactUs extends React.Component {
     render() {
-    	const { translate } = this.props;
  	    return (
 	    	<React.Fragment>
                 <h4>Contacto</h4>
@@ -12,14 +11,13 @@ class ContactUs extends React.Component {
                         <li>
                             <i className="fa fa-phone" style={{ marginBottom: '8px' }}></i>
                             <p>
-                                099999999999<br />                                          										          									
+                                099999999<br />                                          										          									
                             </p>
                         </li>
                         <li>
                             <i className="fa fa-envelope"></i>
                             <p>
-                                <span>office@example</span><br />
-                                <span>info@ask.com</span>
+                                <span>teamupude@gmail.com</span><br />
                             </p>
                         </li>                        
                     </ul>

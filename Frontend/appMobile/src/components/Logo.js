@@ -21,7 +21,7 @@ export default class Logo extends Component<{}>{
       justifyContent: 'flex-end',
      },
      logoText : {
-         fontSize:24,
-         color:'rgba(255,255,255,1)'
+        fontSize:24,
+        color:'rgba(255,255,255,1)'
      },
  });
