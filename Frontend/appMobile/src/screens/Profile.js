@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
-import {View,Text,ScrollView,StyleSheet,TextInput,TouchableOpacity,ToastAndroid} from 'react-native';
+import {View,Text,ScrollView,StyleSheet,TextInput,TouchableOpacity} from 'react-native';
 import { Header } from 'react-native-elements';
+import translations from '../common/translations';
+import {callAPI, displayErrorMessage} from '../common/genericFunctions';
+import LoadingOverlay from 'react-native-loading-spinner-overlay';
 
 import { connect } from 'react-redux';
 import { modifyData } from '../redux/actions/accountActions';
@@ -8,7 +11,7 @@ import { logOut } from '../redux/actions/accountActions';
 
 import FloatingTitle from '../components/FloatingTitleTextInput';
 
-baseURL = 'http://192.168.1.2:59767/api/';
+baseURL = 'http://teamup-001-site1.itempurl.com/api/';
 
 class Profile extends Component {
     constructor(props) {
@@ -28,13 +31,12 @@ class Profile extends Component {
             razonSocial: RazonSocial,
             address: Address,
             anyChange: false,
-            tokenObj: tokenObj
+            tokenObj: tokenObj,
+            isLoading : false
         }
-        this.modify = this.modify.bind(this);
-        this.toggleEditable = this.toggleEditable.bind(this)
     }
 
-    toggleEditable(){
+    toggleEditable = () => {
         this.setState({editActive: !this.state.editActive});
         if (this.state.editActive){
             this.modify()
@@ -46,7 +48,7 @@ class Profile extends Component {
         this.setState({ [attrName]: value });
     }
 
-    checkRequiredInputs() {
+    checkRequiredInputs = () => {
         let returnValue = false;
         let message = "";
         if (!this.state.password || !this.state.email || !this.state.firstName
@@ -96,23 +98,15 @@ class Profile extends Component {
             returnValue = true;
         }
         if (message) {
-            ToastAndroid.showWithGravity(
-                message,
-                ToastAndroid.LONG,
-                ToastAndroid.CENTER,
-            );
+            displayErrorMessage(message);
         }
         return returnValue;
     }
 
-    modify() {
-        if (this.checkRequiredInputs()) {
-            console.log("Token OBJ: ");
-            console.log(this.state.tokenObj);
-            fetch(baseURL + 'user', {
-            method: 'PUT',
-            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify({
+    modify = () => {
+        if (!this.checkRequiredInputs()) {
+            var objApi = {};
+            objApi.objToSend = {
                 Password: this.state.password || "",
                 Mail: this.state.originalEmail,
                 Name: this.state.firstName,
@@ -122,123 +116,23 @@ class Profile extends Component {
                 RazonSocial: this.state.razonSocial,
                 Address: this.state.address,
                 NewMail: this.state.email,
-                AccessToken: this.state.tokenObj.accesToken
-            })
-        }).then(response => response.json()).then(data => {
-            console.log("data:" + JSON.stringify(data));
-            switch(data.responseCode){
-                case "SUCC_USRUPDATED":
-                    if(this.state.email != this.state.originalEmail){
-                        ToastAndroid.showWithGravity(
-                            'Usuario actualizado correctamente, se ha enviado un correo de verificacion a su nueva casilla ',
-                            ToastAndroid.LONG,
-                            ToastAndroid.CENTER,
-                        );
-                        this.props.logOut();
-                        this.props.navigation.navigate('Login');
-                    }else{
-                        this.props.modifyData({
-                            Mail: this.state.originalEmail,
-                            Name: this.state.firstName,
-                            LastName: this.state.lastName,
-                            Phone: this.state.phone,
-                            Rut: this.state.rut,
-                            RazonSocial: this.state.razonSocial,
-                            Address: this.state.address,
-                        }); // this is calling the reducer to store the data on redux Store
-                        ToastAndroid.showWithGravity(
-                            'Usuario actualizado correctamente',
-                            ToastAndroid.LONG,
-                            ToastAndroid.CENTER,
-                        );
-                        this.props.navigation.navigate('Home');
-                    }
-                break;
-                case "ERR_MAILALREADYEXIST":
-                    ToastAndroid.showWithGravity(
-                        'Ese correo ya esta en uso, por favor elija otro',
-                        ToastAndroid.LONG,
-                        ToastAndroid.CENTER,
-                    );
-                break;
-                case "ERR_INVALIDACCESSTOKEN":
-                    fetch(baseURL + 'tokens', {
-                        method: 'PUT',
-                        header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        
-                        body: JSON.stringify({
-                            Mail: this.state.email,
-                            RefreshToken: this.state.tokenObj.refreshToken
-                        })
-                    }).then(response => response.json()).then(data => {
-                        this.setState({isLoading: false, buttonIsDisable:false});
-                        console.log("data:" + JSON.stringify(data));
-                        
-                        switch(data.responseCode){
-                            case "SUCC_TOKENSUPDATED":
-                                let newTokenObj = {
-                                    accesToken: data.AccessToken,
-                                    refreshToken: data.RefreshToken
-                                };
-                                this.props.updateToken(newTokenObj);
-                                this.setState({tokenObj: newTokenObj}, () => this.modify());                            
-                            break;
-                            case "ERR_INVALIDREFRESHTOKEN":
-                                console.log(data.responseCode);
-                            break;
-                            case "ERR_REFRESHTOKENEXPIRED":
-                                    console.log(data.responseCode);
-                            break;
-                            default:
-                            case "ERR_SYSTEM":
-                                    console.log(data.responseCode);
-                            break;
-                        }
-                    }
-                    ).catch(error => {
-                        this.setState({isLoading: false, buttonIsDisable:false});
-                        toast.error('Internal error', {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                        });
-                        console.log(error);
-                    }
-                    )
-                break;
-
-                case "ERR_ACCESSTOKENEXPIRED":
-                        console.log(data.responseCode);
-                break;
-
-                default:
-                    toast.error('Hubo un error', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                break;
+                AccessToken: this.state.tokenObj.accesToken,
+                Language : 'es'
             }
-        }
-        ).catch(error => {
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-            console.log(error);
-        }
-        )
-            
+            objApi.fetchUrl = "api/user";
+            objApi.method = "PUT";
+            objApi.successMSG = {
+                SUCC_USRUPDATED : this.state.email == this.state.originalEmail ? translations['es'].messages['SUCC_USRUPDATED'] : translations['es'].messages['SUCC_USRUPDATED2'],
+            };
+            objApi.functionAfterSuccess = "modifyUser";
+            objApi.functionAfterError = "modifyUser";
+            objApi.errorMSG= {
+                ERR_MAILALREADYEXIST : translations['es'].messages['ERR_MAILALREADYEXIST']
+            }
+            // Custom
+            objApi.emailChanged = this.state.email != this.state.originalEmail;
+            this.setState({ isLoading: true });
+            callAPI(objApi, this);
         }
 
     }
@@ -249,6 +143,13 @@ class Profile extends Component {
         return (
             <ScrollView>
                 <View style={styles.container}>
+                    {this.state.isLoading ? (
+                        <LoadingOverlay
+                        visible={this.state.isLoading}
+                        textContent={'Cargando...'}
+                    />
+                    ) : (
+                    <>
                     <Header
                         leftComponent={{ icon: 'menu', color: '#fff', flex:1, onPress: () => this.props.navigation.openDrawer()}}
                         rightComponent={{ icon: 'home', color: '#fff', flex:1, onPress: () => this.props.navigation.navigate('Home')}}
@@ -257,6 +158,7 @@ class Profile extends Component {
                         <Text style={styles.titleText}>Panel de usuario</Text> 
                     </View>
                     <View style={styles.inputContainer}>
+                        
                         <FloatingTitle
                             attrName = 'firstName'
                             title = 'Nombre'
@@ -319,13 +221,16 @@ class Profile extends Component {
                             value = {this.state.address}
                             updateMasterState = {this._updateMasterState}
                             editBool = {this.state.editActive}
-                        />    
+                        /> 
+ 
                     </View>
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity style={styles.button} onPress={this.toggleEditable}>
                             <Text style={styles.buttonText}>{this.state.editActive === true ? ('Guardar') : ('Editar')}</Text>
                         </TouchableOpacity>
                     </View>
+                    </>
+                )}   
                 </View>   
             </ScrollView>     
         );
@@ -399,4 +304,3 @@ const styles = StyleSheet.create({
         color:'#ffffff'
     },
 });
-

@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, {Component} from 'react';
 import { StyleSheet, Text, View, ScrollView, Keyboard, TouchableOpacity} from 'react-native';
 import { connect } from 'react-redux';
 
@@ -44,13 +44,13 @@ render() {
                         <Text style={styles.infoText}>{this.props.obj.StateDescription}</Text>                
                         <>
                         {this.props.obj.StateDescription === 'PENDING' || this.props.obj.StateDescription === 'RESERVED' ? (
-                            <TouchableOpacity style={styles.button} /*onPress={()=> {this.props.navigate("ReservationPaymentDetails", {IdReservation: this.props.obj.IdReservation, StateDescription: this.props.obj.StateDescription})}}*/> 
+                            <TouchableOpacity style={styles.button} onPress={()=> {this.props.triggerScreen("CANCEL", this.props.obj.IdReservation, this.props.obj.StateDescription)}}> 
                                 <Text style={styles.buttonText}>Cancelar</Text>
                             </TouchableOpacity>
                             ) : ( 
                                 <> 
                                 {this.props.isPublisher && this.props.obj.StateDescription === 'PENDING' ? (
-                                    <TouchableOpacity style={styles.button} /*onPress={()=>}*/>
+                                    <TouchableOpacity style={styles.button} onPress={()=> {this.props.triggerScreen("CONFIRM", this.props.obj.IdReservation, this.props.obj.StateDescription)}}>
                                         <Text style={styles.buttonText}>Confirmar</Text>
                                     </TouchableOpacity>                            
                                     ) : (null)

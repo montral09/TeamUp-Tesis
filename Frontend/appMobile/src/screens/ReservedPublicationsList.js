@@ -27,7 +27,7 @@ class ReservedPublicationsList extends Component {
         //this.ModalResCustPay = React.createRef(); // Connects the reference to the modal
         //this.ModalResComPay = React.createRef(); // Connects the reference to the modal
         this.loadMyReservations = this.loadMyReservations.bind(this);   
-        //this.triggerModal = this.triggerModal.bind(this);   
+        this.triggerScreen = this.triggerScreen.bind(this);   
         this.saveCancel = this.saveCancel.bind(this);
         this.saveConfirm = this.saveConfirm.bind(this);
         //this.triggerSaveModal = this.triggerSaveModal.bind(this);
@@ -72,13 +72,14 @@ class ReservedPublicationsList extends Component {
                 };
                 this.props.navigation.navigate('ReservationReqInfo', {screenConfig: screenConfigObj});
             break;
-            /*case "CONFIRM": 
-                modalConfigObj ={
+            case "CONFIRM": 
+                screenConfigObj ={
                     title: 'Confirmar reserva', mainText: 'Desea confirmar esta reserva? ', mode : mode, saveFunction : "saveConfirm",
                     cancelAvailable:true, confirmAvailable:true, cancelText :'Cancelar', confirmText :'Confirmar' , login_status: this.props.login_status,
                 };
-                this.setState({modalConfigObj : modalConfigObj, selectedIdRes: IdReservation, selectedResState:auxParam},() => {this.modalReqInfo.current.toggle();})
+                this.props.navigation.navigate('ReservationReqInfo', {screenConfig: screenConfigObj});
             break;
+            /*
             case "PAYRESCUST": 
                 this.ModalResCustPay.current.toggle(auxParam);
             break;

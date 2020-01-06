@@ -1,4 +1,3 @@
-import { ToastAndroid } from 'react-native';
 import { loadState, saveState } from '../auth/cookieStore';
 
 const initState = {
@@ -6,6 +5,7 @@ const initState = {
     userData : {},
     tokenObj : {},
     messageObj: {},
+    systemLanguage: 'es'
 }
 
 const loginReducer = (state = initState, action) => {
@@ -20,11 +20,6 @@ const loginReducer = (state = initState, action) => {
                 userData: action.userData,
                 tokenObj: action.tokenObj,
             }
-            ToastAndroid.showWithGravity(
-                action.messageObj.successMessage,
-                ToastAndroid.LONG,
-                ToastAndroid.CENTER,
-            );
             saveState(newStateObj);
             break;
         case 'LOG_IN_ERROR' :
@@ -32,11 +27,6 @@ const loginReducer = (state = initState, action) => {
                 login_status: 'NOT_LOGGED_IN',
                 ...state,
             }
-            ToastAndroid.showWithGravity(
-                action.messageObj.errorMessage,
-                ToastAndroid.LONG,
-                ToastAndroid.CENTER,
-            );
         break;
         case 'LOG_OUT':
             newStateObj = {
@@ -57,6 +47,13 @@ const loginReducer = (state = initState, action) => {
             newStateObj = {
                 ...state,
                 tokenObj: action.tokenObj
+            }
+            saveState(newStateObj);
+        break;
+        case 'LANGUAGE_UPDATED' : 
+            newStateObj = {
+                ...state,
+                systemLanguage: action.systemLanguage
             }
             saveState(newStateObj);
         break;

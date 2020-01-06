@@ -16,6 +16,7 @@ import SpaceView from './SpaceView';
 import SearchPublications from './SearchPublications';
 import ErrorScreen from './ErrorScreen';
 import ReservationPaymentComDetails from './ReservationPaymentComDetails';
+import ReservationReqInfo from './ReservationReqInfo';
 
 class Login extends Component{
    static navigationOptions = {
@@ -87,6 +88,9 @@ const StackNavigator = createStackNavigator({
                               header: null,
                     })},
   ReservationPaymentComDetails: {screen: ReservationPaymentComDetails, navigationOptions: ({ navigation }) => ({
+                              header: null,
+                    })},
+  ReservationReqInfo: {screen: ReservationReqInfo, navigationOptions: ({ navigation }) => ({
                               header: null,
                     })},
   ErrorScreen: {screen: ErrorScreen, navigationOptions: ({ navigation }) => ({

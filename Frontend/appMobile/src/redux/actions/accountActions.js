@@ -1,44 +1,31 @@
-import Globals from './../../Globals';
+import {callAPI} from '../../common/genericFunctions';
+import translations from '../../common/translations';
 
 export const logIn = (userData) => {
     return (dispatch, getState) =>{
         
-        fetch(Globals.baseURL + '/login', {
-            method: 'POST',
-            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-
-            body: JSON.stringify({
-                Password: userData.password,
-                Mail: userData.email
-            })
-        }).then(response => response.json()).then(data => {
-            //this.setState({isLoading: false, buttonIsDisable:false});
-            console.log("logIn - data:");
-            console.log(data);
-            if (data.responseCode == "SUCC_USRLOGSUCCESS") {
-                let originalDate = new Date();
-                let quinceMinDateTime = new Date(originalDate.getTime() + 15*60000);
-                let cincoDiasDateTime = new Date(originalDate.getTime() + 7200*60000);
-                let tokenObj = {
-                    accesToken : data.AccessToken,
-                    accesTokenExp : quinceMinDateTime,
-                    refreshToken : data.RefreshToken,
-                    refreshTokenExp: cincoDiasDateTime
-                }
-                //this.props.logIn(data.voUserLog, tokenObj); // this is calling the reducer to store the data on redux Store
-                //this.props.history.push('/');
-                dispatch({ type: 'LOG_IN', userData: data.voUserLog, tokenObj: tokenObj, messageObj: { responseCode: "SUCC_USRLOGSUCCESS", successMessage: "Bienvenid@,  "+data.voUserLog.Name}});
-            } else if(data.responseCode ==  "ERR_MAILNOTVALIDATED"){
-                dispatch({ type: 'LOG_IN_ERROR', messageObj: { responseCode: "ERR_MAILNOTVALIDATED", errorMessage: "Correo pendiente de validar "}});
-            }else{
-                dispatch({ type: 'LOG_IN_ERROR', messageObj: { responseCode: "ERR_USRWRONGPASS", errorMessage: "Datos incorrectos"}});
-            }
+        var objApi = {};
+        objApi.objToSend = {
+            Password: userData.password,
+            Mail: userData.email
+        };
+        objApi.fetchUrl = "api/login";
+        objApi.method = "POST";
+        objApi.successMSG = {
+            SUCC_USRLOGSUCCESS : ''
+        };
+        objApi.functionAfterSuccess = "logIn";
+        objApi.functionAfterError = "logIn";
+        objApi.successMessage = "Bienvenid@ ";
+        objApi.errorMSG= {
+            ERR_MAILNOTVALIDATED : translations['es'].messages['ERR_MAILNOTVALIDATED'],
+            ERR_USRMAILNOTEXIST : translations['es'].messages['ERR_USRMAILNOTEXIST'],
+            ERR_USRWRONGPASS : translations['es'].messages['ERR_USRWRONGPASS']
         }
-        ).catch(error => {
-            /*this.setState({isLoading: false, buttonIsDisable:false});*/
-            dispatch({ type: 'LOG_IN_ERROR', messageObj: { responseCode: "ERR_SYSTEM_ERROR", errorMessage: "Internal error"}});
-        }
-        )
+        objApi.dispatch = dispatch;
+        objApi.typeSuccess = 'LOG_IN';
+        objApi.typeError = 'LOG_IN_ERROR';
+        callAPI(objApi, userData.bindThis);
     }
 }
 
@@ -57,7 +44,14 @@ export const modifyData = (userData) =>{
 
 export const updateToken = (tokenObj) =>{
     return {
-        type: TOKEN_UPDATED, 
+        type: 'TOKEN_UPDATED', 
         tokenObj: tokenObj
+   }
+}
+
+export const changeLanguage = (systemLanguage) =>{
+    return {
+        type: 'LANGUAGE_UPDATED', 
+        systemLanguage: systemLanguage
    }
 }
