@@ -2,8 +2,7 @@ import React from 'react';
 import {Button, Modal, ModalHeader, ModalBody, ModalFooter,
     Form, FormGroup, Label, Input, Col } from 'reactstrap';
 
-import {toast} from 'react-toastify';
-
+import { callAPI } from '../../../config/genericFunctions';
 
 class approveRejectPreferentialPayment extends React.Component {
     constructor(props) {
@@ -40,21 +39,29 @@ class approveRejectPreferentialPayment extends React.Component {
     }
 
     saveAppRej() {
-        console.log("save - this.state: ");
-        console.log(this.state);
         this.setState({
             isLoading: !this.state.isLoading, buttonIsDisabled: !this.state.buttonIsDisabled
         });        
-        let {Mail} = this.state.adminData;
-        let objPayment = {
+        let {Mail} = this.state.adminData;        
+        var objApi = {};    
+        objApi.objToSend = {
             Mail: Mail,
             RejectedReason : this.state.rejectedReason,
             Approved: this.state.paymentData.approved,
             AccessToken: this.state.admTokenObj.accesToken,
             IdPublication: this.state.paymentData.id
         }
-        console.log(objPayment);
-        fetch('https://localhost:44372/api/publicationPlanPaymentAdmin', {
+        objApi.fetchUrl = "api/publicationPlanPaymentAdmin";
+        objApi.method = "PUT";
+        objApi.successMSG = {
+            SUCC_PAYMENTUPDATED : 'Pago actualizado correctamente',
+        };
+        objApi.functionAfterSuccess = "appRejPreferentialPayment";
+        objApi.functionAfterError = "appRejPreferentialPayment"
+        callAPI(objApi, this);
+
+
+       /* fetch('https://localhost:44372/api/publicationPlanPaymentAdmin', {
             method: 'PUT',
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify(objPayment)
@@ -100,11 +107,9 @@ class approveRejectPreferentialPayment extends React.Component {
                 isLoading: !this.state.isLoading, buttonIsDisabled: !this.state.buttonIsDisabled
             });
         }
-        )
-            
-
-
+        )*/
     }
+
     onChange = (e) => {
         this.setState({
             rejectedReason: e.target.value

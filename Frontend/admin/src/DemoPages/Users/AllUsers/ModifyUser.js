@@ -5,7 +5,7 @@ import {
     Col
 } from 'reactstrap';
 
-import {toast} from 'react-toastify';
+import { callAPI } from '../../../config/genericFunctions'
 
 
 class ModifyUserModal extends React.Component {
@@ -38,7 +38,8 @@ class ModifyUserModal extends React.Component {
         console.log("save - this.state: ");
         console.log(this.state);
         let {Mail, Name, LastName, Phone, Rut, RazonSocial, Address, CheckPublisher, PublisherValidated, MailValidated, Active  } = this.state.userDataChanged;
-        let objUser = {
+        var objApi = {};
+        objApi.objToSend = {
             Mail: Mail,
             OriginalMail : this.state.userData.Mail,
             Name: Name,
@@ -54,65 +55,20 @@ class ModifyUserModal extends React.Component {
             AdminMail: this.state.adminData.Mail,
             Active: Active
         }
-
-        fetch('https://localhost:44372/api/updateUserAdmin', {
-            method: 'PUT',
-            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify(objUser)
-        }).then(response => response.json()).then(data => {
-            console.log("data:" + JSON.stringify(data));
-            if (data.responseCode == "SUCC_USRUPDATED") {
-                toast.success('Usuario actualizado correctamente ', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                this.setState({
-                    modal: !this.state.modal,
-                    userData: this.state.userData,
-                    userDataChanged: this.state.userData
-                });
-                this.props.updateTable();
-            } else
-                if (data.responseCode == "ERR_MAILALREADYEXIST") {
-                    toast.error('Ese correo ya esta en uso, por favor elija otro.', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                } else if (data.Message) {
-                    toast.error('Hubo un error', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                }
-        }
-        ).catch(error => {
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-            console.log(error);
-        }
-        )
-            
-
-
+        console.log(objApi)
+        objApi.fetchUrl = "api/updateUserAdmin";
+        objApi.method = "PUT";
+        objApi.successMSG = {
+            SUCC_USRUPDATED : 'Usuario actualizado correctamente',
+        };
+        objApi.functionAfterSuccess = "updateUser";
+        objApi.functionAfterError = "updateUser";
+            objApi.errorMSG= {
+                ERR_MAILALREADYEXIST : 'Ese correo ya esta en uso, por favor elija otro.'
+            }
+        callAPI(objApi, this);
     }
+    
     onChange = (e) => {
         var valueToUpdate = e.target.value;
         if(e.target.value == 'on'){
