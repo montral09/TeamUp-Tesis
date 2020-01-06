@@ -2739,5 +2739,43 @@ namespace backend.Data_Access
                 }
             }
         }
+
+        public void CreatePublicationStatics(VORequestCreatePublicationStatics voCreatePublicationStatics)
+        {
+            SqlConnection con = null;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                string facilities = "";
+                if (voCreatePublicationStatics.Facilities != null)
+                {
+                    facilities = Util.CreateFacilitiesString(voCreatePublicationStatics.Facilities);
+                }
+                String query = cns.CreatePublicationStatics();
+                SqlCommand insertCommand = new SqlCommand(query, con);                
+                List<SqlParameter> param = new List<SqlParameter>()
+                {
+                    new SqlParameter("@spaceType", SqlDbType.Int) {Value = voCreatePublicationStatics.SpaceType},
+                    new SqlParameter("@facilities", SqlDbType.VarChar) {Value = facilities},
+                    new SqlParameter("@idPublication", SqlDbType.Int) {Value = voCreatePublicationStatics.IdPublication},
+                    new SqlParameter("@favourite", SqlDbType.Bit) {Value = voCreatePublicationStatics.Favourite},
+                    new SqlParameter("@rented", SqlDbType.Bit) {Value = voCreatePublicationStatics.Rented},
+                };
+                insertCommand.Parameters.AddRange(param.ToArray());
+                insertCommand.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+        }
     }
 }
