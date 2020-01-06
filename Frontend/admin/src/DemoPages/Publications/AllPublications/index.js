@@ -77,9 +77,6 @@ class AllPublications extends Component {
         this.modalElement.current.toggle(publData[0],this.state.admTokenObj,this.props.adminData, this.state.spaceTypes, this.state.facilities);
     }
 
-    // This funciton will call the api to submit the publisher
- 
-
     render() {
         return (
             <Fragment>

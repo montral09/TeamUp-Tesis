@@ -1240,6 +1240,9 @@ namespace backend.Logic
             catch (GeneralException e)
             {
                 throw e;
+            } catch (Exception)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
         }
 

@@ -5,6 +5,7 @@ import store from './configureStore'
 import { MAIN_URL} from './constants'
 export const handleErrors = (error, bindThis) => {
     bindThis.setState({ generalError: true });
+    displayErrorMessage('Hubo un error');
 }
 
 export const callAPI = (objApi, bindThis) => {
@@ -88,7 +89,14 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             bindThis.props.updateTable()
             break;
         case "loadFacilities" : bindThis.setState({ facilities: objData.facilities }); break;
-        case "changePublicationTransition" : bindThis.props.updateTable(); break;
+        case "changePublicationTransition" :         
+            bindThis.setState({
+                modal: !bindThis.state.modal,
+                isLoading: !bindThis.state.isLoading, 
+                buttonIsDisabled: !bindThis.state.buttonIsDisabled
+            });
+            bindThis.props.updateTable(); 
+            break;
         case "getPublicationsPendingApproval" : bindThis.setState({ 'publ': objData.Publications }); break;
         case "getAllPublications" : bindThis.setState({ 'publ': objData.Publications }); break;
         case "editPublication" : 
@@ -99,11 +107,21 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         }); 
         bindThis.props.updateTable()
         break;
+        case "getPreferentialPayments" :  bindThis.setState({ 'preferentialPayments': objData.Payments }); break;
+        case "appRejPreferentialPayment" : 
+            bindThis.setState({
+            modal: !bindThis.state.modal,
+            isLoading: !bindThis.state.isLoading, 
+            buttonIsDisabled: !bindThis.state.buttonIsDisabled
+        });
+        bindThis.props.updateTable(); 
+        break;
     }
 }
 
 export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>{
     //Check for expired TOKEN
+    console.log('callFunctionAfterApiError');
     switch(objData.responseCode){
         case "ERR_INVALIDACCESSTOKEN":
         case "ERR_ACCESSTOKENEXPIRED":
@@ -112,7 +130,8 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
             handleExpiredToken(objApi, bindThis)
             break;
     }
-
+    console.log('trigger');
+    console.log(trigger);
     switch(trigger){
         case "logIn":
             objApi.dispatch({ type: objApi.LOG_IN_ERROR});
@@ -120,11 +139,20 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
         case "registerUser":
             bindThis.setState({isLoading: false, buttonIsDisable: false});
         break;
+        case "appRejPreferentialPayment":
+            console.log('error en appRejPreferentialPayment')
+            bindThis.setState({
+                isLoading: !bindThis.state.isLoading, 
+                buttonIsDisabled: !bindThis.state.buttonIsDisabled 
+            });
+        break
         default:
     }
+    console.log(objData);
     if(objData.responseCode && objApi.errorMSG && objData.responseCode in objApi.errorMSG && objApi.errorMSG[objData.responseCode] && objApi.errorMSG[objData.responseCode] != ""){
         displayErrorMessage(objApi.errorMSG[objData.responseCode]);
     }else{
+        console.log('internal error')
         handleErrors("Internal error", bindThis)
     }
 }

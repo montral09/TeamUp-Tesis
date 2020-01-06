@@ -5,7 +5,6 @@ import {
     Col
 } from 'reactstrap';
 
-import {toast} from 'react-toastify';
 import { callAPI } from '../../../config/genericFunctions'
 
 
@@ -39,22 +38,6 @@ class ModifyUserModal extends React.Component {
         console.log("save - this.state: ");
         console.log(this.state);
         let {Mail, Name, LastName, Phone, Rut, RazonSocial, Address, CheckPublisher, PublisherValidated, MailValidated, Active  } = this.state.userDataChanged;
-        /*let objUser = {
-            Mail: Mail,
-            OriginalMail : this.state.userData.Mail,
-            Name: Name,
-            LastName: LastName,
-            Phone: Phone,
-            Rut: Rut,
-            RazonSocial: RazonSocial,
-            Address: Address,
-            CheckPublisher: CheckPublisher,
-            PublisherValidated: PublisherValidated,
-            MailValidated: MailValidated,
-            AccessToken: this.state.admTokenObj.accesToken,
-            AdminMail: this.state.adminData.Mail,
-            Active: Active
-        }*/
         var objApi = {};
         objApi.objToSend = {
             Mail: Mail,

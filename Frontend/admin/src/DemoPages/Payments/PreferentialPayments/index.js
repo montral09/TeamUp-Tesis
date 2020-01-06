@@ -9,7 +9,7 @@ import PageTitle from '../../../Layout/AppMain/PageTitle';
 
 import PreferentialPaymentsTable from './preferentialPaymentsTable';
 import ApproveRejectPreferentialPaymentModal from './approveRejectPreferentialPayment';
-
+import { callAPI } from '../../../config/genericFunctions';
 import { connect } from 'react-redux';
 
 // Table
@@ -62,40 +62,18 @@ class PreferentialPayments extends Component {
     }
 
     updateTable(){
-        fetch('https://localhost:44372/api/publicationPlanPaymentAdmin', {
-            method: 'POST',
-            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify({
-                "AccessToken": this.state.admTokenObj.accesToken,
-                "Mail": this.state.adminMail               
-            })
-        }).then(response => response.json()).then(data => {
-            if (data.responseCode == "SUCC_PUBLICATIONPLANSOK") {
-                console.log(data.Publications);
-                this.setState({ 'preferentialPayments': data.Payments })
-            } else {
-                toast.error('Hubo un error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-            }
+        var objApi = {};
+        objApi.objToSend = {
+            "AccessToken": this.state.admTokenObj.accesToken,
+            "Mail": this.state.adminMail               
         }
-        ).catch(error => {
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-            console.log(error);
-        }
-        )
+        objApi.fetchUrl = "api/publicationPlanPaymentAdmin";
+        objApi.method = "POST";
+        objApi.successMSG = {
+            SUCC_PUBLICATIONPLANSOK : '',
+        };
+        objApi.functionAfterSuccess = "getPreferentialPayments";
+        callAPI(objApi, this);       
     } 
 
     render() {

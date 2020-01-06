@@ -50,24 +50,6 @@ class PublPendApprov extends Component {
         objApi.functionAfterSuccess = "loadFacilities";
         callAPI(objApi, this);
     }
-    
-    changePubTransition ( newTransition, idPub ){
-        var objApi = {};    
-        objApi.objToSend = {
-            AccessToken : this.props.admTokenObj.accesToken,
-            Mail: this.props.adminData.Mail,
-            IdPublication: idPub,
-            OldState: "NOT VALIDATED",
-            NewState: newTransition
-        }
-        objApi.fetchUrl = "api/publication";
-        objApi.method = "PUT";
-        objApi.successMSG = {
-            SUCC_PUBLICATIONUPDATED : 'Solicitud ejecutada correctamente',
-        };
-        objApi.functionAfterSuccess = "changePublicationTransition";
-        callAPI(objApi, this);       
-    }
 
     // This function will try to approve an specific publication
     approvePublication (key) {
