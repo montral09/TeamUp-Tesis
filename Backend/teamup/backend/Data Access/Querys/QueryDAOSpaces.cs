@@ -607,6 +607,12 @@ namespace backend.Data_Access.Query
                 query = "update RESERVATIONS set commission = @commission where idReservation = @idReservation";
             }
             return query;
-        }        
+        }
+
+        public String CreatePublicationStatics()
+        {
+            String query = "insert into publications_statistics (spaceType, facilities, idPublication, favourite, rented) values (@spaceType, @facilities, @idPublication, @favourite, @rented)";
+            return query;
+        }
     }
 }

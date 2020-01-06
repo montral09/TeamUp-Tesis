@@ -1324,5 +1324,25 @@ namespace backend.Logic
                 throw e;
             }
         }
+
+        public VOResponseCreatePublicationStatics CreatePublicationStatics(VORequestCreatePublicationStatics voCreatePublicationStatics)
+        {
+            try
+            {
+                VOResponseCreatePublicationStatics response = new VOResponseCreatePublicationStatics();
+                String message = util.ValidAccessToken(voCreatePublicationStatics.AccessToken, voCreatePublicationStatics.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    spaces.CreatePublicationStatics(voCreatePublicationStatics);
+                    message = EnumMessages.SUCC_PUBLICATIONSTATICSOK.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
     }
 }

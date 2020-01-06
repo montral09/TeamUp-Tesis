@@ -59,55 +59,6 @@ class approveRejectPreferentialPayment extends React.Component {
         objApi.functionAfterSuccess = "appRejPreferentialPayment";
         objApi.functionAfterError = "appRejPreferentialPayment"
         callAPI(objApi, this);
-
-
-       /* fetch('https://localhost:44372/api/publicationPlanPaymentAdmin', {
-            method: 'PUT',
-            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify(objPayment)
-        }).then(response => response.json()).then(data => {
-            console.log("data:" + JSON.stringify(data));
-            if (data.responseCode == "SUCC_PAYMENTUPDATED") {
-                toast.success('Pago actualizado correctamente ', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                this.setState({
-                    modal: !this.state.modal,isLoading: !this.state.isLoading, buttonIsDisabled: !this.state.buttonIsDisabled
-                });
-                this.props.updateTable();
-            } else{
-                toast.error('Hubo un error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                this.setState({
-                    isLoading: !this.state.isLoading, buttonIsDisabled: !this.state.buttonIsDisabled
-                });
-            }
-        }
-        ).catch(error => {
-            toast.error('Internal error:'+error, {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-            this.setState({
-                isLoading: !this.state.isLoading, buttonIsDisabled: !this.state.buttonIsDisabled
-            });
-        }
-        )*/
     }
 
     onChange = (e) => {

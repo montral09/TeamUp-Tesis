@@ -9,6 +9,7 @@ import PageTitle from '../../../Layout/AppMain/PageTitle';
 
 import CommissionPaymentsTable from './commissionPaymentsTable';
 import ApproveRejectCommissionPaymentModal from './approveRejectCommissionPayment';
+import { callAPI } from '../../../config/genericFunctions';
 import { connect } from 'react-redux';
 
 // Table
@@ -59,45 +60,18 @@ class CommissionPayments extends Component {
     }
 
     updateTable(){
-        fetch('https://localhost:44372/api/reservationPaymentPublisher', {
-            method: 'PUT',
-            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify({
-                "AccessToken": this.state.admTokenObj.accesToken,
-                "Mail": this.state.adminMail               
-            })
-        }).then(response => response.json()).then(data => {
-            console.log (data);
-            if (data.responseCode == "SUCC_COMMISSIONSSOK") {
-                console.log(data.Commissions);
-                var commissions = data.Commissions;
-                var paymentsPendingConfirmation = commissions.filter(commission => {
-                    return commission.CommissionState === 'PENDING CONFIRMATION'
-                });                
-                this.setState({ 'paymentsPendingConfirmation': paymentsPendingConfirmation })            
-            } else {
-                toast.error('Hubo un error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-            }
+        var objApi = {};
+        objApi.objToSend = {
+            "AccessToken": this.state.admTokenObj.accesToken,
+            "Mail": this.state.adminMail               
         }
-        ).catch(error => {
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-            console.log(error);
-        }
-        )
+        objApi.fetchUrl = "api/reservationPaymentPublisher";
+        objApi.method = "PUT";
+        objApi.successMSG = {
+            SUCC_COMMISSIONSSOK : '',
+        };
+        objApi.functionAfterSuccess = "getPendingCommissions";
+        callAPI(objApi, this);
     } 
 
     render() {
