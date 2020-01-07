@@ -13,7 +13,7 @@ export default class PasswordRecovery extends Component<>{
             error: null,
         }
     }
-//test save
+
     passRecovery = (ev) => {
         let url = Globals.baseURL + 'passwordRecovery';
         let req = new Request(url, {
