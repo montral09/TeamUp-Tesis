@@ -3,6 +3,8 @@ import Select from 'react-select';
 import {Form, FormGroup, Label, Input} from 'reactstrap';
 import 'react-quill/dist/quill.snow.css'; 
 import ReactQuill from 'react-quill';
+// Multilanguage
+import { withTranslate } from 'react-redux-multilingual'
 
 class CreatePublicationStep1 extends React.Component {
     constructor(props) {
@@ -39,12 +41,14 @@ class CreatePublicationStep1 extends React.Component {
       if (this.props.parentState.currentStep !== 1) { // Prop: The current step
         return null
       }
+      const { translate } = this.props;
+
       // Step 1 UI
       return(
         <Form className="border border-light p-6">
-            <p className="h4 mb-4 text-center">Datos de tu espacio - Paso 1</p>
+            <p className="h4 mb-4 text-center">{translate('createPub_DataFromYourSpace')} - {translate('createPub_stepHeader')} 1</p>
             <FormGroup>
-                <Label for="spaceTypeSelect">Elije el tipo de espacio que deseas publicar (*)</Label>
+                <Label for="spaceTypeSelect">{translate('createPub_step1_chooseSpaceText')}</Label>
                 <Input type="select" name="spaceTypeSelect" id="spaceTypeSelect" onChange={this.props.onChange} defaultValue = {this.props.parentState.spaceTypeSelect} >
                     {this.props.parentState.spaceTypes.map((space, key) => {
                         return <option key={key} value={space.Code}>{space.Description}</option>;
@@ -52,25 +56,22 @@ class CreatePublicationStep1 extends React.Component {
                 </Input>
             </FormGroup>
             <FormGroup>
-                <Label for="spaceName">Nombre del espacio (*)</Label>
+                <Label for="spaceName">{translate('createPub_step1_spaceName')}</Label>
                 <Input type="text" name="spaceName" id="spaceName" placeholder="ej: Edificio ABC / ABC Coworking / Sala ABC" onChange={this.props.onChange} maxLength="50"
                     value ={this.props.parentState.spaceName}/>
             </FormGroup>
             <FormGroup>
-                <Label for="description">Descripción</Label>
-                {//<Input type="textarea" name="description" id="description" onChange={this.props.onChange} maxLength="2000"
-                    //value ={this.props.parentState.description}/>
-                }
+                <Label for="description">{translate('desription_w')}</Label>
                 <ReactQuill  name="description" id="description" value={this.props.parentState.description}
                   onChange={this.handleRichTextChange} />
             </FormGroup>
             <FormGroup>
-                <Label for="capacity">Capacidad (*)</Label>
+                <Label for="capacity">{translate('capacity_w')} (*)</Label>
                 <Input type="text" name="capacity" placeholder="ej: 10 " id="capacity" onChange={this.props.onChange} maxLength="3"
                     value ={this.props.parentState.capacity}/>
             </FormGroup>
             <FormGroup>
-                <Label for="facilitiesSelect" >Infraestructura</Label>
+                <Label for="facilitiesSelect" >{translate('infraestructure_w')}</Label>
                 <Select	
                     isMulti
 					options={facilitiesAux}
@@ -84,4 +85,4 @@ class CreatePublicationStep1 extends React.Component {
     }
   }
 
-  export default CreatePublicationStep1;
+  export default withTranslate(CreatePublicationStep1);

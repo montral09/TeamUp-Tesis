@@ -1,6 +1,6 @@
 import React from 'react';
 import Header from "../header/header";
-import BackPicture from "../images/BackPicture.jpg";
+import BackPicture from "../../images/BackPicture2.jpg";
 import Footer from "../footer/footer";
 import Browser from "./browser";
 import RecommendedPublications from "./recommendedPublications";
@@ -12,7 +12,7 @@ class Index extends React.Component {
     render() {
         return (
             <>
-                <title>TeamUp! | Página Principal</title>
+                <title>TeamUp! | Home</title>
                 <meta name="description" content="TeamUP - Alquileres de espacios" />
                 <Header />
                 <div style={PictureStyle}>

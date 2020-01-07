@@ -1,5 +1,6 @@
 import React from "react";
 import TopBarMenu from './topBarMenu';
+import LanguageForm from './languageForm';
 
 class Header extends React.Component {
  	render() {
@@ -16,6 +17,7 @@ class Header extends React.Component {
 									<div className="container">
 									    <div className="row">
 									        <div className="col-md-4">
+												<LanguageForm/>
 									        </div>
 									        <div className="col-md-8" id="top-bar-right">
 									        	<TopBarMenu />

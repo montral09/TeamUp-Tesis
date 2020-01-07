@@ -4,8 +4,7 @@ import { Form, FormGroup, Label, Input, FormText } from 'reactstrap';
 import {
     Col
 } from 'reactstrap';
-
-import {toast} from 'react-toastify';
+import { callAPI } from '../../config/genericFunctions'
 import Select from 'react-select';
 
 class ModifyPublicationModal extends React.Component {
@@ -82,14 +81,13 @@ class ModifyPublicationModal extends React.Component {
         })
     } 
 
-    save() {
-        console.log("save - this.state: ");
-        console.log(this.state);        
-        let objPub = {
+    save() {        
+        var objApi = {};
+        objApi.objToSend = {
             "AccessToken": this.state.admTokenObj.accesToken,
             "Publication": {
                 "IdPublication": this.state.publDataChanged.IdPublication,
-                "Mail": this.state.publDataChanged.Mail,
+                "Mail": this.state.adminData.Mail,
                 "SpaceType": parseInt(this.state.publDataChanged.SpaceType),
                 "Title": this.state.publDataChanged.Title,
                 "Description": this.state.publDataChanged.Description,
@@ -110,51 +108,13 @@ class ModifyPublicationModal extends React.Component {
             },
             "ImagesURL" : this.state.publDataChanged.ImagesURL //The ones to keep
         }
-        fetch('https://localhost:44372/api/publications', {
-            method: 'PUT',
-            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify(objPub)
-        }).then(response => response.json()).then(data => {
-            console.log("data:" + JSON.stringify(data));
-            if (data.responseCode == "SUCC_PUBLICATIONUPDATED") {
-                toast.success('Publicacion actualizada correctamente ', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                this.setState({
-                    modal: !this.state.modal,
-                    publData: this.state.publData,
-                    publDataChanged: this.state.publDataChanged
-                });
-                this.props.updateTable();
-            } else
-                 if (data.Message) {
-                    toast.error('Hubo un error', {
-                        position: "top-right",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                    });
-                }
-        }
-        ).catch(error => {
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-            console.log(error);
-        }
-        )
+        objApi.fetchUrl = "api/publications";
+        objApi.method = "PUT";
+        objApi.successMSG = {
+            SUCC_PUBLICATIONUPDATED : 'Publicacion actualizada correctamente',
+        };
+        objApi.functionAfterSuccess = "editPublication";
+        callAPI(objApi, this);
     }
 
     onChange = (e) => {
@@ -285,8 +245,8 @@ class ModifyPublicationModal extends React.Component {
                         </FormGroup>
                         {this.state.publDataChanged.ImagesURL && this.state.publDataChanged.ImagesURL.map((obj,index) => {
                             return (
-                            <FormGroup row >
-                                <Label key={index+"_imageurl"} for="imageurl" sm={2}>Imagen {index}</Label>
+                            <FormGroup row  key={index+"_imageurl"} >
+                                <Label for="imageurl" sm={2}>Imagen {index}</Label>
                                 <Col sm={10}>
                                     <a href={obj} target="_blank">ImageURL{index}</a>
                                     {!this.props.disableFields ? 

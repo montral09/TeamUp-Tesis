@@ -2,9 +2,8 @@ import React, {Component} from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ToastAndroid} from 'react-native';
 import { withNavigation } from 'react-navigation';
 
-import Login from './Login'
-
-baseURL = 'https://192.168.0.145:44372/api/';
+//import Login from './Login'
+import Globals from '../Globals';
 
 export default class PasswordRecovery extends Component<>{
     constructor(){
@@ -16,7 +15,7 @@ export default class PasswordRecovery extends Component<>{
     }
 
     passRecovery = (ev) => {
-        let url = baseURL + 'passwordRecovery';
+        let url = Globals.baseURL + 'passwordRecovery';
         let req = new Request(url, {
             headers: {'Content-Type': 'application/json',
                       'Accept' : 'application/json',

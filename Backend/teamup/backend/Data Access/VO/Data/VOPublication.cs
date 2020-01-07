@@ -37,7 +37,7 @@ namespace backend.Data_Access.VO.Data
         public int QuestionsWithoutAnswer { get; set; }
         public bool IsMyPublication { get; set; }
         public int IdPlan { get; set; }
-        public VOPreferentialPlan PreferentialPlan { get;set;}
+        public VOPreferentialPlan PreferentialPlan { get; set; }
 
         public VOPublication() { }
 

@@ -2,8 +2,7 @@ import React from 'react';
 import {Button, Modal, ModalHeader, ModalBody, ModalFooter,
     Form, FormGroup, Label, Input, Col } from 'reactstrap';
 
-import {toast} from 'react-toastify';
-
+import { callAPI } from '../../../config/genericFunctions';
 
 class ApproveRejectPublicationModal extends React.Component {
     constructor(props) {
@@ -37,10 +36,9 @@ class ApproveRejectPublicationModal extends React.Component {
             });
         }
     }
-
+    
+        
     saveAppRej() {
-        console.log("save - this.state: ");
-        console.log(this.state);
         this.setState({
             isLoading: !this.state.isLoading, buttonIsDisabled: !this.state.buttonIsDisabled
         });
@@ -51,67 +49,25 @@ class ApproveRejectPublicationModal extends React.Component {
             newState = 'ACTIVE';
         }
         // Old state => NOT VALIDATED
-        let {Mail} = this.state.adminData;
-        let objPub = {
-            Mail: Mail,
-            RejectedReason : this.state.RejectReason,
-            OldState: 'NOT VALIDATED',
-            NewState: newState,
-            AccessToken: this.state.admTokenObj.accesToken,
-            IdPublication: this.state.pubData.id
+        let {Mail} = this.state.adminData;               
+        var objApi = {};    
+        objApi.objToSend ={
+        Mail: Mail,
+        RejectedReason : this.state.RejectReason,
+        OldState: 'NOT VALIDATED',
+        NewState: newState,
+        AccessToken: this.state.admTokenObj.accesToken,
+        IdPublication: this.state.pubData.id
         }
-        console.log(objPub);
-        fetch('https://localhost:44372/api/publication', {
-            method: 'PUT',
-            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify(objPub)
-        }).then(response => response.json()).then(data => {
-            console.log("data:" + JSON.stringify(data));
-            if (data.responseCode == "SUCC_PUBLICATIONUPDATED") {
-                toast.success('Publicacion actualizada correctamente ', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                this.setState({
-                    modal: !this.state.modal,isLoading: !this.state.isLoading, buttonIsDisabled: !this.state.buttonIsDisabled
-                });
-                this.props.updateTable();
-            } else{
-                toast.error('Hubo un error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                this.setState({
-                    isLoading: !this.state.isLoading, buttonIsDisabled: !this.state.buttonIsDisabled
-                });
-            }
-        }
-        ).catch(error => {
-            toast.error('Internal error:'+error, {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-            this.setState({
-                isLoading: !this.state.isLoading, buttonIsDisabled: !this.state.buttonIsDisabled
-            });
-        }
-        )
-            
-
-
+        objApi.fetchUrl = "api/publication";
+        objApi.method = "PUT";
+        objApi.successMSG = {
+            SUCC_PUBLICATIONUPDATED : 'Solicitud ejecutada correctamente',
+        };
+        objApi.functionAfterSuccess = "changePublicationTransition";
+        callAPI(objApi, this);       
     }
+
     onChange = (e) => {
         this.setState({
             RejectReason: e.target.value

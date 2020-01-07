@@ -1,7 +1,7 @@
 import React from 'react';
-import { toast } from 'react-toastify';
-import {Form, FormGroup, Label, Input} from 'reactstrap';
-
+import {Form} from 'reactstrap';
+// Multilanguage
+import { withTranslate } from 'react-redux-multilingual';
 
 class CreatePublicationStep5 extends React.Component {
 
@@ -9,17 +9,17 @@ class CreatePublicationStep5 extends React.Component {
       if (this.props.parentState.currentStep !== 5) { // Prop: The current step
         return null
       }
+      const { translate } = this.props;
+
       // Step 4 UI
       return(
         <Form className="border border-light p-6">
-            <p className="h4 mb-4 text-center">Resumen</p>
-            La publicacion será enviada al administrador para su aprobación.
-            Además, si seleccionó alguna opcion de pago, quedará pendiente la publicacion hasta que el mismo sea realizado.
-            Se enviará un correo con toda la información.
-
+            <p className="h4 mb-4 text-center">{translate('summary_w')}</p>
+            {translate('createPub_step5_main')}
+            <br/><br/><br/>
         </Form>
       )
     }
   }
 
-  export default CreatePublicationStep5;
+  export default withTranslate(CreatePublicationStep5);

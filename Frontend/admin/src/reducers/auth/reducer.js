@@ -1,14 +1,11 @@
-
 import {
     LOG_IN,
     LOG_OUT,
-    CHECK_LOGIN,
+    TOKEN_UPDATED,
     LOG_IN_ERROR } 
 from "./actionTypes";
 
-import { toast } from 'react-toastify';
-
-import { loadState, saveState } from './cookieStore';
+import { saveState } from './cookieStore';
 
 const initState = {
     login_status : 'NOT_LOGGED_IN',
@@ -31,14 +28,6 @@ const loginReducer = (state = initState, action) =>{
                 adminData: action.adminData,
                 admTokenObj: action.admTokenObj,
             }
-            toast.success(action.messageObj.successMessage, {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            })
             saveState(newStateObj);
         break;
         case LOG_IN_ERROR :
@@ -46,14 +35,6 @@ const loginReducer = (state = initState, action) =>{
                 login_status: 'NOT_LOGGED_IN',
                 ...state,
             }
-            toast.error(action.messageObj.errorMessage, {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
         break; 
         case LOG_OUT : 
             newStateObj = {
@@ -61,6 +42,13 @@ const loginReducer = (state = initState, action) =>{
                 login_status: 'NOT_LOGGED_IN',
                 adminData: [],
                 admTokenObj: {}
+            }
+            saveState(newStateObj);
+        break;
+        case TOKEN_UPDATED : 
+            newStateObj = {
+                ...state,
+                admTokenObj: action.admTokenObj
             }
             saveState(newStateObj);
         break;

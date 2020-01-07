@@ -1,0 +1,2 @@
+language_w: 'Idioma',
+welcome_w: 'Bienvenido',

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
+﻿
 namespace backend.Data_Access.VO.Data
 {
     public class VOPreferentialPlan
@@ -12,10 +9,12 @@ namespace backend.Data_Access.VO.Data
         public string StateDescription { get; set; }
         public int Price { get; set; }
         public string PaymentDate { get; set; }
-       
+        public string Comment { get; set; }
+        public string Evidence { get; set; }
+
         public VOPreferentialPlan() { }
 
-        public VOPreferentialPlan(int idPlan, string description, int stateCode, string stateDescription, int price, string paymentDate)
+        public VOPreferentialPlan(int idPlan, string description, int stateCode, string stateDescription, int price, string paymentDate, string comment, string evidence)
         {
             IdPlan = idPlan;
             Description = description;
@@ -23,6 +22,8 @@ namespace backend.Data_Access.VO.Data
             StateDescription = stateDescription;
             Price = price;
             PaymentDate = paymentDate;
+            Comment = comment;
+            Evidence = evidence;
         }
     }
 }

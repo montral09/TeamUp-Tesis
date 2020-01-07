@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using backend.Logic;
+using System;
 
 namespace backend.Data_Access
 {
@@ -8,5 +7,6 @@ namespace backend.Data_Access
     {
         String ValidAccessToken(String accessToken, String mail);
         String ValidRefreshToken(String refreshToken, String mail);
+        EmailDataGeneric GetEmailDataGeneric(String code, int language);
     }
 }

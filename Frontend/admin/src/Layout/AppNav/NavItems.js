@@ -4,15 +4,12 @@ export const PublNav = [
         label: 'Pendiente Aprobacion',
         to: '#/publications/publicationApprov',
     },
-];  
-
-export const AllPublNav = [
     {
-        icon: 'pe-7s-up-arrow',
+        icon: 'pe-7s-display2',
         label: 'Publicaciones',
         to: '#/publications/AllPublications',
     },
-];
+];  
 
 export const GestNav = [
     {
@@ -33,6 +30,23 @@ export const UsrNav = [
         icon: 'pe-7s-users',
         label: 'Usuarios',
         to: '#/users/allusers',
+    },
+];
+export const PaymentNav = [
+    {
+        icon: 'pe-7s-cash',
+        label: 'Pagos Preferenciales',        
+        to: '#/payments/PreferentialPayments',
+    },
+    {
+        icon: 'pe-7s-cash',
+        label: 'Pagos Comisiones',        
+        to: '#/payments/CommissionPayments',
+    },
+    {
+        icon: 'pe-7s-magic-wand',
+        label: 'Actualizar Pagos Comisiones',        
+        to: '#/payments/UpdateCommissionPayments',
     },
 ];
 export const ComponentsNav = [

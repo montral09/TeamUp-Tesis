@@ -22,13 +22,14 @@ namespace backend.Data_Access.Query
 
         public String User()
         {
-            String query = "select idUser,mail,name,lastName,password,phone,rut,razonSocial,address,checkPublisher,mailValidated,publisherValidated,active from USERS where mail=@mail";
+            String query = "select u.idUser, u.mail, u.name, u.lastName, u.password, u.phone, u.rut, u.razonSocial, u.address, u.checkPublisher, u.mailValidated, u.publisherValidated, u.active, l.description, l.idLanguage from USERS u, LANGUAGES l where " +
+                "mail=@mail and u.language = l.idlanguage";
             return query;
         }
 
         public String InsertUser()
         {
-            String query = "insert into USERS (mail, name, lastName, password, phone, checkPublisher, rut, razonSocial, address, mailValidated, publisherValidated, active) values(@mail, @name, @lastName, @password, @phone, @checkPublisher, @rut, @razonSocial, @address, 0, 0, 1) ";
+            String query = "insert into USERS (mail, name, lastName, password, phone, checkPublisher, rut, razonSocial, address, mailValidated, publisherValidated, active, language) values(@mail, @name, @lastName, @password, @phone, @checkPublisher, @rut, @razonSocial, @address, 0, 0, 1, @language) ";
             return query;
         }
         public String UpdatePassword()
@@ -38,7 +39,7 @@ namespace backend.Data_Access.Query
         }
         public String UpdateUser()
         {
-            String query = "update USERS set mail = @mail, name = @name, lastName = @lastName, phone = @phone, rut = @rut, razonSocial = @razonSocial, address = @address WHERE idUser = @idUser ";
+            String query = "update USERS set mail = @mail, name = @name, lastName = @lastName, phone = @phone, rut = @rut, razonSocial = @razonSocial, address = @address, language = @language WHERE idUser = @idUser ";
             return query;
         }
 
@@ -135,6 +136,51 @@ namespace backend.Data_Access.Query
         public String IsPublisher()
         {
             String query = "select idUser from USERS where mail = @mail and publisherValidated = 1 and active = 1";
+            return query;
+        }
+
+        public String CheckPendingReservation()
+        {
+            String query = "select idReservation from RESERVATIONS where idCustomer = @idCustomer and state in (1,2,3)";
+            return query;
+        }
+
+        public String CheckPendingReservationPayment()
+        {
+            String query = "select idReservation from RESERVATIONS where idCustomer = @idCustomer and paymentCustomerState in (1,2)";
+            return query;
+        }
+
+        public String CheckPendingPublications()
+        {
+            String query = "select idPublication from PUBLICATIONS where idUser = @idUser and state in (1,2,3,4)";
+            return query;
+        }
+
+        public String CheckPendingReservationPublisher()
+        {
+            String query = "select r.idPublication from RESERVATIONS r, PUBLICATIONS p where r.state in (1,2,3) and " +
+                "r.idPublication = p.idPublication and p.idUser = @idUser";
+            return query;
+        }
+
+        public String CheckPendingPreferentialPayment()
+        {
+            String query = "select pp.idPrefPayments from PREFERENTIAL_PAYMENTS pp, PUBLICATIONS P where " +
+                "pp.state in (1,2) and pp.idPublication = p.idPublication and p.idUser = @idUser";
+            return query;
+        }
+
+        public String CheckPendingCommissionPayment()
+        {
+            String query = "select r.idReservation from RESERVATIONS r, PUBLICATIONS p where " +
+                "r.idPublication = p.idPublication and p.idUser = @idUser and r.commissionPaymentState in (1,2)";
+            return query;
+        }
+
+        public String GetIdLanguageByDescription()
+        {
+            String query = "select idLanguage from LANGUAGES where description = @description";
             return query;
         }
     }

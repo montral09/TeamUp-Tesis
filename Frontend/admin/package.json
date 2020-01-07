@@ -1,14 +1,10 @@
 {
-  "name": "architectui-react-theme-free",
+  "name": "team-up-admin",
   "version": "1.0.0",
   "private": true,
-  "description": "ArchitectUI - Bootstrap 4 ReactJS Admin Dashboard Template FREE",
+  "description": "TeamUp - Admin",
   "author": "DashboardPack.com",
-  "homepage": "https://demo.dashboardpack.com/architectui-react-free/",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/DashboardPack/architectui-react-theme-free"
-  },
+  "homepage": "http://teamup-001-site1.itempurl.com/admin/",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.15",
     "@fortawesome/free-brands-svg-icons": "^5.7.2",

@@ -17,11 +17,13 @@ namespace backend.Logic
         public bool MailValidated { get; set; }
         public bool PublisherValidated { get; set; }
         public bool Active { get; set; }
+        public string LanguageDescription { get; set; }
+        public int LanguageCode { get; set; }
 
 
         public User() { }
 
-        public User(Int64 idUser, string mail, string password, string name, string lastName, string phone, bool checkPublisher, string rut, string razonSocial, string address, bool mailValidated, bool publisherValidated, bool active)
+        public User(Int64 idUser, string mail, string password, string name, string lastName, string phone, bool checkPublisher, string rut, string razonSocial, string address, bool mailValidated, bool publisherValidated, bool active, string languageDescription, int languageCode)
         {
             IdUser = idUser;
             Mail = mail;
@@ -36,9 +38,11 @@ namespace backend.Logic
             MailValidated = mailValidated;
             PublisherValidated = publisherValidated;
             Active = active;
+            LanguageDescription = languageDescription;
+            LanguageCode = languageCode;
         }
 
-        public User(string mail, string password, string name, string lastName, string phone, bool checkPublisher, string rut, string razonSocial, string address, bool mailValidated, bool publisherValidated, bool active)
+        public User(string mail, string password, string name, string lastName, string phone, bool checkPublisher, string rut, string razonSocial, string address, bool mailValidated, bool publisherValidated, bool active, string languageDescription, int languageCode)
         {
             Mail = mail;
             Password = password;
@@ -52,6 +56,8 @@ namespace backend.Logic
             MailValidated = mailValidated;
             PublisherValidated = publisherValidated;
             Active = active;
+            LanguageDescription = languageDescription;
+            LanguageCode = languageCode;
         }
 
         /*Admin's constructor*/

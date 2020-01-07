@@ -26,7 +26,6 @@ namespace backend.Data_Access
         private const int PLAN_GOLD = 4;
         private const int PLAN_SILVER = 3;
         private const int PLAN_BRONZE = 2;
-        private const int PLAN_FREE = 1;
         private const int MAX_GOLD = 10;
         private const int MAX_SILVER = 5;
         private const int MAX_TOTAL = 15;
@@ -141,10 +140,11 @@ namespace backend.Data_Access
             return facilities;
         }
 
-        public async Task CreatePublicationAsync(VORequestCreatePublication voCreatePublication, User user)
+        public async Task<string> CreatePublicationAsync(VORequestCreatePublication voCreatePublication, User user)
         {
             SqlConnection con = null;
             SqlTransaction objTrans = null;
+            string expirationDateString = "";
             try
             {
                 con = new SqlConnection(GetConnectionString());
@@ -178,30 +178,65 @@ namespace backend.Data_Access
                 insertCommand.Parameters.AddRange(prm.ToArray());                
                 insertCommand.Transaction = objTrans;
                 int idPublication = Convert.ToInt32(insertCommand.ExecuteScalar());
+                bool isFreePreferentialPlan = IsFreePreferentialPlan(voCreatePublication.VOPublication.IdPlan);
                 // If Plan <> FREE, insert preferential payment
-                if (voCreatePublication.VOPublication.IdPlan != 1)
+                if (!isFreePreferentialPlan)
                 {
                     CreatePreferentialPayment(idPublication, voCreatePublication.VOPublication.IdPlan, con, objTrans);
                 }
                 // Store images
                 StorageUtil storageUtil = new StorageUtil();
                 List<string> urls = await storageUtil.StoreImageAsync(voCreatePublication.Images, user.IdUser, idPublication);
-                InsertImages(con, objTrans, idPublication, urls);
-                // Send email to publisher
-                string subject = "Publication created";
-                string body = Util.CreateBodyEmailNewPublicationToPublisher(user.Name);
-                Util util = new Util();
-                util.SendEmailAsync(mail, body, subject);
-                // Send email to admin
-                string adminEmail = ConfigurationManager.AppSettings["EMAIL_ADMIN"];
-                string bodyAdmin = Util.CreateBodyEmailNewPublicationToAdmin(mail);
-                util.SendEmailAsync(adminEmail, bodyAdmin, subject);                
+                InsertImages(con, objTrans, idPublication, urls);              
                 objTrans.Commit();
+                expirationDateString = Util.ConvertDateToString(expirationDate);
+                return expirationDateString;
             }
             catch (Exception e)
             {
-                objTrans.Rollback();
-                objTrans.Dispose();
+                if (objTrans != null && objTrans.Connection != null)
+                {
+                    objTrans.Rollback();
+                    objTrans.Dispose();
+                }                
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        private bool IsFreePreferentialPlan(int idPlan)
+        {
+            SqlConnection con = null;
+            bool isFree = false;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.GetFreePlan();
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                SqlParameter param = new SqlParameter()
+                {
+                    ParameterName = "@idPlan",
+                    Value = idPlan,
+                    SqlDbType = SqlDbType.Int
+                };
+                selectCommand.Parameters.Add(param);
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                if (dr.HasRows)
+                {
+                    isFree = true;
+                }
+                dr.Close();
+                return isFree;
+            }
+            catch (Exception e)
+            {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             finally
@@ -465,7 +500,7 @@ namespace backend.Data_Access
                             paymentDateString = Util.ConvertDateToString(paymentDate);
                         }
                         voPreferentialPlan = new VOPreferentialPlan(Convert.ToInt32(dr["idPlan"]), Convert.ToString(dr["planDescription"]), Convert.ToInt32(dr["state"]),
-                                Convert.ToString(dr["paymentDescription"]), Convert.ToInt32(dr["price"]), paymentDateString);
+                                Convert.ToString(dr["paymentDescription"]), Convert.ToInt32(dr["price"]), paymentDateString, Convert.ToString(dr["comment"]), Convert.ToString(dr["evidence"]));
                     }
                     dr.Close();
                 } else
@@ -487,7 +522,7 @@ namespace backend.Data_Access
                         plan = Convert.ToString(drPlan["name"]);
                     }
                     drPlan.Close();
-                    voPreferentialPlan = new VOPreferentialPlan(idPlan, plan, 0, null, 0, null);                
+                    voPreferentialPlan = new VOPreferentialPlan(idPlan, plan, 0, null, 0, null, null, null);                
                 }
             }
             catch (Exception e)
@@ -1017,15 +1052,18 @@ namespace backend.Data_Access
             }
             catch (Exception e)
             {
-                objTrans.Rollback();
+                if (objTrans != null && objTrans.Connection != null)
+                {
+                    objTrans.Rollback();
+                    objTrans.Dispose();
+                }
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             finally
             {
                 if (con != null)
                 {
-                    con.Close();
-                    objTrans.Dispose();
+                    con.Close();                    
                 }
             }
         }
@@ -1059,20 +1097,15 @@ namespace backend.Data_Access
                 insertCommand.Parameters.AddRange(prm.ToArray());
                 insertCommand.Transaction = objTrans;
                 insertCommand.ExecuteNonQuery();
-                // Send email to publisher
-                User publisher = GetPublisherByPublication(con, objTrans, voCreateReservation.VOReservation.IdPublication);
-                string subject = "Reservation created";
-                string body = Util.CreateBodyEmailNewReservationToPublisher(publisher.Name);
-                Util util = new Util();
-                util.SendEmailAsync(publisher.Mail, body, subject);
-                // Send email to customer
-                string bodyCustomer = Util.CreateBodyEmailNewReservationToCustomer(user.Name);
-                util.SendEmailAsync(user.Mail, bodyCustomer, subject);
                 objTrans.Commit();
             }
             catch (Exception e)
             {
-                objTrans.Rollback();
+                if (objTrans != null && objTrans.Connection != null)
+                {
+                    objTrans.Rollback();
+                    objTrans.Dispose();
+                }
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             finally
@@ -1084,27 +1117,43 @@ namespace backend.Data_Access
             }
         }
 
-        private User GetPublisherByPublication(SqlConnection con, SqlTransaction objTrans, object idPublication)
+        public User GetPublisherByPublication( int idPublication)
         {
-            String query = cns.GetPublisherByPublication();
-            SqlCommand selectCommand = new SqlCommand(query, con);
-            User user = null;
-            SqlParameter param = new SqlParameter()
+            SqlConnection con = null;
+            try
             {
-                ParameterName = "@idPublication",
-                Value = idPublication,
-                SqlDbType = SqlDbType.Int
-            };
-            selectCommand.Parameters.Add(param);
-            selectCommand.Transaction = objTrans;
-            SqlDataReader dr = selectCommand.ExecuteReader();
-            while (dr.Read())
-            {
-                user = new User(Convert.ToInt64(dr["idUser"]), Convert.ToString(dr["mail"]), null, Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), null, Convert.ToBoolean(dr["checkPublisher"]), null, null, null, Convert.ToBoolean(dr["mailValidated"]), Convert.ToBoolean(dr["publisherValidated"]), Convert.ToBoolean(dr["active"]));
+                String query = cns.GetPublisherByPublication();
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                User user = null;
+                SqlParameter param = new SqlParameter()
+                {
+                    ParameterName = "@idPublication",
+                    Value = idPublication,
+                    SqlDbType = SqlDbType.Int
+                };
+                selectCommand.Parameters.Add(param);
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                while (dr.Read())
+                {
+                    user = new User(Convert.ToInt64(dr["idUser"]), Convert.ToString(dr["mail"]), null, Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), null, Convert.ToBoolean(dr["checkPublisher"]), null, null, null, Convert.ToBoolean(dr["mailValidated"]), Convert.ToBoolean(dr["publisherValidated"]), Convert.ToBoolean(dr["active"]), null, Convert.ToInt32(dr["language"]));
+                }
+                dr.Close();
+                return user;
             }
-            dr.Close();
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
 
-            return user;
         }
 
         public List<VOReservationExtended> GetReservationsCustomer(VORequestGetReservationsCustomer voGetReservationsCustomer, long idCustomer)
@@ -1134,7 +1183,7 @@ namespace backend.Data_Access
                     idReservation = Convert.ToInt32(dr["idReservation"]);
                     wasReviewed = ReservationWasReviewed(idReservation, con);
                     VOPayment payment = GetReservationPaymentInfo(idReservation, con);
-                    String dateConverted = Convert.ToDateTime(dr["dateFrom"]).ToString("dd-MM-yyyy");
+                    String dateConverted = Util.ConvertDateToString(Convert.ToDateTime(dr["dateFrom"]));
                     voReservation = new VOReservationExtended(idReservation, Convert.ToString(dr["title"]), Convert.ToInt32(dr["idPublication"]),
                         Convert.ToString(voGetReservationsCustomer.Mail), Convert.ToString(dr["planSelected"]),
                         Convert.ToInt32(dr["reservedQty"] is DBNull ? 0 : dr["reservedQty"]), Convert.ToDateTime(dr["dateFrom"]), dateConverted,  Convert.ToString(dr["hourFrom"]),
@@ -1217,8 +1266,8 @@ namespace backend.Data_Access
                 {
                     idReservation = Convert.ToInt32(dr["idReservation"]);
                     wasReviewed = ReservationWasReviewed(Convert.ToInt32(dr["idReservation"]), con);
-                    payment = GetReservationPaymentInfo(idReservation, con);
-                    dateConverted = Convert.ToDateTime(dr["dateFrom"]).ToString("dd-MM-yyyy");
+                    payment = GetReservationPaymentInfo(idReservation, con);                    
+                    dateConverted = Util.ConvertDateToString(Convert.ToDateTime(dr["dateFrom"]));
                     paymentCommission = GetCommissionPayment(idReservation, con);
                     voReservation = new VOReservationExtended(Convert.ToInt32(dr["idReservation"]), Convert.ToString(dr["title"]), Convert.ToInt32(dr["idPublication"]),
                         Convert.ToString(voGetReservationsPublisher.Mail), Convert.ToString(dr["planSelected"]),
@@ -1246,10 +1295,10 @@ namespace backend.Data_Access
 
         }
 
-        public void UpdateStateReservation(int idReservation, string canceledReason, int newCodeState, string newDescriptionState, bool isAdmin)
+        public UsersReservationBasicData UpdateStateReservation(int idReservation, string canceledReason, int newCodeState, string newDescriptionState)
         {            
             SqlConnection con = null;
-            SqlTransaction objTrans;
+            UsersReservationBasicData result;
             string canceledReasonAux = "";
             if (canceledReason != null)
             {
@@ -1259,7 +1308,6 @@ namespace backend.Data_Access
             {
                 con = new SqlConnection(GetConnectionString());
                 con.Open();
-                objTrans = con.BeginTransaction();
                 String query = cns.UdpdateStateReservation(canceledReason);
                 SqlCommand updateCommand = new SqlCommand(query, con);
                 List<SqlParameter> prm = new List<SqlParameter>()
@@ -1270,7 +1318,6 @@ namespace backend.Data_Access
 
                 };
                 updateCommand.Parameters.AddRange(prm.ToArray());
-                updateCommand.Transaction = objTrans;
                 updateCommand.ExecuteNonQuery();
                 if (RESERVATION_CANCELED_STATE == newCodeState)
                 {
@@ -1283,42 +1330,10 @@ namespace backend.Data_Access
                         SqlDbType = SqlDbType.Int
                     };
                     updatePayment.Parameters.Add(paramUpdatePayment);
-                    updatePayment.Transaction = objTrans;
                     updatePayment.ExecuteNonQuery();
                 }
-                string queryUsers = cns.GetUsersByReservation();
-                SqlCommand selectCommandUsers = new SqlCommand(queryUsers, con);
-                string customerMail = null;
-                string publisherMail = null;
-                string customerName = null;
-                string publisherName = null;
-                SqlParameter param = new SqlParameter()
-                {
-                    ParameterName = "@idReservation",
-                    Value = idReservation,
-                    SqlDbType = SqlDbType.Int
-                };
-                selectCommandUsers.Parameters.Add(param);
-                selectCommandUsers.Transaction = objTrans;
-                SqlDataReader dr = selectCommandUsers.ExecuteReader();
-                while (dr.Read())
-                {
-                    customerMail = Convert.ToString(dr["cMail"]);
-                    publisherMail = Convert.ToString(dr["pMail"]);
-                    customerName = Convert.ToString(dr["cName"]);
-                    publisherName = Convert.ToString(dr["pName"]);
-                        
-                }
-                dr.Close();
-                // Send email to publisher                
-                string subject = "ATENCION: Cambio en reserva";
-                string body = Util.CreateBodyEmailStateReservationToPublisher(publisherName, newDescriptionState, canceledReason);
-                Util util = new Util();
-                util.SendEmailAsync(publisherMail, body, subject);
-                // Send email to customer
-                string bodyCustomer = Util.CreateBodyEmailStateReservationToCustomer(customerName, newDescriptionState, canceledReason);
-                util.SendEmailAsync(customerMail, bodyCustomer, subject);
-                objTrans.Commit();
+                result = GetUsersReservationBasicData(idReservation);
+                return result;
             }
             catch (Exception e)
             {
@@ -1333,10 +1348,50 @@ namespace backend.Data_Access
             }
         }
 
-        public void UpdateReservation(VORequestUpdateReservation voUpdateReservation)
+        public UsersReservationBasicData GetUsersReservationBasicData(int idReservation)
+        {
+            SqlConnection con = null;
+            UsersReservationBasicData result = null;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                string queryUsers = cns.GetUsersByReservation();
+                SqlCommand selectCommandUsers = new SqlCommand(queryUsers, con);
+                SqlParameter param = new SqlParameter()
+                {
+                    ParameterName = "@idReservation",
+                    Value = idReservation,
+                    SqlDbType = SqlDbType.Int
+                };
+                selectCommandUsers.Parameters.Add(param);
+                SqlDataReader dr = selectCommandUsers.ExecuteReader();
+                while (dr.Read())
+                {
+                    result = new UsersReservationBasicData(Convert.ToString(dr["cMail"]), Convert.ToString(dr["cName"]), Convert.ToInt32(dr["cLanguage"]),
+                       Convert.ToString(dr["pMail"]), Convert.ToString(dr["pName"]), Convert.ToInt32(dr["pLanguage"]));
+                }
+                dr.Close();
+                return result;
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        public UsersReservationBasicData UpdateReservation(VORequestUpdateReservation voUpdateReservation)
         {
             SqlConnection con = null;
             SqlTransaction objTrans = null;
+            UsersReservationBasicData result = null;
             try
             {
                 con = new SqlConnection(GetConnectionString());
@@ -1356,43 +1411,17 @@ namespace backend.Data_Access
                 updateCommand.Parameters.AddRange(prm.ToArray());
                 updateCommand.Transaction = objTrans;
                 updateCommand.ExecuteNonQuery();
-                string queryUsers = cns.GetUsersByReservation();
-                SqlCommand selectCommandUsers = new SqlCommand(queryUsers, con);
-                string customerMail = null;
-                string publisherMail = null;
-                string customerName = null;
-                string publisherName = null;
-                SqlParameter param = new SqlParameter()
-                {
-                    ParameterName = "@idReservation",
-                    Value = voUpdateReservation.IdReservation,
-                    SqlDbType = SqlDbType.Int
-                };
-                selectCommandUsers.Parameters.Add(param);
-                selectCommandUsers.Transaction = objTrans;
-                SqlDataReader dr = selectCommandUsers.ExecuteReader();
-                while (dr.Read())
-                {
-                    customerMail = Convert.ToString(dr["cMail"]);
-                    publisherMail = Convert.ToString(dr["pMail"]);
-                    customerName = Convert.ToString(dr["cName"]);
-                    publisherName = Convert.ToString(dr["pName"]);
-
-                }
-                dr.Close();
-                // Send email to publisher                
-                string subject = "ATENCION: Cambio en reserva";
-                string body = Util.CreateBodyEmailUpdateReservationToPublisher(publisherName);
-                Util util = new Util();
-                util.SendEmailAsync(publisherMail, body, subject);
-                // Send email to customer
-                string bodyCustomer = Util.CreateBodyEmailUpdateReservationToCustomer(customerName);
-                util.SendEmailAsync(customerMail, bodyCustomer, subject);
                 objTrans.Commit();
+                result = GetUsersReservationBasicData(voUpdateReservation.IdReservation);
+                return result;
             }
             catch (Exception e)
             {
-                objTrans.Rollback();
+                if (objTrans != null && objTrans.Connection != null)
+                {
+                    objTrans.Rollback();
+                    objTrans.Dispose();
+                }
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             finally
@@ -1400,7 +1429,6 @@ namespace backend.Data_Access
                 if (con != null)
                 {
                     con.Close();
-                    objTrans.Dispose();
                 }
             }
         }
@@ -1468,7 +1496,7 @@ namespace backend.Data_Access
             }
         }
 
-        public void CreatePublicationAnswer(VORequestCreatePublicationAnswer voCreatePublicationAnswer, long idUser)
+        public User CreatePublicationAnswer(VORequestCreatePublicationAnswer voCreatePublicationAnswer)
         {
             SqlConnection con = null;
             try
@@ -1484,6 +1512,8 @@ namespace backend.Data_Access
                     };
                 insertCommand.Parameters.AddRange(prm.ToArray());
                 insertCommand.ExecuteNonQuery();
+                User user = GetUserByQuestion(voCreatePublicationAnswer.IdQuestion, con);
+                return user;
             }
             catch (Exception e)
             {
@@ -1496,6 +1526,26 @@ namespace backend.Data_Access
                     con.Close();
                 }
             }
+        }
+
+        private User GetUserByQuestion(int idQuestion, SqlConnection con)
+        {
+            User user = null;
+            String query = cns.GetUserByQuestion();
+            SqlCommand selectCommand = new SqlCommand(query, con);
+            SqlParameter param = new SqlParameter()
+            {
+                ParameterName = "@idQuestion",
+                Value = idQuestion,
+                SqlDbType = SqlDbType.Int
+            };
+            selectCommand.Parameters.Add(param);
+            SqlDataReader dr = selectCommand.ExecuteReader();
+            while (dr.Read())
+            {
+                user = new User(Convert.ToInt64(dr["idUser"]), Convert.ToString(dr["mail"]), null, Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), null, Convert.ToBoolean(dr["checkPublisher"]), null, null, null, Convert.ToBoolean(dr["mailValidated"]), Convert.ToBoolean(dr["publisherValidated"]), Convert.ToBoolean(dr["active"]), null, Convert.ToInt32(dr["language"]));                
+            }
+            return user;
         }
 
         public List<VOPublicationQuestion> GetPublicationQuestions(int idPublication)
@@ -1625,7 +1675,7 @@ namespace backend.Data_Access
                 }
                 dr.Close();
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -1678,7 +1728,11 @@ namespace backend.Data_Access
             }
             catch (Exception e)
             {
-                objTrans.Rollback();
+                if (objTrans != null && objTrans.Connection != null)
+                {
+                    objTrans.Rollback();
+                    objTrans.Dispose();
+                }                
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             finally
@@ -1686,7 +1740,6 @@ namespace backend.Data_Access
                 if (con != null)
                 {
                     con.Close();
-                    objTrans.Dispose();
                 }
             } 
         }
@@ -1749,7 +1802,7 @@ namespace backend.Data_Access
             return id;
         }
 
-        public async Task PayReservationCustomer(VORequestPayReservationCustomer voPayReservationCustomer, long idUser)
+        public async Task<UserBasicData> PayReservationCustomer(VORequestPayReservationCustomer voPayReservationCustomer, long idUser)
         {
             SqlConnection con = null;
             StorageUtil storageUtil = new StorageUtil();
@@ -1778,12 +1831,8 @@ namespace backend.Data_Access
                     };
                 updateCommand.Parameters.AddRange(prm.ToArray());               
                 updateCommand.ExecuteNonQuery();
-                VOUserBasicData user = GetPublisherFromReservation(voPayReservationCustomer.IdReservation, con);
-                // Send email to publisher
-                string subject = "Reserva paga";
-                string body = Util.CreateBodyEmailNewPublicationToPublisher(user.Name);
-                Util util = new Util();
-                util.SendEmailAsync(user.Mail, body, subject);
+                UserBasicData user = GetPublisherFromReservation(voPayReservationCustomer.IdReservation, con);
+                return user;
             }
             catch (Exception e)
             {
@@ -1798,9 +1847,9 @@ namespace backend.Data_Access
             }
         }
 
-        private VOUserBasicData GetPublisherFromReservation(int idReservation, SqlConnection con)
+        private UserBasicData GetPublisherFromReservation(int idReservation, SqlConnection con)
         {
-            VOUserBasicData user = null;
+            UserBasicData user = null;
             try
             {
                 String query = cns.GetPublisherFromReservation();
@@ -1815,7 +1864,7 @@ namespace backend.Data_Access
                 SqlDataReader dr = selectCommand.ExecuteReader();
                 while (dr.Read())
                 {
-                    user = new VOUserBasicData(Convert.ToString(dr["mail"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]));
+                    user = new UserBasicData(Convert.ToString(dr["mail"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToInt32(dr["language"]));
                 }
                 dr.Close();
             }
@@ -1854,13 +1903,7 @@ namespace backend.Data_Access
                     new SqlParameter("@evidence", SqlDbType.VarChar) {Value = url},
                     };
                 updateCommand.Parameters.AddRange(prm.ToArray());
-                updateCommand.ExecuteNonQuery();
-                // Send email to admin
-                Util util = new Util();
-                string subject = "Reserva paga";
-                string adminEmail = ConfigurationManager.AppSettings["EMAIL_ADMIN"];
-                string bodyAdmin = Util.CreateBodyEmailPayCommissionToAdmin(voPayReservationPublisher.Mail);
-                util.SendEmailAsync(adminEmail, bodyAdmin, subject);                
+                updateCommand.ExecuteNonQuery();                          
             }
             catch (Exception e)
             {
@@ -1875,9 +1918,10 @@ namespace backend.Data_Access
             }
         }
 
-        public void UpdatePaymentCustomer(VORequestUpdatePaymentCustomer voUpdatePayment)
+        public UserBasicData UpdatePaymentCustomer(VORequestUpdatePaymentCustomer voUpdatePayment)
         {
-            SqlConnection con = null;        
+            SqlConnection con = null;
+            UserBasicData user;
             try
             {
                 string rejectedReasonAux = "";
@@ -1897,22 +1941,10 @@ namespace backend.Data_Access
                 };
                 updateCommand.Parameters.AddRange(prm.ToArray());
                 updateCommand.ExecuteNonQuery();
-                VOUserBasicData user = GetCustomerFromReservation(voUpdatePayment.IdReservation, con);
-                // Send email to customer
-                string subject = "";
-                string body = "";
-                if (voUpdatePayment.Approved)
-                {
-                    subject = "Pago de reserva confirmado";
-                    body = Util.CreateBodyEmailApprovedPaymentCustomer(user.Name);
-                } else
-                {
-                    subject = "Pago de reserva cancelado";
-                    body = Util.CreateBodyEmailCanceledPaymentCustomer(user.Name);
-                }               
-                Util util = new Util();
-                util.SendEmailAsync(user.Mail, body, subject);
-                
+                user = GetCustomerFromReservation(voUpdatePayment.IdReservation, con);
+                return user;
+
+
             }
             catch (Exception e)
             {
@@ -1927,9 +1959,9 @@ namespace backend.Data_Access
             }
         }
 
-        private VOUserBasicData GetCustomerFromReservation(int idReservation, SqlConnection con)
+        private UserBasicData GetCustomerFromReservation(int idReservation, SqlConnection con)
         {
-            VOUserBasicData user = null;
+            UserBasicData user = null;
             try
             {
                 String query = cns.GetCustomerFromReservation();
@@ -1944,7 +1976,7 @@ namespace backend.Data_Access
                 SqlDataReader dr = selectCommand.ExecuteReader();
                 while (dr.Read())
                 {
-                    user = new VOUserBasicData(Convert.ToString(dr["mail"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]));
+                    user = new UserBasicData(Convert.ToString(dr["mail"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToInt32(dr["language"]));
                 }
                 dr.Close();
             }
@@ -1955,9 +1987,9 @@ namespace backend.Data_Access
             return user;
         }
 
-        private VOUserBasicData GetPublisherFromPublication(int idPublication, SqlConnection con)
+        private UserBasicData GetPublisherFromPublication(int idPublication, SqlConnection con)
         {
-            VOUserBasicData user = null;
+            UserBasicData user = null;
             try
             {
                 String query = cns.GetPublisherFromPublication();
@@ -1972,7 +2004,7 @@ namespace backend.Data_Access
                 SqlDataReader dr = selectCommand.ExecuteReader();
                 while (dr.Read())
                 {
-                    user = new VOUserBasicData(Convert.ToString(dr["mail"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]));
+                    user = new UserBasicData(Convert.ToString(dr["mail"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToInt32(dr["language"]));
                 }
                 dr.Close();
             }
@@ -2359,7 +2391,7 @@ namespace backend.Data_Access
             return images;
         }
 
-        public void UpdatePreferentialPaymentAdmin(VORequestUpdatePreferentialPaymentAdmin voUpdatePayment)
+        public UserBasicData UpdatePreferentialPaymentAdmin(VORequestUpdatePreferentialPaymentAdmin voUpdatePayment)
         {
             SqlConnection con = null;
             SqlTransaction objTrans = null;
@@ -2402,24 +2434,16 @@ namespace backend.Data_Access
                     updateCommandPubl.ExecuteNonQuery();
                 }
                 objTrans.Commit();
-                VOUserBasicData user = GetPublisherFromPublication(voUpdatePayment.IdPublication, con);
-                // Send email to publisher
-                string subject = "";
-                string body = "";
-                if (voUpdatePayment.Approved)
-                {
-                    subject = "Pago aprobado";
-                    body = Util.CreateBodyEmailPreferentialPaymentApproved(user.Name);
-                } else {
-                    subject = "Pago rechazado";
-                    body = Util.CreateBodyEmailPreferentialPaymentRejected(user.Name);
-                }                
-                Util util = new Util();
-                util.SendEmailAsync(user.Mail, body, subject);
+                UserBasicData user = GetPublisherFromPublication(voUpdatePayment.IdPublication, con);                
+                return user;
             }
             catch (Exception e)
             {
-                objTrans.Rollback();
+                if (objTrans != null && objTrans.Connection != null)
+                {
+                    objTrans.Rollback();
+                    objTrans.Dispose();
+                }
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             finally
@@ -2427,12 +2451,11 @@ namespace backend.Data_Access
                 if (con != null)
                 {
                     con.Close();
-                    objTrans.Dispose();
                 }
             } 
         }
 
-        public void UpdatePaymentCommissionAdmin(VORequestUpdatePaymentCommissionAdmin voUpdatePayment)
+        public UserBasicData UpdatePaymentCommissionAdmin(VORequestUpdatePaymentCommissionAdmin voUpdatePayment)
         {
             SqlConnection con = null;
             string rejectedReasonAux = "";
@@ -2454,22 +2477,8 @@ namespace backend.Data_Access
                     };
                 updateCommand.Parameters.AddRange(prm.ToArray());
                 updateCommand.ExecuteNonQuery();
-                VOUserBasicData user = GetPublisherFromReservation(voUpdatePayment.IdReservation, con);
-                // Send email to publisher
-                string subject = "";
-                string body = "";
-                if (voUpdatePayment.Approved)
-                {
-                    subject = "Pago aprobado";
-                    body = Util.CreateBodyEmailCommissionPaymentApproved(user.Name);
-                }
-                else
-                {
-                    subject = "Pago rechazado";
-                    body = Util.CreateBodyEmailCommissionPaymentRejected(user.Name);
-                }
-                Util util = new Util();
-                util.SendEmailAsync(user.Mail, body, subject);
+                UserBasicData user = GetPublisherFromReservation(voUpdatePayment.IdReservation, con);
+                return user;
             }
             catch (Exception e)
             {
@@ -2586,5 +2595,187 @@ namespace backend.Data_Access
             return answer;
         }
 
+        public string GetPublicationPlanById(int idPlan)
+        {
+            SqlConnection con = null;
+            string description = null;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();                
+                String queryPlan = cns.GetPublicationPlanById();
+                SqlCommand selectCommandPlan = new SqlCommand(queryPlan, con);
+                SqlParameter paramPlan = new SqlParameter()
+                {
+                    ParameterName = "@idPlan",
+                    Value = idPlan,
+                    SqlDbType = SqlDbType.Int
+                };
+                selectCommandPlan.Parameters.Add(paramPlan);
+                SqlDataReader drPlan = selectCommandPlan.ExecuteReader();
+                while (drPlan.Read())
+                {
+                    description = Convert.ToString(drPlan["name"]);
+                }
+                drPlan.Close();
+                return description;
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        public string GetPublicationTitleByQuestionId(int idQuestion)
+        {
+            SqlConnection con = null;
+            String title = null;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.GetPublicationByQuestionId();
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                SqlParameter param = new SqlParameter()
+                {
+                    ParameterName = "@idQuestion",
+                    Value = idQuestion,
+                    SqlDbType = SqlDbType.Int
+                };
+                selectCommand.Parameters.Add(param);
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                while (dr.Read())
+                {
+                    title = Convert.ToString(dr["title"]);
+                }
+                dr.Close();
+                return title;
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        public string GetPublicationTitleByReservationId(int idReservation)
+        {
+            SqlConnection con = null;
+            String title = null;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.GetPublicationTitleByReservationId();
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                SqlParameter param = new SqlParameter()
+                {
+                    ParameterName = "@idReservation",
+                    Value = idReservation,
+                    SqlDbType = SqlDbType.Int
+                };
+                selectCommand.Parameters.Add(param);
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                while (dr.Read())
+                {
+                    title = Convert.ToString(dr["title"]);
+                }
+                dr.Close();
+                return title;
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        public void UpdateCommissionAmountAdmin(VORequestUpdateCommissionAmountAdmin voUpdateAmount)
+        {
+            SqlConnection con = null;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                bool isPaid = voUpdateAmount.Price == 0 ? true : false;
+                String query = cns.UpdateCommissionAmountAdmin(isPaid);
+                SqlCommand updateCommand = new SqlCommand(query, con);
+                List<SqlParameter> param = new List<SqlParameter>()
+                {
+                    new SqlParameter("@commission", SqlDbType.Int) {Value =  voUpdateAmount.Price},
+                    new SqlParameter("@idReservation", SqlDbType.Int) {Value = voUpdateAmount.IdReservation}
+                };
+                updateCommand.Parameters.AddRange(param.ToArray());
+                updateCommand.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {                
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        public void CreatePublicationStatics(VORequestCreatePublicationStatics voCreatePublicationStatics)
+        {
+            SqlConnection con = null;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                string facilities = "";
+                if (voCreatePublicationStatics.Facilities != null)
+                {
+                    facilities = Util.CreateFacilitiesString(voCreatePublicationStatics.Facilities);
+                }
+                String query = cns.CreatePublicationStatics();
+                SqlCommand insertCommand = new SqlCommand(query, con);                
+                List<SqlParameter> param = new List<SqlParameter>()
+                {
+                    new SqlParameter("@spaceType", SqlDbType.Int) {Value = voCreatePublicationStatics.SpaceType},
+                    new SqlParameter("@facilities", SqlDbType.VarChar) {Value = facilities},
+                    new SqlParameter("@idPublication", SqlDbType.Int) {Value = voCreatePublicationStatics.IdPublication},
+                    new SqlParameter("@favourite", SqlDbType.Bit) {Value = voCreatePublicationStatics.Favourite},
+                    new SqlParameter("@rented", SqlDbType.Bit) {Value = voCreatePublicationStatics.Rented},
+                };
+                insertCommand.Parameters.AddRange(param.ToArray());
+                insertCommand.ExecuteNonQuery();
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+        }
     }
 }

@@ -1,19 +1,12 @@
 import React, { Fragment, Component } from 'react';
-
-import {toast} from 'react-toastify';
-
-// Extra
-
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import PageTitle from '../../../Layout/AppMain/PageTitle';
-
 import AllUsersTable from './AllUsersTable';
-
 import ModifyUserModal from './ModifyUser';
-
 import { connect } from 'react-redux';
-// Table
+import { callAPI } from '../../../config/genericFunctions'
 
+// Table
 import {
     Row, Col,
     Card, CardBody,
@@ -41,43 +34,19 @@ class AllUsers extends Component {
         this.modalElement.current.toggle(userData[0],this.state.admTokenObj,this.state.adminData);
     }
 
-
     updateTable(){
-        fetch('https://localhost:44372/api/users', {
-            method: 'POST',
-            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify({
-                Mail: this.state.adminData.Mail,
-                AccessToken: this.state.admTokenObj.accesToken
-            })
-        }).then(response => response.json()).then(data => {
-            if (data.responseCode == "SUCC_USERSOK") {
-                this.setState({
-                    ...this.state,
-                    arrData : data.voUsers })
-            } else {
-                toast.error('Hubo un error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-            }
+        var objApi = {};
+        objApi.objToSend = {
+            Mail: this.state.adminData.Mail,
+            AccessToken: this.state.admTokenObj.accesToken
         }
-        ).catch(error => {
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-            console.log(error);
-        }
-        )
+        objApi.fetchUrl = "api/users";
+        objApi.method = "POST";
+        objApi.successMSG = {
+            SUCC_USERSOK : '',
+        };
+        objApi.functionAfterSuccess = "getUsers";
+        callAPI(objApi, this);        
     }
 
     // This function will trigger when the component is mounted, to fill the data from the state

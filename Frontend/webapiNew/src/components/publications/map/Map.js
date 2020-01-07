@@ -6,9 +6,9 @@ import {
   GoogleMap,
   Marker
 } from "react-google-maps"
-import credentials from './credentials';
+import {API_CREDENTIALS, GMAP_URL} from '../../../services/common/constants';
 
-const mapURL = `https://maps.googleapis.com/maps/api/js?v=3.exp&key=${credentials.mapsKey}`;
+const mapURL = GMAP_URL+`${API_CREDENTIALS}`;
 const MapWithAMarker = compose(withScriptjs, withGoogleMap)(props => {
 const {zoom, latitude, longitude } = props.objGoogleMaps;
   return (

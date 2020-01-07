@@ -1,13 +1,11 @@
 import React from 'react';
 import { Link, Redirect } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
 import { connect } from 'react-redux';
 import { logIn } from '../../services/login/actions';
-
+import { displayErrorMessage } from '../../services/common/genericFunctions';
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual'
+import { compose } from 'redux';
 
 class Login extends React.Component {
 
@@ -17,14 +15,14 @@ class Login extends React.Component {
             email: '',
             password: '',
             isLoading: false,
-            buttonIsDisable: false
+            buttonIsDisable: false,
+            translate : props.translate,
+            bindThis : this
         }
-        this.login = this.login.bind(this);
     }
 
     componentDidMount() {
         window.scrollTo(0, 0);
-
     }
 
     onChange = (e) => {
@@ -37,67 +35,58 @@ class Login extends React.Component {
         let returnValue = false;
         let message = "";
         if (!this.state.password || !this.state.email) {
-            message = 'Por favor ingrese correo y contraseña';
+            message = this.props.translate('login_errorMsg1');
             returnValue = true;
         } else if (!this.state.email.match(/\S+@\S+/)) {
-            message = 'Formato de email incorrecto';
+            message = this.props.translate('login_errorMsg2');
             returnValue = true;
         }
 
         if (message) {
-            toast.error(message, {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
+            displayErrorMessage(message);
         }
 
         return returnValue;
     }
 
-    login() {
+    login = () =>  {
         if (!this.checkRequiredInputs()) {
             this.toggleButton();
             this.props.logIn(this.state);
-            const scopeThis = this;
-            setTimeout(function () {
-                scopeThis.toggleButton();
-            }, 350);
         }
     }
-    toggleButton() {
+    toggleButton = () =>   {
         this.setState({
             isLoading: !this.state.isLoading,
             buttonIsDisable: !this.state.buttonIsDisable
         })
     }
 
-    render() {
+    render () {
         let { login_status, redirectToMain } = this.props;
         if (login_status == 'LOGGED_IN' && redirectToMain) return <Redirect to='/' />
+        const { translate } = this.props;
+
         return (
             <div className="well">
                 <form className="text-center border border-light p-5" action="#!">
-                    <p className="h4 mb-4">Iniciar sesión</p>
-                    <input type="email" name="email" id="input-email" className="form-control mb-4" placeholder="Correo" maxLength="50" onChange={this.onChange}></input>
-                    <input type="password" name="password" id="input-password" className="form-control mb-4" placeholder="Password" maxLength="100" onChange={this.onChange}></input>
+                    <p className="h4 mb-4">{translate('login_login')}</p>
+                    <input type="email" name="email" id="input-email" className="form-control mb-4" placeholder={translate('email_w')}maxLength="50" onChange={this.onChange}></input>
+                    <input type="password" name="password" id="input-password" className="form-control mb-4" placeholder={translate('password_w')} maxLength="100" onChange={this.onChange}></input>
                     <div className="d-flex justify-content-around mb-2">
                         <div>
-                            <Link target="_blank" to="/account/forgotPassword">Olvido su contraseña?</Link>
+                            <Link target="_blank" to="/account/forgotPassword">{translate('login_forgotPassword')}</Link>
                         </div>
                     </div>
-                    <button className="btn btn-primary" disabled={this.state.buttonIsDisable} type="button" value='Registrarse' onClick={() => { this.login() }} >
+                    <button className="btn btn-primary" disabled={this.state.buttonIsDisable} type="button" value={translate('registerYourself_w')} onClick={() => { this.login() }} >
 
-                        Login&nbsp;&nbsp;
+                        {translate('login_login')}&nbsp;&nbsp;
                                         {this.state.isLoading &&
                             <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                         }
                     </button>
-                    <p>No tiene cuenta?
-                                        <Link target="_blank" to="/account/register"> Registrarse</Link>
+                    <p>{translate('login_dontHaveAccount')}
+                        <Link target="_blank" to="/account/register"> {translate('registerYourself_w')}</Link>
                     </p>
                 </form>
             </div>
@@ -117,5 +106,8 @@ const mapDispatchToProps = (dispatch) => {
         logIn: (userData) => { dispatch(logIn(userData)) }
     }
 }
-
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+const enhance = compose(
+    connect(mapStateToProps, mapDispatchToProps),
+    withTranslate
+)
+export default enhance(Login);

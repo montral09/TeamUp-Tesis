@@ -224,7 +224,7 @@ namespace backend.Data_Access.Query
 
         public String GetPublisherByPublication()
         {
-            String query = "select u.idUser, u.mail, u.name, u.lastName, u.checkPublisher, u.mailValidated, u.publisherValidated, u.active " +
+            String query = "select u.idUser, u.mail, u.name, u.lastName, u.checkPublisher, u.mailValidated, u.publisherValidated, u.active, u.language " +
                 "from USERS u, PUBLICATIONS p where p.idPublication = @idPublication and u.idUser = p.idUser";
             return query;
         }
@@ -236,10 +236,10 @@ namespace backend.Data_Access.Query
                 " r.people, r.comment, r.totalPrice, r.state, rs.description, s.individualRent, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, r.paymentCustomerState, ps.description as customerPaymentDesc, u.name from RESERVATIONS r, PUBLICATIONS p, RESERVATION_STATES rs, SPACE_TYPES s, PAYMENT_STATES ps");
             if (idCustomer != 0)
             {
-                query.Append(" , USERS U where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) and rs.idReservationState = r.state and p.spaceType = s.idSpaceType and r.idCustomer = @idCustomer and ps.idPaymentState = paymentCustomerState and u.idUser = r.idCustomer");
+                query.Append(" , USERS U where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) and rs.idReservationState = r.state and p.spaceType = s.idSpaceType and r.idCustomer = @idCustomer and ps.idPaymentState = paymentCustomerState and u.idUser = r.idCustomer order by r.idReservation desc");
             } else if (idPublisher != 0)
             {
-                query.Append(", USERS u where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) and rs.idReservationState = r.state and p.spaceType = s.idSpaceType and p.idUser = u.idUser and u.idUser = @idPublisher and ps.idPaymentState = paymentCustomerState");
+                query.Append(", USERS u where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) and rs.idReservationState = r.state and p.spaceType = s.idSpaceType and p.idUser = u.idUser and u.idUser = @idPublisher and ps.idPaymentState = paymentCustomerState order by r.idReservation desc");
             }
             return query.ToString();
         }
@@ -264,7 +264,7 @@ namespace backend.Data_Access.Query
 
         public String GetUsersByReservation()
         {
-            String query = "select u1.mail as cMail, u1.name as cName, u2.mail as pMail, u2.name as pName " +
+            String query = "select u1.mail as cMail, u1.name as cName, u1.language as cLanguage, u2.mail as pMail, u2.name as pName, u2.language as pLanguage " +
                 "from USERS u1, USERS u2, PUBLICATIONS p, RESERVATIONS r where r.idReservation = @idReservation and p.idPublication = r.idPublication and u1.idUser = r.idCustomer and u2.idUser = p.idUser";
             return query;
         }
@@ -399,7 +399,7 @@ namespace backend.Data_Access.Query
 
         public String GetPreferentialPlanInfo()
         {
-            String query = "select pp.idPlan, ppl.name as planDescription, pp.state, ps.description as paymentDescription, ppl.price, pp.paymentDate from PAYMENT_STATES ps, PUBLICATIONS p, PREFERENTIAL_PAYMENTS pp, PUBLICATION_PLANS ppl where p.idPublication = @idPublication and " +
+            String query = "select pp.idPlan, ppl.name as planDescription, pp.state, ps.description as paymentDescription, ppl.price, pp.paymentDate, pp.comment, pp.evidence from PAYMENT_STATES ps, PUBLICATIONS p, PREFERENTIAL_PAYMENTS pp, PUBLICATION_PLANS ppl where p.idPublication = @idPublication and " +
                 "pp.idPlan = ppl.idPlan and pp.idPublication = p.idPublication and pp.state = ps.idPaymentState";
             return query;
         }
@@ -430,7 +430,7 @@ namespace backend.Data_Access.Query
 
         public String GetPublisherFromReservation()
         {
-            String query = "select u.name, u.lastName, u.mail from USERS u, RESERVATIONS r, PUBLICATIONS p " +
+            String query = "select u.name, u.lastName, u.mail, u.language from USERS u, RESERVATIONS r, PUBLICATIONS p " +
                 "where r.idReservation = @idReservation and r.idPublication = p.idPublication and p.idUser = u.idUser";                
             return query;
         }
@@ -466,7 +466,7 @@ namespace backend.Data_Access.Query
 
         public String GetCustomerFromReservation()
         {
-            String query = "select u.name, u.lastName, u.mail from USERS u, RESERVATIONS r " +
+            String query = "select u.name, u.lastName, u.mail, u.language from USERS u, RESERVATIONS r " +
                 "where r.idReservation = @idReservation and r.idCustomer = u.idUser";
             return query;
         }
@@ -493,7 +493,7 @@ namespace backend.Data_Access.Query
         {
             String query = "select r.idReservation, p.title, u.mail, u.name, u.lastName, u.phone, r.commission, ps.description, " +
                 "r.commissionComment, r.commissionEvidence, r.paymentCommissionDate from RESERVATIONS r, PUBLICATIONS p, USERS u, " +
-                "PAYMENT_STATES ps where r.commissionPaymentState = 2 and r.commissionPaymentState = ps.idPaymentState and r.idPublication = p.idPublication and p.idUser = u.idUser ";
+                "PAYMENT_STATES ps where (r.commissionPaymentState = 2 or r.commissionPaymentState = 1) and r.commissionPaymentState = ps.idPaymentState and r.idPublication = p.idPublication and p.idUser = u.idUser ";
             return query;
         }
 
@@ -541,7 +541,7 @@ namespace backend.Data_Access.Query
 
         public String GetPublisherFromPublication()
         {
-            String query = "select u.name, u.lastName, u.mail from USERS u, PUBLICATIONS p " +
+            String query = "select u.name, u.lastName, u.mail, u.language from USERS u, PUBLICATIONS p " +
                 "where p.idPublication = @idPublication and p.idUser = u.idUser";
             return query;
         }
@@ -569,6 +569,49 @@ namespace backend.Data_Access.Query
         {
             String query = "select q.idQuestion, u.name, q.question, q.creationDate, p.idPublication, p.title from PUBLICATION_QUESTIONS q, PUBLICATIONS p, USERS u where " +
                 "q.idPublication = @idPublication and q.idPublication = p.idPublication and p.state = 2 and u.idUser = q.idUser order by q.creationDate desc";
+            return query;
+        }
+
+        public String GetUserByQuestion()
+        {
+            String query = "select u.idUser, u.mail, u.name, u.lastName, u.checkPublisher, u.mailValidated, u.publisherValidated, u.active, u.language from PUBLICATION_QUESTIONS p, USERS u where p.idQuestion = @idQuestion and p.idUser = u.idUser";
+            return query;
+        }
+
+        public String GetPublicationByQuestionId()
+        {
+            String query = "select p.title from PUBLICATIONS p, PUBLICATION_QUESTIONS q where q.idPublication = p.idPublication and q.idQuestion = @idQuestion";
+            return query;
+        }
+
+        public String GetPublicationTitleByReservationId()
+        {
+            String query = "select p.title from PUBLICATIONS p, RESERVATIONS r where r.idReservation = @idReservation and r.idPublication = p.idPublication";
+            return query;
+        }
+
+        public String GetFreePlan()
+        {
+            String query = "select pt.idPlan FROM PUBLICATION_PLAN_TYPES pt, PUBLICATION_PLANS pp where pp.idPlan = @idPlan and pt.idPlan = pp.idPlan and pt.idPlan = 1";
+            return query;
+        }
+
+        public String UpdateCommissionAmountAdmin (bool isPaid)
+        {
+            String query = "";
+            if (isPaid)
+            {
+                query = "update RESERVATIONS set commission = @commission, paymentCommissionDate = getdate(), commissionPaymentState = 3 where idReservation = @idReservation";
+            } else
+            {
+                query = "update RESERVATIONS set commission = @commission where idReservation = @idReservation";
+            }
+            return query;
+        }
+
+        public String CreatePublicationStatics()
+        {
+            String query = "insert into publications_statistics (spaceType, facilities, idPublication, favourite, rented) values (@spaceType, @facilities, @idPublication, @favourite, @rented)";
             return query;
         }
     }

@@ -3,12 +3,13 @@ import { toast } from 'react-toastify';
 import {Form, FormGroup, Label, Input, FormFeedback,
     Row,Col,Button, InputGroupAddon,InputGroup } from 'reactstrap';
 import Geocode from "react-geocode";
-import credentials from '../map/credentials';
+import {API_CREDENTIALS} from '../../../services/common/constants';
 import Upload from './upload/upload';
 import Map from '../map/Map';
 import LocationSearchInput from './LocationSearchInput';
 import ViewImages from './upload/viewImages';
-
+// Multilanguage
+import { withTranslate } from 'react-redux-multilingual'
 
 class CreatePublicationStep2 extends React.Component {
     constructor(props) {
@@ -34,7 +35,7 @@ class CreatePublicationStep2 extends React.Component {
         this.validateLocation = this.validateLocation.bind(this);
         this.functionLoadLocation = this.functionLoadLocation.bind(this);
         this.deleteImage = this.deleteImage.bind(this);
-        Geocode.setApiKey(credentials.mapsKey);
+        Geocode.setApiKey(API_CREDENTIALS);
         Geocode.setRegion("uy");
         Geocode.enableDebug();
     }
@@ -127,36 +128,38 @@ class CreatePublicationStep2 extends React.Component {
       if (this.props.parentState.currentStep !== 2) { // Prop: The current step
         return null
       }
+      const { translate } = this.props;
+
       // Step 2 UI
       return(
         <Form className="border border-light p-6">
-            <p className="h4 mb-4 text-center">Datos de tu espacio - Paso 2</p>
+            <p className="h4 mb-4 text-center">{translate('createPub_DataFromYourSpace')} - {translate('createPub_stepHeader')} 2</p>
             <FormGroup>
                 <Upload onChange={this.props.onChange} loadedImages={this.props.parentState.imagesURL}/>
                 {this.props.parentState.imagesURL.length > 0 ? (
                     <ViewImages loadedImages={this.props.parentState.imagesURL} deleteImage={this.deleteImage}/>
                 ) : (null)}
-                <Label for="">Cantidad de fotos : {this.props.parentState.imagesURL.length + this.props.parentState.spaceImages.length} , guardadas {this.props.parentState.imagesURL.length} , a subir {this.props.parentState.spaceImages.length}</Label>
+                <Label for="">{translate('createPub_step2_photoLbl1')} : {this.props.parentState.imagesURL.length + this.props.parentState.spaceImages.length} , {translate('createPub_step2_photoLbl2')} : {this.props.parentState.imagesURL.length} , {translate('to_w')} {translate('upload_w')} : {this.props.parentState.spaceImages.length}</Label>
             </FormGroup>
             <FormGroup>
-                <Label for="youtubeURL">Video (Link de YouTube)</Label>
+                <Label for="youtubeURL">{translate('video_w')} {translate('createPub_step2_youtubeLinkTxt')}</Label>
                 <Input {...(this.state.matchYoutubeSuccess ? {valid :true} : {})} {...(this.state.matchYoutubeError ? {invalid :true} : {})} 
                     type="text" name="youtubeURL" id="youtubeURL" onChange={this.matchYoutubeUrl} maxLength="70" value={this.state.youtubeURL}/>
-                <FormFeedback tooltip>Error: No es una URL de YouTube válida</FormFeedback>
+                <FormFeedback tooltip>{translate('createPub_step2_youtubeURLErrorTxt')}</FormFeedback>
             </FormGroup>
             <Row form>
                 <Col md={8}>
                     <FormGroup>
-                    <Label for="locationSearch">Localidad (*)</Label>
+                    <Label for="locationSearch">{translate('location2_w')} (*)</Label>
                     <LocationSearchInput onChange={this.props.onChange} city={this.props.parentState.city}/>
                     </FormGroup>
                 </Col>
                 <Col md={8}>
                     <FormGroup>
-                        <Label for="locationText">Ubicación (*)</Label>
+                        <Label for="locationText">{translate('location_w')} (*)</Label>
                         <InputGroup>
                             <InputGroupAddon addonType="prepend">
-                                <Button id="locationTexButton" onClick={this.validateLocation} disabled={this.state.locationTextLoading}>Validar</Button>
+                                <Button id="locationTexButton" onClick={this.validateLocation} disabled={this.state.locationTextLoading}>{translate('validate_w')}</Button>
                             </InputGroupAddon>
                             <Input {...(this.state.locationTextSuccess ? {valid :true} : {})} {...(this.state.locationTextError ? {invalid :true} : {})} 
                                     type="text" name="locationText" placeholder="ej: 18 de julio 2233" id="locationText"
@@ -176,4 +179,4 @@ class CreatePublicationStep2 extends React.Component {
     }
   }
 
-  export default CreatePublicationStep2;
+  export default withTranslate(CreatePublicationStep2);

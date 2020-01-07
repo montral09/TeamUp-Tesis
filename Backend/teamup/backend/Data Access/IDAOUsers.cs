@@ -13,9 +13,9 @@ namespace backend.Data_Access.Query
         bool AdminMember(String user);
         bool IsMailValidated(String mail);
         User Find(string mail);
-        Task InsertUser(User user);
-        Task UpdateUser(User user, String newMail);
-        bool ValidateDeletion(String mail);
+        string InsertUser(User user);
+        string UpdateUser(User user, String newMail);
+        String ValidateDeletion(String mail);
         void DeleteUser(String mail);
         List<VOPublisher> GetPublishers();
         List<VOCustomer> GetCustomers();
@@ -24,12 +24,13 @@ namespace backend.Data_Access.Query
         void RequestPublisher(String mail);
         VOTokens CreateTokens(String mail);
         bool ValidAccessToken(String mail, String accessToken);
-        Task UpdatePassword(String mail);
+        string UpdatePassword(String mail);
         int ValidateEmail(String activationCode);
         void UpdateUserAdmin(VORequestUpdateUserAdmin voRequest);
         List<VOUserAdmin> GetUsers();
         User GetUserData(VORequestGetUserData voRequestUserData);
         bool IsPublisher(String mail);
+        int GetIdLanguageByDescription(String descLanguage);
 
     }
 }

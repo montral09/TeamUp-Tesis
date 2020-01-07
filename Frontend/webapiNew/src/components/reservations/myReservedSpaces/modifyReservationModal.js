@@ -1,12 +1,8 @@
 import React from 'react';
-import {Button, Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
-import { Form, FormGroup, Label, Input} from 'reactstrap';
-import {
-    Col
-} from 'reactstrap';
-
-import {toast} from 'react-toastify';
+import {Button, Modal, ModalHeader, ModalBody, ModalFooter, Form, FormGroup, Label, Input, Col} from 'reactstrap';
 import DatePicker from  '../../publications/viewPublication/datePicker';
+// Multilanguage
+import { withTranslate } from 'react-redux-multilingual'
 
 class ModifyReservationModal extends React.Component {
     constructor(props) {
@@ -24,19 +20,13 @@ class ModifyReservationModal extends React.Component {
             isLoading : false,
             buttonIsDisabled: false
         };
-
-        this.toggle = this.toggle.bind(this);
-        this.save = this.save.bind(this);
-        this.changeModalLoadingState = this.changeModalLoadingState.bind(this);      
     }
 
-    toggle(resData, tokenObj, userData) {
-        console.log('toggle')
-        console.log(resData)
+    toggle = (resData, tokenObj, userData)  => {
         if (resData != null) {
             if(resData.DateFromString) {
-                var dateConverted = this.splitDate (resData.DateFromString)
-                var dateFormated = new Date(dateConverted[2], dateConverted[1], dateConverted[0])
+                var dateConverted = this.splitDate(resData.DateFromString)
+                var dateFormated = new Date(dateConverted[2],parseInt(dateConverted[1])-1, dateConverted[0])
                 this.setState({
                     modal: !this.state.modal,
                     resData: resData,
@@ -62,16 +52,16 @@ class ModifyReservationModal extends React.Component {
     }
 
     splitDate (date) {      
-      return  date.split('-')
+      return  date.split('/')
     }
 
     getPricePlanChosen(resData) {   
         var price;
         switch (resData.PlanSelected) {
             case "Hour" : price = resData.HourPrice; break;
-            case "Daily" : price = resData.DailyPrice; break;
-            case "Weekly" : price = resData.WeeklyPrice; break;
-            case "Monthly" : price = resData.MonthlyPrice; break;
+            case "Day" : price = resData.DailyPrice; break;
+            case "Week" : price = resData.WeeklyPrice; break;
+            case "Month" : price = resData.MonthlyPrice; break;
         }
         return price;
     }
@@ -127,15 +117,18 @@ class ModifyReservationModal extends React.Component {
     calculatePrice = () => {
         var tmpHfs = 0;
         var tmpHts = 1;
+        var totalPrice = 0;
         if (this.state.resData.PlanSelected === 'Hour') {
             tmpHfs = this.state.resDataChanged.HourFrom; 
             tmpHts = this.state.resDataChanged.HourTo == 0 ? 24 : this.state.resDataChanged.HourTo; 
+            totalPrice = (parseInt(tmpHts-tmpHfs) * parseInt(this.state.pricePlanChosen));
+        }else{
+            totalPrice = parseInt(this.state.pricePlanChosen);
         }
-
-        var totalPrice = (parseInt(tmpHts-tmpHfs) * parseInt(this.state.pricePlanChosen));
         if(this.state.resData.IndividualRent == true && this.state.resDataChanged.People != null){
             totalPrice = totalPrice * parseInt(this.state.resDataChanged.People);
         }        
+
         this.setState({
             resDataChanged : {
                 ...this.state.resDataChanged,                
@@ -157,7 +150,7 @@ class ModifyReservationModal extends React.Component {
           }, () => {this.calculatePrice()})
     }
 
-    changeModalLoadingState(closeModal){
+    changeModalLoadingState = (closeModal)  => {
         if(closeModal){
             this.setState({
                 modal: !this.state.modal,
@@ -172,21 +165,22 @@ class ModifyReservationModal extends React.Component {
         }
     }
 
-    save() {
+    save = () =>  {
         this.changeModalLoadingState();
         this.props.confirmEditReservation(this.state);
     }
 
     render() {
+        const { translate } = this.props;
         return (
             <span className="d-inline-block mb-2 mr-2">
                 <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
-                    <ModalHeader toggle={this.toggle}>Cambiar datos de reserva</ModalHeader>
+                    <ModalHeader toggle={this.toggle}>{translate('myReservedSpacesList_modalModify_header')}</ModalHeader>
                     <ModalBody>
                     <Form>
                         <FormGroup row>
-                        <Label for="DateFrom" sm={4}>Fecha</Label>
-                        <DatePicker placeholderText="Fecha"
+                        <Label for="DateFrom" sm={4}>{translate('date_w')}</Label>
+                        <DatePicker placeholderText={translate('date_w')}
                             dateFormat="dd-MM-yyyy"
                             selected= {this.state.dateFrom}
                             minDate={new Date()}
@@ -198,7 +192,7 @@ class ModifyReservationModal extends React.Component {
                             <FormGroup>
                             <div className="cart">
                                 <div className="add-to-cart d-flex">
-                                    <span><b>Hora</b></span>
+                                    <span><b>{translate('hour_w')}</b></span>
                                     <div style={{ marginLeft: '8%' }} className="browser">
                                         <select style={{ marginLeft: '8%' }} className="browser" id="hourFromSelect" 
                                             value={this.state.resDataChanged.HourFrom} onChange={this.changeHour} >
@@ -209,7 +203,7 @@ class ModifyReservationModal extends React.Component {
                                             })}
                                         </select>
                                     </div>
-                                    <b style={{ marginLeft: '8%' }}>a</b>
+                                    <b style={{ marginLeft: '8%' }}>{translate('to_w')}</b>
                                     <div className="browser">
                                         <select className="browser" id="hourToSelect" 
                                         value={this.state.resDataChanged.HourTo} onChange={this.changeHour} >
@@ -225,14 +219,14 @@ class ModifyReservationModal extends React.Component {
                             </FormGroup>
                         ) : (null)}                        
                         <FormGroup row>
-                        <Label for="People" sm={8}>Personas</Label>
+                        <Label for="People" sm={8}>{translate('people_w')}</Label>
                         <Col sm={10}>
-                        <Input type="text" name="People" id="People"
+                        <Input type="number" name="People" id="People"
                                         value={this.state.resDataChanged.People} onChange={this.onChange}/>
                         </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label for="TotalPrice" sm={8}>Monto</Label>
+                            <Label for="TotalPrice" sm={8}>{translate('amount_w')}</Label>
                             <Col sm={10}>
                                 <Input disabled type="text" name="TotalPrice" id="TotalPrice"
                                         value={this.state.resDataChanged.TotalPrice} />
@@ -241,8 +235,8 @@ class ModifyReservationModal extends React.Component {
                     </Form>
                     </ModalBody>
                     <ModalFooter>
-                        <Button color="link" onClick={this.toggle}>Cancel</Button>
-                        <Button color="primary" onClick={this.save} disabled= {this.state.buttonIsDisabled}>Guardar
+                        <Button color="link" onClick={this.toggle}>{translate('cancel_w')}</Button>
+                        <Button color="primary" onClick={this.save} disabled= {this.state.buttonIsDisabled}>{translate('save_w')}
                         &nbsp;&nbsp;
                             {this.state.isLoading &&  
                                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -255,4 +249,4 @@ class ModifyReservationModal extends React.Component {
     }
 }
 
-export default ModifyReservationModal;
+export default withTranslate(ModifyReservationModal);
