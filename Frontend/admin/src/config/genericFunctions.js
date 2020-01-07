@@ -3,8 +3,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { logOut, updateToken } from '../reducers/auth/actions';
 import store from './configureStore'
 import { MAIN_URL} from './constants'
+
 export const handleErrors = (error, bindThis) => {
-    bindThis.setState({ generalError: true });
     displayErrorMessage('Hubo un error');
 }
 
@@ -25,9 +25,6 @@ export const callAPI = (objApi, bindThis) => {
             }
         }
         ).catch(error => {
-            throw error;
-
-            alert(error)
             handleErrors(error, bindThis);
         }
         )
@@ -49,8 +46,6 @@ export const callAPI = (objApi, bindThis) => {
             }
         }
         ).catch(error => {
-            throw error;
-            alert(error)
             handleErrors(error, bindThis);
         }
         )
@@ -66,6 +61,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             callAPI(objApi.retryObjApi, bindThis);
             break;
         case "logIn":
+            bindThis.toggleButton();
             let admTokenObj = {
                 accesToken : objData.AccessToken,
                 refreshToken : objData.RefreshToken
@@ -73,7 +69,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             objApi.dispatch({ type: objApi.typeSuccess, adminData: objData.voAdmin, admTokenObj: admTokenObj});            
         break;
         case "loadPendingPublishers" :
-            const sanitizedValues = objData.voUsers.filter(voUsr =>{
+            var sanitizedValues = objData.voUsers.filter(voUsr =>{
                 return voUsr.PublisherValidated == false
             })
             bindThis.setState({ 'gestPendApr': sanitizedValues })
@@ -146,6 +142,12 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             });
             bindThis.props.updateTable(); 
             break;
+        case "gestPendApp":
+            var sanitizedValues = objData.voUsers.filter(voUsr =>{
+                return voUsr.PublisherValidated == false
+            })
+            bindThis.setState({ 'gestPendApr': sanitizedValues })
+            break;
     } 
 }
 
@@ -161,7 +163,8 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
     }
     switch(trigger){
         case "logIn":
-            objApi.dispatch({ type: objApi.LOG_IN_ERROR});
+            bindThis.toggleButton();
+            objApi.dispatch({ type: objApi.typeError});
         break;
         case "registerUser":
             bindThis.setState({isLoading: false, buttonIsDisable: false});
@@ -179,11 +182,9 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
             });
         default:
     }
-    console.log(objData);
     if(objData.responseCode && objApi.errorMSG && objData.responseCode in objApi.errorMSG && objApi.errorMSG[objData.responseCode] && objApi.errorMSG[objData.responseCode] != ""){
         displayErrorMessage(objApi.errorMSG[objData.responseCode]);
     }else{
-        console.log('internal error')
         handleErrors("Internal error", bindThis)
     }
 }

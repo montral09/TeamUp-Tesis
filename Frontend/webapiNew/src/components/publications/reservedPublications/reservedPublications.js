@@ -189,11 +189,11 @@ class MyReservedPublications extends React.Component {
     }
 
     render() {
-        const { translate } = this.props;
+        const { translate, userData, login_status } = this.props;
                     /* START SECURITY VALIDATIONS */
-        if (this.props.login_status != 'LOGGED_IN') return <Redirect to='/' />
+        if (login_status != 'LOGGED_IN') return <Redirect to='/' />
         // THIS ONE ONLY FOR PUBLISHER PAGES
-        if (this.props.userData.PublisherValidated != true) return <Redirect to='/' />
+        if (userData.PublisherValidated != true) return <Redirect to='/' />
                     /* END SECURITY VALIDATIONS */
         return (
         <>

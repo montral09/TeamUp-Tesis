@@ -5,12 +5,13 @@ import {
     Button
 } from 'reactstrap';
 import {BrowserRouter as Redirect} from 'react-router-dom';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 import './Login.css';
 
 import { connect } from 'react-redux';
 import { logIn } from '../../reducers/auth/actions';
+
+import {displayErrorMessage} from '../../config/genericFunctions'
 
 class Login extends React.Component {
     constructor(props) {
@@ -18,7 +19,10 @@ class Login extends React.Component {
         this.state = {
             email: '',
             password: '',
-            loggedIn: false
+            loggedIn: false,
+            isLoading: false,
+            buttonIsDisable: false,
+            bindThis : this
         }
         this.handleChange = this.handleChange.bind(this);
     }
@@ -31,8 +35,13 @@ class Login extends React.Component {
             [name]: value,
         });
     }
-
-    checkRequiredInputs() {
+    toggleButton = () =>   {
+        this.setState({
+            isLoading: !this.state.isLoading,
+            buttonIsDisable: !this.state.buttonIsDisable
+        })
+    }
+    checkRequiredInputs=()=> {
         let returnValue = false;
         let message = "";
         if (!this.state.password || !this.state.email) {
@@ -44,31 +53,18 @@ class Login extends React.Component {
         }
         
         if(message){
-            toast.error(message, {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
+            displayErrorMessage(message);
         }
         
         return returnValue;
     }
-    submitForm(e) {
+    submitForm =(e)=> {
         e.preventDefault();
         if (this.state.password && this.state.email) {
+            this.toggleButton();
             this.props.logIn(this.state);
         } else {
-            toast.error('Por favor ingrese correo y contraseña', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
+            displayErrorMessage('Por favor ingrese correo y contraseña');
         }
     }
     render() {
@@ -104,9 +100,11 @@ class Login extends React.Component {
                                     placeholder="Password"
                                     onChange={(e) => this.handleChange(e)}
                                 />
+
                             </FormGroup>
                         </Col>
-                        <Button>Login</Button>
+                        <Button>Login &nbsp;&nbsp;{this.state.isLoading &&
+                                    <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>}</Button>
                     </Form>
                     <ToastContainer/>
                 </Container>

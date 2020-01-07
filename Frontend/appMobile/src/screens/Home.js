@@ -15,22 +15,18 @@ import FavoriteSpaceList from '../screens/FavoriteSpaceList';
 import ReservationSpaceList from '../screens/ReservationSpaceList';
 import RequestBePublisher from '../screens/RequestBePublisher';
 import ReservedPublicationsList from '../screens/ReservedPublicationsList';
+import DeleteUser from '../screens/DeleteUser';
 
 import Globals from '../Globals';
 
 import SearchPublications from './SearchPublications';
 
 import MenuButton from '../components/MenuButton';
-import SearchBar from '../components/SearchBar';
+import SearchBar from '../components/searchBar';
 import Banner from '../components/BannerScrollView';
 import SpacesScrollView from '../components/SpacesScrollView';
 import Contact from '../components/contactUs';
 import RecommendedPublications from '../components/RecommendedPublications';
-
-//Imagenes de prueba
-const uri1 = 'https://cdn.pixabay.com/photo/2016/11/07/19/25/meeting-room-1806702_960_720.jpg';
-const uri2 = 'https://cdn.pixabay.com/photo/2015/05/15/14/22/conference-room-768441_960_720.jpg';
-const uri3 = 'https://cdn.pixabay.com/photo/2015/04/20/06/43/meeting-room-730679_960_720.jpg';
 
 class Home extends Component{
   constructor(props){
@@ -106,7 +102,11 @@ const DrawerNavigator = createDrawerNavigator(
   RequestBePublisher: {screen: RequestBePublisher, navigationOptions: ({ navigation }) => ({
                               header: null,
                               title: 'Quiero publicar',
-                    })},               
+                    })},    
+  DeleteUser: {screen: DeleteUser, navigationOptions: ({ navigation }) => ({
+                      header: null,
+                      title: 'Darme de baja',
+            })},           
   },
 {
   drawerBackgroundColor: '#0069c0',

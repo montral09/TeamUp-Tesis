@@ -60,7 +60,7 @@ class UserBox extends React.Component {
                                     <DropdownMenu right className="rm-pointers dropdown-menu-lg">
                                         <Nav vertical>
                                             <NavItem>
-                                                <a onClick = { () => (this.props.logOut())}> Log out</a>
+                                            <a onClick = { () => (this.props.logOut())}><i className='pe-7s-back-2'> </i> Cerrar sesión</a>
                                             </NavItem>
                                         </Nav>
                                     </DropdownMenu>
@@ -68,7 +68,7 @@ class UserBox extends React.Component {
                             </div>
                             <div className="widget-content-left  ml-3 header-user-info">
                                 <div className="widget-heading">
-                                    Administrator
+                                    Administrador
                                 </div>
                                 <div className="widget-subheading">
                                     {this.props.adminData.Mail}
