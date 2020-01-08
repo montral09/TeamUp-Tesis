@@ -62,6 +62,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
                 accesToken : objData.AccessToken,
                 refreshToken : objData.RefreshToken,
             }});
+        break;
         case "modifyUser":
             bindThis.setState({ isLoading: false });
             if(objApi.emailChanged){
