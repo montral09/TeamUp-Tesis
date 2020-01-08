@@ -1,9 +1,8 @@
-import React, {Component} from 'react';
-import { StyleSheet, Text, View, ScrollView, Keyboard,TouchableOpacity} from 'react-native';
+import React, { Component } from 'react';
+import { StyleSheet, Text, View, ScrollView, Keyboard, TouchableOpacity } from 'react-native';
 import { Header } from 'react-native-elements';
 import { createDrawerNavigator, createAppContainer } from 'react-navigation';
 //import Theme from './theme';
-
 
 import SignUp from '../screens/SignUp';
 import Profile from '../screens/Profile';
@@ -16,9 +15,9 @@ import ReservationSpaceList from '../screens/ReservationSpaceList';
 import RequestBePublisher from '../screens/RequestBePublisher';
 import ReservedPublicationsList from '../screens/ReservedPublicationsList';
 import DeleteUser from '../screens/DeleteUser';
+import LogOut from '../screens/LogOut';
 
 import Globals from '../Globals';
-
 import SearchPublications from './SearchPublications';
 
 import MenuButton from '../components/MenuButton';
@@ -28,36 +27,36 @@ import SpacesScrollView from '../components/SpacesScrollView';
 import Contact from '../components/contactUs';
 import RecommendedPublications from '../components/RecommendedPublications';
 
-class Home extends Component{
-  constructor(props){
+class Home extends Component {
+  constructor(props) {
     super(props);
-      this.state = {
-        searchBarFocused: false,
-      }
+    this.state = {
+      searchBarFocused: false,
+    }
   }
 
   static navigationOptions = {
     header: null
   };
 
-  render(){
-        
+  render() {
+
     return (
       <View style={styles.container}>
         <Header
-          leftComponent={{ icon: 'menu', color: '#fff', flex:1, onPress: () => this.props.navigation.openDrawer()}}
-          centerComponent={<SearchBar parentState={this.state} onChange={this.onChange} onSelectionsChangeSpace={this.onSelectionsChangeSpace} navigate={this.props.navigation.navigate}/>}
-          //rightComponent={{ icon: 'home', color: '#fff', flex:1, onPress: () => this.props.navigation.navigate('Home')}}
+          leftComponent={{ icon: 'menu', color: '#fff', flex: 1, onPress: () => this.props.navigation.openDrawer() }}
+          centerComponent={<SearchBar parentState={this.state} onChange={this.onChange} onSelectionsChangeSpace={this.onSelectionsChangeSpace} navigate={this.props.navigation.navigate} />}
+        //rightComponent={{ icon: 'home', color: '#fff', flex:1, onPress: () => this.props.navigation.navigate('Home')}}
         />
         <ScrollView vertical>
-          <Banner/>     
-          <RecommendedPublications navigate={this.props.navigation.navigate}/>
-          <Contact/>
+          <Banner />
+          <RecommendedPublications navigate={this.props.navigation.navigate} />
+          <Contact />
         </ScrollView>
       </View>
-            
-            
-      );
+
+
+    );
   }
 }
 
@@ -71,58 +70,80 @@ const styles = StyleSheet.create({
 });
 
 const DrawerNavigator = createDrawerNavigator(
-{
-  Home: {screen: Home},
-  Perfil: {screen: Profile, navigationOptions: ({ navigation }) => ({
-                              header: null,
-                            })},
-  Publicar: {screen: PublishSpaceMaster, navigationOptions: ({ navigation }) => ({
-                                     header: null,
-                                     title: 'Publicar espacio',
-                                   })},
-  Publicaciones: {screen: SpaceList, navigationOptions: ({ navigation }) => ({
-                                     header: null,
-                                     title: 'Ver publicaciones de gestor',
-                                   })},
-  /*SearchPublications: {screen: SearchPublications, navigationOptions: ({ navigation }) => ({
-                              header: null,
-                    })},*/
-  FavoriteSpaceList: {screen: FavoriteSpaceList, navigationOptions: ({ navigation }) => ({
-                              header: null,
-                              title: 'Mis favoritos',
-                    })},
-  ReservationSpaceList: {screen: ReservationSpaceList, navigationOptions: ({ navigation }) => ({
-                              header: null,
-                              title: 'Mis reservas',
-                    })}, 
-  ReservedPublicationsList: {screen: ReservedPublicationsList, navigationOptions: ({ navigation }) => ({
-                              header: null,
-                              title: 'Mis espacios reservados',
-                    })}, 
-  RequestBePublisher: {screen: RequestBePublisher, navigationOptions: ({ navigation }) => ({
-                              header: null,
-                              title: 'Quiero publicar',
-                    })},    
-  DeleteUser: {screen: DeleteUser, navigationOptions: ({ navigation }) => ({
-                      header: null,
-                      title: 'Darme de baja',
-            })},           
+  {
+    Home: { screen: Home },
+    Perfil: {
+      screen: Profile, navigationOptions: ({ navigation }) => ({
+        header: null,
+      })
+    },
+    Publicar: {
+      screen: PublishSpaceMaster, navigationOptions: ({ navigation }) => ({
+        header: null,
+        title: 'Publicar espacio',
+      })
+    },
+    Publicaciones: {
+      screen: SpaceList, navigationOptions: ({ navigation }) => ({
+        header: null,
+        title: 'Ver publicaciones de gestor',
+      })
+    },
+    /*SearchPublications: {screen: SearchPublications, navigationOptions: ({ navigation }) => ({
+                                header: null,
+                      })},*/
+    FavoriteSpaceList: {
+      screen: FavoriteSpaceList, navigationOptions: ({ navigation }) => ({
+        header: null,
+        title: 'Mis favoritos',
+      })
+    },
+    ReservationSpaceList: {
+      screen: ReservationSpaceList, navigationOptions: ({ navigation }) => ({
+        header: null,
+        title: 'Mis reservas',
+      })
+    },
+    ReservedPublicationsList: {
+      screen: ReservedPublicationsList, navigationOptions: ({ navigation }) => ({
+        header: null,
+        title: 'Mis espacios reservados',
+      })
+    },
+    RequestBePublisher: {
+      screen: RequestBePublisher, navigationOptions: ({ navigation }) => ({
+        header: null,
+        title: 'Quiero publicar',
+      })
+    },
+    DeleteUser: {
+      screen: DeleteUser, navigationOptions: ({ navigation }) => ({
+        header: null,
+        title: 'Darme de baja',
+      })
+    },
+    LogOut: {
+      screen: LogOut, navigationOptions: ({ navigation }) => ({
+        header: null,
+        title: 'Log Out',
+      })
+    },
   },
-{
-  drawerBackgroundColor: '#0069c0',
-  contentOptions: {
-    labelStyle: {
-      color: 'white',
+  {
+    drawerBackgroundColor: '#0069c0',
+    contentOptions: {
+      labelStyle: {
+        color: 'white',
+      }
     }
-  }
-});
+  });
 
 export default DrawerNavigator;
 
 /*<Text style={styles.titleText}>
             Destacados
-          </Text>     
-          <View style={{marginTop: 20, elevation: 3}}>   
+          </Text>
+          <View style={{marginTop: 20, elevation: 3}}>
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
