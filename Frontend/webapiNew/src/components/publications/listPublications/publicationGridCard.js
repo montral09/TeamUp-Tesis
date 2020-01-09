@@ -14,7 +14,7 @@ class PublicationGridCard extends React.Component {
 						<div className="sale">Recomendado</div>
 				        <div className="image ">
 							<Link to={`/publications/viewPublication/viewPublication/${IdPublication}`}>
-                            	<img src={ImagesURL[0]} onError={(e)=>{e.target.onerror = null; e.target.src="/images/no-image-available.png"}} alt='No image available' className="" />
+                            	<img src={ImagesURL[0]} onError={(e)=>{e.target.onerror = null; e.target.src="../../../images/no-image-available.png"}} alt='No image available' className="" />
 							</Link>
 				    	</div>
 					</div>

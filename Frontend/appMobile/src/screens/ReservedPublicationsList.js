@@ -79,10 +79,10 @@ class ReservedPublicationsList extends Component {
                 };
                 this.props.navigation.navigate('ReservationReqInfo', {screenConfig: screenConfigObj});
             break;
-            /*
             case "PAYRESCUST": 
-                this.ModalResCustPay.current.toggle(auxParam);
+                this.props.navigation.navigate('ReservationCustResPay', {auxParam: auxParam});
             break;
+            /*
             case "PAYRESCOM": 
                 this.ModalResComPay.current.toggle(auxParam);
             break;*/

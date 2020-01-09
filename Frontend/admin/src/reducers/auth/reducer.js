@@ -5,7 +5,7 @@ import {
     LOG_IN_ERROR } 
 from "./actionTypes";
 
-import { loadState, saveState } from './cookieStore';
+import { saveState } from './cookieStore';
 
 const initState = {
     login_status : 'NOT_LOGGED_IN',

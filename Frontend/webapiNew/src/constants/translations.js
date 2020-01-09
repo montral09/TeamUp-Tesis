@@ -67,7 +67,7 @@ var module = {
             ERR_PENDINGRESERVATIONPUBLISHER : "Usted tiene reservas pendientes, por favor finalizarlas antes de darse de baja",
             ERR_PENDINGPREFERENTIALPAYMENT : "Usted tiene pagos pendientes, por favor realizarlos antes de darse de baja",
             ERR_PENDINGCOMMISSIONPAYMENT : "Usted tiene pagos pendientes, por favor realizarlos antes de darse de baja",
-            deleteUser_body: 'Esta acción de baja su usuario.',
+            deleteUser_body: 'Esta acción dará de baja su usuario.',
             viewPub_addToFav: 'Agregar a favoritos',
             viewPub_remToFav: 'Quitar de favoritos',
             viewPub_addedToFav: 'Agregado a favoritos',

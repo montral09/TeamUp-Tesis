@@ -28,14 +28,14 @@ render() {
                     <View style={styles.borderContainer}>
                         <Text style={styles.subTitleText}>Pago reserva</Text>
                         <Text style={styles.infoText}>{this.props.objReservationCustomerPayment.reservationPaymentStateText}</Text>               
-                        <TouchableOpacity style={styles.button} /*onPress={()=>}*/> 
+                        <TouchableOpacity style={styles.button} onPress={()=> {this.props.triggerModal("PAYRESCUST", obj.IdReservation, objReservationCustomerPayment)}}> 
                             <Text style={styles.buttonText}>Detalles</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={styles.borderContainer}>
                         <Text style={styles.subTitleText}>Pago comisión</Text>
                         <Text style={styles.infoText}>{this.props.objCommisionPayment.paymentStatusText}</Text>               
-                        <TouchableOpacity style={styles.button} /*onPress={()=>}*/> 
+                        <TouchableOpacity style={styles.button} /*onPress={()=> }*/> 
                             <Text style={styles.buttonText}>Detalles</Text>
                         </TouchableOpacity>
                     </View>

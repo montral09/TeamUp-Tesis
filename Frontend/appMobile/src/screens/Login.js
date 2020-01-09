@@ -17,6 +17,7 @@ import SearchPublications from './SearchPublications';
 import ErrorScreen from './ErrorScreen';
 import ReservationPaymentComDetails from './ReservationPaymentComDetails';
 import ReservationReqInfo from './ReservationReqInfo';
+import ReservationCustResPay from './ReservationCustResPay';
 
 class Login extends Component{
    static navigationOptions = {
@@ -87,6 +88,9 @@ const StackNavigator = createStackNavigator({
   SearchPublications: {screen: SearchPublications, navigationOptions: ({ navigation }) => ({
                               header: null,
                     })},
+  ReservationCustResPay: {screen: ReservationCustResPay, navigationOptions: ({ navigation }) => ({
+                              header: null,
+                    })},                  
   ReservationPaymentComDetails: {screen: ReservationPaymentComDetails, navigationOptions: ({ navigation }) => ({
                               header: null,
                     })},

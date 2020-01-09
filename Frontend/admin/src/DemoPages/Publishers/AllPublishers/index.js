@@ -1,14 +1,12 @@
 import React, { Fragment, Component } from 'react';
-
-import {toast} from 'react-toastify';
-
 // Extra
-
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import PageTitle from '../../../Layout/AppMain/PageTitle';
 
 import PublisherApprovTable from './PublisherApprovTable';
 import { connect } from 'react-redux';
+
+import {callAPI} from '../../../config/genericFunctions'
 
 // Table
 
@@ -21,8 +19,6 @@ import {
 class AllPublishers extends Component {
     constructor(props) {
         super(props);
-        console.log("AllPublishers - props:")
-        console.log(props);
         const admTokenObj = props.admTokenObj;
         const adminMail = props.adminData.Mail
         this.state = {
@@ -52,94 +48,39 @@ class AllPublishers extends Component {
 
     // This function will trigger when the component is mounted, to fill the data from the state
     componentDidMount() {
-        fetch('https://localhost:44372/api/publisher'
-        ).then(response => response.json()).then(data => {
-            if (data.responseCode == "SUCC_PUBLISHERSOK") {
-                const sanitizedValues = data.voUsers.filter(voUsr =>{
-                    return voUsr.PublisherValidated == false
-                })
-                this.setState({ 'gestPendApr': sanitizedValues })
-            } else {
-                toast.error('Hubo un error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-            }
-        }
-        ).catch(error => {
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-            console.log(error);
-        }
-        )
+        this.gestPendApp();
+    }
+
+    gestPendApp = () => {
+        var objApi = {};        
+        objApi.fetchUrl = "api/publisher";
+        objApi.method = "GET";
+        objApi.successMSG = {
+            SUCC_PUBLISHERSOK : '',
+        };
+        objApi.functionAfterSuccess = "gestPendApp";
+        callAPI(objApi, this);      
     }
 
     // This funciton will call the api to submit the publisher
-    submitPublisher(publishersEmails, newArrIfSuccess, admTokenObj, adminMail) {
-        console.log ("entre al submit con mails y access token");
-        console.log(publishersEmails);
-        console.log(admTokenObj);
-        fetch('https://localhost:44372/api/publisher', {
-            method: 'PUT',
-            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify({
-                Mails: publishersEmails,
-                AccessToken : admTokenObj.accesToken,
-                AdminMail : adminMail
-            })
-        }).then(response => response.json()).then(data => {
-            console.log("data:" + JSON.stringify(data));
-            if (data.responseCode == "SUCC_PUBLISHERSOK") {
-                let text = "Solicitud ejecutada correctamente";
-                this.setState({
-                    gestPendApr: newArrIfSuccess,
-                });
-                toast.success(text, {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-                //this.props.history.push('/publishers/pendienteaprobacion')
-            } else {
-                toast.error('Hubo un error', {
-                    position: "top-right",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                });
-            }
+    submitPublisher = (publishersEmails, newArrIfSuccess, admTokenObj, adminMail) => {
+        var objApi = {};    
+        objApi.objToSend = {
+            Mails: publishersEmails,
+            AccessToken : admTokenObj.accesToken,
+            AdminMail : adminMail
         }
-        ).catch(error => {
-            toast.error('Internal error', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-            console.log(error);
-        }
-        )
+        objApi.fetchUrl = "api/publisher";
+        objApi.method = "PUT";
+        objApi.successMSG = {
+            SUCC_PUBLISHERSOK : 'Solicitud ejecutada correctamente',
+        };
+        objApi.functionAfterSuccess = "appRejPreferentialPayment";
+        objApi.functionAfterError = "appRejPreferentialPayment"
+        callAPI(objApi, this);
     }
 
     render() {
-
         return (
             <Fragment>
                 <PageTitle

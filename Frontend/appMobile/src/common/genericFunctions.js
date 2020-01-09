@@ -62,6 +62,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
                 accesToken : objData.AccessToken,
                 refreshToken : objData.RefreshToken,
             }});
+        break;
         case "modifyUser":
             bindThis.setState({ isLoading: false });
             if(objApi.emailChanged){
@@ -81,7 +82,9 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
                     });
                 }catch(error){}
             }
-        break;
+        break;        
+        case "deleteUser": bindThis.setState({ isLoading: false }); objApi.logOut();break;
+
     }
 }
 
@@ -116,6 +119,7 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
         case "modifyUser":
             bindThis.setState({ isLoading: false });
         break;
+        case "deleteUser": bindThis.setState({ isLoading: false });break;
         default:
     }
 
