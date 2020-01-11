@@ -1092,7 +1092,8 @@ namespace backend.Data_Access
                         new SqlParameter("@people", SqlDbType.Int) {Value = voCreateReservation.VOReservation.People},
                         new SqlParameter("@comment", SqlDbType.VarChar) {Value = voCreateReservation.VOReservation.Comment},
                         new SqlParameter("@totalPrice", SqlDbType.Int) {Value = voCreateReservation.VOReservation.TotalPrice},
-                        new SqlParameter("@commission", SqlDbType.Int) {Value = reservationCommission}
+                        new SqlParameter("@commission", SqlDbType.Int) {Value = reservationCommission},
+                        new SqlParameter("@reservedQty", SqlDbType.Int) {Value = voCreateReservation.VOReservation.ReservedQuantity}
                     };
                 insertCommand.Parameters.AddRange(prm.ToArray());
                 insertCommand.Transaction = objTrans;

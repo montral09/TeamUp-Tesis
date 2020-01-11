@@ -100,9 +100,25 @@ class ViewPublication extends React.Component {
         }
     }
 
+    increaseQuantityPlan() {
+        this.setState({ quantityPlan: parseInt(this.state.quantityPlan) + 1 });
+    }
+
+    decreaseQuantityPlan() {
+        if (parseInt(this.state.quantityPlan) > 1) {
+            this.setState({ quantityPlan: parseInt(this.state.quantityPlan) - 1 });
+        }
+    }
+
     changeQuantityPeople(value) {
         if (parseInt(value) > 0) {
             this.setState({ quantityPeople: parseInt(value) });
+        }
+    }
+
+    changeQuantityPlan(value) {
+        if (parseInt(value) > 0) {
+            this.setState({ quantityPlan: parseInt(value) });
         }
     }
     loadInfraestructureVP = () => {
@@ -205,8 +221,8 @@ class ViewPublication extends React.Component {
         objApi.successMSG = {
             SUCC_RESERVATIONCREATED : "",
         };
-        objApi.functionAfterSuccess = "submitFavoriteVP";
-        objApi.functionAfterError = "submitFavoriteVP";
+        objApi.functionAfterSuccess = "confirmReservationVP";
+        objApi.functionAfterError = "confirmReservationVP";
         objApi.errorMSG= {}
         this.modalSummaryElement.current.changeModalLoadingState(false);
         callAPI(objApi, this);
@@ -214,18 +230,20 @@ class ViewPublication extends React.Component {
 
 
     triggerSummaryModal(){
+        const { translate } = this.props;
         var validObj = this.validateReservation();
         if(validObj.valid){
             var planChosenText = "";
+            var planChosenQuantityDescription = "";
             var tmpHfs = 0;
             var tmpHts = 1;
             switch(this.state.planChosen){
-                case "HourPrice" : planChosenText = "por hora"; tmpHfs = this.state.hourFromSelect; tmpHts = this.state.hourToSelect == 0 ? 24 : this.state.hourToSelect;  break;
-                case "DailyPrice" : planChosenText = "por día"; break;
-                case "WeeklyPrice" : planChosenText = "por semana"; break;
-                case "MonthlyPrice" : planChosenText = "por mes"; break;
+                case "HourPrice" : planChosenText = "por hora"; planChosenQuantityDescription = ""; tmpHfs = this.state.hourFromSelect; tmpHts = this.state.hourToSelect == 0 ? 24 : this.state.hourToSelect;  break;
+                case "DailyPrice" : planChosenText = "por día"; planChosenQuantityDescription = translate('planChosenQuantityDescriptionDays_w'); break;
+                case "WeeklyPrice" : planChosenText = "por semana"; planChosenQuantityDescription = translate('planChosenQuantityDescriptionWeeks_w'); break;
+                case "MonthlyPrice" : planChosenText = "por mes"; planChosenQuantityDescription = translate('planChosenQuantityDescriptionMonths_w'); break;
             }
-            var totalPrice = (parseInt(tmpHts-tmpHfs) * parseInt(this.state.pubObj[this.state.planChosen]));
+            var totalPrice = (parseInt(tmpHts-tmpHfs) * parseInt(this.state.pubObj[this.state.planChosen]) * parseInt(this.state.quantityPlan));
             if(this.state.pubObj.IndividualRent == true){
                 totalPrice = totalPrice * parseInt(this.state.quantityPeople);
             }
@@ -242,6 +260,8 @@ class ViewPublication extends React.Component {
                 date: this.convertDate(this.state.date),
                 quantityPeople : this.state.quantityPeople,
                 totalPrice : totalPrice,
+                planChosenQuantityDescription: planChosenQuantityDescription,
+                quantityPlan: this.state.quantityPlan
             };
             this.modalSummaryElement.current.toggle(summaryObject);
         }else{
@@ -527,6 +547,22 @@ class ViewPublication extends React.Component {
                                                                                                         {this.state.pubObj.WeeklyPrice > 0 && <option value="WeeklyPrice"> {translate('weeklyPrice_w')+": $" + this.state.pubObj.WeeklyPrice}</option>}
                                                                                                         {this.state.pubObj.MonthlyPrice > 0 && <option value="MonthlyPrice"> {translate('monthlyPrice_w')+": $" + this.state.pubObj.MonthlyPrice}</option>}
                                                                                                     </select>
+                                                                                                    {this.state.planChosen != "HourPrice" ? (
+                                                                                                        <div className="cart">
+                                                                                                            <div style={{ marginLeft: '10%' }} className="add-to-cart d-flex" >
+                                                                                                                <span><b>
+                                                                                                                    {this.state.planChosen == "DailyPrice" ? translate('planChosenQuantityDescriptionDays_w'): ''}
+                                                                                                                    {this.state.planChosen == "WeeklyPrice" ? translate('planChosenQuantityDescriptionWeeks_w'): ''}
+                                                                                                                    {this.state.planChosen == "MonthlyPrice" ? translate('planChosenQuantityDescriptionMonths_w'): ''}
+                                                                                                                </b></span>
+                                                                                                                <div style={{ marginLeft: '10%' }} className="quantity">
+                                                                                                                    <input type="text" name="quantityPlan" id="quantityPlan" size="4" value={this.state.quantityPlan} onChange={(event) => this.changeQuantityPlan(event.target.value)} />
+                                                                                                                    <a id="q_up" onClick={() => this.increaseQuantityPlan()}><i className="fa fa-plus"></i></a>
+                                                                                                                    <a id="q_down" onClick={() => this.decreaseQuantityPlan()}><i className="fa fa-minus"></i></a>
+                                                                                                                </div>
+                                                                                                            </div>                                                                                                            
+                                                                                                         </div>
+                                                                                                        ) : (null) }
                                                                                                     {this.state.planChosen == "HourPrice" ? (
                                                                                                         <div style={{ marginLeft: '10%' }} className="cart">
                                                                                                             <div className="add-to-cart d-flex">
