@@ -16,6 +16,7 @@ namespace backend.Logic
         public static string AVAILABILITY { get { return "[availability]"; } }
         public static string PREFERENTIAL_PLAN { get { return "[preferentialPlan]"; } }
         public static string REJECTED_REASON { get { return "[rejectedReason]"; } }
+        public static string COMMENT { get { return "[comment]"; } }
         //Reservations
         public static string DATE_FROM { get { return "[dateFrom]"; } }
         public static string RESERVATION_PLAN { get { return "[reservationPlan]"; } }

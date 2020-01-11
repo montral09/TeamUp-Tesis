@@ -287,6 +287,7 @@ class CreatePublication extends React.Component {
                 SUCC_PUBLICATIONUPDATED : this.props.translate('SUCC_PUBLICATIONUPDATED'),
             };
         }else{
+            objApi.fetchUrl = "api/publication";
             objApi.objToSend = {
                 "AccessToken": this.props.tokenObj.accesToken,
                 "VOPublication": {
