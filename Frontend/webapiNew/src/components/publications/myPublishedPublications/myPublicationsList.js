@@ -22,7 +22,10 @@ class MyPublicationsList extends React.Component {
             publications : [],
             spaceTypes : [],
             generalError : false,
-            objPaymentDetails : {}
+            objPaymentDetails : {},
+            currentIDPlan: null,
+            IdPlan: null,
+            planPrice: null
         }
         this.ModalDetailPayment    = React.createRef(); // Connects the reference to the modal
     }
@@ -62,8 +65,8 @@ class MyPublicationsList extends React.Component {
     }
 
 
-    editPublication=(pubId)=>{
-        this.setState({ pubId: pubId })
+    editPublication=(pubId, currentIDPlan, IdPlan, planPrice)=>{
+        this.setState({ pubId, currentIDPlan, IdPlan, planPrice })
     }
 
     changePubStateMPL=(pubState, pubId)=>{
@@ -161,7 +164,8 @@ class MyPublicationsList extends React.Component {
                 </LoadingOverlay>
                 </>
             ) : (
-                <CreatePublication publicationID={this.state.pubId} />
+                <CreatePublication publicationID={this.state.pubId} currentIDPlan={this.state.currentIDPlan} IdPlan={this.state.IdPlan} 
+                        planPrice={this.state.planPrice}/>
             )}
                 
             </>

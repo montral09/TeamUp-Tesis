@@ -51,7 +51,7 @@ const MyPublicationTable = (props) =>{
                 </td>
                 {obj.State === 'ACTIVE' ? (
                     <>
-                    <td><a href="#" className = "col-md-12" onClick={() => props.editPublication(obj.IdPublication)}> <span><i className="col-md-1 fa fa-pencil-alt"></i></span> {translate('edit_w')}</a></td> 
+                    <td><a href="#" className = "col-md-12" onClick={() => props.editPublication(obj.IdPublication,obj.IdPlan , obj.PreferentialPlan.IdPlan, obj.PreferentialPlan.Price)}> <span><i className="col-md-1 fa fa-pencil-alt"></i></span> {translate('edit_w')}</a></td> 
                     <td><a href="#" onClick={() => props.changePubState(obj.State, obj.IdPublication)}><span><i className="col-md-1 fa fa-pause"></i></span> {translate('pause_w')}</a></td>
                     </>
                 ) : (
