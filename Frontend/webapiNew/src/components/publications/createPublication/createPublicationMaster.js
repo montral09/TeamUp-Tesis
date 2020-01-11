@@ -20,12 +20,18 @@ class CreatePublication extends React.Component {
 
     constructor(props) {
         super(props);
-        var pubIsLoading = false;
+        var pubIsLoading = false; var editObject = {}; var premiumOptionSelected = null;
         if(props.publicationID){
             pubIsLoading = true;
+            editObject.publicationID = props.publicationID;
+            editObject.currentIDPlan = props.currentIDPlan;
+            editObject.IdPlan = props.IdPlan;
+            editObject.planPrice = props.planPrice;
+            premiumOptionSelected = props.IdPlan
         }
         this.state = {
             publicationID: props.publicationID,
+            editObject : editObject,
             pubIsLoading : pubIsLoading,
             imagesURL : [],
             currentStep: 1,
@@ -47,7 +53,7 @@ class CreatePublication extends React.Component {
             spaceImages: [],
             reservationTypes: [],
             premiumOptions: [],
-            premiumOptionSelected: null,
+            premiumOptionSelected: premiumOptionSelected,
             HourPrice: 0,
             DailyPrice: 0,
             WeeklyPrice: 0,

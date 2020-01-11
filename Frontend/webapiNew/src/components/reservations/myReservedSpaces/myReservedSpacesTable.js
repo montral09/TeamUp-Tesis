@@ -8,7 +8,7 @@ const MyReservedSpacesTable = (props) =>{
     const { translate } = props;
     let reservations = props.reservations;
     const isPublisher = props.isPublisher || false;
-    const columnsName = ['#Ref',translate('publication_w'), translate('email_w'), translate('people_w'), translate('date_w'), translate('stay_w'), translate('amount_w'), translate('payment_w')+' '+translate('reservation_w'),translate('payment_w')+' '+translate('comission_w'), translate('status_w')+' '+translate('reservation_w'), translate('action_w')];
+    const columnsName = ['#Ref',translate('publication_w'), translate('custonerName'), translate('email_w'), translate('people_w'), translate('dateFrom_w'), translate('dateTo_w'), translate('stay_w'), translate('amount_w')+ ' ($)', translate('payment_w')+' '+translate('reservation_w'),translate('payment_w')+' '+translate('comission_w'), translate('status_w')+' '+translate('reservation_w'), translate('action_w')];
     const columnsTable = columnsName.map( colName => {
         var valToRet = <th className="text-center" key={colName}>{colName}</th>;
         switch(colName){
@@ -45,21 +45,23 @@ const MyReservedSpacesTable = (props) =>{
             return(
             <tr key={obj.IdReservation}>
                 <td>{obj.IdReservation}</td>
-                <td>{obj.TitlePublication}</td>
+                <td>{obj.TitlePublication}</td> 
+                <td>{obj.CustomerName}</td>
                 {isPublisher ? <td>{obj.MailCustomer}</td> : null}
                 <td>{obj.People}</td>
                 <td>{obj.DateFromString}</td>
-                <td>{obj.PlanSelected == 'Hour' ? (translate('from_w')+" "+obj.HourFrom+" "+translate('to_w')+" "+obj.HourTo+" hs") : ("1 "+ obj.PlanSelected)}</td>
+                <td>99/99/9999</td>
+                <td>{obj.PlanSelected == 'Hour' ? (translate('from_w')+" "+obj.HourFrom+" "+translate('to_w')+" "+obj.HourTo+" hs") : (obj.ReservedQuantity == 1 ? (obj.ReservedQuantity+' '+ translate('planSelected_'+obj.PlanSelected)) : (obj.ReservedQuantity+' '+ translate('planSelected_'+obj.PlanSelected+'s')))}</td>
                 <td>{obj.TotalPrice}</td>
-                <td>{objReservationCustomerPayment.reservationPaymentStateText}</td>
+                <td>{translate('pubState_'+objReservationCustomerPayment.reservationPaymentStateText.replace(/\s/g,''))}</td>
                 <td>
                     {obj.StateDescription === 'PENDING' ? (<p>{translate('myReservedSpacesList_reservedSpacesTable_pendingRes')}</p>) : (
                         <a href="#" className = "col-md-12" onClick={() => props.triggerModal("PAYRESCUST", obj.IdReservation, objReservationCustomerPayment)}> <span><i className="col-md-1 fa fa-align-justify"></i></span> {translate('details_w')}</a>
                     )}
                 </td> 
-                {isPublisher ? <td>{objCommisionPayment.paymentStatusText}</td> : null}
+                {isPublisher ? <td>{translate('pubState_'+objCommisionPayment.paymentStatusText.replace(/\s/g,''))}</td> : null}
                 {isPublisher ? <td><a href="#" className = "col-md-12" onClick={() => props.triggerModal("PAYRESCOM", obj.IdReservation, objCommisionPayment)}> <span><i className="col-md-1 fa fa-align-justify"></i></span> {translate('details_w')}</a></td> : null}
-                <td>{obj.StateDescription}</td>
+                <td>{translate('resState_'+obj.StateDescription.replace(/\s/g,''))}</td>
                 <td>
                     <div>
                         {obj.StateDescription === 'PENDING' || obj.StateDescription === 'RESERVED' ? (

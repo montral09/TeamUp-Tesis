@@ -506,13 +506,21 @@ class ViewPublication extends React.Component {
                                                                                                 </div>
 
                                                                                             </div>
-                                                                                            <div className="review col-md-4" style={{ marginLeft: '60%' }}>
-                                                                                                <div className="title-page">
-                                                                                                    <span style={{ marginLeft: '20%' }}><b>{translate('viewPub_rentNow')}</b></span>
+                                                                                            <div className="review col-md-7">
+                                                                                                <span><h5>{translate('location_w')}</h5><br /></span>
+                                                                                                    {
+                                                                                                        this.state.pubObj &&
+                                                                                                        <Map objGoogleMaps={{ zoom: 17, latitude: this.state.pubObj.Location.Latitude, longitude: this.state.pubObj.Location.Longitude }} />
+                                                                                                    }
                                                                                                 </div>
-
-                                                                                                <div className="col-md-12" style={{ border: '1px solid dodgerBlue' }}>
-                                                                                                    <span><b>Plan</b></span>
+                                                                                            <div className="review col-md-1"></div>
+                                                                                            <div className="review col-md-4"><br />
+                                                                                                <div className="title-page">
+                                                                                                    <h5><span style={{ marginLeft: '20%' }}><b>{translate('viewPub_rentNow')}</b></span></h5>
+                                                                                                </div>
+                                                                                                <br />
+                                                                                                <div className="col-md-12" style={{ border: '0.5px solid dodgerBlue' }}>
+                                                                                                    <span style={{ marginLeft: '10%' }} ><b>Plan</b></span>
                                                                                                     <select style={{ marginLeft: '10%' }} className="browser" id="planChosen" onChange={this.onChange} >
                                                                                                         {this.state.pubObj.HourPrice > 0 && <option value="HourPrice"> {translate('hourlyPrice_w')+": $" + this.state.pubObj.HourPrice}</option>}
                                                                                                         {this.state.pubObj.DailyPrice > 0 && <option value="DailyPrice"> {translate('dailyPrice_w')+": $" +this.state.pubObj.DailyPrice}</option>}
@@ -520,9 +528,10 @@ class ViewPublication extends React.Component {
                                                                                                         {this.state.pubObj.MonthlyPrice > 0 && <option value="MonthlyPrice"> {translate('monthlyPrice_w')+": $" + this.state.pubObj.MonthlyPrice}</option>}
                                                                                                     </select>
                                                                                                     {this.state.planChosen == "HourPrice" ? (
-                                                                                                        <div className="cart">
+                                                                                                        <div style={{ marginLeft: '10%' }} className="cart">
                                                                                                             <div className="add-to-cart d-flex">
-                                                                                                                <span><b>{translate('hour_w')}</b></span>
+                                                                                                                <span style={{marginTop : '5%'}}><b>{translate('hour_w')}</b></span>
+                                                                                                                
                                                                                                                 <div style={{ marginLeft: '8%' }} className="browser">
                                                                                                                     <select style={{ marginLeft: '8%' }} className="browser" id="hourFromSelect" 
                                                                                                                         value={this.state.hourFromSelect} onChange={this.changeHour}>
@@ -533,7 +542,7 @@ class ViewPublication extends React.Component {
                                                                                                                         })}
                                                                                                                     </select>
                                                                                                                 </div>
-                                                                                                                <b style={{ marginLeft: '8%' }}>{translate('to_w')}</b>
+                                                                                                                <b style={{ marginLeft: '8%' ,marginTop : '5%'}}>{translate('to_w')}</b>
                                                                                                                 <div className="browser">
                                                                                                                     <select className="browser" id="hourToSelect" 
                                                                                                                     value={this.state.hourToSelect} onChange={this.changeHour}>
@@ -548,7 +557,7 @@ class ViewPublication extends React.Component {
                                                                                                         </div>
                                                                                                     ) : (null)}
                                                                                                     <div className="cart">
-                                                                                                        <div className="add-to-cart d-flex">
+                                                                                                        <div style={{ marginLeft: '10%' }} className="add-to-cart d-flex">
                                                                                                             <span><b>{translate('date_w')}</b></span>
                                                                                                                 <div style={{ marginLeft: '7%' }} className="browser">
                                                                                                                     <DatePicker placeholderText={translate('date_w')}
@@ -563,7 +572,7 @@ class ViewPublication extends React.Component {
                                                                                                     </div>
                                                                                                     
                                                                                                     <div className={this.state.pubObj.state === 3 ? 'hidden' : 'shown'}>
-                                                                                                        <div className="cart">
+                                                                                                        <div style={{ marginLeft: '10%' }} className="cart">
                                                                                                             <div className="add-to-cart d-flex">
                                                                                                                 <span><b>{translate('people_w')}</b></span>
                                                                                                                 <div style={{ marginLeft: '2%' }} className="quantity">
@@ -637,12 +646,6 @@ class ViewPublication extends React.Component {
                                                                                     <TabYoutube youtubeUrl={this.state.pubObj.VideoURL}/>
                                                                                 </div>
                                                                             ) : (null)}
-                                                                            
-                                                                            <span><h5>{translate('location_w')}</h5><br /></span>
-                                                                            {
-                                                                                this.state.pubObj &&
-                                                                                <Map objGoogleMaps={{ zoom: 17, latitude: this.state.pubObj.Location.Latitude, longitude: this.state.pubObj.Location.Longitude }} />
-                                                                            }
                                                                             <RelatedPublications relatedPublications={this.state.relatedPublications} redirectToPub={this.redirectToPub} title="Publicaciones relacionadas"/>
                                                                         </div>
                                                                     </div>

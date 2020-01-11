@@ -11,7 +11,7 @@ import ModalResCustPay from './modalResCustPay'
 import ModalResComPay from './modalResComPay';
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual'
-import { callAPI } from '../../../services/common/genericFunctions';
+import { callAPI, displayErrorMessage } from '../../../services/common/genericFunctions';
 
 class MyReservedPublications extends React.Component {
 
@@ -58,19 +58,21 @@ class MyReservedPublications extends React.Component {
     }
 
     triggerModal=(mode, IdReservation, auxParam)=>{
+        let {translate} = this.props
         var modalConfigObj = {};
         switch(mode){
             case "CANCEL": 
                 modalConfigObj ={
-                    title: this.props.translate('reservedPublications_cancelModal_header'), mainText: this.props.translate('reservedPublications_cancelModal_body'), mode : mode, saveFunction : "saveCancelRP", textboxLabel: this.props.translate('comment_w'),
-                    textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :this.props.translate('yes_w'), confirmText :this.props.translate('no_w') , login_status: this.props.login_status
+                    title: translate('reservedPublications_cancelModal_header'), mainText: translate('reservedPublications_cancelModal_body'), mode : mode, saveFunction : "saveCancelRP", textboxLabel: translate('comment_w'),
+                    textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :translate('yes_w'), confirmText :translate('no_w') , login_status: this.props.login_status
                 };
                 this.setState({modalConfigObj : modalConfigObj, selectedIdRes: IdReservation, selectedResState:auxParam},() => {this.modalReqInfo.current.toggle();})
             break;
             case "CONFIRM": 
                 modalConfigObj ={
-                    title: this.props.translate('reservedPublications_confirmModal_header'), mainText: this.props.translate('reservedPublications_confirmModal_body'), mode : mode, saveFunction : "saveConfirmRP",
-                    cancelAvailable:true, confirmAvailable:true, cancelText :this.props.translate('cancel_w'), confirmText :this.props.translate('confirm_w') , login_status: this.props.login_status,
+                    title: translate('reservedPublications_confirmModal_header'), mainText: translate('reservedPublications_confirmModal_body'), mode : mode, saveFunction : "saveConfirmRP",
+                    cancelAvailable:true, confirmAvailable:true, cancelText :translate('cancel_w'), confirmText :translate('confirm_w') , login_status: this.props.login_status,
+                    dateSelectLabel: translate('reservedPublications_confirmModal_dateSelectLabel'), dateSelectDisplay : true
                 };
                 this.setState({modalConfigObj : modalConfigObj, selectedIdRes: IdReservation, selectedResState:auxParam},() => {this.modalReqInfo.current.toggle();})
             break;
@@ -104,30 +106,35 @@ class MyReservedPublications extends React.Component {
         callAPI(objApi, this);
     }
 
-    saveConfirmRP=()=>{
-        var objApi = {};
-        objApi.objToSend = {
-            "AccessToken": this.props.tokenObj.accesToken,
-            "IdReservation": this.state.selectedIdRes,
-            "Mail": this.props.userData.Mail,
-            "OldState": this.state.selectedResState,
-            "NewState": "RESERVED"
+    saveConfirmRP=(dateSelectValue)=>{
+        if(dateSelectValue == ""){
+            displayErrorMessage(this.props.translate('reservedPublications_confirmModal_dateSelectMissingErr'));
+        }else{
+            var objApi = {};
+            objApi.objToSend = {
+                "AccessToken": this.props.tokenObj.accesToken,
+                "IdReservation": this.state.selectedIdRes,
+                "Mail": this.props.userData.Mail,
+                "OldState": this.state.selectedResState,
+                "NewState": "RESERVED"
+            }
+            objApi.fetchUrl = "api/reservation";
+            objApi.method = "PUT";
+            objApi.successMSG = {
+                SUCC_RESERVATIONUPDATED : this.props.translate('SUCC_RESERVATIONUPDATED2'),
+            };
+            objApi.functionAfterSuccess = "saveConfirmRP";
+            objApi.errorMSG= {}
+            this.modalReqInfo.current.changeModalLoadingState(false);
+            callAPI(objApi, this);
         }
-        objApi.fetchUrl = "api/reservation";
-        objApi.method = "PUT";
-        objApi.successMSG = {
-            SUCC_RESERVATIONUPDATED : this.props.translate('SUCC_RESERVATIONUPDATED2'),
-        };
-        objApi.functionAfterSuccess = "saveConfirmRP";
-        objApi.errorMSG= {}
-        this.modalReqInfo.current.changeModalLoadingState(false);
-        callAPI(objApi, this);
+
     }
 
     triggerSaveModal=(saveFunction, objData)=>{
         switch(saveFunction){
             case "saveCancelRP": this.saveCancelRP(objData.textboxValue);break;
-            case "saveConfirmRP": this.saveConfirmRP();break;
+            case "saveConfirmRP": this.saveConfirmRP(objData.dateSelectValue);break;
         }
     }
     saveComissionPayment=(objPaymentDetails)=>{
