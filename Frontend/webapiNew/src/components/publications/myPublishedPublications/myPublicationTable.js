@@ -36,11 +36,11 @@ const MyPublicationTable = (props) =>{
                 <td>{obj.SpaceTypeDesc}</td>
                 <td>{obj.CreationDate}</td>
                 <td>{obj.Title}</td>
-                <td>{obj.State}</td>
+                <td>{translate('pubState_'+obj.State.replace(/\s/g,''))}</td>
                 {objPayment.plan == 'FREE' ? (
                     <td colSpan="2">Plan Free</td>
                 ) : (<>
-                    <td>{objPayment.paymentStatus}</td>
+                    <td>{translate('pubState_'+objPayment.paymentStatus.replace(/\s/g,''))}</td>
                     <td><a href="#" className = "col-md-12" onClick={() => props.triggerModalDetailPayment(objPayment)}> <span><i className="col-md-1 fa fa-align-justify"></i></span> {translate('details_w')}</a></td> 
                     </>
                 )}
