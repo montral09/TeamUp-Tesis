@@ -1,10 +1,10 @@
 import React from "react";
 import MobileApp from './mobileApp';
 import ContactUs from "./contactUs";
+import AboutUs from "../../components/footer/aboutUs";
 
 class Footer extends React.Component {
  	render() {
- 		const {translate} = this.props;
 		return (
 			<>	
 				<div className="custom-footer full-width">
@@ -14,6 +14,9 @@ class Footer extends React.Component {
 				        <div className="pattern">
 				            <div className="container">
 				                <div className="row">
+									<div className="col-md-4">
+										<AboutUs />
+									</div>
 				                    <div className="col-md-4">
 				                        <MobileApp />
 				                    </div>
