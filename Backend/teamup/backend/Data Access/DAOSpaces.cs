@@ -1711,7 +1711,6 @@ namespace backend.Data_Access
             SqlTransaction objTrans = null;
             StorageUtil storageUtil = new StorageUtil();
             string url = "";
-            int idPlan = 2;
             string commentAux = "";                  
             try
             {
@@ -1728,12 +1727,11 @@ namespace backend.Data_Access
                 {
                     commentAux = voUpdatePayment.Comment;
                 }
-                string query = cns.UpdatePreferentialPayment(voUpdatePayment.Comment, url, idPlan);
+                string query = cns.UpdatePreferentialPayment(voUpdatePayment.Comment, url);
                 SqlCommand updateCommand = new SqlCommand(query, con);
                 List<SqlParameter> prm = new List<SqlParameter>()
                 {
                 new SqlParameter("@idPrefPayments", SqlDbType.Int) {Value = idPayment},
-                new SqlParameter("@idPlan", SqlDbType.Int) {Value = idPlan},
                 new SqlParameter("@comment", SqlDbType.VarChar) {Value = commentAux},
                 new SqlParameter("@evidence", SqlDbType.VarChar) {Value = url},
                 };

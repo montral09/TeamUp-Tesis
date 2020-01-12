@@ -348,7 +348,7 @@ class CreatePublication extends React.Component {
                     </Helmet>
                     {/*SEO Support End */}
                     <Header />
-                        <div className="col-md-9 center-column" id="content">
+                        <div className="col-md-9" id="content">
                             <div className="row">
                                 <div className="col-md-3">
                                     <div className="well">
@@ -368,6 +368,7 @@ class CreatePublication extends React.Component {
 
                             </div>
                         </div>
+                        <br/>
                     <Footer />
                     </>
                 ) : (                
