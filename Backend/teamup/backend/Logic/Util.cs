@@ -216,7 +216,11 @@ namespace backend.Logic
 
         public static string ConvertDateToString(DateTime date)
         {
-            return date.ToString("dd/MM/yyyy");
+            if (date != null)
+            {
+                return date.ToString("dd/MM/yyyy");
+            }
+            return "";
         }
 
         public static string CreateBodyEmailPayCommissionToAdmin(string publisherMail)

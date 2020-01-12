@@ -232,7 +232,7 @@ namespace backend.Data_Access.Query
         public String GetReservations(long idCustomer, long idPublisher)
         {
             StringBuilder query = new StringBuilder();
-            query = query.Append("select p.title, r.idReservation, r.idPublication, r.idCustomer, r.planSelected, r.reservedQty, r.dateFrom, r.hourFrom, r.HourTo," +
+            query = query.Append("select p.title, r.idReservation, r.idPublication, r.idCustomer, r.planSelected, r.reservedQty, r.dateFrom, r.dateTo, r.hourFrom, r.HourTo," +
                 " r.people, r.comment, r.totalPrice, r.state, rs.description, s.individualRent, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, r.paymentCustomerState, ps.description as customerPaymentDesc, u.name from RESERVATIONS r, PUBLICATIONS p, RESERVATION_STATES rs, SPACE_TYPES s, PAYMENT_STATES ps");
             if (idCustomer != 0)
             {
@@ -253,7 +253,7 @@ namespace backend.Data_Access.Query
         public String UdpdateStateReservation(string canceledReason)
         {
             StringBuilder query = new StringBuilder();
-            query = query.Append("update RESERVATIONS set state = @state");
+            query = query.Append("update RESERVATIONS set state = @state, dateTo = @dateTo ");
             if (canceledReason != null)
             {
                 query.Append(",canceledReason = @canceledReason");

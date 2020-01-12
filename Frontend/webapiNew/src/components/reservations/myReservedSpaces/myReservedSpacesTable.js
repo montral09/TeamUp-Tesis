@@ -50,7 +50,7 @@ const MyReservedSpacesTable = (props) =>{
                 {isPublisher ? <td>{obj.MailCustomer}</td> : null}
                 <td>{obj.People}</td>
                 <td>{obj.DateFromString}</td>
-                <td>99/99/9999</td>
+                <td>{obj.DateToString}</td>
                 <td>{obj.PlanSelected == 'Hour' ? (translate('from_w')+" "+obj.HourFrom+" "+translate('to_w')+" "+obj.HourTo+" hs") : (obj.ReservedQuantity == 1 ? (obj.ReservedQuantity+' '+ translate('planSelected_'+obj.PlanSelected)) : (obj.ReservedQuantity+' '+ translate('planSelected_'+obj.PlanSelected+'s')))}</td>
                 <td>{obj.TotalPrice}</td>
                 <td>{translate('pubState_'+objReservationCustomerPayment.reservationPaymentStateText.replace(/\s/g,''))}</td>

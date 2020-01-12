@@ -21,8 +21,8 @@ namespace backend.Data_Access.VO.Data
 
         public VOReservationExtended() { }
 
-        public VOReservationExtended(int idReservation, string title, int idPublication, String mailCustomer, String planSelected, int reservedQuantity, DateTime dateFrom, string dateFromString, string hourFrom, string hourTo,
-            int people, string comment, int totalPrice, int state, string stateDescription, bool individualRent, int hourPrice, int dailyPrice, int weeklyPrice, int monthlyPrice, bool reviewed, VOPayment customerPayment, VOPayment commissionPayment, string customerName)  : base (idPublication, mailCustomer, planSelected, reservedQuantity, dateFrom, dateFromString, hourFrom, hourTo,
+        public VOReservationExtended(int idReservation, string title, int idPublication, String mailCustomer, String planSelected, int reservedQuantity, DateTime dateFrom, string dateFromString, DateTime dateTo, string dateToString, string hourFrom, string hourTo,
+            int people, string comment, int totalPrice, int state, string stateDescription, bool individualRent, int hourPrice, int dailyPrice, int weeklyPrice, int monthlyPrice, bool reviewed, VOPayment customerPayment, VOPayment commissionPayment, string customerName)  : base (idPublication, mailCustomer, planSelected, reservedQuantity, dateFrom, dateFromString, dateTo, dateToString, hourFrom, hourTo,
              people, comment, totalPrice, state)       
         {
             IdReservation = idReservation;
@@ -33,6 +33,8 @@ namespace backend.Data_Access.VO.Data
             ReservedQuantity = reservedQuantity;
             DateFrom = dateFrom;
             DateFromString = dateFromString;
+            DateTo = dateTo;
+            DateToString = dateToString;
             HourFrom = hourFrom;
             HourTo = hourTo;
             People = people;

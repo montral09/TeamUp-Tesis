@@ -2,6 +2,7 @@
 using backend.Data_Access.VO.Data;
 using backend.Data_Access.VO.Requests;
 using backend.Logic;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -25,7 +26,7 @@ namespace backend.Data_Access
         void CreateReservation(VORequestCreateReservation voCreateReservation, User user);
         List<VOReservationExtended> GetReservationsCustomer(VORequestGetReservationsCustomer voGetReservationsCustomer, long idCustomer);
         List<VOReservationExtended> GetReservationsPublisher(VORequestGetReservationsPublisher voGetReservationsPublisher, long idPublisher);
-        UsersReservationBasicData UpdateStateReservation(int idReservation, string canceledReason, int newCodeState, string newDescriptionState);
+        UsersReservationBasicData UpdateStateReservation(int idReservation, string canceledReason, int newCodeState, string newDescriptionState, DateTime dateTo);
         UsersReservationBasicData UpdateReservation(VORequestUpdateReservation voUpdateRservation);
         void CreateReview(VORequestCreateReview voCreateReview, long idUser);
         void CreatePublicationQuestion(VORequestCreatePublicationQuestion voCreatePublicationQuestion, long idUser);

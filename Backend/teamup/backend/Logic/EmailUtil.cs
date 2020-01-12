@@ -108,6 +108,10 @@ namespace backend.Logic
             {
                 emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.REJECTED_REASON, keyValuePairs[ParamCodes.REJECTED_REASON]);
             }
+            if (emailBodyGeneric.Contains(ParamCodes.COMMENT))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.COMMENT, keyValuePairs[ParamCodes.COMMENT]);
+            }
             return emailBodyGeneric;
         }
 

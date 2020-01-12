@@ -766,6 +766,7 @@ namespace backend.Logic
                     keyValuePairs[ParamCodes.USER_NAME] = publisher.Name;
                     VOResponseGetSpace publication = GetSpace(voCreateReservation.VOReservation.IdPublication, voCreateReservation.VOReservation.MailCustomer);
                     keyValuePairs[ParamCodes.PUBLICATION_TITLE] = publication.Publication.Title;
+                    string comment = String.IsNullOrEmpty(voCreateReservation.VOReservation.Comment) ? "-" : voCreateReservation.VOReservation.Comment;
                     keyValuePairs[ParamCodes.COMMENT] = voCreateReservation.VOReservation.Comment;
                     EmailDataGeneric mailData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_RESERVATION_CREATED_PUBLISHER, publisher.LanguageCode, keyValuePairs);
                     emailUtil.SendEmailAsync(publisher.Mail, mailData.Body, mailData.Subject);
@@ -849,7 +850,7 @@ namespace backend.Logic
                     Util util = new Util();
                     int oldCodeRservation = util.ConvertStateReservation(voUpdateStateReservation.OldState);
                     int newCodeReservation = util.ConvertStateReservation(voUpdateStateReservation.NewState);
-                    UsersReservationBasicData usersData = spaces.UpdateStateReservation(voUpdateStateReservation.IdReservation, voUpdateStateReservation.CanceledReason, newCodeReservation, voUpdateStateReservation.NewState);
+                    UsersReservationBasicData usersData = spaces.UpdateStateReservation(voUpdateStateReservation.IdReservation, voUpdateStateReservation.CanceledReason, newCodeReservation, voUpdateStateReservation.NewState, voUpdateStateReservation.DateTo);
                     EmailDataGeneric mailData;
                     isAdmin = users.AdminMember(voUpdateStateReservation.Mail);
                     string publicationTitle = spaces.GetPublicationTitleByReservationId(voUpdateStateReservation.IdReservation);
