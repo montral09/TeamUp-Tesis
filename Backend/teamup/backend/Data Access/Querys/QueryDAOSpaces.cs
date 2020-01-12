@@ -216,8 +216,8 @@ namespace backend.Data_Access.Query
 
         public String CreateReservation()
         {
-            String query = "insert into RESERVATIONS (idPublication, idCustomer, planSelected, dateFrom, hourFrom, HourTo," +
-                " people, comment, totalPrice, state, commission) VALUES (@idPublication, @idCustomer, @planSelected, @dateFrom, @hourFrom, @HourTo," +
+            String query = "insert into RESERVATIONS (idPublication, idCustomer, planSelected, reservedQty, dateFrom, hourFrom, HourTo," +
+                " people, comment, totalPrice, state, commission) VALUES (@idPublication, @idCustomer, @planSelected, @reservedQty, @dateFrom, @hourFrom, @HourTo," +
                 " @people, @comment, @totalPrice, 1, @commission)";
             return query;
         }

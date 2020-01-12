@@ -727,7 +727,7 @@ namespace backend.Logic
                         Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
                         keyValuePairs[ParamCodes.USER_NAME] = publisher.Name;
                         keyValuePairs[ParamCodes.PUBLICATION_TITLE] = voUpdatePublication.Publication.Title;
-                        EmailDataGeneric mailData = emailUtil.GetFormatMailUsers(EmailFormatCodes.CODE_PUBLICATION_MODIFIED_ADMIN, publisher.LanguageCode, keyValuePairs);
+                        EmailDataGeneric mailData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_PUBLICATION_MODIFIED_ADMIN, publisher.LanguageCode, keyValuePairs);
                         emailUtil.SendEmailAsync(publisher.Mail, mailData.Body, mailData.Subject);
                     } else
                     {
@@ -736,7 +736,7 @@ namespace backend.Logic
                         keyValuePairs[ParamCodes.PUBLICATION_TITLE] = voUpdatePublication.Publication.Title;
                         keyValuePairs[ParamCodes.PUBLISHER_EMAIL] = user.Mail;
                         string mailAdmin = ConfigurationManager.AppSettings["EMAIL_ADMIN"];
-                        EmailDataGeneric mailData = emailUtil.GetFormatMailUsers(EmailFormatCodes.CODE_PUBLICATION_MODIFIED, publisher.LanguageCode, keyValuePairs);
+                        EmailDataGeneric mailData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_PUBLICATION_MODIFIED, publisher.LanguageCode, keyValuePairs);
                         emailUtil.SendEmailAsync(mailAdmin, mailData.Body, mailData.Subject);
                     }
                     message = EnumMessages.SUCC_PUBLICATIONUPDATED.ToString();
@@ -766,6 +766,7 @@ namespace backend.Logic
                     keyValuePairs[ParamCodes.USER_NAME] = publisher.Name;
                     VOResponseGetSpace publication = GetSpace(voCreateReservation.VOReservation.IdPublication, voCreateReservation.VOReservation.MailCustomer);
                     keyValuePairs[ParamCodes.PUBLICATION_TITLE] = publication.Publication.Title;
+                    keyValuePairs[ParamCodes.COMMENT] = voCreateReservation.VOReservation.Comment;
                     EmailDataGeneric mailData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_RESERVATION_CREATED_PUBLISHER, publisher.LanguageCode, keyValuePairs);
                     emailUtil.SendEmailAsync(publisher.Mail, mailData.Body, mailData.Subject);
                     //Send mail to customer

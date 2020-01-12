@@ -83,6 +83,13 @@ class ModalSummary extends React.Component {
                                 </Col>
                             </FormGroup>
                             <FormGroup row>
+                                <Label for="IdPublication" sm={4}>Cantidad de {this.state.summaryObject.planChosenQuantityDescription}</Label>
+                                <Col sm={8}>
+                                    <Input type="text" name="IdPublication" id="IdPublication"
+                                            value={this.state.summaryObject.quantityPlan} readOnly/>
+                                </Col>
+                            </FormGroup>
+                            <FormGroup row>
                                 <Label for="IdPublication" sm={4}>Valor {this.state.summaryObject.planChosenText}</Label>
                                 <Col sm={8}>
                                     <Input type="text" name="IdPublication" id="IdPublication"

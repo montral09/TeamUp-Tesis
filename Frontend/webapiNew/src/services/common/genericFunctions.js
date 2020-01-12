@@ -275,6 +275,9 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
             bindThis.toggleButton(); objApi.dispatch({type: objApi.typeError}); 
         break;
         case "deleteUser":bindThis.toggleButton();break;
+        case "confirmReservationVP":
+            bindThis.modalSummaryElement.current.changeModalLoadingState(false);
+        break;
         default:
     }
     console.log("objData.responseCode + "+objData.responseCode)
