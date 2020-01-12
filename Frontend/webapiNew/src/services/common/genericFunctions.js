@@ -6,8 +6,8 @@ import { MAIN_URL, MAIN_URL_WEB} from './constants';
 
 export const handleErrors = (error, bindThis) => {
     bindThis.setState({ generalError: true });
+    displayErrorMessage("Hubo un error, intente nuevamente");   
     window.open(MAIN_URL_WEB+"error", "_self");
-    displayErrorMessage("Hubo un error, intente nuevamente");
 }
 
 export const callAPI = (objApi, bindThis) => {
@@ -112,7 +112,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         break;
 
         case "validateEmail":
-            bindThis.setState({isLoading: false});
+            bindThis.setState({isLoading: false, isValid: true});
             bindThis.props.history.push('/account/login');
         break;
 
@@ -278,6 +278,8 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
         case "confirmReservationVP":
             bindThis.modalSummaryElement.current.changeModalLoadingState(false);
         break;
+        case "validateEmail":
+            bindThis.setState({isLoading: false, isvalid: false});
         default:
     }
     console.log("objData.responseCode + "+objData.responseCode)

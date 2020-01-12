@@ -40,8 +40,12 @@ const MyPublicationTable = (props) =>{
                 {objPayment.plan == 'FREE' ? (
                     <td colSpan="2">Plan Free</td>
                 ) : (<>
-                    <td>{translate('pubState_'+objPayment.paymentStatus.replace(/\s/g,''))}</td>
-                    <td><a href="#" className = "col-md-12" onClick={() => props.triggerModalDetailPayment(objPayment)}> <span><i className="col-md-1 fa fa-align-justify"></i></span> {translate('details_w')}</a></td> 
+                    <td>{translate('payState_'+objPayment.paymentStatus.replace(/\s/g,''))}</td>
+                    {obj.State.replace(/\s/g,'') == 'NOTVALIDATED'
+                        ? (null) : (
+                            <td><a href="#" className = "col-md-12" onClick={() => props.triggerModalDetailPayment(objPayment)}> <span><i className="col-md-1 fa fa-align-justify"></i></span> {translate('details_w')}</a></td> 
+                        )
+                    }
                     </>
                 )}
                 <td>{obj.QuestionsWithoutAnswer}</td>
