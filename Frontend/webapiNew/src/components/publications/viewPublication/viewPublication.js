@@ -486,13 +486,13 @@ class ViewPublication extends React.Component {
                                                                                                 <h1 className="product-name">{this.state.pubObj.Title}</h1>
                                                                                                 {this.state.pubObj.Favorite === false && login_status == 'LOGGED_IN' ? (
                                                                                                     <div>
-                                                                                                        <a href="#add_to_wishlist" onClick={this.submitFavoriteVP}><span><i className="fas fa-heart"></i></span> {translate('viewPub_addToFav')}</a>
+                                                                                                        <a href="#" onClick={this.submitFavoriteVP}><span><i className="fas fa-heart"></i></span> {translate('viewPub_addToFav')}</a>
                                                                                                     </div>
                                                                                                 ) : (
                                                                                                         <div>
                                                                                                             {this.state.pubObj.Favorite === true ? (
                                                                                                                 <div>
-                                                                                                                    <a href="#remove_from_wishlist" onClick={this.submitFavoriteVP}><span><i className="fas fa-heart"></i></span>  {translate('viewPub_remToFav')}</a>
+                                                                                                                    <a href="#" onClick={this.submitFavoriteVP}><span><i className="fas fa-heart"></i></span>  {translate('viewPub_remToFav')}</a>
                                                                                                                 </div>
                                                                                                             ) : (null)}
                                                                                                         </div>)}

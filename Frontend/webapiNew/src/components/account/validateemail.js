@@ -1,8 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import Header from "../header/header";
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { callAPI } from '../../services/common/genericFunctions';
 import { withTranslate } from 'react-redux-multilingual'
 
@@ -46,15 +44,17 @@ class ValidateEmail extends React.Component {
             <>
                 {/*SEO Support*/}
                 <Helmet>
-                    <title>TeamUp | Validar Email</title>
+                    <title>TeamUp | {this.props.translate('validateEmail_header')}</title>
                     <meta name="description" content="---" />
                 </Helmet>
                 {/*SEO Support End */}
                 <Header />
                 <div className="main-content  full-width  home">
                     <div className="col-md-6">
-                        { this.state.isLoading ? <div><div className="spinner-border"></div>Validando...</div> : <div>VALIDADO!</div>}
-                        Token received: {this.state.emailtoken}
+                        { this.state.isLoading ? 
+                            (<div><div className="spinner-border"></div>{this.props.translate('validateEmail_header')}</div>) 
+                                : 
+                            (this.state.isValid ? (<div>{this.props.translate('validateEmail_validated')}</div>) : (<div>{this.props.translate('validateEmail_notValid')}</div>))}
                     </div>
                 </div>
             </>
