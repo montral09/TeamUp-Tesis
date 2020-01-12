@@ -18,6 +18,7 @@ import FavPublications from './publications/favPublications/favPublications';
 import NotFoundPage from './pages/404';
 import DeleteUser from './account/deleteUser';
 import MyMessagesList from './messages/myMessagesList';
+import AboutUs from './pages/about_us';
 
 const Page = () => {
   return (
@@ -39,7 +40,7 @@ const Page = () => {
         <Route path="/publications/reservedPublications/reservedPublications" component={MyReservedPublications} />
         <Route path="/publications/favPublications" component={FavPublications} />
         <Route path="/messages" component={MyMessagesList} />
-        
+        <Route path="/about_us" component={AboutUs} />
         <Route component={NotFoundPage} />
       </Switch>
     </>

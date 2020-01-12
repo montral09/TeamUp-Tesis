@@ -41,7 +41,7 @@ class RelatedPublications extends React.Component {
 		        1000:{
 		            items:5,
 		        }
-		    }
+			}
 		};
 		return (
 			<React.Fragment>

@@ -93,17 +93,22 @@ const MyReservedSpacesTable = (props) =>{
     ) : (
         <tr><td colSpan={columnsName.length}>{translate('elementsNotFound_w')}</td></tr>
         );
-    return(
-    <Table hover striped bordered size="lg" responsive className = "center">
-        <thead>
-          <tr>
-            {columnsTable}
-          </tr>
-        </thead>
-        <tbody>
-            {arrDataList}
-        </tbody>
-    </Table>
+    return (
+        <div style={{
+            overflowX: 'auto'
+        }}>
+            <Table hover striped bordered size="lg" responsive className="center">
+                <thead>
+                    <tr>
+                        {columnsTable}
+                    </tr>
+                </thead>
+                <tbody>
+                    {arrDataList}
+                </tbody>
+            </Table>
+        </div>
+
     )
 }
 
