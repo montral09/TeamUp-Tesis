@@ -64,7 +64,7 @@ class MyReservedPublications extends React.Component {
             case "CANCEL": 
                 modalConfigObj ={
                     title: translate('reservedPublications_cancelModal_header'), mainText: translate('reservedPublications_cancelModal_body'), mode : mode, saveFunction : "saveCancelRP", textboxLabel: translate('comment_w'),
-                    textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :translate('yes_w'), confirmText :translate('no_w') , login_status: this.props.login_status
+                    textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :translate('no_w'), confirmText :translate('yes_w') , login_status: this.props.login_status
                 };
                 this.setState({modalConfigObj : modalConfigObj, selectedIdRes: IdReservation, selectedResState:auxParam},() => {this.modalReqInfo.current.toggle();})
             break;
@@ -93,7 +93,8 @@ class MyReservedPublications extends React.Component {
             "Mail": this.props.userData.Mail,
             "OldState": this.state.selectedResState,
             "NewState": "CANCELED",
-            "CanceledReason": commentValue
+            "CanceledReason": commentValue,
+            "DateTo" : new Date()
         }
         objApi.fetchUrl = "api/reservation";
         objApi.method = "PUT";
@@ -116,7 +117,8 @@ class MyReservedPublications extends React.Component {
                 "IdReservation": this.state.selectedIdRes,
                 "Mail": this.props.userData.Mail,
                 "OldState": this.state.selectedResState,
-                "NewState": "RESERVED"
+                "NewState": "RESERVED",
+                "DateTo": dateSelectValue
             }
             objApi.fetchUrl = "api/reservation";
             objApi.method = "PUT";

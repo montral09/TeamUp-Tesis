@@ -30,6 +30,7 @@ namespace backend.Data_Access
         private const int MAX_SILVER = 5;
         private const int MAX_TOTAL = 15;
         private const int MIN_TOTAL = 5;
+        private DateTime DEFAULT_DATE_TIME = new DateTime();
 
         public DAOSpaces()
         {
@@ -1094,6 +1095,7 @@ namespace backend.Data_Access
                         new SqlParameter("@totalPrice", SqlDbType.Int) {Value = voCreateReservation.VOReservation.TotalPrice},
                         new SqlParameter("@commission", SqlDbType.Int) {Value = reservationCommission},
                         new SqlParameter("@reservedQty", SqlDbType.Int) {Value = voCreateReservation.VOReservation.ReservedQuantity}
+
                     };
                 insertCommand.Parameters.AddRange(prm.ToArray());
                 insertCommand.Transaction = objTrans;
@@ -1184,10 +1186,16 @@ namespace backend.Data_Access
                     idReservation = Convert.ToInt32(dr["idReservation"]);
                     wasReviewed = ReservationWasReviewed(idReservation, con);
                     VOPayment payment = GetReservationPaymentInfo(idReservation, con);
-                    String dateConverted = Util.ConvertDateToString(Convert.ToDateTime(dr["dateFrom"]));
+                    String dateConvertedFrom = Util.ConvertDateToString(Convert.ToDateTime(dr["dateFrom"]));
+                    DateTime dateTo = Convert.ToDateTime(dr["dateTo"] is DBNull ? null : dr["dateTo"]);
+                    String dateConvertedTo = "";
+                    if (DEFAULT_DATE_TIME != dateTo)
+                    {                        
+                        dateConvertedTo = Util.ConvertDateToString(Convert.ToDateTime(dr["dateTo"]));
+                    }                    
                     voReservation = new VOReservationExtended(idReservation, Convert.ToString(dr["title"]), Convert.ToInt32(dr["idPublication"]),
                         Convert.ToString(voGetReservationsCustomer.Mail), Convert.ToString(dr["planSelected"]),
-                        Convert.ToInt32(dr["reservedQty"] is DBNull ? 0 : dr["reservedQty"]), Convert.ToDateTime(dr["dateFrom"]), dateConverted,  Convert.ToString(dr["hourFrom"]),
+                        Convert.ToInt32(dr["reservedQty"] is DBNull ? 0 : dr["reservedQty"]), Convert.ToDateTime(dr["dateFrom"]), dateConvertedFrom, dateTo, dateConvertedTo, Convert.ToString(dr["hourFrom"]),
                         Convert.ToString(dr["hourTo"]), Convert.ToInt32(dr["people"] is DBNull ? 0 : dr["people"]), Convert.ToString(dr["comment"]),
                         Convert.ToInt32(dr["totalPrice"]), Convert.ToInt32(dr["state"]), Convert.ToString(dr["description"]), Convert.ToBoolean(dr["individualRent"]), Convert.ToInt32(dr["hourPrice"]),
                         Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), wasReviewed, payment, null, null);
@@ -1248,7 +1256,8 @@ namespace backend.Data_Access
             bool wasReviewed;
             VOPayment payment;
             VOPayment paymentCommission;
-            String dateConverted;
+            String dateConvertedFrom;
+            String dateConvertedTo;
             try
             {
                 con = new SqlConnection(GetConnectionString());
@@ -1268,11 +1277,17 @@ namespace backend.Data_Access
                     idReservation = Convert.ToInt32(dr["idReservation"]);
                     wasReviewed = ReservationWasReviewed(Convert.ToInt32(dr["idReservation"]), con);
                     payment = GetReservationPaymentInfo(idReservation, con);                    
-                    dateConverted = Util.ConvertDateToString(Convert.ToDateTime(dr["dateFrom"]));
-                    paymentCommission = GetCommissionPayment(idReservation, con);
+                    dateConvertedFrom = Util.ConvertDateToString(Convert.ToDateTime(dr["dateFrom"]));
+                    DateTime dateTo = Convert.ToDateTime(dr["dateTo"] is DBNull ? null : dr["dateTo"]);
+                    dateConvertedTo = "";
+                    if (DEFAULT_DATE_TIME != dateTo)
+                    {
+                        dateConvertedTo = Util.ConvertDateToString(Convert.ToDateTime(dr["dateTo"]));
+                    }
+                    paymentCommission = GetCommissionPayment(idReservation, con);                    
                     voReservation = new VOReservationExtended(Convert.ToInt32(dr["idReservation"]), Convert.ToString(dr["title"]), Convert.ToInt32(dr["idPublication"]),
                         Convert.ToString(voGetReservationsPublisher.Mail), Convert.ToString(dr["planSelected"]),
-                        Convert.ToInt32(dr["reservedQty"] is DBNull ? 0 : dr["reservedQty"]), Convert.ToDateTime(dr["dateFrom"]), dateConverted, Convert.ToString(dr["hourFrom"]),
+                        Convert.ToInt32(dr["reservedQty"] is DBNull ? 0 : dr["reservedQty"]), Convert.ToDateTime(dr["dateFrom"]), dateConvertedFrom, dateTo, dateConvertedTo, Convert.ToString(dr["hourFrom"]),
                         Convert.ToString(dr["hourTo"]), Convert.ToInt32(dr["people"] is DBNull ? 0 : dr["people"]), Convert.ToString(dr["comment"]),
                         Convert.ToInt32(dr["totalPrice"]), Convert.ToInt32(dr["state"]), Convert.ToString(dr["description"]), Convert.ToBoolean(dr["individualRent"]), Convert.ToInt32(dr["hourPrice"]), 
                         Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), wasReviewed, payment, paymentCommission, Convert.ToString(dr["name"]));
@@ -1296,7 +1311,7 @@ namespace backend.Data_Access
 
         }
 
-        public UsersReservationBasicData UpdateStateReservation(int idReservation, string canceledReason, int newCodeState, string newDescriptionState)
+        public UsersReservationBasicData UpdateStateReservation(int idReservation, string canceledReason, int newCodeState, string newDescriptionState, DateTime dateTo)
         {            
             SqlConnection con = null;
             UsersReservationBasicData result;
@@ -1316,7 +1331,7 @@ namespace backend.Data_Access
                         new SqlParameter("@idReservation", SqlDbType.Int) {Value = idReservation},
                         new SqlParameter("@state", SqlDbType.Int) {Value = newCodeState},
                         new SqlParameter("@canceledReason", SqlDbType.VarChar) {Value = canceledReasonAux},
-
+                        new SqlParameter("@dateTo", SqlDbType.DateTime) {Value = dateTo},                        
                 };
                 updateCommand.Parameters.AddRange(prm.ToArray());
                 updateCommand.ExecuteNonQuery();
