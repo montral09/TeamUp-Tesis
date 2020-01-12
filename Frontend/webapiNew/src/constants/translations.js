@@ -171,9 +171,11 @@ var module = {
             createPub_step3_availPlaceHolderTxt : 'ej: Lunes a viernes de 09 a 18hrs',
             createPub_step4_header : '¿Aumentar visibilidad? (Opcional)',
             createPub_step4_errorMsg1 : 'No puede cambiar el plan hacia un plan de menor valor habiendo realizado ya el pago',
-
             createPub_step5_main : 'La publicacion será enviada al administrador para su aprobación.\nAdemás, si seleccionó alguna opcion de pago, los beneficios premiums no se aplicaran el pago sea realizado.\nSe enviará un correo con toda la información.',
             createPub_main_header : 'Crear espacio',
+            createPub_upload_maxUploadText: 'Sube tus fotos (Mínimo 1 - Máximo 7)',
+            createPub_upload_maxUploadTextError: 'El maximo de imagenes a subir son 7',
+            createPub_upload_successMsg: 'Imagenes cargadas correctamente. ',
             myReservedSpacesList_modalModify_header : 'Cambiar datos de reserva',
             myReservedSpacesList_header : 'Mis Reservas',
             myReservedSpacesList_modalCancel_header : 'Cancelar reserva',

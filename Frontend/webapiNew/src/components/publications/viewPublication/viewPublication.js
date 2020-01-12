@@ -506,14 +506,14 @@ class ViewPublication extends React.Component {
                                                                                                     <span> <b>{translate('capacity_w')}: </b></span>{this.state.pubObj.Capacity} {translate('people_w')} <br />
                                                                                                 </div>
                                                                                                 <div className="review">
-                                                                                                    <span><b>{translate('prices_w')}</b><br /></span>
+                                                                                                    <span><b>{translate('prices_w')}</b></span>
                                                                                                 </div>
                                                                                                 <div className="price">
-                                                                                                    <span className="col-md-9 center-column">
-                                                                                                        {this.state.pubObj.HourPrice > 0 && translate('hourlyPrice_w')+": $" + this.state.pubObj.HourPrice + " - "}
-                                                                                                        {this.state.pubObj.DailyPrice > 0 && translate('dailyPrice_w')+" : $" + this.state.pubObj.DailyPrice + " - "}
-                                                                                                        {this.state.pubObj.WeeklyPrice > 0 && translate('weeklyPrice_w')+" : $" + this.state.pubObj.WeeklyPrice + " - "}
-                                                                                                        {this.state.pubObj.MonthlyPrice > 0 && translate('monthlyPrice_w')+" : $" + this.state.pubObj.MonthlyPrice}
+                                                                                                    <span className="col-md-4 center-column">
+                                                                                                        <b>{translate('hour_w')}</b>{this.state.pubObj.HourPrice != 0 ? " $" + this.state.pubObj.HourPrice : " -"}&nbsp;&nbsp;
+                                                                                                        <b>{translate('day_w')}</b>{this.state.pubObj.DailyPrice != 0 ? " $" + this.state.pubObj.DailyPrice : " -"}&nbsp;&nbsp;<br />
+                                                                                                        <b>{translate('week_w')}</b>{this.state.pubObj.WeeklyPrice != 0 ? " $" + this.state.pubObj.WeeklyPrice : " -"}&nbsp;&nbsp;
+                                                                                                        <b>{translate('month_w')}</b>{this.state.pubObj.MonthlyPrice != 0 ? " $" + this.state.pubObj.MonthlyPrice : " -"}&nbsp;&nbsp;
                                                                                                     </span>
                                                                                                 </div>
                                                                                                 <div className="review">
