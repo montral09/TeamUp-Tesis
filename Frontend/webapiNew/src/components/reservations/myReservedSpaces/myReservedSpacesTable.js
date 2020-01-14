@@ -33,7 +33,7 @@ const MyReservedSpacesTable = (props) =>{
             if(isPublisher){
                 var objCommisionPayment = {
                     paymentStatus: obj.CommissionPayment.PaymentDescription, 
-                    paymentStatusText: obj.CommissionPayment.PaymentDescription,
+                    paymentStatusText: translate('payState_'+obj.CommissionPayment.PaymentDescription.replace(/\s/g,'')),
                     paymentAmmount: obj.CommissionPayment.Commission,
                     paymentDate: obj.CommissionPayment.PaymentDate,
                     paymentDocument: obj.CommissionPayment.PaymentEvidence,
@@ -59,7 +59,7 @@ const MyReservedSpacesTable = (props) =>{
                         <a href="#" className = "col-md-12" onClick={() => props.triggerModal("PAYRESCUST", obj.IdReservation, objReservationCustomerPayment)}> <span><i className="col-md-1 fa fa-align-justify"></i></span> {translate('details_w')}</a>
                     )}
                 </td> 
-                {isPublisher ? <td>{translate('payState_'+objCommisionPayment.paymentStatusText.replace(/\s/g,''))}</td> : null}
+                {isPublisher ? <td>{objCommisionPayment.paymentStatusText}</td> : null}
                 {isPublisher ? <td><a href="#" className = "col-md-12" onClick={() => props.triggerModal("PAYRESCOM", obj.IdReservation, objCommisionPayment)}> <span><i className="col-md-1 fa fa-align-justify"></i></span> {translate('details_w')}</a></td> : null}
                 <td>{translate('resState_'+obj.StateDescription.replace(/\s/g,''))}</td>
                 <td>

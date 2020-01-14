@@ -85,7 +85,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         break;
         case "saveAnswerVP":
         case "saveQuestionVP":
-            bindThis.modalReqInfo.current.changeModalLoadingState(true);
+            objApi.tabQuestionThis.setState({isLoading : false});
             bindThis.loadPublicationVP(bindThis.state.pubID);
         break;
 
@@ -280,6 +280,10 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
         break;
         case "validateEmail":
             bindThis.setState({isLoading: false, isvalid: false});
+        break;
+        case "saveQuestionVP":
+            objApi.tabQuestionThis.setState({isLoading : false});
+        break;
         default:
     }
     console.log("objData.responseCode + "+objData.responseCode)

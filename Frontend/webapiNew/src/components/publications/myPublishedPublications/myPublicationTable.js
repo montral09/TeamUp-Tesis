@@ -28,8 +28,8 @@ const MyPublicationTable = (props) =>{
     const arrDataList = publications.length ? (
         publications.map( obj => {
             let url = MAIN_URL_WEB+"publications/viewPublication/viewPublication/"+obj.IdPublication;
-            var objPayment = {paymentStatus: obj.PreferentialPlan.StateDescription, paymentStatusText:obj.PreferentialPlan.StateDescription, paymentAmmount: 
-                obj.PreferentialPlan.Price,plan: obj.PreferentialPlan.Description,paymentDate:obj.PreferentialPlan.PaymentDate, IdPublication: obj.IdPublication};
+            var objPayment = {paymentStatus: obj.PreferentialPlan.StateDescription, paymentStatusText: translate('payState_'+obj.PreferentialPlan.StateDescription.replace(/\s/g,'')), paymentAmmount: 
+                obj.PreferentialPlan.Price,plan: obj.PreferentialPlan.Description,paymentDate:obj.PreferentialPlan.PaymentDate, IdPublication: obj.IdPublication, paymentDocument : obj.PreferentialPlan.Evidence};
             return(
             <tr key={obj.IdPublication}>
                 <td>{obj.IdPublication}</td>

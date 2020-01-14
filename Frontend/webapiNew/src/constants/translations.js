@@ -61,6 +61,7 @@ var module = {
             currency_UY : 'Pesos Uruguayos',
             currency_UY_symbol : '$U',
             view_w: 'Ver',
+            reject_w : 'Rechazar',
             spaceType_w: 'Tipo de espacio',
             selectOne_w : 'Seleccione uno',
             about_us : 'Acerca de nosotros',
@@ -147,6 +148,7 @@ var module = {
             amount_w: 'Monto',
             yes_w: 'Si',
             no_w: 'No',
+            pending_w: 'Pendiente',
             login_login: 'Iniciar sesión',
             login_dontHaveAccount: 'No tienes cuenta?',
             login_forgotPassword: 'Olvido su contraseña?',
@@ -233,6 +235,17 @@ var module = {
             modalDetailPayment_txt2: 'Puede adjuntar una imagen/pdf y agregar un comentario.',
             modalDetailPaymenty_txt3: 'El pago fue confirmado.',
 
+            modalResCusPay_header: 'Estado de pago de reserva por parte del cliente',
+            modalResCusPay_documentUploadedByCust: 'Documento adjunto por el cliente',
+            modalResCusPay_commentByCust: 'Comentario del cliente',
+            modalResCusPay_txt1: 'El cliente ha confirmado que ha pagado, por favor valide que esto sea así, en caso contrario seleccione el botón rechazar y la confirmación de pago será rechazada. ',
+            modalResCusPay_txt2: 'Puede adjuntar una imagen/pdf y agregar un comentario.',
+            modalResCusPay_txt3: 'El pago fue confirmado.',
+            modalResCusPay_txt4: 'El cliente aún no realizó el pago.',
+
+            
+            modalResCusPay_errMsg1: 'Solo puede subir un archivo',
+
             premOptions_FREE_text : 'Gratis',
             premOptions_FREE_visibilityMainScreen : 'visibilidad en pantalla principal',
             premOptions_FREE_visibilityMainScreenStricked : 'true',
@@ -288,6 +301,12 @@ var module = {
             validateEmail_validated : 'Validado',
             validateEmail_validating : 'Validando...',
             validateEmail_notValid : 'Código Inválido, comuniquese con el administrador',
+            
+            tabQuestions_questions : 'Sin preguntas',
+            tabQuestions_makeYourRequest : 'Haga su consulta',
+            tabQuestions_loginMsg1 : 'Debe de estar logueado para poder realizar consultas, por favor',
+            tabQuestions_loginMsg2 : 'o sino tiene cuenta regístrese',
+
             socialReason: 'Razón Social',
             optional_w : 'Opcional',
             stay_w : 'Estadía',

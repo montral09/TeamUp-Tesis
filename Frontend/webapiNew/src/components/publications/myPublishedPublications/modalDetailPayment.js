@@ -194,7 +194,7 @@ class ModalDetailPayment extends React.Component {
                             <Label for="paymentDate" sm={4}>{translate('myReservedSpacesList_custPay_paymentDateTxt')}</Label>
                             <Col sm={8}>
                                 <Input type="text" name="paymentDate" id="paymentDate"
-                                    value={this.state.objPaymentDetails.paymentDate == null ? "Pendiente" : this.state.objPaymentDetails.paymentDate} readOnly />
+                                    value={this.state.objPaymentDetails.paymentDate == null ? translate('pending_w') : this.state.objPaymentDetails.paymentDate} readOnly />
                             </Col>
                         </FormGroup>
                         {this.state.objPaymentDetails.paymentDocument ? (
@@ -218,7 +218,7 @@ class ModalDetailPayment extends React.Component {
                             <Label for="paymentComment" sm={6}>{translate('comment_w')} ({translate('optional_w')})</Label>
                             <Col sm={12}>
                                 <Input type="textarea" name="paymentComment" id="paymentComment"
-                                    value={this.state.objPaymentDetails.paymentComment} onChange={this.onChange} readOnly={this.state.objPaymentDetails.paymentStatus != "PAID" || this.state.objPaymentDetails.paymentStatus != "CANCELED" ? false : true} />
+                                    value={this.state.objPaymentDetails.paymentComment} onChange={this.onChange} readOnly={this.state.objPaymentDetails.paymentStatus != "PAID" && this.state.objPaymentDetails.paymentStatus != "CANCELED" ? false : true} />
                             </Col>
                         </FormGroup>
                         <FormGroup row>

@@ -54,7 +54,7 @@ class RecommendedPublications extends React.Component {
         const { translate } = this.props;
         return (
             <React.Fragment>
-                <h3>{translate('recPubs_recommendedPubls')}</h3>
+                {this.state.recommendedPublications.length > 0 ? (<h3>{translate('recPubs_recommendedPubls')}</h3>) : (null)}
                 {this.state.recommendedPublications.map((relPubs) => {
                     if(relPubs.Publications.length == 0){
                         return null;
@@ -66,7 +66,9 @@ class RecommendedPublications extends React.Component {
                         </React.Fragment>
                     );
                 })}
+                <br/>
             </React.Fragment>
+            
         );
     }
 }

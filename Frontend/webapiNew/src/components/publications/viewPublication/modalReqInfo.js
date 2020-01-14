@@ -16,12 +16,10 @@ class ModalReqInfo extends React.Component {
             isLoading : false,
             buttonIsDisabled: false
         };
-        this.toggle = this.toggle.bind(this);
-        this.save = this.save.bind(this);
         this.changeModalLoadingState = this.changeModalLoadingState.bind(this);
     }
 
-    toggle(optionalData) {
+    toggle = (optionalData) => {
         if(optionalData){
             this.setState({
                 modal: !this.state.modal,
@@ -36,7 +34,7 @@ class ModalReqInfo extends React.Component {
         }
     }
 
-    changeModalLoadingState(closeModal){
+    changeModalLoadingState=(closeModal)=>{
         if(closeModal){
             this.setState({
                 modal: !this.state.modal,
@@ -51,7 +49,7 @@ class ModalReqInfo extends React.Component {
         }
     }
 
-    save() {
+    save = () => {
         if(this.props.modalConfigObj.saveFunction){
             this.props.triggerSaveModal(this.props.modalConfigObj.saveFunction,{optionValue:this.state.optionValue, textboxValue:this.state.textboxValue, dateSelectValue: this.state.dateSelectValue })
         }else{
