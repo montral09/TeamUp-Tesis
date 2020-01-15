@@ -20,15 +20,13 @@ class CreatePublicationStep1 extends React.Component {
         this.state= {
             value: facilitiesSelectTemp
         }
-        this.handleSelectChange = this.handleSelectChange.bind(this)
-        this.handleRichTextChange = this.handleRichTextChange.bind(this)
     }
 
-    handleRichTextChange(value){
+    handleRichTextChange = (value) =>{
         this.props.onChange({target :{value:value, id:"description", options : value}})
     }
 
-    handleSelectChange(value){
+    handleSelectChange =(value) =>{
         this.setState({ value });
         this.props.onChange({target :{value:value, id:"facilitiesSelect", options : this.props.parentState.facilities}})
     }
