@@ -382,7 +382,7 @@ class ViewPublication extends React.Component {
         callAPI(objApi, this);
     }
 
-    saveQuestionVP = (question) => {
+    saveQuestionVP = (question, tabQuestionThis) => {
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,
@@ -397,8 +397,9 @@ class ViewPublication extends React.Component {
         };
         objApi.functionAfterSuccess = "saveQuestionVP";
         objApi.functionAfterError = "saveQuestionVP";
-        objApi.errorMSG= {}
-        this.modalReqInfo.current.changeModalLoadingState(false);
+        objApi.errorMSG= {};
+        objApi.tabQuestionThis = tabQuestionThis;
+        tabQuestionThis.setState({isLoading : true})
         callAPI(objApi, this);
     }
 
@@ -673,7 +674,7 @@ class ViewPublication extends React.Component {
                                                                             ) : (null)}
                                                                             {this.state.tabDisplayed === 3 ? (
                                                                                 <div id="tab-questions" className="tab-content">
-                                                                                    <TabQuestions arrQA={this.state.arrQA} login_status={this.props.login_status} saveQuestion={this.saveQuestionVP}
+                                                                                    <TabQuestions arrQA={this.state.arrQA} login_status={this.props.login_status} saveQuestionVP={this.saveQuestionVP}
                                                                                     userData={this.props.userData} isMyPublication={this.state.pubObj.IsMyPublication} triggerModal={this.triggerModal} />
                                                                                 </div>
                                                                             ) : (null)}

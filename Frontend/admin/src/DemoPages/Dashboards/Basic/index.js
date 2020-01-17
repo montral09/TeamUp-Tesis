@@ -122,7 +122,7 @@ export default class AnalyticsDashboard1 extends Component {
                                                 <i className="lnr-cog icon-gradient bg-arielle-smile"/>
                                             </div>
                                             <div className="widget-numbers">
-                                                10
+                                                ??
                                             </div>
                                             <div className="widget-subheading">
                                                 Usuarios
@@ -136,7 +136,7 @@ export default class AnalyticsDashboard1 extends Component {
                                                 <i className="lnr-screen icon-gradient bg-warm-flame"/>
                                             </div>
                                             <div className="widget-numbers">
-                                                3
+                                                ??
                                             </div>
                                             <div className="widget-subheading">
                                                 Gestores
@@ -150,7 +150,7 @@ export default class AnalyticsDashboard1 extends Component {
                                                 <i className="lnr-graduation-hat text-white"/>
                                             </div>
                                             <div className="widget-numbers">
-                                                0
+                                                ??
                                             </div>
                                             <div className="widget-subheading">
                                                 Publicaciones activas
@@ -165,7 +165,7 @@ export default class AnalyticsDashboard1 extends Component {
                                                     <i className="lnr-cog"/>
                                                 </div>
                                                 <div className="widget-numbers">
-                                                    1
+                                                    ??
                                                 </div>
                                                 <div className="widget-subheading">
                                                     Gestores pendiente aprobacion

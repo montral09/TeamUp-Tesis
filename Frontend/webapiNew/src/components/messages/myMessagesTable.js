@@ -24,9 +24,9 @@ const MyMessagesTable = (props) =>{
                 <td>{obj.Name}</td>
                 <td>{obj.Question}</td>
                 <td>{obj.CreationDate}</td>
-                {obj.Answer != null && obj.IsMyPublication == true ? (
+                {obj.Answer != null ? (
                     <td>{obj.Answer.Answer}</td>) : (<td></td>)}
-                {obj.Answer != null && obj.IsMyPublication == true ? (
+                {obj.Answer != null ? (
                     <td>{obj.Answer.CreationDate}</td>) : (<td></td>)}
                 {obj.Answer == null && obj.IsMyPublication == true ? (
                     <td><a href="#" className = "col-md-12" onClick={() => props.answerMsg(obj)}> <span><i className="col-md-1 fa fa-align-justify"></i></span> {translate('reply_w')}</a></td> 

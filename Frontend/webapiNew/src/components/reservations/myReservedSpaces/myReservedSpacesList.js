@@ -114,7 +114,7 @@ class MyReservedSpacesList extends React.Component {
                 modalConfigObj ={
                     title: this.props.translate('myReservedSpacesList_modalRate_header'), mainText: this.props.translate('myReservedSpacesList_modalRate_main'), mode : mode, saveFunction : "saveRateMRSL", textboxLabel: this.props.translate('comment_w'),
                     textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :this.props.translate('cancel_w'), confirmText :this.props.translate('rate_w'), login_status: this.props.login_status,
-                    optionDisplay: true, optionLabel: this.props.translate('score_w'), optionDefaultValue:1, optionArray: [5,4,3,2,1]
+                    optionDisplay: true, optionLabel: this.props.translate('score_w'), optionArray: [5,4,3,2,1]
                 };
                 this.setState({modalConfigObj : modalConfigObj, selectedIdRes: IdReservation, selectedResState: auxParam},() => {this.modalReqInfo.current.toggle();})
             break;
@@ -154,6 +154,9 @@ class MyReservedSpacesList extends React.Component {
     }
 
     saveRateMRSL=(optionValue, commentValue)=>{
+        if(!optionValue){
+            optionValue = 5;
+        }
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,
