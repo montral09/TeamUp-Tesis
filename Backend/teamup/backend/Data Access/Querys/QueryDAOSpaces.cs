@@ -1,4 +1,5 @@
 ﻿using backend.Data_Access.VO;
+using backend.Logic;
 using System;
 using System.Text;
 
@@ -12,9 +13,9 @@ namespace backend.Data_Access.Query
             return query;
         }
 
-        public String GetReservationTypes()
+        public String GetReservationPlans()
         {
-            String query = "select idReservationType, description from RESERVATION_TYPES";
+            String query = "select idReservationPlan, description from RESERVATION_PLANS";
             return query;
         }
 
@@ -27,16 +28,16 @@ namespace backend.Data_Access.Query
         public String CreatePublication()
         {
             String query = "insert into PUBLICATIONS (idUser, spaceType, creationDate, title, description, address, locationLat, locationLong, capacity," +
-                " videoURL, hourPrice, dailyPrice, weeklyPrice, monthlyPrice, availability, facilities, state, city, expirationDate)" +
+                " videoURL, hourPrice, dailyPrice, weeklyPrice, monthlyPrice, availability, state, city, expirationDate)" +
                 " output INSERTED.idPublication VALUES(@idUser, @spaceType, getdate(), @title, @description, @address, @locationLat, @locationLong, @capacity, " +
-                " @videoURL, @hourPrice, @dailyPrice, @weeklyPrice, @monthlyPrice, @availability, @facilities, 1, @city, @expirationDate)";
+                " @videoURL, @hourPrice, @dailyPrice, @weeklyPrice, @monthlyPrice, @availability, 1, @city, @expirationDate)";
             return query;
         }
 
         public String GetPublicationsPendingApproval()
         {
             String query = "select p.idPublication, p.idUser, u.name, u.lastName, u.mail, u.phone, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, " +
-                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities, p.city from PUBLICATIONS p, USERS u where " +
+                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.city from PUBLICATIONS p, USERS u where " +
                 "p.idUser = u.idUser and p.state = 1";
             return query;
         }
@@ -44,7 +45,7 @@ namespace backend.Data_Access.Query
         public String GetPublisherSpaces()
         {
             String query = "select p.idPublication, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, " +
-                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities, p.city, e.description as state, p.idPlan, p.totalViews from PUBLICATIONS p, USERS u, SPACE_STATES e where " +
+                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.city, e.description as state, p.idPlan, p.totalViews, p.expirationDate from PUBLICATIONS p, USERS u, SPACE_STATES e where " +
                 "p.idUser = u.idUser and u.mail= @mail and p.state = e.idSpaceState";
             return query;
         }
@@ -52,7 +53,7 @@ namespace backend.Data_Access.Query
         public String GetSpace()
         {
             String query = "select p.idPublication, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, " +
-                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities, p.city, p.totalViews, s.individualRent, p.idUser from PUBLICATIONS p, SPACE_TYPES s where " +
+                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.city, p.totalViews, s.individualRent, p.idUser, p.expirationDate from PUBLICATIONS p, SPACE_TYPES s where " +
                 " p.idPublication = @idPublication and p.state = 2 and s.idSpaceType = p.spaceType";
             return query;
         }
@@ -84,7 +85,7 @@ namespace backend.Data_Access.Query
         public String GetQuantityPublicationsWithFilter(VORequestGetPublicationsWithFilters voGetPublicationsFilter, int state)
         {
             StringBuilder query = new StringBuilder();
-            query = query.Append("select count(p.idPublication) as quantity from PUBLICATIONS p where p.creationDate is not null ");
+            query = query.Append("select count(p.idPublication) as quantity from PUBLICATIONS p, PUBLICATION_FACILITIES pf where p.creationDate is not null ");
             if (state != 0)
             {
                 query.Append("and p.state = @state ");
@@ -103,10 +104,8 @@ namespace backend.Data_Access.Query
             }
             if (voGetPublicationsFilter.Facilities != null && voGetPublicationsFilter.Facilities.Count != 0)
             {
-                foreach (var facility in voGetPublicationsFilter.Facilities)
-                {
-                    query.Append("and CHARINDEX(CAST(").Append(facility).Append(" AS VARCHAR)").Append(", p.facilities) > 0 ");
-                }
+                string facilities = Util.CreateFacilitiesString(voGetPublicationsFilter.Facilities);
+                query.Append("and pf.idFacility in (") .Append(facilities).Append(") and pf.idPublication = p.idPublication group by p.idPublication having count(pf.idPublication) = ").Append(voGetPublicationsFilter.Facilities.Count);
 
             }            
             return query.ToString();
@@ -115,7 +114,7 @@ namespace backend.Data_Access.Query
         public String GetPublicationsWithFilter(VORequestGetPublicationsWithFilters voGetPublicationsFilter, int maxPublicationsPage, int state)
         {
             StringBuilder query = new StringBuilder();
-            query = query.Append("select p.idPublication, u.name, u.lastName, u.mail, u.phone, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities, p.city, p.totalViews, s.individualRent from PUBLICATIONS p, Users u, SPACE_TYPES s where p.idUser = u.idUser and s.idSpaceType = p.spaceType ");
+            query = query.Append("select p.idPublication, u.name, u.lastName, u.mail, u.phone, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.city, p.totalViews, p.expirationDate, s.individualRent from PUBLICATIONS p, PUBLICATION_FACILITIES pf, Users u, SPACE_TYPES s where p.idUser = u.idUser and s.idSpaceType = p.spaceType ");
             if (state != 0)
             {
                 query.Append("and p.state = @state ");
@@ -134,13 +133,11 @@ namespace backend.Data_Access.Query
             }
             if (voGetPublicationsFilter.Facilities != null && voGetPublicationsFilter.Facilities.Count != 0)
             {
-                foreach(var facility in voGetPublicationsFilter.Facilities)
-                {
-                    query.Append("and CHARINDEX(CAST(").Append(facility).Append(" AS VARCHAR)").Append(", p.facilities) > 0 ");   
-                }
-                
+                string facilities = Util.CreateFacilitiesString(voGetPublicationsFilter.Facilities);
+                query.Append("and pf.idFacility in (").Append(facilities).Append(")  and pf.idPublication = p.idPublication order by 1, 2 having count(pf.idPublication) = ").Append(voGetPublicationsFilter.Facilities.Count);
+
             }
-            query.Append("order by p.idPublication offset ").Append((voGetPublicationsFilter.PageNumber) * maxPublicationsPage).Append(" rows fetch next ").Append(maxPublicationsPage).Append(" rows only ");
+           // query.Append(" order by p.idPublication offset ").Append((voGetPublicationsFilter.PageNumber) * maxPublicationsPage).Append(" rows fetch next ").Append(maxPublicationsPage).Append(" rows only ");
             return query.ToString();
         }
 
@@ -162,7 +159,7 @@ namespace backend.Data_Access.Query
         public String GetRelatedSpaces ()
         {
             String query = "select p.idPublication, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, " +
-                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.facilities, p.city, p.totalViews from PUBLICATIONS p where " +
+                "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.city, p.totalViews from PUBLICATIONS p where " +
                 " p.idPublication <> @idPublication and p.state = 2 and p.capacity >= @capacity and p.spaceType = @spaceType and p.city = @city";
             return query;
         }
@@ -195,7 +192,7 @@ namespace backend.Data_Access.Query
             String query = "update PUBLICATIONS set spaceType = @spaceType, title = @title, description = @description, " +
                 "address = @address, locationLat = @locationLat, locationLong = @locationLong, capacity = @capacity, " +
                 "videoURL = @videoURL, hourPrice = @hourPrice, dailyPrice = @dailyPrice, weeklyPrice = @weeklyPrice, " +
-                "monthlyPrice = @monthlyPrice, availability = @availability, facilities = @facilities, city = @city where idPublication = @idPublication";
+                "monthlyPrice = @monthlyPrice, availability = @availability, city = @city where idPublication = @idPublication";
             return query;            
         }
 
@@ -232,14 +229,14 @@ namespace backend.Data_Access.Query
         public String GetReservations(long idCustomer, long idPublisher)
         {
             StringBuilder query = new StringBuilder();
-            query = query.Append("select p.title, r.idReservation, r.idPublication, r.idCustomer, r.planSelected, r.reservedQty, r.dateFrom, r.dateTo, r.hourFrom, r.HourTo," +
-                " r.people, r.comment, r.totalPrice, r.state, rs.description, s.individualRent, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, r.paymentCustomerState, ps.description as customerPaymentDesc, u.name from RESERVATIONS r, PUBLICATIONS p, RESERVATION_STATES rs, SPACE_TYPES s, PAYMENT_STATES ps");
+            query = query.Append("select p.title, r.idReservation, r.idPublication, r.idCustomer, rp.description as planSelected, r.reservedQty, r.dateFrom, r.dateTo, r.hourFrom, r.HourTo," +
+                " r.people, r.comment, r.totalPrice, r.state, rs.description, s.individualRent, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, r.paymentCustomerState, ps.description as customerPaymentDesc, u.name from RESERVATIONS r, PUBLICATIONS p, RESERVATION_STATES rs, SPACE_TYPES s, PAYMENT_STATES ps, RESERVATION_PLANS rp ");
             if (idCustomer != 0)
             {
-                query.Append(" , USERS U where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) and rs.idReservationState = r.state and p.spaceType = s.idSpaceType and r.idCustomer = @idCustomer and ps.idPaymentState = paymentCustomerState and u.idUser = r.idCustomer order by r.idReservation desc");
+                query.Append(" , USERS U where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) and rs.idReservationState = r.state and p.spaceType = s.idSpaceType and r.planSelected = rp.idReservationPlan and r.idCustomer = @idCustomer and ps.idPaymentState = paymentCustomerState and u.idUser = r.idCustomer order by r.idReservation desc");
             } else if (idPublisher != 0)
             {
-                query.Append(", USERS u where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) and rs.idReservationState = r.state and p.spaceType = s.idSpaceType and p.idUser = u.idUser and u.idUser = @idPublisher and ps.idPaymentState = paymentCustomerState order by r.idReservation desc");
+                query.Append(", USERS u where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) and rs.idReservationState = r.state and p.spaceType = s.idSpaceType and r.planSelected = rp.idReservationPlan and p.idUser = u.idUser and u.idUser = @idPublisher and ps.idPaymentState = paymentCustomerState order by r.idReservation desc");
             }
             return query.ToString();
         }
@@ -271,7 +268,7 @@ namespace backend.Data_Access.Query
 
         public String UpdateReservation()
         {           
-            String query = "update RESERVATIONS set dateFrom = @dateFrom, hourFrom = @hourFrom, hourTo = @hourTo, totalPrice = @totalPrice, people = @people " +
+            String query = "update RESERVATIONS set reservedQty = @reservedQty, dateFrom = @dateFrom, hourFrom = @hourFrom, hourTo = @hourTo, totalPrice = @totalPrice, people = @people " +
                 "where idReservation = @idReservation and state in (1, 2, 3)";
             return query;
         }
@@ -356,7 +353,7 @@ namespace backend.Data_Access.Query
         public String UpdatePreferentialPayment(string comment, string url)
         {
             StringBuilder query = new StringBuilder();
-            query = query.Append("update PREFERENTIAL_PAYMENTS set state = 2");
+            query = query.Append("update PREFERENTIAL_PAYMENTS set state = 2, paymentDate = getdate()");
             if (comment != null)
             {
                 query.Append(",comment = @comment");
@@ -470,7 +467,7 @@ namespace backend.Data_Access.Query
         public String GetPublicationPlanPayments()
         {
             String query = "select p.idPublication, p.title, u.mail, u.name, u.lastName, u.phone, ppl.name as planName, ps.description, " +
-                "ppl.price, pp.comment, pp.evidence, pp.paymentDate from PUBLICATIONS p, USERS u, PUBLICATION_PLANS ppl, PREFERENTIAL_PAYMENTS pp, " +
+                "p.planPrice, pp.comment, pp.evidence, pp.paymentDate from PUBLICATIONS p, USERS u, PUBLICATION_PLANS ppl, PREFERENTIAL_PAYMENTS pp, " +
                 "PAYMENT_STATES ps where pp.idPublication = p.idPublication and p.idUser = u.idUser and " +
                 "ppl.idPlan = pp.idPlan and pp.state = ps.idPaymentState and pp.state = 2 order by pp.paymentDate desc";
             return query;
@@ -610,5 +607,59 @@ namespace backend.Data_Access.Query
             String query = "insert into publications_statistics (spaceType, facilities, idPublication, favourite, rented) values (@spaceType, @facilities, @idPublication, @favourite, @rented)";
             return query;
         }
+
+        public String GetReservationPlanByDescription()
+        {
+            String query = "select idReservationPlan from RESERVATION_PLANS where description = @description";
+            return query;
+        }
+        public String GetReservationPlanDescription()
+        {
+            String query = "select description from RESERVATION_PLANS_TRANSLATIONS where idPlan = @idPlan and language = @language and plural = @plural";
+            return query;
+        }
+
+        public String InsertFacility()
+        {
+            String query = "insert into publication_facilities (idPublication, idFacility) values (@idPublication, @idFacility)";
+            return query;
+        }
+        
+        public String DeleteFacilities()
+        {
+            String query = "delete from PUBLICATION_FACILITIES where idPublication = @idPublication";
+            return query;
+        }
+
+        public String GetFacilitiesPublication()
+        {
+            String query = "select idFacility from PUBLICATION_FACILITIES where idPublication = @idPublication";
+            return query;
+        }
+
+        public String GetPreferentialPlan()
+        {
+            String query = "select idPlan from PREFERENTIAL_PLAN where idPublication = @idPublication";
+            return query;
+        }
+
+        public String GetDaysLeftPublication()
+        {
+            String query = "SELECT DATEDIFF(DAY, GETDATE(), p.expirationDate) as daysLeft from publications p where p.idPublication = @idPublication";
+            return query;
+        }
+
+        public String UpdatePreferentialPlanUpgraded()
+        {
+            String query = "update PREFERENTIAL_PAYMENTS set idPlan = @idPlan, state = 1, paymentDate = null, comment = null, evidence = null, paymentRejectedReason = null where idPublication = @idPublication";
+            return query;
+        }
+        public String SetPreferentialPlanPrice()
+        {
+            String query = "update PUBLICATIONS set idPlan = @idPlan, state = 1, planPrice = @price where idPublication = @idPublication";
+            return query;
+        }
+        
     }
+
 }

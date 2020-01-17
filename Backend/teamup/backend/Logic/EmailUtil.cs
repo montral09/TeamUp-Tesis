@@ -112,6 +112,18 @@ namespace backend.Logic
             {
                 emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.COMMENT, keyValuePairs[ParamCodes.COMMENT]);
             }
+            if (emailBodyGeneric.Contains(ParamCodes.QUESTION))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.QUESTION, keyValuePairs[ParamCodes.QUESTION]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.ANSWER))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.ANSWER, keyValuePairs[ParamCodes.ANSWER]);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.PRICE))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.PRICE, keyValuePairs[ParamCodes.PRICE]);
+            }
             return emailBodyGeneric;
         }
 

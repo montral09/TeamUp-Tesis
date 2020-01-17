@@ -75,7 +75,7 @@ class MyReservedSpacesList extends React.Component {
     }
 
     confirmEditReservationMRSL=(modalInfo)=> {
-        let {IdReservation, HourFrom, HourTo, TotalPrice, People} = modalInfo.resDataChanged;
+        let {IdReservation, HourFrom, HourTo, TotalPrice, People, ReservedQuantity} = modalInfo.resDataChanged;
         var objApi = {};
         objApi.objToSend = {
             AccessToken: this.props.tokenObj.accesToken,
@@ -85,7 +85,8 @@ class MyReservedSpacesList extends React.Component {
             HourFrom: HourFrom,
             HourTo: HourTo,
             TotalPrice: TotalPrice,
-            People : People
+            People : People,
+            ReservedQuantity : ReservedQuantity
         }
         objApi.fetchUrl = "api/reservationCustomer";
         objApi.method = "PUT";

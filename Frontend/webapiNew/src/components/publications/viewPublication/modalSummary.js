@@ -82,6 +82,7 @@ class ModalSummary extends React.Component {
                                             value={this.state.summaryObject.planChosenText} readOnly/>
                                 </Col>
                             </FormGroup>
+                            {this.state.summaryObject.planChosenQuantityDescription != "" ? (
                             <FormGroup row>
                                 <Label for="IdPublication" sm={4}>Cantidad de {this.state.summaryObject.planChosenQuantityDescription}</Label>
                                 <Col sm={8}>
@@ -89,6 +90,7 @@ class ModalSummary extends React.Component {
                                             value={this.state.summaryObject.quantityPlan} readOnly/>
                                 </Col>
                             </FormGroup>
+                            ) : (null)}
                             <FormGroup row>
                                 <Label for="IdPublication" sm={4}>Valor {this.state.summaryObject.planChosenText}</Label>
                                 <Col sm={8}>

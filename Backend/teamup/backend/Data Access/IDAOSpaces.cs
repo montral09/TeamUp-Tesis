@@ -13,7 +13,7 @@ namespace backend.Data_Access
         List<VOSpaceType> GetSpaceTypes();
         List<VOReservationType> GetReservationTypes();
         List<VOFacility> GetFacilities();
-        Task<string> CreatePublicationAsync(VORequestCreatePublication voCreatePublication, User user);
+        Task<Dictionary<string, string>> CreatePublicationAsync(VORequestCreatePublication voCreatePublication, User user);
         List<VOPublicationAdmin> GetPublicationsPendingApproval(VORequestPublicationPendindApproval voPublicationPendingApproval);
         List<VOPublication> GetPublisherSpaces(string mail);
         VOPublication GetSpace(int idSpace, User user);
@@ -23,7 +23,7 @@ namespace backend.Data_Access
         List<VOPublication> GetRelatedSpaces(int idPublication, int capacity, int spaceType, string city);
         void UpdateFavorite(VORequestUpdateFavorite voUpdateFavorite, long idUser);
         Task UpdatePublication(VORequestUpdatePublication voUpdatePublication, User user);
-        void CreateReservation(VORequestCreateReservation voCreateReservation, User user);
+        void CreateReservation(VORequestCreateReservation voCreateReservation, User user, int idPlan);
         List<VOReservationExtended> GetReservationsCustomer(VORequestGetReservationsCustomer voGetReservationsCustomer, long idCustomer);
         List<VOReservationExtended> GetReservationsPublisher(VORequestGetReservationsPublisher voGetReservationsPublisher, long idPublisher);
         UsersReservationBasicData UpdateStateReservation(int idReservation, string canceledReason, int newCodeState, string newDescriptionState, DateTime dateTo);
@@ -51,5 +51,7 @@ namespace backend.Data_Access
         UsersReservationBasicData GetUsersReservationBasicData(int idReservation);
         void UpdateCommissionAmountAdmin(VORequestUpdateCommissionAmountAdmin voUpdateAmount);
         void CreatePublicationStatics(VORequestCreatePublicationStatics voCreatePublicationStatics);
+        string GetReservationPlanDescriptionEmail(int idPlan, int language, bool plural);
+        int GetReservationPlanByDescription(string desc);
     }
 }

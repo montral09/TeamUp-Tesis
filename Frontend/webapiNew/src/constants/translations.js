@@ -121,7 +121,6 @@ var module = {
             title_w: 'Titulo',
             totalViews_w: 'Visitas totales',
             questionsWithoutAnswers_w: 'Preguntas sin responder',
-            dateCreated_w : 'Fecha creado',
             register_helper_thisIsYourUser: 'Este va a ser su usuario',
             register_helper_password: 'La contraseña debe contener al menos 6 caracteres',
             register_helper_publisherApply: 'Desea aplicar para ser gestor?',

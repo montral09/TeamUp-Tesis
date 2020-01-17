@@ -9,7 +9,7 @@ const MyPublicationTable = (props) =>{
     const {translate} = props;
     let publications = props.publications;
     let spaceTypes = props.spaceTypes;
-    const columnsName = ['#Ref',translate('spaceType_w'),translate('dateCreated_w'),translate('title_w'),translate('status_w'),translate('payment_w')+' premium',translate('questionsWithoutAnswers_w'),translate('totalViews_w'),translate('action_w')];
+    const columnsName = ['#Ref',translate('spaceType_w'),translate('title_w'),translate('status_w'),translate('dateFrom_w'), translate('dateTo_w'), translate('payment_w')+' premium',translate('questionsWithoutAnswers_w'),translate('totalViews_w'),translate('action_w')];
     const columnsTable = columnsName.map( colName => {
         var valToRet = <th className="text-center" key={colName}>{colName}</th>;
         switch(colName){
@@ -34,15 +34,16 @@ const MyPublicationTable = (props) =>{
             <tr key={obj.IdPublication}>
                 <td>{obj.IdPublication}</td>
                 <td>{obj.SpaceTypeDesc}</td>
-                <td>{obj.CreationDate}</td>
                 <td>{obj.Title}</td>
                 <td>{translate('pubState_'+obj.State.replace(/\s/g,''))}</td>
+                <td>{obj.CreationDate}</td>
+                <td>{obj.DateTo}</td>
                 {objPayment.plan == 'FREE' ? (
                     <td colSpan="2">Plan Free</td>
                 ) : (<>
                     <td>{translate('payState_'+objPayment.paymentStatus.replace(/\s/g,''))}</td>
                     {obj.State.replace(/\s/g,'') == 'NOTVALIDATED'
-                        ? (null) : (
+                        ? (<td colSpan="1"></td>) : (
                             <td><a href="#" className = "col-md-12" onClick={() => props.triggerModalDetailPayment(objPayment)}> <span><i className="col-md-1 fa fa-align-justify"></i></span> {translate('details_w')}</a></td> 
                         )
                     }
