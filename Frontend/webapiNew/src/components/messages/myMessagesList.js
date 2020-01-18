@@ -1,19 +1,17 @@
 import React from 'react';
-import Header from "../header/header";
 import { Redirect } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { connect } from 'react-redux';
-import MyMessagesTable from './myMessagesTable';
-import LoadingOverlay from 'react-loading-overlay';
-import ModalReqInfo from '../publications/viewPublication/modalReqInfo';
-
-import { callAPI } from '../../services/common/genericFunctions';
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual'
 import { compose } from 'redux';
-
+import 'react-toastify/dist/ReactToastify.css';
+import { connect } from 'react-redux';
+import Header from "../header/header";
+import MyMessagesTable from './myMessagesTable';
+import LoadingOverlay from 'react-loading-overlay';
+import ModalReqInfo from '../publications/viewPublication/modalReqInfo';
+import { MAX_ELEMENTS_PER_TABLE } from '../../services/common/constants'
+import { callAPI } from '../../services/common/genericFunctions';
 
 class MyMessagesList extends React.Component {
 
@@ -22,8 +20,11 @@ class MyMessagesList extends React.Component {
         this.state = {
             loadingMessages : true,
             messages : [],
+            messagesToDisplay : [],
             generalError : false,
-            modalConfigObj: {}
+            modalConfigObj: {},
+            pagination: [1],
+            currentPage: 1
         }
         this.modalReqInfo    = React.createRef(); // Connects the reference to the modal
     }
@@ -32,7 +33,14 @@ class MyMessagesList extends React.Component {
         window.scrollTo(0, 0);
         this.loadMessages();
     }
+    changePage = (pageClicked) => {
+        this.setState({ messagesToDisplay: this.filterPaginationArray(this.state.messages, (this.state.currentPage - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked },
+            () => this.setState({ messagesToDisplay: this.filterPaginationArray(this.state.messages, (this.state.currentPage - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked }))
+    }
 
+    filterPaginationArray = (arrayToFilter, startIndex) => {
+        return arrayToFilter.slice(startIndex, startIndex + MAX_ELEMENTS_PER_TABLE)
+    }
     loadMessages = () => {
         var objApi = {};
         objApi.objToSend = {
@@ -111,6 +119,19 @@ class MyMessagesList extends React.Component {
                                     (<MyMessagesTable messages={this.state.messages} answerMsg={this.answerMsg} />)
                                 : ( <div style={{ height:"100ph", display:"block", width:"100ph" }}> <p>{translate('loading_text_small')}</p></div>)
                                 }
+                                <br />
+                                <div className="row pagination-results">
+                                    <div className="col-md-6 text-left">
+                                        <ul className="pagination">
+                                            {this.state.pagination.map(page => {
+                                                return (
+                                                    <li className={this.state.currentPage === page ? 'active' : ''} key={page}><a href="#pagination" onClick={() => this.changePage(page)}>{page}</a></li>
+                                                );
+                                            })}
+                                        </ul>
+                                    </div>
+                                    <div className="col-md-6 text-right">{translate('showing_w')} {MAX_ELEMENTS_PER_TABLE * this.state.currentPage < this.state.messages.length ? MAX_ELEMENTS_PER_TABLE * this.state.currentPage : this.state.messages.length} {translate('of_w')} {this.state.messages.length}</div>
+                                </div>
                             </div>
                         </div>
                     </div>
