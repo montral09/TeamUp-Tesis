@@ -388,7 +388,6 @@
     <Compile Include="Controllers\PublicationStaticsController.cs" />
     <Compile Include="Controllers\RecommendedPublicationsController.cs" />
     <Compile Include="Controllers\PublicationPlanPaymentAdminController.cs" />
-    <Compile Include="Controllers\PublicationPlanPaymentController.cs" />
     <Compile Include="Controllers\PublicationPlanController.cs" />
     <Compile Include="Controllers\PublicationQuestionsController.cs" />
     <Compile Include="Controllers\MessagesController.cs" />

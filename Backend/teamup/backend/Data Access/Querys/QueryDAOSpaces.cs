@@ -353,10 +353,10 @@ namespace backend.Data_Access.Query
             return query;
         }
         
-        public String UpdatePreferentialPayment(string comment, string url, int idPlan)
+        public String UpdatePreferentialPayment(string comment, string url)
         {
             StringBuilder query = new StringBuilder();
-            query = query.Append("update PREFERENTIAL_PAYMENTS set idPlan = @idPlan, state = 2");
+            query = query.Append("update PREFERENTIAL_PAYMENTS set state = 2");
             if (comment != null)
             {
                 query.Append(",comment = @comment");
@@ -364,10 +364,6 @@ namespace backend.Data_Access.Query
             if (url != null)
             {
                 query.Append(",evidence = @evidence");
-            }
-            if (idPlan == 2)
-            {
-                query.Append(",paymentDate = getdate()");
             }
             query.Append(" where idPrefPayments = @idPrefPayments");
             return query.ToString();
