@@ -19,10 +19,10 @@ class AllUsers extends Component {
         this.state = {
             arrData: [],
             admTokenObj: this.props.admTokenObj,
-            adminData: this.props.adminData
+            adminData: this.props.adminData,
+            isLoading : true,
         }
         this.modalElement = React.createRef(); // esto hace unas magias para cambiar el estado de un componente hijo
-        this.updateTable = this.updateTable.bind(this);
     }
     
     // This function will trigger the save function inside the modal to update the values
@@ -34,7 +34,7 @@ class AllUsers extends Component {
         this.modalElement.current.toggle(userData[0],this.state.admTokenObj,this.state.adminData);
     }
 
-    updateTable(){
+    updateTable = () => {
         var objApi = {};
         objApi.objToSend = {
             Mail: this.state.adminData.Mail,
@@ -76,7 +76,7 @@ class AllUsers extends Component {
                             <Card className="main-card mb-3">
                                 <CardBody>
                                     <CardTitle>Tabla de usuarios</CardTitle>
-                                    <AllUsersTable arrData={this.state.arrData} editUser={this.editUser} />
+                                    <AllUsersTable arrData={this.state.arrData} editUser={this.editUser} isLoading ={this.state.isLoading} />
                                 </CardBody>
                             </Card>
                         </Col>

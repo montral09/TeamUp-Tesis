@@ -30,16 +30,14 @@ class CommissionPayments extends Component {
         this.state = {
             paymentsPendingConfirmation: [],
             admTokenObj: admTokenObj,
-            adminMail: adminMail
+            adminMail: adminMail,
+            isLoading : true
         }        
         this.modalElementAppRej = React.createRef(); // Connects the reference to the modal
-        this.approveCommissionPayment  = this.approveCommissionPayment.bind(this);
-        this.rejectCommissionPayment = this.rejectCommissionPayment.bind(this);
-        this.updateTable = this.updateTable.bind(this);
     }
         
     // This function will try to approve the payment
-    approveCommissionPayment (key) {
+    approveCommissionPayment =(key)=>{
         var paymentData = {
             id: key,
             approved: true
@@ -47,7 +45,7 @@ class CommissionPayments extends Component {
         this.modalElementAppRej.current.toggleAppRej(this.props.admTokenObj, this.props.adminData, paymentData);        
     }
 
-    rejectCommissionPayment (key) {
+    rejectCommissionPayment =(key)=>{
         var paymentData = {
             id: key,
             approved: false
@@ -56,10 +54,10 @@ class CommissionPayments extends Component {
     }
     // This function will trigger when the component is mounted, to fill the data from the state
     componentDidMount() {
-        this.updateTable()
+        this.loadPendingComissions()
     }
 
-    updateTable(){
+    loadPendingComissions=()=>{
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.state.admTokenObj.accesToken,
@@ -90,12 +88,12 @@ class CommissionPayments extends Component {
                     transitionEnter={false}
                     transitionLeave={false}>
                     <Row>
-                        <ApproveRejectCommissionPaymentModal ref = {this.modalElementAppRej} updateTable={this.updateTable}/>
+                        <ApproveRejectCommissionPaymentModal ref = {this.modalElementAppRej} updateTable={this.loadPendingComissions}/>
                         <Col lg="12">
                             <Card className="main-card mb-3">
                                 <CardBody>
                                     <CardTitle>Pendientes de aprobación</CardTitle>
-                                    <CommissionPaymentsTable paymentsPendingConfirmation={this.state.paymentsPendingConfirmation} rejectCommissionPayment={this.rejectCommissionPayment} approveCommissionPayment={this.approveCommissionPayment}/>                                    
+                                    <CommissionPaymentsTable isLoading = {this.state.isLoading} paymentsPendingConfirmation={this.state.paymentsPendingConfirmation} rejectCommissionPayment={this.rejectCommissionPayment} approveCommissionPayment={this.approveCommissionPayment}/>                                    
                                 </CardBody>
                             </Card>
                         </Col>

@@ -1,9 +1,9 @@
 import React from 'react'
-import { Table } from 'reactstrap';
+import { Table, Progress } from 'reactstrap';
 
 
 // This component will render the table with the values passed as parameters -props-
-const PublisherApprovTable = ({pubPendApp, approvePublisher, approveAllPublishers}) =>{
+const PublisherApprovTable = ({pubPendApp, approvePublisher, approveAllPublishers, isLoading}) =>{
     const pubPendAppList = pubPendApp.length ? (
         pubPendApp.map( publ => {
             return(
@@ -20,11 +20,11 @@ const PublisherApprovTable = ({pubPendApp, approvePublisher, approveAllPublisher
             )
         })
     ) : (
-        <tr><td colSpan="8">"No se encontraron elementos"</td></tr>
+        isLoading ? (<tr><td colSpan={8}><Progress className="mb-3" animated value={100} /></td></tr>) : (<tr><td colSpan={8}>No se encontraron elementos</td></tr>)
         );
     const approveAllButton = pubPendApp.length ? ( <tr><td colSpan="8"><button type="button" className="btn btn-outline-primary mr-2" onClick={() => {approveAllPublishers()}}>Aprobar todos</button></td></tr> ) : (null);
     return(
-    <Table hover className="mb-0">
+    <Table hover className="mb-0" responsive = {true}>
         <thead>
           <tr>
             <th>Nombre</th>

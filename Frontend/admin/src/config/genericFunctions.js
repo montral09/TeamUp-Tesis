@@ -72,10 +72,10 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             var sanitizedValues = objData.voUsers.filter(voUsr =>{
                 return voUsr.PublisherValidated == false
             })
-            bindThis.setState({ 'gestPendApr': sanitizedValues })
+            bindThis.setState({ 'gestPendApr': sanitizedValues, isLoading: false })
         break;
         case "submitPublisher" : bindThis.setState({ gestPendApr: objApi.newArrIfSuccess }); break;
-        case "getUsers" : bindThis.setState ({...bindThis.state, arrData: objData.voUsers}); break;
+        case "getUsers" : bindThis.setState ({...bindThis.state, arrData: objData.voUsers, isLoading: false}); break;
         case "updateUser" : 
             bindThis.setState({ 
                 modal: !bindThis.state.modal,
@@ -84,7 +84,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             }); 
             bindThis.props.updateTable()
             break;
-        case "loadFacilities" : bindThis.setState({ facilities: objData.facilities }); break;
+        case "loadFacilities" : bindThis.setState({ facilities: objData.facilities}); break;
         case "changePublicationTransition" :         
             bindThis.setState({
                 modal: !bindThis.state.modal,
@@ -93,8 +93,8 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             });
             bindThis.props.updateTable(); 
             break;
-        case "getPublicationsPendingApproval" : bindThis.setState({ 'publ': objData.Publications }); break;
-        case "getAllPublications" : bindThis.setState({ 'publ': objData.Publications }); break;
+        case "getPublicationsPendingApproval" : bindThis.setState({ 'publ': objData.Publications, isLoading : false  }); break;
+        case "getAllPublications" : bindThis.setState({ 'publ': objData.Publications, isLoading : false }); break;
         case "editPublication" : 
         bindThis.setState({ 
             modal: !bindThis.state.modal,
@@ -103,7 +103,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         }); 
         bindThis.props.updateTable()
         break;
-        case "getPreferentialPayments" :  bindThis.setState({ 'preferentialPayments': objData.Payments }); break;
+        case "getPreferentialPayments" :  bindThis.setState({ 'preferentialPayments': objData.Payments, isLoading : false }); break;
         case "appRejPreferentialPayment" : 
             bindThis.setState({
             modal: !bindThis.state.modal,
@@ -117,7 +117,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             var paymentsPendingConfirmation = commissions.filter(commission => {
                 return commission.CommissionState === 'PENDING CONFIRMATION'
             });                
-            bindThis.setState({ 'paymentsPendingConfirmation': paymentsPendingConfirmation });
+            bindThis.setState({ 'paymentsPendingConfirmation': paymentsPendingConfirmation , isLoading : false});
             break;
         case "appRejCommissionPayment" :
             bindThis.setState({
@@ -132,7 +132,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             var paymentsPendingPaid = commissions.filter(commission => {
                 return commission.CommissionState === 'PENDING PAYMENT'
             });                
-            bindThis.setState({ 'paymentsPendingPaid': paymentsPendingPaid });
+            bindThis.setState({ 'paymentsPendingPaid': paymentsPendingPaid , isLoading : false});
             break;
         case "editCommission" :
             bindThis.setState({
@@ -158,7 +158,9 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
         case "ERR_ACCESSTOKENEXPIRED":
         case "ERR_REFRESHTOKENEXPIRED":
         case "ERR_INVALIDREFRESHTOKEN":
-            handleExpiredToken(objApi, bindThis)
+            displayErrorMessage("Su sesión expiró, por favor inicie sesión nuevamente");
+            store.dispatch(logOut());
+            //handleExpiredToken(objApi, bindThis)
             break;
     }
     switch(trigger){
@@ -203,8 +205,10 @@ export const handleExpiredToken = (retryObjApi, bindThis) =>{
         }
         objApi.fetchUrl = "api/tokens";
         objApi.method = "PUT";
-        objApi.responseSuccess = "SUCC_TOKENSUPDATED";
-        objApi.successMessage = "";
+        objApi.successMSG = {
+            SUCC_TOKENSUPDATED : '',
+        };
+        objApi.functionAfterError = "updateExpiredToken"
         objApi.functionAfterSuccess = "updateExpiredToken";
         callAPI(objApi, bindThis);
     }

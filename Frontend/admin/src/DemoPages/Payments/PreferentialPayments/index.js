@@ -30,17 +30,15 @@ class PreferentialPayments extends Component {
         this.state = {
             preferentialPayments: [],
             admTokenObj: admTokenObj,
-            adminMail: adminMail
+            adminMail: adminMail,
+            isLoading : true
         }
         this.modalElement = React.createRef(); // Connects the reference to the modal
         this.modalElementAppRej = React.createRef(); // Connects the reference to the modal
-        this.approvePreferentialPayment  = this.approvePreferentialPayment.bind(this);
-        this.rejectPreferentialPayment = this.rejectPreferentialPayment.bind(this);
-        this.updateTable = this.updateTable.bind(this);
     }
         
     // This function will try to approve the payment
-    approvePreferentialPayment (key) {
+    approvePreferentialPayment = (key) =>{
         var paymentData = {
             id: key,
             approved: true
@@ -48,7 +46,7 @@ class PreferentialPayments extends Component {
         this.modalElementAppRej.current.toggleAppRej(this.props.admTokenObj, this.props.adminData, paymentData);        
     }
 
-    rejectPreferentialPayment (key) {
+    rejectPreferentialPayment = (key) =>{
         var paymentData = {
             id: key,
             approved: false
@@ -58,10 +56,10 @@ class PreferentialPayments extends Component {
 
     // This function will trigger when the component is mounted, to fill the data from the state
     componentDidMount() {
-        this.updateTable()
+        this.loadPreferentialPayments()
     }
 
-    updateTable(){
+    loadPreferentialPayments = () =>{
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.state.admTokenObj.accesToken,
@@ -92,12 +90,12 @@ class PreferentialPayments extends Component {
                     transitionEnter={false}
                     transitionLeave={false}>
                     <Row>
-                        <ApproveRejectPreferentialPaymentModal ref = {this.modalElementAppRej} updateTable={this.updateTable}/>
+                        <ApproveRejectPreferentialPaymentModal ref = {this.modalElementAppRej} updateTable={this.loadPreferentialPayments}/>
                         <Col lg="12">
                             <Card className="main-card mb-3">
                                 <CardBody>
                                     <CardTitle>Pendientes de aprobación</CardTitle>
-                                    <PreferentialPaymentsTable preferentialPayments={this.state.preferentialPayments} rejectPreferentialPayment={this.rejectPreferentialPayment} approvePreferentialPayment={this.approvePreferentialPayment}/>
+                                    <PreferentialPaymentsTable isLoading = {this.state.isLoading} preferentialPayments={this.state.preferentialPayments} rejectPreferentialPayment={this.rejectPreferentialPayment} approvePreferentialPayment={this.approvePreferentialPayment}/>
                                 </CardBody>
                             </Card>
                         </Col>

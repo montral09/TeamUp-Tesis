@@ -28,11 +28,11 @@ class AllPublications extends Component {
             admTokenObj: admTokenObj,
             adminMail: adminMail,
             spaceTypes: [],
-            facilities: []
+            facilities: [],
+            isLoading: true
         }
         this.modalElement = React.createRef(); // esto hace unas magias para cambiar el estado de un componente hijo
         this.modalElementAppRej = React.createRef();
-        this.updateTable = this.updateTable.bind(this);
     }
 
     loadInfraestructure() {
@@ -48,11 +48,11 @@ class AllPublications extends Component {
 
     // This function will trigger when the component is mounted, to fill the data from the state
     componentDidMount() {
-        this.updateTable();
+        this.loadAllPublications();
         this.loadInfraestructure()
     }
 
-    updateTable(){
+    loadAllPublications = () =>{
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.state.admTokenObj.accesToken,
@@ -93,12 +93,12 @@ class AllPublications extends Component {
                     transitionEnter={false}
                     transitionLeave={false}>
                     <Row>
-                        <ModifyPublicationModal ref = {this.modalElement} updateTable={this.updateTable} disableFields = {false}/>                        
+                        <ModifyPublicationModal ref = {this.modalElement} updateTable={this.loadAllPublications} disableFields = {false}/>                        
                         <Col lg="12">
                             <Card className="main-card mb-3">
                                 <CardBody>
                                     <CardTitle>Publicaciones</CardTitle>
-                                    <AllPublicationsTable publ={this.state.publ} editPublication={this.editPublication} spaceTypes={this.state.spaceTypes} publisherData = {false}/>
+                                    <AllPublicationsTable isLoading = {this.state.isLoading} publ={this.state.publ} editPublication={this.editPublication} spaceTypes={this.state.spaceTypes} publisherData = {false}/>
                                 </CardBody>
                             </Card>
                         </Col>

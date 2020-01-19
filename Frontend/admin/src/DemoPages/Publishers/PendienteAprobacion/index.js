@@ -27,7 +27,8 @@ class PendienteAprobacion extends Component {
         this.state = {
             gestPendApr: [],
             admTokenObj: admTokenObj,
-            adminMail: adminMail
+            adminMail: adminMail,
+            isLoading : true
         }
     }
 
@@ -103,7 +104,7 @@ class PendienteAprobacion extends Component {
                             <Card className="main-card mb-3">
                                 <CardBody>
                                     <CardTitle>Pendientes de aprobación</CardTitle>
-                                    <PublisherApprovTable pubPendApp={this.state.gestPendApr} approvePublisher={this.approvePublisher} approveAllPublishers={this.approveAllPublishers} />
+                                    <PublisherApprovTable isLoading = {this.state.isLoading} pubPendApp={this.state.gestPendApr} approvePublisher={this.approvePublisher} approveAllPublishers={this.approveAllPublishers} />
                                 </CardBody>
                             </Card>
                         </Col>

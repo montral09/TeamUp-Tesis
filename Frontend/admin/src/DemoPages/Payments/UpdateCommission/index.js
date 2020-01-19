@@ -28,10 +28,10 @@ class UpdateCommission extends Component {
         this.state = {
             paymentsPendingPaid: [],
             admTokenObj: admTokenObj,
-            adminMail: adminMail
+            adminMail: adminMail,
+            isLoading : true
         }
         this.modalElementUpdate = React.createRef(); // Connects the reference to the modal
-        this.updateTable = this.updateTable.bind(this);
         this.changeCommission = this.changeCommission.bind(this);
     }
 
@@ -42,10 +42,10 @@ class UpdateCommission extends Component {
 
     // This function will trigger when the component is mounted, to fill the data from the state
     componentDidMount() {
-        this.updateTable()
+        this.loadComissions()
     }
 
-    updateTable() {
+    loadComissions = () =>{
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.state.admTokenObj.accesToken,
@@ -76,12 +76,12 @@ class UpdateCommission extends Component {
                     transitionEnter={false}
                     transitionLeave={false}>
                     <Row>
-                        <UpdateCommissionConfirmationModal ref = {this.modalElementUpdate} updateTable={this.updateTable}/>
+                        <UpdateCommissionConfirmationModal ref = {this.modalElementUpdate} updateTable={this.loadComissions}/>
                         <Col lg="12">
                             <Card className="main-card mb-3">
                                 <CardBody>
                                     <CardTitle>Pendientes de pago</CardTitle>                                    
-                                    <UpdateCommissionTable paymentsPendingPaid={this.state.paymentsPendingPaid} changeCommission={this.changeCommission} />
+                                    <UpdateCommissionTable isLoading = {this.state.isLoading} paymentsPendingPaid={this.state.paymentsPendingPaid} changeCommission={this.changeCommission} />
                                 </CardBody>
                             </Card>
                         </Col>

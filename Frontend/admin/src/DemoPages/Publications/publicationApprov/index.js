@@ -31,16 +31,14 @@ class PublPendApprov extends Component {
             admTokenObj: admTokenObj,
             adminMail: adminMail,
             spaceTypes: [],
-            facilities: []
+            facilities: [],
+            isLoading : true
         }
         this.modalElement = React.createRef(); // Connects the reference to the modal
         this.modalElementAppRej = React.createRef(); // Connects the reference to the modal
-        this.approvePublication  = this.approvePublication.bind(this);
-        this.rejectPublication = this.rejectPublication.bind(this);
-        this.updateTable = this.updateTable.bind(this);
     }
 
-    loadInfraestructure() {
+    loadInfraestructure = () => {
         var objApi = {};        
         objApi.fetchUrl = "api/facilities";
         objApi.method = "GET";
@@ -52,7 +50,7 @@ class PublPendApprov extends Component {
     }
 
     // This function will try to approve an specific publication
-    approvePublication (key) {
+    approvePublication = (key) => {
         var pubData = {
             id: key,
             type: "APPROVE"
@@ -60,7 +58,7 @@ class PublPendApprov extends Component {
         this.modalElementAppRej.current.toggleAppRej(this.props.admTokenObj, this.props.adminData, pubData);        
     }
 
-    rejectPublication (key) {
+    rejectPublication = (key) => {
         var pubData = {
             id: key,
             type: "REJECT"
@@ -74,7 +72,7 @@ class PublPendApprov extends Component {
         this.loadInfraestructure()
     }
 
-    updateTable(){
+    updateTable = () =>{
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.state.admTokenObj.accesToken,
@@ -121,7 +119,7 @@ class PublPendApprov extends Component {
                             <Card className="main-card mb-3">
                                 <CardBody>
                                     <CardTitle>Pendientes de aprobación</CardTitle>
-                                    <PublicationApprovTable publ={this.state.publ} rejectPublication={this.rejectPublication} editPublication={this.editPublication} approvePublication={this.approvePublication} spaceTypes={this.state.spaceTypes}/>
+                                    <PublicationApprovTable isLoading = {this.state.isLoading} publ={this.state.publ} rejectPublication={this.rejectPublication} editPublication={this.editPublication} approvePublication={this.approvePublication} spaceTypes={this.state.spaceTypes}/>
                                 </CardBody>
                             </Card>
                         </Col>
