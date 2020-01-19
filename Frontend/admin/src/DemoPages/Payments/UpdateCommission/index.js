@@ -1,17 +1,15 @@
 import React, { Fragment, Component } from 'react';
-
-// Extra
-
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-import PageTitle from '../../../Layout/AppMain/PageTitle';
-
-import UpdateCommissionTable from './updateCommissionTable';
-import UpdateCommissionConfirmationModal from './updateCommissionConfirmation'
-import { callAPI } from '../../../config/genericFunctions';
 import { connect } from 'react-redux';
 
-// Table
+// Extra
+import PageTitle from '../../../Layout/AppMain/PageTitle';
+import UpdateCommissionTable from './updateCommissionTable';
+import UpdateCommissionConfirmationModal from './updateCommissionConfirmation'
+import Pagination from '../../Common/pagination';
+import { callAPI } from '../../../config/genericFunctions';
 
+// Table
 import {
     Row, Col,
     Card, CardBody,
@@ -27,25 +25,27 @@ class UpdateCommission extends Component {
         const adminMail = props.adminData.Mail
         this.state = {
             paymentsPendingPaid: [],
+            paymentsPendingPaidToDisplay: [],
             admTokenObj: admTokenObj,
-            adminMail: adminMail
+            adminMail: adminMail,
+            isLoading : true
         }
         this.modalElementUpdate = React.createRef(); // Connects the reference to the modal
-        this.updateTable = this.updateTable.bind(this);
-        this.changeCommission = this.changeCommission.bind(this);
     }
 
-    changeCommission (key) {
+    changeCommission = (key) =>{
         var id = key;
         this.modalElementUpdate.current.toggleElementUpdate(this.props.admTokenObj, this.props.adminData, id);  
     }
 
     // This function will trigger when the component is mounted, to fill the data from the state
     componentDidMount() {
-        this.updateTable()
+        this.loadComissions()
     }
-
-    updateTable() {
+    updateElementsToDisplay = (toDisplayArray) => {
+        this.setState({publToDisplay : toDisplayArray})
+    }
+    loadComissions = () =>{
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.state.admTokenObj.accesToken,
@@ -76,14 +76,17 @@ class UpdateCommission extends Component {
                     transitionEnter={false}
                     transitionLeave={false}>
                     <Row>
-                        <UpdateCommissionConfirmationModal ref = {this.modalElementUpdate} updateTable={this.updateTable}/>
+                        <UpdateCommissionConfirmationModal ref = {this.modalElementUpdate} updateTable={this.loadComissions}/>
                         <Col lg="12">
                             <Card className="main-card mb-3">
                                 <CardBody>
                                     <CardTitle>Pendientes de pago</CardTitle>                                    
-                                    <UpdateCommissionTable paymentsPendingPaid={this.state.paymentsPendingPaid} changeCommission={this.changeCommission} />
+                                    <UpdateCommissionTable isLoading = {this.state.isLoading} paymentsPendingPaid={this.state.paymentsPendingPaidToDisplay} changeCommission={this.changeCommission} />
                                 </CardBody>
                             </Card>
+                        </Col>
+                        <Col lg="12">
+                            {!this.state.isLoading ? (<Pagination originalArray = {this.state.paymentsPendingPaid} updateElementsToDisplay = {this.updateElementsToDisplay} />) : (null)} 
                         </Col>
                     </Row>
                 </ReactCSSTransitionGroup>

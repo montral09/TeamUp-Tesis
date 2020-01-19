@@ -2,7 +2,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { logOut, updateToken } from '../../services/login/actions';
 import store from '../../services/store';
-import { MAIN_URL, MAIN_URL_WEB} from './constants';
+import { MAIN_URL, MAIN_URL_WEB, MAX_ELEMENTS_PER_TABLE} from './constants';
 
 export const handleErrors = (error, bindThis) => {
     displayErrorMessage("Hubo un error, intente nuevamente");   
@@ -116,7 +116,13 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         break;
 
         case "loadMessages":
-            bindThis.setState({messages: objData.Messages, loadingMessages: false});
+            var newTotalPages = Math.round(parseFloat(objData.Messages.length/MAX_ELEMENTS_PER_TABLE));
+            var newPagination = [];
+            for(var i=1;i<=newTotalPages;i++){
+                newPagination.push(i);
+            }
+            bindThis.setState({ messages: objData.Messages, loadingMessages: false,
+                messagesToDisplay: bindThis.filterPaginationArray(objData.Messages, 0), pagination: newPagination })
         break;
         
         case "saveAnswerMSG":
@@ -148,7 +154,13 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             bindThis.props.history.push('/');
         break;
         case "loadMyReservationsMRSL":
-            bindThis.setState({ reservations: objData.Reservations, loadingReservations: false })
+            var newTotalPages = Math.round(parseFloat(objData.Reservations.length/MAX_ELEMENTS_PER_TABLE));
+            var newPagination = [];
+            for(var i=1;i<=newTotalPages;i++){
+                newPagination.push(i);
+            }
+            bindThis.setState({ reservations: objData.Reservations, loadingReservations: false,
+                reservationsToDisplay: bindThis.filterPaginationArray(objData.Reservations, 0), pagination: newPagination })
         break;
         case "confirmEditReservationMRSL":
             bindThis.modalElement.current.changeModalLoadingState(true);                               
@@ -195,8 +207,8 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         case "loadMyFavoritePublications"   : bindThis.setState({ publications: objData.Publications, loadingPubs: false });   break;
         case "loadSpaceTypesFP"             : bindThis.setState({ spaceTypes: objData.spaceTypes, loadingSpaceTypes: false }); break;
         case "startSearchMP":
-            let newTotalPages = Math.round(parseFloat(objData.TotalPublications/bindThis.state.publicationsPerPage));
-            let newPagination = [];
+            var newTotalPages = Math.round(parseFloat(objData.TotalPublications/bindThis.state.publicationsPerPage));
+            var newPagination = [];
             for(var i=1;i<=newTotalPages;i++){
                 newPagination.push(i);
             }
@@ -226,7 +238,16 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             }
         break;
         case "changePubStateMPL"    : bindThis.loadMyPublications(); break;
-        case "loadMyPublications"   : bindThis.setState({ publications: objData.Publications, loadingPubs: false });   break;
+        case "loadMyPublications"   :
+            var newTotalPages = Math.round(parseFloat(objData.Publications.length/MAX_ELEMENTS_PER_TABLE));
+            var newPagination = [];
+            for(var i=1;i<=newTotalPages;i++){
+                newPagination.push(i);
+            }
+            bindThis.setState({ publications: objData.Publications, loadingPubs: false, 
+                publicationsToDisplay: bindThis.filterPaginationArray(objData.Publications, 0), pagination: newPagination });   
+        
+        break;
         case "confirmPayment"       : bindThis.ModalDetailPayment.current.changeModalLoadingState(true); bindThis.loadMyPublications(); break;
         case "saveComissionPayment":
             bindThis.ModalResComPay.current.changeModalLoadingState(true);
@@ -244,7 +265,13 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         break;
 
         case "loadMyReservationsRP":
-            bindThis.setState({ reservations: objData.Reservations, loadingReservations: false })
+            var newTotalPages = Math.round(parseFloat(objData.Reservations.length/MAX_ELEMENTS_PER_TABLE));
+            var newPagination = [];
+            for(var i=1;i<=newTotalPages;i++){
+                newPagination.push(i);
+            }
+            bindThis.setState({ reservations: objData.Reservations, loadingReservations: false,
+                reservationsToDisplay: bindThis.filterPaginationArray(objData.Reservations, 0), pagination: newPagination })
         break;
     }
 }

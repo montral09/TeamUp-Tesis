@@ -5,12 +5,11 @@ import {
     Button
 } from 'reactstrap';
 import {BrowserRouter as Redirect} from 'react-router-dom';
+import 'react-toastify/dist/ReactToastify.css';
+import { connect } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 import './Login.css';
-
-import { connect } from 'react-redux';
 import { logIn } from '../../reducers/auth/actions';
-
 import {displayErrorMessage} from '../../config/genericFunctions'
 
 class Login extends React.Component {
@@ -68,17 +67,17 @@ class Login extends React.Component {
         }
     }
     render() {
-        const { email, password } = this.state;
         let { login_status } = this.props;
         if(login_status == 'LOGGED_IN') return <Redirect to='/'/>
         return (
             <Fragment>
+                <ToastContainer/>
                 <Container className="LoginForm">
                     <h2>Team UP! Admin - Login</h2>
                     <Form className="form" onSubmit={(e) => this.submitForm(e)}>
                         <Col>
                             <FormGroup>
-                                <Label>Username</Label>
+                                <Label>Usuario</Label>
                                 <Input
                                     type="email"
                                     name="email"
@@ -106,7 +105,7 @@ class Login extends React.Component {
                         <Button>Login &nbsp;&nbsp;{this.state.isLoading &&
                                     <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>}</Button>
                     </Form>
-                    <ToastContainer/>
+                    
                 </Container>
             </Fragment>
         );

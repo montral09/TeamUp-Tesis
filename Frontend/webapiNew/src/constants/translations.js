@@ -67,6 +67,7 @@ var module = {
             about_us : 'Acerca de nosotros',
             about_mainText : 'Somos la mejor empresa',
             footer_about_us  : 'Somos la mejor empresa',
+            reservations_w : 'Reservas',
             recPubs_recommendedPubls: 'Publicaciones recomendadas',
             singInLinks_wantToPublish: 'Quiero publicar',
             singInLinks_wantToPublishBody: 'Si quieres ser uno de nuestros colaboradores, pudiendo realizar publicaciones en el sito, haz click en el boton "Quiero!". Se enviara una solicitud y uno de nuestros representantes se comunicara contigo a la brevedad.',
@@ -217,6 +218,9 @@ var module = {
             favPublications_head: 'Mis Publicaciones favoritas',
             mainPublications_head : 'Lista de publicaciones',
             myPublications_header: 'Mis Publicaciones',
+            myPublications_pausePubMsg: 'Desea pausar la publicacion?',
+            myPublications_resumePubMsg: 'Desea reanudar la publicacion?',
+
             reservedPublications_cancelModal_header: 'Cancelar reserva',
             reservedPublications_cancelModal_body: '¿Desea cancelar la reserva? Por favor indique el motivo ',
             reservedPublications_confirmModal_header: 'Confirmar reserva',

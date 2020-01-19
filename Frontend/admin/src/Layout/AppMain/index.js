@@ -15,6 +15,7 @@ const Forms = lazy(() => import('../../DemoPages/Forms'));
 const Tables = lazy(() => import('../../DemoPages/Tables'));
 
 const Publications = lazy(() => import('../../DemoPages/Publications'));
+const Reservations = lazy(() => import('../../DemoPages/Reservations'));
 const Publishers = lazy(() => import('../../DemoPages/Publishers'));
 const Users = lazy(() => import('../../DemoPages/Users'));
 const Payments = lazy(() => import('../../DemoPages/Payments'));
@@ -23,14 +24,29 @@ const AppMain = () => {
 
     return (
         <Fragment>
+            {/* Reservations */}
+
+            <Suspense fallback={
+                <div className="loader-container">
+                    <div className="loader-container-inner">
+                        <h6 className="mt-5">
+                            Por favor espere mientras cargamos los datos
+                            <small>Cargando...</small>
+                        </h6>
+                    </div>
+                </div>
+            }>
+                <Route path="/reservations" component={Reservations}/>
+            </Suspense>
+
             {/* Publications */}
 
             <Suspense fallback={
                 <div className="loader-container">
                     <div className="loader-container-inner">
                         <h6 className="mt-5">
-                            Please wait while we load all the Publications data
-                            <small>Loading...</small>
+                            Por favor espere mientras cargamos los datos
+                            <small>Cargando...</small>
                         </h6>
                     </div>
                 </div>
@@ -44,8 +60,8 @@ const AppMain = () => {
                 <div className="loader-container">
                     <div className="loader-container-inner">
                         <h6 className="mt-5">
-                            Please wait while we load all the Publishers data
-                            <small>Because this is a demonstration we load at once all the Publishers data. This wouldn't happen in a real live app!</small>
+                            Por favor espere mientras cargamos los datos
+                            <small>Cargando...</small>
                         </h6>
                     </div>
                 </div>
@@ -59,8 +75,8 @@ const AppMain = () => {
                 <div className="loader-container">
                     <div className="loader-container-inner">
                         <h6 className="mt-5">
-                            Please wait while we load all the Users data
-                            <small>Because this is a demonstration we load at once all the Users data. This wouldn't happen in a real live app!</small>
+                            Por favor espere mientras cargamos los datos
+                            <small>Cargando...</small>
                         </h6>
                     </div>
                 </div>
@@ -73,8 +89,8 @@ const AppMain = () => {
                 <div className="loader-container">
                     <div className="loader-container-inner">
                         <h6 className="mt-5">
-                            Please wait while we load payment data
-                            <small>Because this is a demonstration we load at once all the payment data. This wouldn't happen in a real live app!</small>
+                            Por favor espere mientras cargamos los datos
+                            <small>Cargando...</small>
                         </h6>
                     </div>
                 </div>

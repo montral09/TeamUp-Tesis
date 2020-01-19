@@ -1,9 +1,9 @@
 import React from 'react'
-import { Table } from 'reactstrap';
+import { Table, Progress } from 'reactstrap';
 
 
 // This component will render the table with the values passed as parameters -props-
-const PublicationApprovTable = ({publ, approvePublication, editPublication, rejectPublication}) =>{
+const PublicationApprovTable = ({publ, approvePublication, editPublication, rejectPublication, isLoading}) =>{
     const columnsName = ['ID Pub','Mail','Nombre','Telefono','Fecha Creado','Titulo','Capacidad','Ver Mas','Aprobar','Rechazar'];
 
     const columnsTable = columnsName.map( colName => {
@@ -27,10 +27,10 @@ const PublicationApprovTable = ({publ, approvePublication, editPublication, reje
             )
         })
     ) : (
-        <tr><td colSpan={columnsName.length}>"No se encontraron elementos"</td></tr>
+        isLoading ? (<tr><td colSpan={columnsName.length}><Progress className="mb-3" animated value={100} /></td></tr>) : (<tr><td colSpan={columnsName.length}>No se encontraron elementos</td></tr>)
         );
     return(
-    <Table hover className="mb-0">
+    <Table hover className="mb-0" responsive = {true}>
         <thead>
           <tr>
             {columnsTable}

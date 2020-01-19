@@ -9,6 +9,14 @@ export const PublNav = [
         label: 'Publicaciones',
         to: '#/publications/AllPublications',
     },
+]; 
+
+export const ResNav = [
+    {
+        icon: 'pe-7s-bookmarks',
+        label: 'Reservas',
+        to: '#/reservations/AllReservations',
+    },
 ];  
 
 export const GestNav = [

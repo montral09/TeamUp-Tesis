@@ -1,9 +1,9 @@
 import React from 'react'
-import { Table, Tooltip } from 'reactstrap';
+import { Table, Progress } from 'reactstrap';
 
 
 // This component will render the table with the values passed as parameters -props-
-const PreferentialPaymentsTable = ({preferentialPayments, approvePreferentialPayment, rejectPreferentialPayment}) =>{
+const PreferentialPaymentsTable = ({preferentialPayments, approvePreferentialPayment, rejectPreferentialPayment, isLoading}) =>{
     const columnsName = ['ID Pub','Publicacion','Mail','Nombre','Telefono', 'Plan', 'Monto','Comentario','Evidencia','Fecha Pago','Aprobar','Rechazar'];
 
     const columnsTable = columnsName.map( colName => {
@@ -29,10 +29,10 @@ const PreferentialPaymentsTable = ({preferentialPayments, approvePreferentialPay
             )
         })
     ) : (
-        <tr><td colSpan={columnsName.length}>"No se encontraron elementos"</td></tr>
+        isLoading ? (<tr><td colSpan={columnsName.length}><Progress className="mb-3" animated value={100} /></td></tr>) : (<tr><td colSpan={columnsName.length}>No se encontraron elementos</td></tr>)
         );
     return(
-    <Table hover className="mb-0">
+    <Table hover className="mb-0" responsive = {true}>
         <thead>
           <tr>
             {columnsTable}

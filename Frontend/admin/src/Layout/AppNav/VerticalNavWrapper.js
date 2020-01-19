@@ -3,7 +3,7 @@ import {withRouter} from 'react-router-dom';
 
 import MetisMenu from 'react-metismenu';
 
-import {PaymentNav, PublNav, GestNav, MainNav, UsrNav, ComponentsNav, FormsNav, WidgetsNav, ChartsNav} from './NavItems';
+import {PaymentNav, PublNav, ResNav, GestNav, MainNav, UsrNav, ComponentsNav, FormsNav, WidgetsNav, ChartsNav} from './NavItems';
 
 class Nav extends Component {
 
@@ -19,10 +19,12 @@ class Nav extends Component {
                 <h5 className="app-sidebar__heading">Usuarios</h5>
                 <MetisMenu content={UsrNav} activeLinkFromLocation className="vertical-nav-menu" iconNamePrefix="" classNameStateIcon="pe-7s-angle-down"/>
                 <h5 className="app-sidebar__heading">Publicaciones</h5>
-                <MetisMenu content={PublNav} activeLinkFromLocation className="vertical-nav-menu" iconNamePrefix="" classNameStateIcon="pe-7s-angle-down"/>                
+                <MetisMenu content={PublNav} activeLinkFromLocation className="vertical-nav-menu" iconNamePrefix="" classNameStateIcon="pe-7s-angle-down"/>
+                <h5 className="app-sidebar__heading">Reservas</h5>
+                <MetisMenu content={ResNav} activeLinkFromLocation className="vertical-nav-menu" iconNamePrefix="" classNameStateIcon="pe-7s-angle-down"/>
                 <h5 className="app-sidebar__heading">Pagos</h5>
                 <MetisMenu content={PaymentNav} activeLinkFromLocation className="vertical-nav-menu" iconNamePrefix="" classNameStateIcon="pe-7s-angle-down"/>   
-                {/*             
+                
                 <h5 className="app-sidebar__heading">UI Components</h5>
                 <MetisMenu content={ComponentsNav} activeLinkFromLocation className="vertical-nav-menu" iconNamePrefix="" classNameStateIcon="pe-7s-angle-down"/>
                 <h5 className="app-sidebar__heading">Widgets</h5>
@@ -30,7 +32,7 @@ class Nav extends Component {
                 <h5 className="app-sidebar__heading">Forms</h5>
                 <MetisMenu content={FormsNav} activeLinkFromLocation className="vertical-nav-menu" iconNamePrefix="" classNameStateIcon="pe-7s-angle-down"/>
                 <h5 className="app-sidebar__heading">Charts</h5>
-                <MetisMenu content={ChartsNav} activeLinkFromLocation className="vertical-nav-menu" iconNamePrefix="" classNameStateIcon="pe-7s-angle-down"/>*/}
+                <MetisMenu content={ChartsNav} activeLinkFromLocation className="vertical-nav-menu" iconNamePrefix="" classNameStateIcon="pe-7s-angle-down"/>
             </Fragment>
         );
     }

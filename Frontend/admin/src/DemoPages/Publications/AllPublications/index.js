@@ -1,12 +1,13 @@
 import React, { Fragment, Component } from 'react';
-// Extra
+import { connect } from 'react-redux';
 
+// Extra
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import PageTitle from '../../../Layout/AppMain/PageTitle';
 import ModifyPublicationModal from '../modifyPublication';
 import AllPublicationsTable from './AllPublicationsTable'
+import Pagination from '../../Common/pagination';
 import { callAPI } from '../../../config/genericFunctions';
-import { connect } from 'react-redux';
 
 // Table
 
@@ -25,14 +26,15 @@ class AllPublications extends Component {
         const adminMail = props.adminData.Mail
         this.state = {
             publ: [],
+            publToDisplay : [],
             admTokenObj: admTokenObj,
             adminMail: adminMail,
             spaceTypes: [],
-            facilities: []
+            facilities: [],
+            isLoading: true
         }
         this.modalElement = React.createRef(); // esto hace unas magias para cambiar el estado de un componente hijo
         this.modalElementAppRej = React.createRef();
-        this.updateTable = this.updateTable.bind(this);
     }
 
     loadInfraestructure() {
@@ -46,13 +48,16 @@ class AllPublications extends Component {
         callAPI(objApi, this);        
     }          
 
+    updateElementsToDisplay = (toDisplayArray) => {
+        this.setState({publToDisplay : toDisplayArray})
+    }
     // This function will trigger when the component is mounted, to fill the data from the state
     componentDidMount() {
-        this.updateTable();
+        this.loadAllPublications();
         this.loadInfraestructure()
     }
 
-    updateTable(){
+    loadAllPublications = () =>{
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.state.admTokenObj.accesToken,
@@ -70,7 +75,7 @@ class AllPublications extends Component {
 
     // This function will trigger the save function inside the modal to update the values
     editPublication = (key) => {
-        const publData = this.state.publ.filter(publ => {
+        const publData = this.state.publToDisplay.filter(publ => {
             return publ.IdPublication === key
         });
 
@@ -93,14 +98,17 @@ class AllPublications extends Component {
                     transitionEnter={false}
                     transitionLeave={false}>
                     <Row>
-                        <ModifyPublicationModal ref = {this.modalElement} updateTable={this.updateTable} disableFields = {false}/>                        
+                        <ModifyPublicationModal ref = {this.modalElement} updateTable={this.loadAllPublications} disableFields = {false}/>                        
                         <Col lg="12">
                             <Card className="main-card mb-3">
                                 <CardBody>
                                     <CardTitle>Publicaciones</CardTitle>
-                                    <AllPublicationsTable publ={this.state.publ} editPublication={this.editPublication} spaceTypes={this.state.spaceTypes} publisherData = {false}/>
+                                    <AllPublicationsTable isLoading = {this.state.isLoading} publ={this.state.publToDisplay} editPublication={this.editPublication} spaceTypes={this.state.spaceTypes} publisherData = {false}/>
                                 </CardBody>
                             </Card>
+                        </Col>
+                        <Col lg="12">
+                            {!this.state.isLoading ? (<Pagination originalArray = {this.state.publ} updateElementsToDisplay = {this.updateElementsToDisplay} />) : (null)} 
                         </Col>
                     </Row>
                 </ReactCSSTransitionGroup>
