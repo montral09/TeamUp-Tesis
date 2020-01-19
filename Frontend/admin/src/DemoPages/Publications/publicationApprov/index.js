@@ -1,17 +1,15 @@
 import React, { Fragment, Component } from 'react';
-
-import {toast} from 'react-toastify';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 // Extra
 
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import PageTitle from '../../../Layout/AppMain/PageTitle';
-
 import PublicationApprovTable from './publicationApprovTable';
 import ModifyPublicationModal from '../modifyPublication';
 import ApproveRejectPublicationModal from './approveRejectPublication';
 import { connect } from 'react-redux';
 import { callAPI } from '../../../config/genericFunctions';
+import Pagination from '../../Common/pagination';
 
 // Table
 
@@ -28,6 +26,7 @@ class PublPendApprov extends Component {
         const adminMail = props.adminData.Mail
         this.state = {
             publ: [],
+            publToDisplay : [],
             admTokenObj: admTokenObj,
             adminMail: adminMail,
             spaceTypes: [],
@@ -68,11 +67,11 @@ class PublPendApprov extends Component {
     
     // This function will trigger when the component is mounted, to fill the data from the state
     componentDidMount() {
-        this.updateTable();
+        this.loadPublicationsPendingApproval();
         this.loadInfraestructure()
     }
 
-    updateTable = () =>{
+    loadPublicationsPendingApproval = () =>{
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.state.admTokenObj.accesToken,
@@ -86,6 +85,10 @@ class PublPendApprov extends Component {
         };
         objApi.functionAfterSuccess = "getPublicationsPendingApproval";
         callAPI(objApi, this);
+    }
+
+    updateElementsToDisplay = (toDisplayArray) => {
+        this.setState({publToDisplay : toDisplayArray})
     }
 
     // This function will trigger the save function inside the modal to update the values
@@ -113,8 +116,8 @@ class PublPendApprov extends Component {
                     transitionEnter={false}
                     transitionLeave={false}>
                     <Row>
-                        <ModifyPublicationModal ref = {this.modalElement} updateTable={this.updateTable} disableFields = {true}/>
-                        <ApproveRejectPublicationModal ref = {this.modalElementAppRej} updateTable={this.updateTable}/>
+                        <ModifyPublicationModal ref = {this.modalElement} updateTable={this.loadPublicationsPendingApproval} disableFields = {true}/>
+                        <ApproveRejectPublicationModal ref = {this.modalElementAppRej} updateTable={this.loadPublicationsPendingApproval}/>
                         <Col lg="12">
                             <Card className="main-card mb-3">
                                 <CardBody>
@@ -122,6 +125,9 @@ class PublPendApprov extends Component {
                                     <PublicationApprovTable isLoading = {this.state.isLoading} publ={this.state.publ} rejectPublication={this.rejectPublication} editPublication={this.editPublication} approvePublication={this.approvePublication} spaceTypes={this.state.spaceTypes}/>
                                 </CardBody>
                             </Card>
+                        </Col>
+                        <Col lg="12">
+                            {!this.state.isLoading ? (<Pagination originalArray = {this.state.publ} updateElementsToDisplay = {this.updateElementsToDisplay} />) : (null)} 
                         </Col>
                     </Row>
                 </ReactCSSTransitionGroup>

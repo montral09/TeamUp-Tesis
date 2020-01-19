@@ -1,12 +1,13 @@
 import React, { Fragment, Component } from 'react';
-// Extra
+import { connect } from 'react-redux';
 
+// Extra
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import PageTitle from '../../../Layout/AppMain/PageTitle';
 import ModifyPublicationModal from '../modifyPublication';
 import AllPublicationsTable from './AllPublicationsTable'
+import Pagination from '../../Common/pagination';
 import { callAPI } from '../../../config/genericFunctions';
-import { connect } from 'react-redux';
 
 // Table
 
@@ -25,6 +26,7 @@ class AllPublications extends Component {
         const adminMail = props.adminData.Mail
         this.state = {
             publ: [],
+            publToDisplay : [],
             admTokenObj: admTokenObj,
             adminMail: adminMail,
             spaceTypes: [],
@@ -46,6 +48,9 @@ class AllPublications extends Component {
         callAPI(objApi, this);        
     }          
 
+    updateElementsToDisplay = (toDisplayArray) => {
+        this.setState({publToDisplay : toDisplayArray})
+    }
     // This function will trigger when the component is mounted, to fill the data from the state
     componentDidMount() {
         this.loadAllPublications();
@@ -70,7 +75,7 @@ class AllPublications extends Component {
 
     // This function will trigger the save function inside the modal to update the values
     editPublication = (key) => {
-        const publData = this.state.publ.filter(publ => {
+        const publData = this.state.publToDisplay.filter(publ => {
             return publ.IdPublication === key
         });
 
@@ -98,9 +103,12 @@ class AllPublications extends Component {
                             <Card className="main-card mb-3">
                                 <CardBody>
                                     <CardTitle>Publicaciones</CardTitle>
-                                    <AllPublicationsTable isLoading = {this.state.isLoading} publ={this.state.publ} editPublication={this.editPublication} spaceTypes={this.state.spaceTypes} publisherData = {false}/>
+                                    <AllPublicationsTable isLoading = {this.state.isLoading} publ={this.state.publToDisplay} editPublication={this.editPublication} spaceTypes={this.state.spaceTypes} publisherData = {false}/>
                                 </CardBody>
                             </Card>
+                        </Col>
+                        <Col lg="12">
+                            {!this.state.isLoading ? (<Pagination originalArray = {this.state.publ} updateElementsToDisplay = {this.updateElementsToDisplay} />) : (null)} 
                         </Col>
                     </Row>
                 </ReactCSSTransitionGroup>

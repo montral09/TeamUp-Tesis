@@ -34,8 +34,8 @@ class MyMessagesList extends React.Component {
         this.loadMessages();
     }
     changePage = (pageClicked) => {
-        this.setState({ messagesToDisplay: this.filterPaginationArray(this.state.messages, (this.state.currentPage - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked },
-            () => this.setState({ messagesToDisplay: this.filterPaginationArray(this.state.messages, (this.state.currentPage - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked }))
+        this.setState({ messagesToDisplay: this.filterPaginationArray(this.state.messages, (pageClicked - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked },
+            () => this.setState({ messagesToDisplay: this.filterPaginationArray(this.state.messages, (pageClicked - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked }))
     }
 
     filterPaginationArray = (arrayToFilter, startIndex) => {

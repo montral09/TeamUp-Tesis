@@ -1,14 +1,14 @@
 import React, { Fragment, Component } from 'react';
-// Extra
-
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import { connect } from 'react-redux';
+
+// Extra
 import PageTitle from '../../../Layout/AppMain/PageTitle';
 import AllReservationsTable from './AllReservationsTable'
 import { callAPI } from '../../../config/genericFunctions';
-import { connect } from 'react-redux';
+import Pagination from '../../Common/pagination';
 
 // Table
-
 import {
     Row, Col,
     Card, CardBody,
@@ -26,6 +26,7 @@ class AllReservations extends Component {
             admTokenObj: admTokenObj,
             adminMail: adminMail,
             reservations: [],
+            reservationsToDisplay : [],
             isLoading : true
         }
         this.modalElement = React.createRef(); // esto hace unas magias para cambiar el estado de un componente hijo
@@ -39,7 +40,7 @@ class AllReservations extends Component {
         objApi.successMSG = {
             SUCC_FACILITIESOK : '',
         };
-        objApi.functionAfterSuccess = "loadFacilities";
+        objApi.functionAfterSuccess = "loadReservations";
         callAPI(objApi, this); */
         var resObj = {
             Reservations: [
@@ -80,7 +81,9 @@ class AllReservations extends Component {
         this.loadReservations()
     }
 
-
+    updateElementsToDisplay = (toDisplayArray) => {
+        this.setState({publToDisplay : toDisplayArray})
+    }
     // This function will trigger the save function inside the modal to update the values
     editPublication = (key) => {
         const publData = this.state.publ.filter(publ => {
@@ -110,9 +113,12 @@ class AllReservations extends Component {
                             <Card className="main-card mb-3">
                                 <CardBody>
                                     <CardTitle>Reservas</CardTitle>
-                                    <AllReservationsTable elements = {this.state.reservations} isLoading = {this.state.isLoading} />
+                                    <AllReservationsTable elements = {this.state.reservationsToDisplay} isLoading = {this.state.isLoading} />
                                 </CardBody>
                             </Card>
+                        </Col>
+                        <Col lg="12">
+                            {!this.state.isLoading ? (<Pagination originalArray = {this.state.reservations} updateElementsToDisplay = {this.updateElementsToDisplay} />) : (null)} 
                         </Col>
                     </Row>
                 </ReactCSSTransitionGroup>

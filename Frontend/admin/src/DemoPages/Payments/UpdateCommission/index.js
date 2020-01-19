@@ -1,17 +1,15 @@
 import React, { Fragment, Component } from 'react';
-
-// Extra
-
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-import PageTitle from '../../../Layout/AppMain/PageTitle';
-
-import UpdateCommissionTable from './updateCommissionTable';
-import UpdateCommissionConfirmationModal from './updateCommissionConfirmation'
-import { callAPI } from '../../../config/genericFunctions';
 import { connect } from 'react-redux';
 
-// Table
+// Extra
+import PageTitle from '../../../Layout/AppMain/PageTitle';
+import UpdateCommissionTable from './updateCommissionTable';
+import UpdateCommissionConfirmationModal from './updateCommissionConfirmation'
+import Pagination from '../../Common/pagination';
+import { callAPI } from '../../../config/genericFunctions';
 
+// Table
 import {
     Row, Col,
     Card, CardBody,
@@ -27,15 +25,15 @@ class UpdateCommission extends Component {
         const adminMail = props.adminData.Mail
         this.state = {
             paymentsPendingPaid: [],
+            paymentsPendingPaidToDisplay: [],
             admTokenObj: admTokenObj,
             adminMail: adminMail,
             isLoading : true
         }
         this.modalElementUpdate = React.createRef(); // Connects the reference to the modal
-        this.changeCommission = this.changeCommission.bind(this);
     }
 
-    changeCommission (key) {
+    changeCommission = (key) =>{
         var id = key;
         this.modalElementUpdate.current.toggleElementUpdate(this.props.admTokenObj, this.props.adminData, id);  
     }
@@ -44,7 +42,9 @@ class UpdateCommission extends Component {
     componentDidMount() {
         this.loadComissions()
     }
-
+    updateElementsToDisplay = (toDisplayArray) => {
+        this.setState({publToDisplay : toDisplayArray})
+    }
     loadComissions = () =>{
         var objApi = {};
         objApi.objToSend = {
@@ -81,9 +81,12 @@ class UpdateCommission extends Component {
                             <Card className="main-card mb-3">
                                 <CardBody>
                                     <CardTitle>Pendientes de pago</CardTitle>                                    
-                                    <UpdateCommissionTable isLoading = {this.state.isLoading} paymentsPendingPaid={this.state.paymentsPendingPaid} changeCommission={this.changeCommission} />
+                                    <UpdateCommissionTable isLoading = {this.state.isLoading} paymentsPendingPaid={this.state.paymentsPendingPaidToDisplay} changeCommission={this.changeCommission} />
                                 </CardBody>
                             </Card>
+                        </Col>
+                        <Col lg="12">
+                            {!this.state.isLoading ? (<Pagination originalArray = {this.state.paymentsPendingPaid} updateElementsToDisplay = {this.updateElementsToDisplay} />) : (null)} 
                         </Col>
                     </Row>
                 </ReactCSSTransitionGroup>

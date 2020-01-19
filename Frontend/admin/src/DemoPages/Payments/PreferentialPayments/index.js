@@ -1,19 +1,15 @@
 import React, { Fragment, Component } from 'react';
-
-import {toast} from 'react-toastify';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import { connect } from 'react-redux';
 
 // Extra
-
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import PageTitle from '../../../Layout/AppMain/PageTitle';
-
 import PreferentialPaymentsTable from './preferentialPaymentsTable';
 import ApproveRejectPreferentialPaymentModal from './approveRejectPreferentialPayment';
 import { callAPI } from '../../../config/genericFunctions';
-import { connect } from 'react-redux';
+import Pagination from '../../Common/pagination';
 
 // Table
-
 import {
     Row, Col,
     Card, CardBody,
@@ -29,6 +25,7 @@ class PreferentialPayments extends Component {
         const adminMail = props.adminData.Mail
         this.state = {
             preferentialPayments: [],
+            preferentialPaymentsToDisplay: [],
             admTokenObj: admTokenObj,
             adminMail: adminMail,
             isLoading : true
@@ -36,7 +33,11 @@ class PreferentialPayments extends Component {
         this.modalElement = React.createRef(); // Connects the reference to the modal
         this.modalElementAppRej = React.createRef(); // Connects the reference to the modal
     }
-        
+
+    updateElementsToDisplay = (toDisplayArray) => {
+        this.setState({publToDisplay : toDisplayArray})
+    }
+
     // This function will try to approve the payment
     approvePreferentialPayment = (key) =>{
         var paymentData = {
@@ -95,9 +96,12 @@ class PreferentialPayments extends Component {
                             <Card className="main-card mb-3">
                                 <CardBody>
                                     <CardTitle>Pendientes de aprobación</CardTitle>
-                                    <PreferentialPaymentsTable isLoading = {this.state.isLoading} preferentialPayments={this.state.preferentialPayments} rejectPreferentialPayment={this.rejectPreferentialPayment} approvePreferentialPayment={this.approvePreferentialPayment}/>
+                                    <PreferentialPaymentsTable isLoading = {this.state.isLoading} preferentialPayments={this.state.preferentialPaymentsToDisplay} rejectPreferentialPayment={this.rejectPreferentialPayment} approvePreferentialPayment={this.approvePreferentialPayment}/>
                                 </CardBody>
                             </Card>
+                        </Col>
+                        <Col lg="12">
+                            {!this.state.isLoading ? (<Pagination originalArray = {this.state.preferentialPayments} updateElementsToDisplay = {this.updateElementsToDisplay} />) : (null)} 
                         </Col>
                     </Row>
                 </ReactCSSTransitionGroup>

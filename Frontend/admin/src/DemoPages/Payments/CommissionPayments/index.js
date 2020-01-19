@@ -1,6 +1,5 @@
 import React, { Fragment, Component } from 'react';
-
-import {toast} from 'react-toastify';
+import { connect } from 'react-redux';
 
 // Extra
 
@@ -9,8 +8,8 @@ import PageTitle from '../../../Layout/AppMain/PageTitle';
 
 import CommissionPaymentsTable from './commissionPaymentsTable';
 import ApproveRejectCommissionPaymentModal from './approveRejectCommissionPayment';
+import Pagination from '../../Common/pagination';
 import { callAPI } from '../../../config/genericFunctions';
-import { connect } from 'react-redux';
 
 // Table
 
@@ -29,13 +28,17 @@ class CommissionPayments extends Component {
         const adminMail = props.adminData.Mail
         this.state = {
             paymentsPendingConfirmation: [],
+            paymentsPendingConfirmationToDisplay : [],
             admTokenObj: admTokenObj,
             adminMail: adminMail,
             isLoading : true
         }        
         this.modalElementAppRej = React.createRef(); // Connects the reference to the modal
     }
-        
+
+    updateElementsToDisplay = (toDisplayArray) => {
+        this.setState({paymentsPendingConfirmationToDisplay : toDisplayArray})
+    }
     // This function will try to approve the payment
     approveCommissionPayment =(key)=>{
         var paymentData = {
@@ -93,9 +96,12 @@ class CommissionPayments extends Component {
                             <Card className="main-card mb-3">
                                 <CardBody>
                                     <CardTitle>Pendientes de aprobación</CardTitle>
-                                    <CommissionPaymentsTable isLoading = {this.state.isLoading} paymentsPendingConfirmation={this.state.paymentsPendingConfirmation} rejectCommissionPayment={this.rejectCommissionPayment} approveCommissionPayment={this.approveCommissionPayment}/>                                    
+                                    <CommissionPaymentsTable isLoading = {this.state.isLoading} paymentsPendingConfirmation={this.state.paymentsPendingConfirmationToDisplay} rejectCommissionPayment={this.rejectCommissionPayment} approveCommissionPayment={this.approveCommissionPayment}/>                                    
                                 </CardBody>
                             </Card>
+                        </Col>
+                        <Col lg="12">
+                            {!this.state.isLoading ? (<Pagination originalArray = {this.state.paymentsPendingConfirmation} updateElementsToDisplay = {this.updateElementsToDisplay} />) : (null)} 
                         </Col>
                     </Row>
                 </ReactCSSTransitionGroup>

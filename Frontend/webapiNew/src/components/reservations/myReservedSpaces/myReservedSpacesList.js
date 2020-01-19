@@ -41,8 +41,8 @@ class MyReservedSpacesList extends React.Component {
         this.loadMyReservationsMRSL();
     }
     changePage = (pageClicked) => {
-        this.setState({ reservationsToDisplay: this.filterPaginationArray(this.state.reservations, (this.state.currentPage - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked },
-            () => this.setState({ reservationsToDisplay: this.filterPaginationArray(this.state.reservations, (this.state.currentPage - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked }))
+        this.setState({ reservationsToDisplay: this.filterPaginationArray(this.state.reservations, (pageClicked - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked },
+            () => this.setState({ reservationsToDisplay: this.filterPaginationArray(this.state.reservations, (pageClicked - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked }))
     }
 
     filterPaginationArray = (arrayToFilter, startIndex) => {

@@ -1,12 +1,12 @@
 import React, { Fragment, Component } from 'react';
-// Extra
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-import PageTitle from '../../../Layout/AppMain/PageTitle';
-
-import PublisherApprovTable from './PublisherApprovTable';
 import { connect } from 'react-redux';
 
+// Extra
+import PageTitle from '../../../Layout/AppMain/PageTitle';
+import PublisherApprovTable from './PublisherApprovTable';
 import {callAPI} from '../../../config/genericFunctions'
+import Pagination from '../../Common/pagination';
 
 // Table
 
@@ -23,6 +23,7 @@ class AllPublishers extends Component {
         const adminMail = props.adminData.Mail
         this.state = {
             gestPendApr: [],
+            gestPendAprToDisplay : [],
             admTokenObj: admTokenObj,
             adminMail : adminMail
         }
@@ -60,6 +61,10 @@ class AllPublishers extends Component {
         };
         objApi.functionAfterSuccess = "gestPendApp";
         callAPI(objApi, this);      
+    }
+
+    updateElementsToDisplay = (toDisplayArray) => {
+        this.setState({publToDisplay : toDisplayArray})
     }
 
     // This funciton will call the api to submit the publisher
@@ -100,9 +105,12 @@ class AllPublishers extends Component {
                             <Card className="main-card mb-3">
                                 <CardBody>
                                     <CardTitle>Pendientes de aprobación</CardTitle>
-                                    <PublisherApprovTable pubPendApp={this.state.gestPendApr} approvePublisher={this.approvePublisher} approveAllPublishers={this.approveAllPublishers} />
+                                    <PublisherApprovTable pubPendApp={this.state.gestPendAprToDisplay} approvePublisher={this.approvePublisher} approveAllPublishers={this.approveAllPublishers} />
                                 </CardBody>
                             </Card>
+                        </Col>
+                        <Col lg="12">
+                            {!this.state.isLoading ? (<Pagination originalArray = {this.state.gestPendApr} updateElementsToDisplay = {this.updateElementsToDisplay} />) : (null)} 
                         </Col>
                     </Row>
                 </ReactCSSTransitionGroup>

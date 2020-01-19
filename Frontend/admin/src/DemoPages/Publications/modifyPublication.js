@@ -180,7 +180,7 @@ class ModifyPublicationModal extends React.Component {
                             <Label for="Description" sm={2}>Descripción</Label>
                             <Col sm={10}>
                                 <ReactQuill  name="Description" id="Description" value={this.state.publDataChanged.Description || ""} 
-                                onChange={this.handleRichTextChange} readOnly={this.props.disableFields}/>
+                                onChange={() => this.handleRichTextChange} readOnly={this.props.disableFields}/>
                             </Col>
                         </FormGroup>
                         <FormGroup row>
@@ -194,12 +194,12 @@ class ModifyPublicationModal extends React.Component {
                             <Label for="Location" sm={2}>Coordenadas</Label>
                             <Col sm={5}>
                                 <Input type="text" name="Latitude" id="Latitude" disabled= {this.props.disableFields}
-                                    {...(this.state.publDataChanged.Location ? {value :this.state.publDataChanged.Location.Latitude} : {})}
+                                    {...(this.state.publDataChanged.Location ? {value :this.state.publDataChanged.Location.Latitude || ""} : {value:''})}
                                     onChange={this.onChange}/>
                             </Col>
                             <Col sm={5}>
                                 <Input type="text" name="Longitude" id="Longitude" disabled= {this.props.disableFields}
-                                {...(this.state.publDataChanged.Location ? {value :this.state.publDataChanged.Location.Longitude} : {})}
+                                {...(this.state.publDataChanged.Location ? {value :this.state.publDataChanged.Location.Longitude || ""} : {value:''})}
                                  onChange={this.onChange}/>
                             </Col>
                         </FormGroup>

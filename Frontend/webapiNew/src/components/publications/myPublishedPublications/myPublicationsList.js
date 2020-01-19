@@ -71,8 +71,8 @@ class MyPublicationsList extends React.Component {
     }
 
     changePage = (pageClicked) => {
-        this.setState({ publicationsToDisplay: this.filterPaginationArray(this.state.publications, (this.state.currentPage - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked },
-            () => this.setState({ publicationsToDisplay: this.filterPaginationArray(this.state.publications, (this.state.currentPage - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked }))
+        this.setState({ publicationsToDisplay: this.filterPaginationArray(this.state.publications, (pageClicked - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked },
+            () => this.setState({ publicationsToDisplay: this.filterPaginationArray(this.state.publications, (pageClicked - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked }))
     }
 
     filterPaginationArray = (arrayToFilter, startIndex) => {
