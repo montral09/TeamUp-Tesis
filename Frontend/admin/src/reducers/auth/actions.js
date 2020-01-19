@@ -23,7 +23,8 @@ export const logIn = (adminData) =>{
         objApi.functionAfterSuccess = "logIn";
         objApi.functionAfterError = "logIn";
         objApi.errorMSG= {
-            ERR_USRMAILNOTEXIST : 'Datos incorrectos'
+            ERR_USRMAILNOTEXIST : 'Datos incorrectos',
+            ERR_USRWRONGPASS : 'Datos incorrectos'
         }
         objApi.dispatch = dispatch;
         objApi.typeSuccess = LOG_IN;

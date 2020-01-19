@@ -27,6 +27,7 @@ class CreatePublication extends React.Component {
             editObject.currentIDPlan = props.currentIDPlan;
             editObject.IdPlan = props.IdPlan;
             editObject.planPrice = props.planPrice;
+            editObject.stateDescription = props.stateDescription;
             premiumOptionSelected = props.IdPlan
         }
         this.state = {

@@ -31,7 +31,8 @@ class MyPublicationsList extends React.Component {
             IdPlan: null,
             planPrice: null,
             pagination: [1],
-            currentPage: 1
+            currentPage: 1,
+            stateDescription: null
         }
         this.ModalDetailPayment = React.createRef(); // Connects the reference to the modal
     }

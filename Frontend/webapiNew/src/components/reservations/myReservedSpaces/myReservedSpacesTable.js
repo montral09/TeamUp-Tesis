@@ -16,6 +16,7 @@ const MyReservedSpacesTable = (props) =>{
             case translate('payment_w')+' '+translate('comission_w') : isPublisher ? valToRet = <th className="text-center" colSpan='2' key={colName}>{colName}</th> : valToRet = null; break;
             case translate('email_w') : isPublisher ? valToRet = <th className="text-center" key={colName}>{colName}</th> : valToRet = null; break;
             case translate('people_w')  : valToRet = <th className="text-center" key={colName}><i className="fa fa-users" aria-hidden="true" title={colName}></i></th>; break;
+            case translate('custonerName') : isPublisher ? valToRet = <th className="text-center" key={colName}>{colName}</th> : valToRet = null; break;
         }
         return valToRet;
     });
@@ -46,7 +47,7 @@ const MyReservedSpacesTable = (props) =>{
             <tr key={obj.IdReservation}>
                 <td>{obj.IdReservation}</td>
                 <td>{obj.TitlePublication}</td> 
-                <td>{obj.CustomerName}</td>
+                {isPublisher ? <td>{obj.CustomerName}</td> : null}
                 {isPublisher ? <td>{obj.MailCustomer}</td> : null}
                 <td>{obj.People}</td>
                 <td>{obj.DateFromString}</td>
