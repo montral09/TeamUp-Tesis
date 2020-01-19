@@ -79,8 +79,8 @@ class PreferentialPayments extends Component {
         return (
             <Fragment>
                 <PageTitle
-                    heading="Pagos pendientes de confirmacion"
-                    subheading="En esta pantalla se mostrarán todos los pagos pendientes de confirmacion de planes preferenciales."
+                    heading="Pagos plalnes preferenciales"
+                    subheading="En esta pantalla se mostrará la información de pagos de planes preferenciales."
                     icon="pe-7s-drawer icon-gradient bg-happy-itmeo"
                 />
                 <ReactCSSTransitionGroup
@@ -101,7 +101,7 @@ class PreferentialPayments extends Component {
                             </Card>
                         </Col>
                         <Col lg="12">
-                            {!this.state.isLoading ? (<Pagination originalArray = {this.state.preferentialPayments} updateElementsToDisplay = {this.updateElementsToDisplay} />) : (null)} 
+                            {!this.state.isLoading ? (<Pagination originalArray = {this.state.preferentialPaymentsFiltered} updateElementsToDisplay = {this.updateElementsToDisplay} />) : (null)} 
                         </Col>
                     </Row>
                 </ReactCSSTransitionGroup>

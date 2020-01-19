@@ -106,7 +106,11 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         }); 
         bindThis.props.updateTable()
         break;
-        case "getPreferentialPayments" :  bindThis.setState({ 'preferentialPayments': objData.Payments, preferentialPaymentsToDisplay : filterInitialElementsToDisplay(objData.Payments), isLoading : false }); break;
+        case "getPreferentialPayments" :  
+            bindThis.setState({ 'preferentialPayments': objData.Payments, 'preferentialPaymentsFiltered': objData.Payments,
+                preferentialPaymentsToDisplay : filterInitialElementsToDisplay(objData.Payments), 
+                isLoading : false }); 
+        break;
         case "appRejPreferentialPayment" : 
             bindThis.setState({
             modal: !bindThis.state.modal,
@@ -119,8 +123,14 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             var commissions = objData.Commissions;
             var paymentsPendingConfirmation = commissions.filter(commission => {
                 return commission.CommissionState === 'PENDING CONFIRMATION'
-            });                
-            bindThis.setState({ 'paymentsPendingConfirmation': paymentsPendingConfirmation, paymentsPendingConfirmationToDisplay : filterInitialElementsToDisplay(paymentsPendingConfirmation), isLoading : false});
+            });
+            var paymentsComission = commissions.filter(commission => {
+                return commission.CommissionState != 'PENDING CONFIRMATION'
+            });               
+            bindThis.setState({ 'paymentsPendingConfirmation': paymentsPendingConfirmation, 
+                    paymentsPendingConfirmationToDisplay : filterInitialElementsToDisplay(paymentsPendingConfirmation), 
+                    paymentsComission : paymentsComission, paymentsComissionToDisplay : filterInitialElementsToDisplay(paymentsComission),
+                    isLoading : false});
             break;
         case "appRejCommissionPayment" :
             bindThis.setState({
