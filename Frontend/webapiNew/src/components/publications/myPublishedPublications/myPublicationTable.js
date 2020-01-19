@@ -28,6 +28,9 @@ const MyPublicationTable = (props) =>{
     const arrDataList = publications.length ? (
         publications.map( obj => {
             let url = MAIN_URL_WEB+"publications/viewPublication/viewPublication/"+obj.IdPublication;
+            if (obj.PreferentialPlan.StateDescription == null) {
+                obj.PreferentialPlan.StateDescription = ''
+            } 
             var objPayment = {paymentStatus: obj.PreferentialPlan.StateDescription, paymentStatusText: translate('payState_'+obj.PreferentialPlan.StateDescription.replace(/\s/g,'')), paymentAmmount: 
                 obj.PreferentialPlan.Price,plan: obj.PreferentialPlan.Description,paymentDate:obj.PreferentialPlan.PaymentDate, IdPublication: obj.IdPublication, paymentDocument : obj.PreferentialPlan.Evidence};
             return(
@@ -56,7 +59,7 @@ const MyPublicationTable = (props) =>{
                 </td>
                 {obj.State === 'ACTIVE' ? (
                     <>
-                    <td><a href="#" className = "col-md-12" onClick={() => props.editPublication(obj.IdPublication,obj.IdPlan , obj.PreferentialPlan.IdPlan, obj.PreferentialPlan.Price)}> <span><i className="col-md-1 fa fa-pencil-alt"></i></span> {translate('edit_w')}</a></td> 
+                    <td><a href="#" className = "col-md-12" onClick={() => props.editPublication(obj.IdPublication,obj.IdPlan , obj.PreferentialPlan.IdPlan, obj.PreferentialPlan.Price, obj.PreferentialPlan.StateDescription)}> <span><i className="col-md-1 fa fa-pencil-alt"></i></span> {translate('edit_w')}</a></td> 
                     <td><a href="#" onClick={() => props.changePubState(obj.State, obj.IdPublication)}><span><i className="col-md-1 fa fa-pause"></i></span> {translate('pause_w')}</a></td>
                     </>
                 ) : (

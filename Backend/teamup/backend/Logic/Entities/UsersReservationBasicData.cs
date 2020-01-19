@@ -10,10 +10,11 @@ namespace backend.Logic
         public String PublisherMail { get; set; }
         public String PublisherName { get; set; }
         public int PublisherLanguage { get; set; }
+        public int IdPlan { get; set; }
 
         public UsersReservationBasicData() { }
 
-        public UsersReservationBasicData(String cMail, String cName, int cLanguage, String pMail, String pName, int pLanguage)
+        public UsersReservationBasicData(String cMail, String cName, int cLanguage, String pMail, String pName, int pLanguage, int idPlan)
         {
             CustomerMail = cMail;
             CustomerName = cName;
@@ -21,6 +22,7 @@ namespace backend.Logic
             PublisherMail = pMail;
             PublisherName = pName;
             PublisherLanguage = pLanguage;
+            IdPlan = idPlan;
         }
     }
 }

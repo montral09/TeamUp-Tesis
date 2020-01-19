@@ -104,7 +104,7 @@ var module = {
             SUCC_EMAILVALIDATED: 'Correo validado correctamente',
             SUCC_PUBLICATIONUPDATED : 'Su publicación ha sido actualizada correctamente, revise su casilla de correo para más informacion. ',
             SUCC_PUBLICATIONCREATED : 'Su publicación ha sido creada correctamente, revise su casilla de correo para más informacion. ',
-            SUCC_RESERVATIONUPDATED : 'Reserva modificada correctamente',
+            SUCC_RESERVATIONUPDATED1 : 'Reserva modificada correctamente',
             SUCC_RESERVATIONUPDATED : 'Se ha actualizado la reserva',
             SUCC_REVIEWCREATED : 'Calificación realizada correctamente!',
             SUCC_PAYMENTUPDATED : 'Se ha enviado el pago para su procesamiento',
@@ -325,7 +325,10 @@ var module = {
             status_w : 'Estado',
             action_w : 'Acción',
             publications_w : 'Publicaciones',
-            of_w : 'de'
+            of_w : 'de',
+            error404_header: 'La pagina que estabas buscando no se encuentra o hubo un error...',
+            error404_detail : 'En caso de persistir el problema contactarse con ',
+            sessionExpired : 'Su sesion expiro',
         }
     },
     en: {
@@ -403,6 +406,7 @@ var module = {
             SUCC_USRCREATED: 'Usuario creado correctamente, por favor revise su correo para activar la cuenta ',
             SUCC_EMAILVALIDATED: 'Correo validado correctamente',
             ERR_ACTIVATIONCODENOTEXIST: 'Codigo de activacion no existe',
+            SUCC_RESERVATIONUPDATED1 : 'Reservation modified succesfully',
             myMessages_title: 'Mis mensajes',
             elementsNotFound_w: 'No se encontraron elementos',
             publication_w: 'Publicación',
@@ -435,6 +439,9 @@ var module = {
             login_forgotPassword: 'Forgot your password?',
             SUCC_PASSWORDUPDATED: 'Se ha enviado un correo con su nueva password ',
             loading_text_small: 'Loading...',
+            error404_header: 'The page you requested was not found...',
+            error404_detail : 'If error continues please contact to ',
+            sessionExpired : 'Your session has expired',
         }
     }
 }

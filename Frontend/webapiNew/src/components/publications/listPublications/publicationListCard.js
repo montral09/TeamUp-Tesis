@@ -7,10 +7,13 @@ import { withTranslate } from 'react-redux-multilingual'
 class PublicationListCard extends React.Component {
 
  	render() {
-        const {IdPublication, Description, Capacity, HourPrice, DailyPrice, WeeklyPrice, MonthlyPrice, Title, ImagesURL, City, translate} = this.props;
+        const {IdPublication, Description, Capacity, HourPrice, DailyPrice, WeeklyPrice, MonthlyPrice, Title, ImagesURL, City, translate, IsRecommended} = this.props;
 		return (
 			<React.Fragment>
                 <div className="row">
+                    {IsRecommended ? (
+                        <div className="sale">{translate('recommended_w')}</div>
+				    ) : (null)}
                     <div className="image col-md-3">
                         <Link to={`/publications/viewPublication/viewPublication/${IdPublication}`}>
                             <img src={ImagesURL[0]} onError={(e)=>{e.target.onerror = null; e.target.src="../../../images/no-image-available.png"}} alt='No image available' className="" />
@@ -22,9 +25,6 @@ class PublicationListCard extends React.Component {
 							<i data-toggle="tooltip" title={translate('location_w')} className="fas fa-home" aria-hidden="true"></i>{" "+City}&ensp;&nbsp;&nbsp;&nbsp;
 							<i data-toggle="tooltip" title={translate('capacity_w')} className="fas fa-users" aria-hidden="true"></i>{" "+Capacity}<br/>
 				        </div>
-                        <div className="description">
-                            {Description.length < 175 ? (Description) : (Description.substring(0,175)+"...")}<br/>
-                        </div>
                         <div className="price">
                         <br/>
 							<i data-toggle="tooltip" title={translate('hour_w')} className="fas fa-clock" aria-hidden="true"></i>{HourPrice != 0 ? " $" + HourPrice : " -"}&nbsp;&nbsp;&nbsp;&nbsp;

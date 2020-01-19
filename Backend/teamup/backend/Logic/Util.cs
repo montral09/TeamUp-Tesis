@@ -157,27 +157,25 @@ namespace backend.Logic
         /// Calculate remaining amout to be paid
         /// Calculation: [new plan price] * [daysLeft] - [old plan price] * [daysLeft]
         /// </summary>
+        /// <param name="newPlanPrice"></param>
         /// <param name="daysLeft"></param>
         /// <param name="currentPreferentialPlan"></param>
-        /// <param name="newPreferentialPlan"></param>
         /// <param name="preferentialPlans"></param>
         /// <returns> amount to be paid </returns>
-        internal static int RecalculatePrice(int daysLeft, int currentPreferentialPlan, int newPreferentialPlan, List<VOPublicationPlan> preferentialPlans)
+        internal static int RecalculatePrice(int newPlanPrice, int daysLeft, int currentPreferentialPlan, List<VOPublicationPlan> preferentialPlans)
         {
             int currentPlanPricePerDay = 0;
-            int newPlanPricePerDay = 0;
-
+            int newTotalPrice;
             foreach (VOPublicationPlan publicationPlan in preferentialPlans)
             {
                 if (publicationPlan.IdPlan == currentPreferentialPlan)
                 {
                     currentPlanPricePerDay = Convert.ToInt32(publicationPlan.Price / publicationPlan.Days);
-                } else if (publicationPlan.IdPlan == newPreferentialPlan)
-                {
-                    newPlanPricePerDay = Convert.ToInt32(publicationPlan.Price / publicationPlan.Days);
                 }
             }
-            return newPlanPricePerDay * daysLeft - currentPlanPricePerDay * daysLeft;            
+            newTotalPrice = newPlanPrice - currentPlanPricePerDay * daysLeft;
+            
+            return newTotalPrice;            
         }
     }
 }

@@ -16,13 +16,13 @@ namespace backend.Data_Access
         Task<Dictionary<string, string>> CreatePublicationAsync(VORequestCreatePublication voCreatePublication, User user);
         List<VOPublicationAdmin> GetPublicationsPendingApproval(VORequestPublicationPendindApproval voPublicationPendingApproval);
         List<VOPublication> GetPublisherSpaces(string mail);
-        VOPublication GetSpace(int idSpace, User user);
+        VOPublication GetSpace(int idSpace, User user, bool addVisit);
         VOPublicationAdmin UpdateStatePublication(int idPublication, string rejectedreason, int newCodeState, bool isAdmin);
         VOResponseGetPublicationsWithFilters GetPublicationsWithFilters(VORequestGetPublicationsWithFilters voGetPublicationsFilter);
         bool IsFavourite(int idPublication, long idUser);
         List<VOPublication> GetRelatedSpaces(int idPublication, int capacity, int spaceType, string city);
         void UpdateFavorite(VORequestUpdateFavorite voUpdateFavorite, long idUser);
-        Task UpdatePublication(VORequestUpdatePublication voUpdatePublication, User user);
+        Task<Dictionary<string, string>> UpdatePublication(VORequestUpdatePublication voUpdatePublication, User user);
         void CreateReservation(VORequestCreateReservation voCreateReservation, User user, int idPlan);
         List<VOReservationExtended> GetReservationsCustomer(VORequestGetReservationsCustomer voGetReservationsCustomer, long idCustomer);
         List<VOReservationExtended> GetReservationsPublisher(VORequestGetReservationsPublisher voGetReservationsPublisher, long idPublisher);

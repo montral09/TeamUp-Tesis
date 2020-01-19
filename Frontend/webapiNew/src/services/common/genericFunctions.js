@@ -5,7 +5,6 @@ import store from '../../services/store';
 import { MAIN_URL, MAIN_URL_WEB} from './constants';
 
 export const handleErrors = (error, bindThis) => {
-    bindThis.setState({ generalError: true });
     displayErrorMessage("Hubo un error, intente nuevamente");   
     window.open(MAIN_URL_WEB+"error", "_self");
 }
@@ -252,14 +251,13 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
 
 export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>{
     //Check for expired TOKEN
-    switch(objData.responseCode){
-        case "ERR_INVALIDACCESSTOKEN":
-        case "ERR_ACCESSTOKENEXPIRED":
-        case "ERR_REFRESHTOKENEXPIRED":
-        case "ERR_INVALIDREFRESHTOKEN":
+    if (objData.responseCode == 'ERR_INVALIDACCESSTOKEN' || 
+        objData.responseCode == 'ERR_ACCESSTOKENEXPIRED' || 
+        objData.responseCode == 'ERR_REFRESHTOKENEXPIRED' ||
+        objData.responseCode == 'ERR_INVALIDREFRESHTOKEN') {
             handleExpiredToken(objApi, bindThis)
-            break;
-    }
+            return;
+        }  
 
     switch(trigger){
         case "registerUser":
@@ -283,7 +281,7 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
         break;
         case "saveQuestionVP":
             objApi.tabQuestionThis.setState({isLoading : false});
-        break;
+        break;        
         default:
     }
     console.log("objData.responseCode + "+objData.responseCode)
@@ -299,8 +297,13 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
 export const handleExpiredToken = (retryObjApi, bindThis) =>{
     if(retryObjApi.functionAfterSuccess == "updateExpiredToken"){
         // This is the second attempt -> Log off
-        displayErrorMessage("Su sesión expiró, por favor inicie sesión nuevamente");
         store.dispatch(logOut());
+        try {
+            displayErrorMessage (bindThis.props.translate('sessionExpired'));
+        } catch (error) {
+            displayErrorMessage ('Su sesion expiro/ Your session has expired');
+        }
+        
     }else{
         var objApi = {};
         objApi.retryObjApi = retryObjApi;
@@ -310,12 +313,16 @@ export const handleExpiredToken = (retryObjApi, bindThis) =>{
         }
         objApi.fetchUrl = "api/tokens";
         objApi.method = "PUT";
-        objApi.responseSuccess = "SUCC_TOKENSUPDATED";
-        objApi.successMessage = "";
+        objApi.successMSG = {
+            SUCC_TOKENSUPDATED : '',
+        };
         objApi.functionAfterSuccess = "updateExpiredToken";
+        objApi.errorMSG= {
+            ERR_REFRESHTOKENEXPIRED : '',
+        };
+        objApi.functionAfterError = "updateExpiredToken";
         callAPI(objApi, bindThis);
-    }
-
+    }    
 }
 
 export const displayErrorMessage = (message) =>{

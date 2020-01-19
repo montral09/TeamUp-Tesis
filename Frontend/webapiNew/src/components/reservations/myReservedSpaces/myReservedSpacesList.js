@@ -91,7 +91,7 @@ class MyReservedSpacesList extends React.Component {
         objApi.fetchUrl = "api/reservationCustomer";
         objApi.method = "PUT";
         objApi.successMSG = {
-            SUCC_RESERVATIONUPDATED : this.props.translate('SUCC_RESERVATIONUPDATED'),
+            SUCC_RESERVATIONUPDATED : this.props.translate('SUCC_RESERVATIONUPDATED1'),
         };
         objApi.functionAfterSuccess = "confirmEditReservationMRSL";
         objApi.functionAfterError = "confirmEditReservationMRSL";

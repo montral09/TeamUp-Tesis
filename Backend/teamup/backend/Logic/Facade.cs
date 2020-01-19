@@ -591,7 +591,7 @@ namespace backend.Logic
                 {
                    user = users.Find(mail);
                 }
-                VOPublication voPublication = spaces.GetSpace(idPublication, user);
+                VOPublication voPublication = spaces.GetSpace(idPublication, user, true);
 
                 if (voPublication != null)
                 {
@@ -710,27 +710,26 @@ namespace backend.Logic
                 String message = util.ValidAccessToken(voUpdatePublication.AccessToken, voUpdatePublication.Publication.Mail);
                 if (EnumMessages.OK.ToString().Equals(message))
                 {
+                    Dictionary<string, string> publicationInfo;
                     User user = users.Find(voUpdatePublication.Publication.Mail);
-                    await spaces.UpdatePublication(voUpdatePublication, user);
-                    User publisher = spaces.GetPublisherByPublication(voUpdatePublication.Publication.IdPublication);
-                    if (users.AdminMember(voUpdatePublication.Publication.Mail))
-                    {
-                        //Send email to publisher
-                        Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
-                        keyValuePairs[ParamCodes.USER_NAME] = publisher.Name;
-                        keyValuePairs[ParamCodes.PUBLICATION_TITLE] = voUpdatePublication.Publication.Title;
-                        EmailDataGeneric mailData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_PUBLICATION_MODIFIED_ADMIN, publisher.LanguageCode, keyValuePairs);
-                        emailUtil.SendEmailAsync(publisher.Mail, mailData.Body, mailData.Subject);
-                    } else
-                    {
-                        //Send email to admin
-                        Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
-                        keyValuePairs[ParamCodes.PUBLICATION_TITLE] = voUpdatePublication.Publication.Title;
-                        keyValuePairs[ParamCodes.PUBLISHER_EMAIL] = user.Mail;
-                        string mailAdmin = ConfigurationManager.AppSettings["EMAIL_ADMIN"];
-                        EmailDataGeneric mailData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_PUBLICATION_MODIFIED, publisher.LanguageCode, keyValuePairs);
-                        emailUtil.SendEmailAsync(mailAdmin, mailData.Body, mailData.Subject);
-                    }
+                    publicationInfo = await spaces.UpdatePublication(voUpdatePublication, user);
+                    User publisher = spaces.GetPublisherByPublication(voUpdatePublication.Publication.IdPublication);                    
+                    //Send email to publisher
+                    Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
+                    keyValuePairs[ParamCodes.USER_NAME] = publisher.Name;
+                    keyValuePairs[ParamCodes.PUBLICATION_TITLE] = voUpdatePublication.Publication.Title;
+                    keyValuePairs[ParamCodes.DATE_TO] = publicationInfo[ParamCodes.DATE_TO];
+                    keyValuePairs[ParamCodes.AVAILABILITY] = publicationInfo[ParamCodes.AVAILABILITY];
+                    keyValuePairs[ParamCodes.PREFERENTIAL_PLAN] = publicationInfo[ParamCodes.PREFERENTIAL_PLAN];
+                    keyValuePairs[ParamCodes.PRICE] = publicationInfo[ParamCodes.PRICE];
+                    EmailDataGeneric mailDataPublisher = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_PUBLICATION_MODIFIED_ADMIN, publisher.LanguageCode, keyValuePairs);
+                    emailUtil.SendEmailAsync(publisher.Mail, mailDataPublisher.Body, mailDataPublisher.Subject);                    
+                    //Send email to admin                    
+                    keyValuePairs[ParamCodes.PUBLISHER_EMAIL] = user.Mail;
+                    string mailAdmin = ConfigurationManager.AppSettings["EMAIL_ADMIN"];
+                    EmailDataGeneric mailDataAdmin = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_PUBLICATION_MODIFIED, publisher.LanguageCode, keyValuePairs);
+                    emailUtil.SendEmailAsync(mailAdmin, mailDataAdmin.Body, mailDataAdmin.Subject);
+
                     message = EnumMessages.SUCC_PUBLICATIONUPDATED.ToString();
                 }
                 response.responseCode = message;
@@ -904,6 +903,17 @@ namespace backend.Logic
                     UsersReservationBasicData usersData = spaces.UpdateReservation(voUpdateReservation);
                     EmailDataGeneric mailData;
                     string publicationTitle = spaces.GetPublicationTitleByReservationId(voUpdateReservation.IdReservation);
+                    int reservedQuantity;
+                    if (voUpdateReservation.HourFrom != null && voUpdateReservation.HourTo != null)
+                    {
+                        reservedQuantity = Convert.ToInt32(voUpdateReservation.HourTo) - Convert.ToInt32(voUpdateReservation.HourFrom);
+                    }
+                    else
+                    {
+                        reservedQuantity = voUpdateReservation.ReservedQuantity;
+                    }
+                    bool plural = reservedQuantity > 1;
+                    string descriptionReservationPlan = spaces.GetReservationPlanDescriptionEmail(usersData.IdPlan, usersData.CustomerLanguage, plural);
                     Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
                     keyValuePairs[ParamCodes.USER_NAME] = usersData.CustomerName;
                     keyValuePairs[ParamCodes.PUBLICATION_TITLE] = publicationTitle;
@@ -911,6 +921,8 @@ namespace backend.Logic
                     keyValuePairs[ParamCodes.DATE_FROM] = dateFromString;
                     keyValuePairs[ParamCodes.QUANTITY_PEOPLE] = voUpdateReservation.People.ToString();
                     keyValuePairs[ParamCodes.PRICE] = voUpdateReservation.TotalPrice.ToString();
+                    keyValuePairs[ParamCodes.RESERVATION_PLAN] = descriptionReservationPlan;
+                    keyValuePairs[ParamCodes.RESERVED_QUANTITY] = reservedQuantity.ToString();
                     //Send mail to customer
                     mailData = emailUtil.GetFormatMailReservations(EmailFormatCodes.CODE_RESERVATION_MODIFIED_CUSTOMER, usersData.CustomerLanguage, keyValuePairs);
                     emailUtil.SendEmailAsync(usersData.CustomerMail, mailData.Body, mailData.Subject);
@@ -1224,7 +1236,7 @@ namespace backend.Logic
                     UserBasicData publisher = spaces.UpdatePreferentialPaymentAdmin(voUpdatePayment);
                     Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
                     keyValuePairs[ParamCodes.USER_NAME] = publisher.Name;
-                    VOPublication publication = spaces.GetSpace(voUpdatePayment.IdPublication, null);
+                    VOPublication publication = spaces.GetSpace(voUpdatePayment.IdPublication, null, false);
                     keyValuePairs[ParamCodes.PUBLICATION_TITLE] = publication.Title;
                     keyValuePairs[ParamCodes.PROJECT_NAME] = projectName;
                     EmailDataGeneric mailData;

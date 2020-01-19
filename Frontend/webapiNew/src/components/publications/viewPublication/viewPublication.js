@@ -55,7 +55,7 @@ class ViewPublication extends React.Component {
         this.modalReqInfo           = React.createRef(); // Connects the reference to the modal
         this.modalSummaryElement    = React.createRef(); // Connects the reference to the modal
         this.bindFunctions();
-        this.loadPublicationVP(pubID);
+        //this.loadPublicationVP(pubID);
     }
 
     bindFunctions(){
@@ -67,6 +67,7 @@ class ViewPublication extends React.Component {
 
     componentDidMount() {
         this.loadInfraestructureVP();
+        this.loadPublicationVP(this.state.pubID);
         this.setInitialHour();
         window.scrollTo(0, 0);
     }
@@ -468,7 +469,7 @@ class ViewPublication extends React.Component {
                                                                                         <div className="row" id="quickview_product">
                                                                                             <div className="col-md-7 popup-gallery">
                                                                                                 <div className="product-image cloud-zoom">
-                                                                                                    {true === true &&
+                                                                                                    {this.state.pubObj.IsRecommended === true &&
                                                                                                         <div className="sale">{translate('recommended_w')}</div>
                                                                                                     }
                                                                                                     {<InnerImageZoom src={this.state.activeImage.src} />}
