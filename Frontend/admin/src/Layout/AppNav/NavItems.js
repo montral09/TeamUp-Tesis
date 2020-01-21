@@ -50,12 +50,7 @@ export const PaymentNav = [
         icon: 'pe-7s-cash',
         label: 'Pagos Comisiones',        
         to: '#/payments/CommissionPayments',
-    },
-    {
-        icon: 'pe-7s-magic-wand',
-        label: 'Actualizar Pagos Comisiones',        
-        to: '#/payments/UpdateCommissionPayments',
-    },
+    }
 ];
 export const ComponentsNav = [
     {

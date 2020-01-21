@@ -20,9 +20,9 @@ const PublicationApprovTable = ({publ, approvePublication, editPublication, reje
                 <td>{obj.CreationDate}</td>
                 <td>{obj.Title}</td>
                 <td>{obj.Capacity}</td>
-                <td><a onClick={() => { editPublication(obj.IdPublication) }}><i className="lnr lnr-magnifier"></i></a></td>
-                <td><a onClick={() => { approvePublication(obj.IdPublication) }}><i className="lnr lnr-thumbs-up"></i></a></td>
-                <td><a onClick={() => { rejectPublication(obj.IdPublication) }}><i className="lnr lnr-thumbs-down"></i></a></td>
+                <td><a href='javascript:void(0);' onClick={() => { editPublication(obj.IdPublication) }}><i className="lnr lnr-magnifier"></i></a></td>
+                <td><a href='javascript:void(0);' onClick={() => { approvePublication(obj.IdPublication) }}><i className="lnr lnr-thumbs-up"></i></a></td>
+                <td><a href='javascript:void(0);' onClick={() => { rejectPublication(obj.IdPublication) }}><i className="lnr lnr-thumbs-down"></i></a></td>
             </tr>
             )
         })

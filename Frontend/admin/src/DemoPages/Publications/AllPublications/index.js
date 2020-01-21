@@ -25,8 +25,8 @@ class AllPublications extends Component {
         const admTokenObj = props.admTokenObj;
         const adminMail = props.adminData.Mail
         this.state = {
-            publ: [],
-            publToDisplay : [],
+            allPubl: [],
+            allPublToDisplay : [],
             admTokenObj: admTokenObj,
             adminMail: adminMail,
             spaceTypes: [],
@@ -49,7 +49,7 @@ class AllPublications extends Component {
     }          
 
     updateElementsToDisplay = (toDisplayArray) => {
-        this.setState({publToDisplay : toDisplayArray})
+        this.setState({allPublToDisplay : toDisplayArray})
     }
     // This function will trigger when the component is mounted, to fill the data from the state
     componentDidMount() {
@@ -75,7 +75,7 @@ class AllPublications extends Component {
 
     // This function will trigger the save function inside the modal to update the values
     editPublication = (key) => {
-        const publData = this.state.publToDisplay.filter(publ => {
+        const publData = this.state.allPublToDisplay.filter(publ => {
             return publ.IdPublication === key
         });
 
@@ -103,12 +103,12 @@ class AllPublications extends Component {
                             <Card className="main-card mb-3">
                                 <CardBody>
                                     <CardTitle>Publicaciones</CardTitle>
-                                    <AllPublicationsTable isLoading = {this.state.isLoading} publ={this.state.publToDisplay} editPublication={this.editPublication} spaceTypes={this.state.spaceTypes} publisherData = {false}/>
+                                    <AllPublicationsTable isLoading = {this.state.isLoading} publ={this.state.allPublToDisplay} editPublication={this.editPublication} spaceTypes={this.state.spaceTypes} publisherData = {false}/>
                                 </CardBody>
                             </Card>
                         </Col>
                         <Col lg="12">
-                            {!this.state.isLoading ? (<Pagination originalArray = {this.state.publ} updateElementsToDisplay = {this.updateElementsToDisplay} />) : (null)} 
+                            {!this.state.isLoading ? (<Pagination originalArray = {this.state.allPubl} updateElementsToDisplay = {this.updateElementsToDisplay} />) : (null)} 
                         </Col>
                     </Row>
                 </ReactCSSTransitionGroup>

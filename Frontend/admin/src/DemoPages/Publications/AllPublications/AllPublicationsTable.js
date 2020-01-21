@@ -21,7 +21,7 @@ const AllPublicationsTable = ({publ, editPublication, isLoading}) =>{
                 <td>{obj.CreationDate}</td>
                 <td>{obj.Title}</td>
                 <td>{obj.Capacity}</td>
-                <td><a onClick={() => { editPublication(obj.IdPublication) }}><i className="lnr lnr-pencil"></i></a></td>                
+                <td><a href='javascript:void(0);' onClick={() => { editPublication(obj.IdPublication) }}><i className="lnr lnr-pencil"></i></a></td>                
             </tr>
             )
         })

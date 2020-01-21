@@ -385,7 +385,7 @@ class BasicExample extends Component {
                                         <i className="lnr-cog icon-gradient bg-night-fade"/>
                                     </div>
                                     <div className="widget-numbers">
-                                        45.8k
+                                        12.8k
                                     </div>
                                     <div className="widget-subheading">
                                         Total Views
@@ -473,7 +473,7 @@ class BasicExample extends Component {
                                             <i className="lnr-cog text-primary"/>
                                         </div>
                                         <div className="widget-numbers">
-                                            45.8k
+                                            222.8k
                                         </div>
                                         <div className="widget-subheading">
                                             Total Views
@@ -654,7 +654,7 @@ class BasicExample extends Component {
                                             <i className="lnr-cog text-primary"/>
                                         </div>
                                         <div className="widget-numbers">
-                                            45.8k
+                                            333.8k
                                         </div>
                                         <div className="widget-subheading">
                                             Total Views
@@ -836,7 +836,7 @@ class BasicExample extends Component {
                                             <i className="lnr-cog text-primary"/>
                                         </div>
                                         <div className="widget-numbers">
-                                            45.8k
+                                            444.8k
                                         </div>
                                         <div className="widget-subheading">
                                             Total Views
@@ -1016,7 +1016,7 @@ class BasicExample extends Component {
                                         <i className="lnr-cog text-primary"/>
                                     </div>
                                     <div className="widget-numbers">
-                                        45.8k
+                                        555.8k
                                     </div>
                                     <div className="widget-subheading">
                                         Total Views

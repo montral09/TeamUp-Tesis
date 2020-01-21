@@ -1,6 +1,8 @@
 import React, {Component, Fragment} from 'react';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import { connect } from 'react-redux';
 import classnames from 'classnames';
+import {callAPI} from '../../../config/genericFunctions';
 
 import {
     Row, Col,
@@ -25,20 +27,6 @@ import {
     Tooltip,
     LineChart
 } from 'recharts';
-
-import {
-    faAngleUp,
-    faArrowRight,
-    faArrowUp,
-    faArrowLeft,
-    faAngleDown
-} from '@fortawesome/free-solid-svg-icons';
-
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-
-import avatar1 from '../../../assets/utils/images/avatars/1.png';
-
-
 
 const data = [
     {name: 'Page A', uv: 4000, pv: 2400, amt: 2400},
@@ -67,34 +55,71 @@ const data2 = [
     {name: 'Page G', uv: 5349, pv: 3430, amt: 3210},
 ];
 
-export default class AnalyticsDashboard1 extends Component {
-    constructor() {
-        super();
-
+class AnalyticsDashboard1 extends Component {
+    constructor(props) {
+        super(props);
         this.state = {
+            admTokenObj: this.props.admTokenObj,
+            adminData: this.props.adminData,
             dropdownOpen: false,
-            activeTab1: '11',
-
+            arrDataUsers : null,
+            publ : null,
+            allPubl : null
         };
-        this.toggle = this.toggle.bind(this);
-        this.toggle1 = this.toggle1.bind(this);
-
     }
-
-    toggle() {
-        this.setState(prevState => ({
-            dropdownOpen: !prevState.dropdownOpen
-        }));
+    // This function will trigger when the component is mounted, to fill the data from the state
+    componentDidMount() {
+        this.loadUsers();
+        this.loadPublicationsPendingApproval();
+        this.loadAllPublications();
     }
-
-    toggle1(tab) {
-        if (this.state.activeTab1 !== tab) {
-            this.setState({
-                activeTab1: tab
-            });
+    
+    loadUsers = () => {
+        var objApi = {};
+        objApi.objToSend = {
+            Mail: this.state.adminData.Mail,
+            AccessToken: this.state.admTokenObj.accesToken
         }
+        objApi.fetchUrl = "api/users";
+        objApi.method = "POST";
+        objApi.successMSG = {
+            SUCC_USERSOK : '',
+        };
+        objApi.functionAfterSuccess = "getUsers";
+        callAPI(objApi, this);        
     }
 
+    loadPublicationsPendingApproval = () =>{
+        var objApi = {};
+        objApi.objToSend = {
+            "AccessToken": this.state.admTokenObj.accesToken,
+            "AdminMail": this.state.adminData.Mail,
+            "PublicationsPerPage": 50
+        }
+        objApi.fetchUrl = "api/publicationPendingApproval";
+        objApi.method = "POST";
+        objApi.successMSG = {
+            SUCC_PUBLICATIONSOK : '',
+        };
+        objApi.functionAfterSuccess = "getPublicationsPendingApproval";
+        callAPI(objApi, this);
+    }
+
+    loadAllPublications = () =>{
+        var objApi = {};
+        objApi.objToSend = {
+            "AccessToken": this.state.admTokenObj.accesToken,
+            "AdminMail": this.state.adminMail,
+            "PublicationsPerPage": 10                  
+        }
+        objApi.fetchUrl = "api/publications";
+        objApi.method = "POST";
+        objApi.successMSG = {
+            SUCC_PUBLICATIONSOK : '',
+        };
+        objApi.functionAfterSuccess = "getAllPublications";
+        callAPI(objApi, this);
+    }
     render() {
 
         return (
@@ -122,62 +147,69 @@ export default class AnalyticsDashboard1 extends Component {
                                                 <i className="lnr-cog icon-gradient bg-arielle-smile"/>
                                             </div>
                                             <div className="widget-numbers">
-                                                ??
+                                                {this.state.arrDataUsers == null ? ("--") : (this.state.arrDataUsers.length)}
                                             </div>
                                             <div className="widget-subheading">
                                                 Usuarios
+                                            </div>
+                                            <div className="widget-progress-wrapper mt-3">
+                                                {this.state.arrDataUsers == null ? (<Progress className="progress-bar-sm progress-bar-animated-alt" color="primary"
+                                                        value="100"/>) : (null)}
                                             </div>
                                         </div>
                                     </Col>
                                     <Col md="6">
                                         <div className="card mb-3 bg-midnight-bloom widget-chart text-white card-border">
                                             <div className="icon-wrapper rounded">
-                                                <div className="icon-wrapper-bg bg-white opacity-10"/>
-                                                <i className="lnr-screen icon-gradient bg-warm-flame"/>
+                                                    <div className="icon-wrapper-bg bg-dark opacity-9"/>
+                                                <i className="lnr-graduation-hat text-white"/>
                                             </div>
                                             <div className="widget-numbers">
-                                                ??
+                                                {this.state.arrDataUsers == null ? ("--") : (this.state.arrDataUsers.filter(function (element){return element.CheckPublisher == true}).length)}
                                             </div>
                                             <div className="widget-subheading">
                                                 Gestores
+                                            </div>
+                                            <div className="widget-progress-wrapper mt-3">
+                                                {this.state.arrDataUsers == null ? (<Progress className="progress-bar-sm progress-bar-animated-alt" color="primary"
+                                                        value="100"/>) : (null)}
                                             </div>
                                         </div>
                                     </Col>
                                     <Col md="6">
                                         <div className="card mb-3 bg-grow-early widget-chart text-white card-border">
                                             <div className="icon-wrapper rounded">
-                                                <div className="icon-wrapper-bg bg-dark opacity-9"/>
-                                                <i className="lnr-graduation-hat text-white"/>
+                                            <div className="icon-wrapper-bg bg-white opacity-10"/>
+                                                <i className="lnr-screen icon-gradient bg-warm-flame"/>
+
                                             </div>
                                             <div className="widget-numbers">
-                                                ??
+                                            {this.state.allPubl == null ? ("--") : (this.state.allPubl.length)}
                                             </div>
                                             <div className="widget-subheading">
                                                 Publicaciones activas
                                             </div>
+                                            <div className="widget-progress-wrapper mt-3">
+                                                {this.state.allPubl == null ? (<Progress className="progress-bar-sm progress-bar-animated-alt" color="primary"
+                                                        value="100"/>) : (null)}
+                                            </div>
                                         </div>
                                     </Col>
                                     <Col md="6">
-                                        <div className="card mb-3 bg-love-kiss widget-chart card-border">
-                                            <div className="widget-chart-content text-white">
-                                                <div className="icon-wrapper rounded-circle">
-                                                    <div className="icon-wrapper-bg bg-white opacity-4"/>
-                                                    <i className="lnr-cog"/>
-                                                </div>
-                                                <div className="widget-numbers">
-                                                    ??
-                                                </div>
-                                                <div className="widget-subheading">
-                                                    Gestores pendiente aprobacion
-                                                </div>
+                                        <div className="card mb-3 widget-chart card-hover-shadow-2x">
+                                            <div className="icon-wrapper border-light rounded">
+                                                <div className="icon-wrapper-bg bg-light"/>
+                                                <i className="lnr-hourglass icon-gradient bg-love-kiss"> </i>
                                             </div>
-                                            <div className="widget-chart-wrapper">
-                                                <ResponsiveContainer width='100%' aspect={3.0 / 1.0}>
-                                                    <LineChart data={data}
-                                                               margin={{top: 0, right: 5, left: 5, bottom: 0}}>
-                                                        <Line type='monotone' dataKey='pv' stroke='#ffffff' strokeWidth={3}/>
-                                                    </LineChart>
-                                                </ResponsiveContainer>
+                                            <div className="widget-numbers">
+                                                {this.state.publ == null ? ("--") : (this.state.publ.length)}
+                                            </div>
+                                            <div className="widget-subheading">
+                                                Gestores pendientes aprobación
+                                            </div>
+                                            <div className="widget-progress-wrapper mt-3">
+                                                {this.state.publ == null ? (<Progress className="progress-bar-sm progress-bar-animated-alt" color="primary"
+                                                        value="100"/>) : (null)}
                                             </div>
                                         </div>
                                     </Col>
@@ -192,3 +224,13 @@ export default class AnalyticsDashboard1 extends Component {
         )
     }
 }
+
+const mapStateToProps = (state) => {
+    return {
+        login_status: state.loginData.login_status,
+        adminData: state.loginData.adminData,
+        admTokenObj: state.loginData.admTokenObj,
+    }
+}
+
+export default connect(mapStateToProps,null)(AnalyticsDashboard1);

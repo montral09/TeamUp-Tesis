@@ -149,13 +149,6 @@ class ModifyPublicationModal extends React.Component {
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label for="IdUser" sm={2}>Usuario Id</Label>
-                            <Col sm={10}>
-                                <Input type="text" name="IdUser" id="IdUser"
-                                        value={this.state.publDataChanged.IdUser || ""} readOnly/>
-                            </Col>
-                        </FormGroup>
-                        <FormGroup row>
                             <Label for="Mail" sm={2}>Mail</Label>
                             <Col sm={10}>
                                 <Input type="text" name="Mail" id="Mail"

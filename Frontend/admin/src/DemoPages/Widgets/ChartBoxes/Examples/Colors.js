@@ -80,7 +80,7 @@ class BasicExample extends Component {
                                         <i className="lnr-cog text-white"/>
                                     </div>
                                     <div className="widget-numbers">
-                                        45.8k
+                                        43.8k
                                     </div>
                                     <div className="widget-subheading">
                                         Total Views
@@ -241,7 +241,7 @@ class BasicExample extends Component {
                                         <i className="lnr-cog icon-gradient bg-arielle-smile"/>
                                     </div>
                                     <div className="widget-numbers">
-                                        45.8k
+                                        49.8k
                                     </div>
                                     <div className="widget-subheading">
                                         Total Views
@@ -353,7 +353,7 @@ class BasicExample extends Component {
                                             <i className="lnr-cog"/>
                                         </div>
                                         <div className="widget-numbers">
-                                            45.8k
+                                            33.8k
                                         </div>
                                         <div className="widget-subheading">
                                             Total Views
@@ -522,7 +522,7 @@ class BasicExample extends Component {
                                             <i className="lnr-cog text-white"/>
                                         </div>
                                         <div className="widget-numbers">
-                                            45.8k
+                                            47.8k
                                         </div>
                                         <div className="widget-subheading">
                                             Total Views

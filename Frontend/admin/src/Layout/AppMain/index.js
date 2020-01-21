@@ -98,6 +98,21 @@ const AppMain = () => {
                 <Route path="/payments" component={Payments}/>
             </Suspense>
 
+            {/* Dashboards */}
+
+            <Suspense fallback={
+                <div className="loader-container">
+                    <div className="loader-container-inner">
+                        <h6 className="mt-3">
+                                Por favor espere mientras cargamos los datos
+                            <small>Cargando...</small>
+                        </h6>
+                    </div>
+                </div>
+            }>
+                <Route path="/dashboards" component={Dashboards}/>
+            </Suspense>
+            
             {/* Components */}
 
             <Suspense fallback={
@@ -179,28 +194,13 @@ const AppMain = () => {
                 <div className="loader-container">
                     <div className="loader-container-inner">
                         <h6 className="mt-3">
-                            Please wait while we load all the Dashboard Widgets examples
-                            <small>Because this is a demonstration we load at once all the Dashboard Widgets examples. This wouldn't happen in a real live app!</small>
+                            Por favor espere mientras cargamos los datos
+                            <small>Cargando...</small>
                         </h6>
                     </div>
                 </div>
             }>
                 <Route path="/widgets" component={Widgets}/>
-            </Suspense>
-
-            {/* Dashboards */}
-
-            <Suspense fallback={
-                <div className="loader-container">
-                    <div className="loader-container-inner">
-                        <h6 className="mt-3">
-                            Please wait while we load all the Dashboards examples
-                            <small>Because this is a demonstration, we load at once all the Dashboards examples. This wouldn't happen in a real live app!</small>
-                        </h6>
-                    </div>
-                </div>
-            }>
-                <Route path="/dashboards" component={Dashboards}/>
             </Suspense>
 
             <Route exact path="/" render={() => (
