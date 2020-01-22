@@ -25,13 +25,12 @@ class AllPublications extends Component {
         const admTokenObj = props.admTokenObj;
         const adminMail = props.adminData.Mail
         this.state = {
-            allPubl: [],
-            allPublToDisplay : [],
+            allPubl: null,
+            allPublToDisplay : null,
             admTokenObj: admTokenObj,
             adminMail: adminMail,
             spaceTypes: [],
-            facilities: [],
-            isLoading: true
+            facilities: []
         }
         this.modalElement = React.createRef(); // esto hace unas magias para cambiar el estado de un componente hijo
         this.modalElementAppRej = React.createRef();
@@ -58,6 +57,7 @@ class AllPublications extends Component {
     }
 
     loadAllPublications = () =>{
+        this.setState({allPubl: null, allPublToDisplay : null})
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.state.admTokenObj.accesToken,
@@ -103,12 +103,12 @@ class AllPublications extends Component {
                             <Card className="main-card mb-3">
                                 <CardBody>
                                     <CardTitle>Publicaciones</CardTitle>
-                                    <AllPublicationsTable isLoading = {this.state.isLoading} publ={this.state.allPublToDisplay} editPublication={this.editPublication} spaceTypes={this.state.spaceTypes} publisherData = {false}/>
+                                    <AllPublicationsTable isLoading = {this.state.allPubl == null} publ={this.state.allPublToDisplay} editPublication={this.editPublication} spaceTypes={this.state.spaceTypes} publisherData = {false}/>
                                 </CardBody>
                             </Card>
                         </Col>
                         <Col lg="12">
-                            {!this.state.isLoading ? (<Pagination originalArray = {this.state.allPubl} updateElementsToDisplay = {this.updateElementsToDisplay} />) : (null)} 
+                            {this.state.allPubl != null ? (<Pagination originalArray = {this.state.allPubl} updateElementsToDisplay = {this.updateElementsToDisplay} />) : (null)} 
                         </Col>
                     </Row>
                 </ReactCSSTransitionGroup>
