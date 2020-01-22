@@ -1,9 +1,9 @@
 import React from 'react';
 import {Button, Modal, ModalHeader, ModalBody, ModalFooter,
     Form, FormGroup, Label, Input, Col } from 'reactstrap';
-import Login from '../../account/login';
-import { connect } from 'react-redux';
-
+import { displayErrorMessage, displaySuccessMessage } from '../../../services/common/genericFunctions';
+// Multilanguage
+import { withTranslate } from 'react-redux-multilingual'
 
 class ModalResCustPay extends React.Component {
     constructor(props) {
@@ -54,27 +54,29 @@ class ModalResCustPay extends React.Component {
         this.props.rejetPayment();
     }
     render() {
+        const { translate } = this.props;
+
         return (
             <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
-                <ModalHeader toggle={this.toggle}>Estado de pago de reserva por parte del cliente</ModalHeader>
+                <ModalHeader toggle={this.toggle}>{translate('modalResCusPay_header')}</ModalHeader>
                 <ModalBody>
                 <Form>
                     <FormGroup row>
-                        <Label for="reservationPaymentStateText" sm={4}>Estado pago reserva</Label>
+                        <Label for="reservationPaymentStateText" sm={4}>{translate('myReservedSpacesList_custPay_paymentStatusTxt')}</Label>
                         <Col sm={8}>
                             <Input type="text" name="reservationPaymentStateText" id="reservationPaymentStateText"
                                     value={this.state.objPaymentDetails.reservationPaymentStateText} readOnly/>
                         </Col>
                     </FormGroup>
                     <FormGroup row>
-                        <Label for="reservationPaymentAmmount" sm={4}>Monto</Label>
+                        <Label for="reservationPaymentAmmount" sm={4}>{translate('amount_w')}</Label>
                         <Col sm={8}>
                             <Input type="text" name="reservationPaymentAmmount" id="reservationPaymentAmmount"
                                     value={this.state.objPaymentDetails.reservationPaymentAmmount} readOnly/>
                         </Col>
                     </FormGroup>
                     <FormGroup row>
-                        <Label for="reservationpaymentDate" sm={4}>Fecha de pago</Label>
+                        <Label for="reservationpaymentDate" sm={4}>{translate('myReservedSpacesList_custPay_paymentDateTxt')}</Label>
                         <Col sm={8}>
                             <Input type="text" name="reservationpaymentDate" id="reservationpaymentDate"
                                     value={this.state.objPaymentDetails.reservationpaymentDate} readOnly/>
@@ -85,16 +87,16 @@ class ModalResCustPay extends React.Component {
                     <>
                         {this.state.objPaymentDetails.paymentDocument ? (
                             <FormGroup row>
-                                <Label for="paymentDocument" sm={4}>Documento adjunto por el cliente</Label>
+                                <Label for="paymentDocument" sm={4}>{translate('modalResCusPay_documentUploadedByCust')}</Label>
                                 <Col sm={8}>
-                                    <a href={this.state.objPaymentDetails.paymentDocument} target="_blank">Archivo subido</a>
+                                    <a href={this.state.objPaymentDetails.paymentDocument} target="_blank">LINK</a>
                                 </Col>
                             </FormGroup>
                         ) : (null)}
 
                         {this.state.objPaymentDetails.paymentComment ? (
                             <FormGroup row>
-                                <Label for="paymentComment" sm={6}>Comentario del cliente</Label>
+                                <Label for="paymentComment" sm={6}>{translate('modalResCusPay_commentByCust')}</Label>
                                 <Col sm={12}>
                                     <Input type="textarea" name="paymentComment" id="paymentComment"
                                         value={this.state.objPaymentDetails.paymentComment} readOnly/>
@@ -104,14 +106,14 @@ class ModalResCustPay extends React.Component {
                         {this.state.objPaymentDetails.reservationPaymentState == "PENDING CONFIRMATION" ? (
                             <FormGroup row>
                                 <Col sm={12}>
-                                El cliente ha confirmado que ha pagado, por favor valide que esto sea así, en caso contrario seleccione el botón rechazar y la confirmación de pago será rechazada.
+                                    
                                 </Col>
                             </FormGroup>
                         ) : (null)}
                         {this.state.objPaymentDetails.reservationPaymentState == "PAID" ? (
                             <FormGroup row>
                                 <Col sm={12}>
-                                El pago fue confirmado.
+                                    {translate('modalResCusPay_txt3')}
                                 </Col>
                             </FormGroup>
                         ) : (null)}
@@ -119,7 +121,7 @@ class ModalResCustPay extends React.Component {
                     ) : (
                     <FormGroup row>
                         <Col sm={12}>
-                            El cliente aún no realizó el pago.
+                            {translate('modalResCusPay_txt4')}
                         </Col>
                     </FormGroup>
                     )}
@@ -127,16 +129,16 @@ class ModalResCustPay extends React.Component {
                 </Form>
                 </ModalBody>
                 <ModalFooter>
-                    <Button color="link" onClick={this.toggle} disabled= {this.state.buttonIsDisabled}>Cerrar</Button>
+                    <Button color="link" onClick={this.toggle} disabled= {this.state.buttonIsDisabled}>{translate('close_w')}</Button>
                     {this.state.objPaymentDetails.reservationPaymentState == 'PENDING CONFIRMATION' ? (
                         <>
-                        <Button color="red" onClick={this.deny} disabled= {this.state.buttonIsDisabled}>Rechazar
+                        <Button color="red" onClick={this.deny} disabled= {this.state.buttonIsDisabled}>{translate('reject_w')}
                             &nbsp;&nbsp;
                             {this.state.isLoading &&  
                                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                             }
                         </Button>
-                        <Button color="green" onClick={this.save} disabled= {this.state.buttonIsDisabled}>Confirmar
+                        <Button color="green" onClick={this.save} disabled= {this.state.buttonIsDisabled}>{translate('confirm_w')}
                             &nbsp;&nbsp;
                             {this.state.isLoading &&  
                                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
@@ -150,4 +152,4 @@ class ModalResCustPay extends React.Component {
     }
 }
 
-export default ModalResCustPay;
+export default withTranslate(ModalResCustPay);

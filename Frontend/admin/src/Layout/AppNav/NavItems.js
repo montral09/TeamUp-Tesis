@@ -9,6 +9,14 @@ export const PublNav = [
         label: 'Publicaciones',
         to: '#/publications/AllPublications',
     },
+]; 
+
+export const ResNav = [
+    {
+        icon: 'pe-7s-bookmarks',
+        label: 'Reservas',
+        to: '#/reservations/AllReservations',
+    },
 ];  
 
 export const GestNav = [
@@ -42,12 +50,7 @@ export const PaymentNav = [
         icon: 'pe-7s-cash',
         label: 'Pagos Comisiones',        
         to: '#/payments/CommissionPayments',
-    },
-    {
-        icon: 'pe-7s-magic-wand',
-        label: 'Actualizar Pagos Comisiones',        
-        to: '#/payments/UpdateCommissionPayments',
-    },
+    }
 ];
 export const ComponentsNav = [
     {

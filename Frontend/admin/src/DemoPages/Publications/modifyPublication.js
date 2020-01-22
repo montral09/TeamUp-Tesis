@@ -1,11 +1,13 @@
 import React from 'react';
 import {Button, Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
-import { Form, FormGroup, Label, Input, FormText } from 'reactstrap';
+import { Form, FormGroup, Label, Input } from 'reactstrap';
 import {
     Col
 } from 'reactstrap';
 import { callAPI } from '../../config/genericFunctions'
 import Select from 'react-select';
+import 'react-quill/dist/quill.snow.css'; 
+import ReactQuill from 'react-quill';
 
 class ModifyPublicationModal extends React.Component {
     constructor(props) {
@@ -30,14 +32,9 @@ class ModifyPublicationModal extends React.Component {
     }
 
     deleteImage(id){
-        console.log ('delete image id');
-        console.log (id);
-        console.log (this.state.publDataChanged.ImagesURL);
         var tempImgArr = this.state.publDataChanged.ImagesURL.filter(function(value, index){
             return index != id;
         });
-        console.log('tempImgArr')
-        console.log(tempImgArr)
         this.onChange({target :{value:tempImgArr, name:"ImagesURL"}});
     }
 
@@ -118,7 +115,6 @@ class ModifyPublicationModal extends React.Component {
     }
 
     onChange = (e) => {
-        console.log('estado despues de borrar')
         var valueToUpdate = e.target.value;
         this.setState({
             publDataChanged: {
@@ -126,6 +122,15 @@ class ModifyPublicationModal extends React.Component {
               [e.target.name] : valueToUpdate
             }
           }, () => console.log ((this.state)))
+    }
+
+    handleRichTextChange = (value) =>{
+        this.setState({             
+            publDataChanged: {
+            ...this.state.publDataChanged,
+            'Description' : value
+          } 
+        });
     }
 
     render() {
@@ -140,28 +145,21 @@ class ModifyPublicationModal extends React.Component {
                             <Label for="IdPublication" sm={2}>Publicación Id</Label>
                             <Col sm={10}>
                                 <Input type="text" name="IdPublication" id="IdPublication"
-                                        value={this.state.publDataChanged.IdPublication} readOnly/>
-                            </Col>
-                        </FormGroup>
-                        <FormGroup row>
-                            <Label for="IdUser" sm={2}>Usuario Id</Label>
-                            <Col sm={10}>
-                                <Input type="text" name="IdUser" id="IdUser"
-                                        value={this.state.publDataChanged.IdUser} readOnly/>
+                                        value={this.state.publDataChanged.IdPublication || ""} readOnly/>
                             </Col>
                         </FormGroup>
                         <FormGroup row>
                             <Label for="Mail" sm={2}>Mail</Label>
                             <Col sm={10}>
                                 <Input type="text" name="Mail" id="Mail"
-                                        value={this.state.publDataChanged.Mail} readOnly/>
+                                        value={this.state.publDataChanged.Mail || ""} readOnly/>
                             </Col>
                         </FormGroup>
                         <FormGroup row>
                             <Label for="SpaceType" sm={2}>Tipo de espacio</Label>
                             <Col sm={10}>
                                 <Input type="text" name="SpaceType" id="SpaceType" disabled= {this.props.disableFields}
-                                        value={this.state.publDataChanged.SpaceType} onChange={this.onChange}/>
+                                        value={this.state.publDataChanged.SpaceType || ""} onChange={this.onChange}/>
                             </Col>
                         </FormGroup>
                         <FormGroup row>
@@ -174,8 +172,8 @@ class ModifyPublicationModal extends React.Component {
                         <FormGroup row>
                             <Label for="Description" sm={2}>Descripción</Label>
                             <Col sm={10}>
-                                <Input type="textarea" name="Description" id="Description" disabled= {this.props.disableFields}
-                                        value={this.state.publDataChanged.Description || ""} onChange={this.onChange}/>
+                                <ReactQuill  name="Description" id="Description" value={this.state.publDataChanged.Description || ""} 
+                                onChange={() => this.handleRichTextChange} readOnly={this.props.disableFields}/>
                             </Col>
                         </FormGroup>
                         <FormGroup row>
@@ -189,12 +187,12 @@ class ModifyPublicationModal extends React.Component {
                             <Label for="Location" sm={2}>Coordenadas</Label>
                             <Col sm={5}>
                                 <Input type="text" name="Latitude" id="Latitude" disabled= {this.props.disableFields}
-                                    {...(this.state.publDataChanged.Location ? {value :this.state.publDataChanged.Location.Latitude} : {})}
+                                    {...(this.state.publDataChanged.Location ? {value :this.state.publDataChanged.Location.Latitude || ""} : {value:''})}
                                     onChange={this.onChange}/>
                             </Col>
                             <Col sm={5}>
                                 <Input type="text" name="Longitude" id="Longitude" disabled= {this.props.disableFields}
-                                {...(this.state.publDataChanged.Location ? {value :this.state.publDataChanged.Location.Longitude} : {})}
+                                {...(this.state.publDataChanged.Location ? {value :this.state.publDataChanged.Location.Longitude || ""} : {value:''})}
                                  onChange={this.onChange}/>
                             </Col>
                         </FormGroup>

@@ -11,23 +11,17 @@ class UpdateCommissionConfirmationModal extends React.Component {
 
         this.state = {
             modal: false,
-            admTokenObj: {},
-            adminData: {},
             id: 0,
             price: 0,
             isLoading : false,
             buttonIsDisabled: false
         };
-        this.toggleElementUpdate = this.toggleElementUpdate.bind(this);
-        this.saveUpdate = this.saveUpdate.bind(this);
     }
 
-    toggleElementUpdate(admTokenObj, adminData, id) {        
+    toggleElementUpdate = (id) => {        
         this.setState({
             id: id,
             modal: !this.state.modal,
-            admTokenObj: admTokenObj,
-            adminData: adminData,
         });        
     }
 
@@ -49,28 +43,24 @@ class UpdateCommissionConfirmationModal extends React.Component {
         return returnValue;
     }
             
-    saveUpdate() {
+    saveUpdate = () => {
         if (!this.checkRequiredInputs()) {
+            this.toggleLoading(false);
+            this.props.saveUpdatedComission(this.state.id, this.state.price)
+        }
+    }
+
+    toggleLoading = (close) =>{
+        if(close){
+            this.setState({
+                isLoading: !this.state.isLoading, buttonIsDisabled: !this.state.buttonIsDisabled, modal: !this.state.modal
+            });
+        }else{
             this.setState({
                 isLoading: !this.state.isLoading, buttonIsDisabled: !this.state.buttonIsDisabled
-            });        
-            let {Mail} = this.state.adminData;        
-            var objApi = {};    
-            objApi.objToSend = {
-                Mail: Mail,
-                AccessToken: this.state.admTokenObj.accesToken,
-                IdReservation: this.state.id,
-                Price: this.state.price
-            }
-            objApi.fetchUrl = "api/reservationPaymentAdmin";
-            objApi.method = "POST";
-            objApi.successMSG = {
-                SUCC_COMMISSIONUPDATED : 'Pago actualizado correctamente',
-            };
-            objApi.functionAfterSuccess = "editCommission";
-            objApi.functionAfterError = "editCommission"
-            callAPI(objApi, this);
+            });
         }
+
     }
 
     onChange = (e) => {

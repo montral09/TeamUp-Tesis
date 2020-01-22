@@ -214,7 +214,7 @@ class ModalResComPay extends React.Component {
                             <Label for="paymentComment" sm={6}>{translate('comment_w')} ({translate('optional_w')})</Label>
                             <Col sm={12}>
                                 <Input type="textarea" name="paymentComment" id="paymentComment"
-                                    value={this.state.objPaymentDetails.paymentComment} onChange={this.onChange} readOnly={this.state.objPaymentDetails.paymentStatus != "PAID" || this.state.objPaymentDetails.paymentStatus != "CANCELED" ? false : true} />
+                                    value={this.state.objPaymentDetails.paymentComment} onChange={this.onChange} readOnly={this.state.objPaymentDetails.paymentStatus != "PAID" && this.state.objPaymentDetails.paymentStatus != "CANCELED" ? false : true} />
                             </Col>
                         </FormGroup>
                         <FormGroup row>
@@ -223,7 +223,7 @@ class ModalResComPay extends React.Component {
                                     translate('modalResComPay_txt1') +
                                     translate('modalResComPay_txt2')
                                 ) : (
-                                    translate('modalResComPay_txt3')
+                                    this.state.objPaymentDetails.paymentStatus != "CANCELED" ? (translate('modalResComPay_txt3')) : (null)
                                     )}
                             </Col>
                         </FormGroup>

@@ -121,9 +121,9 @@ class ModifyReservationModal extends React.Component {
         if (this.state.resData.PlanSelected === 'Hour') {
             tmpHfs = this.state.resDataChanged.HourFrom; 
             tmpHts = this.state.resDataChanged.HourTo == 0 ? 24 : this.state.resDataChanged.HourTo; 
-            totalPrice = (parseInt(tmpHts-tmpHfs) * parseInt(this.state.pricePlanChosen));
+            totalPrice = (parseInt(tmpHts-tmpHfs) * parseInt(this.state.pricePlanChosen));            
         }else{
-            totalPrice = parseInt(this.state.pricePlanChosen);
+            totalPrice = parseInt(this.state.pricePlanChosen) * parseInt(this.state.resDataChanged.ReservedQuantity);            
         }
         if(this.state.resData.IndividualRent == true && this.state.resDataChanged.People != null){
             totalPrice = totalPrice * parseInt(this.state.resDataChanged.People);
@@ -180,6 +180,7 @@ class ModifyReservationModal extends React.Component {
                     <Form>
                         <FormGroup row>
                         <Label for="DateFrom" sm={4}>{translate('date_w')}</Label>
+                        <Col sm={10}>
                         <DatePicker placeholderText={translate('date_w')}
                             dateFormat="dd-MM-yyyy"
                             selected= {this.state.dateFrom}
@@ -187,7 +188,21 @@ class ModifyReservationModal extends React.Component {
                             onSelect={this.handleChange} //when day is clicked
                             onChange={this.handleChange} //only when value has changed
                         />
+                        </Col>
                         </FormGroup>
+                        {this.state.resData.PlanSelected != 'Hour' ? (
+                            <FormGroup row>
+                                <Label for="ReservedQuantity" sm={8}>
+                                        {this.state.resData.PlanSelected == "Day" ? translate('planChosenQuantityDescriptionDays_w'): ''}
+                                        {this.state.resData.PlanSelected == "Week" ? translate('planChosenQuantityDescriptionWeeks_w'): ''}
+                                        {this.state.resData.PlanSelected == "Month" ? translate('planChosenQuantityDescriptionMonths_w'): ''}
+                                </Label>
+                                <Col sm={10}>
+                                    <Input type="number" name="ReservedQuantity" id="ReservedQuantity"
+                                        value={this.state.resDataChanged.ReservedQuantity} onChange={this.onChange}/>
+                                </Col>
+                            </FormGroup>
+                            ) : (null) }
                         {this.state.resData.PlanSelected == 'Hour' ? (
                             <FormGroup>
                             <div className="cart">

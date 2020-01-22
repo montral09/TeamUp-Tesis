@@ -55,7 +55,7 @@ class ViewPublication extends React.Component {
         this.modalReqInfo           = React.createRef(); // Connects the reference to the modal
         this.modalSummaryElement    = React.createRef(); // Connects the reference to the modal
         this.bindFunctions();
-        this.loadPublicationVP(pubID);
+        //this.loadPublicationVP(pubID);
     }
 
     bindFunctions(){
@@ -67,6 +67,7 @@ class ViewPublication extends React.Component {
 
     componentDidMount() {
         this.loadInfraestructureVP();
+        this.loadPublicationVP(this.state.pubID);
         this.setInitialHour();
         window.scrollTo(0, 0);
     }
@@ -100,9 +101,25 @@ class ViewPublication extends React.Component {
         }
     }
 
+    increaseQuantityPlan() {
+        this.setState({ quantityPlan: parseInt(this.state.quantityPlan) + 1 });
+    }
+
+    decreaseQuantityPlan() {
+        if (parseInt(this.state.quantityPlan) > 1) {
+            this.setState({ quantityPlan: parseInt(this.state.quantityPlan) - 1 });
+        }
+    }
+
     changeQuantityPeople(value) {
         if (parseInt(value) > 0) {
             this.setState({ quantityPeople: parseInt(value) });
+        }
+    }
+
+    changeQuantityPlan(value) {
+        if (parseInt(value) > 0) {
+            this.setState({ quantityPlan: parseInt(value) });
         }
     }
     loadInfraestructureVP = () => {
@@ -205,8 +222,8 @@ class ViewPublication extends React.Component {
         objApi.successMSG = {
             SUCC_RESERVATIONCREATED : "",
         };
-        objApi.functionAfterSuccess = "submitFavoriteVP";
-        objApi.functionAfterError = "submitFavoriteVP";
+        objApi.functionAfterSuccess = "confirmReservationVP";
+        objApi.functionAfterError = "confirmReservationVP";
         objApi.errorMSG= {}
         this.modalSummaryElement.current.changeModalLoadingState(false);
         callAPI(objApi, this);
@@ -214,18 +231,20 @@ class ViewPublication extends React.Component {
 
 
     triggerSummaryModal(){
+        const { translate } = this.props;
         var validObj = this.validateReservation();
         if(validObj.valid){
             var planChosenText = "";
+            var planChosenQuantityDescription = "";
             var tmpHfs = 0;
             var tmpHts = 1;
             switch(this.state.planChosen){
-                case "HourPrice" : planChosenText = "por hora"; tmpHfs = this.state.hourFromSelect; tmpHts = this.state.hourToSelect == 0 ? 24 : this.state.hourToSelect;  break;
-                case "DailyPrice" : planChosenText = "por día"; break;
-                case "WeeklyPrice" : planChosenText = "por semana"; break;
-                case "MonthlyPrice" : planChosenText = "por mes"; break;
+                case "HourPrice" : planChosenText = "por hora"; planChosenQuantityDescription = ""; tmpHfs = this.state.hourFromSelect; tmpHts = this.state.hourToSelect == 0 ? 24 : this.state.hourToSelect;  break;
+                case "DailyPrice" : planChosenText = "por día"; planChosenQuantityDescription = translate('planChosenQuantityDescriptionDays_w'); break;
+                case "WeeklyPrice" : planChosenText = "por semana"; planChosenQuantityDescription = translate('planChosenQuantityDescriptionWeeks_w'); break;
+                case "MonthlyPrice" : planChosenText = "por mes"; planChosenQuantityDescription = translate('planChosenQuantityDescriptionMonths_w'); break;
             }
-            var totalPrice = (parseInt(tmpHts-tmpHfs) * parseInt(this.state.pubObj[this.state.planChosen]));
+            var totalPrice = (parseInt(tmpHts-tmpHfs) * parseInt(this.state.pubObj[this.state.planChosen]) * parseInt(this.state.quantityPlan));
             if(this.state.pubObj.IndividualRent == true){
                 totalPrice = totalPrice * parseInt(this.state.quantityPeople);
             }
@@ -242,6 +261,8 @@ class ViewPublication extends React.Component {
                 date: this.convertDate(this.state.date),
                 quantityPeople : this.state.quantityPeople,
                 totalPrice : totalPrice,
+                planChosenQuantityDescription: planChosenQuantityDescription,
+                quantityPlan: this.state.quantityPlan
             };
             this.modalSummaryElement.current.toggle(summaryObject);
         }else{
@@ -362,7 +383,7 @@ class ViewPublication extends React.Component {
         callAPI(objApi, this);
     }
 
-    saveQuestionVP = (question) => {
+    saveQuestionVP = (question, tabQuestionThis) => {
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,
@@ -377,8 +398,9 @@ class ViewPublication extends React.Component {
         };
         objApi.functionAfterSuccess = "saveQuestionVP";
         objApi.functionAfterError = "saveQuestionVP";
-        objApi.errorMSG= {}
-        this.modalReqInfo.current.changeModalLoadingState(false);
+        objApi.errorMSG= {};
+        objApi.tabQuestionThis = tabQuestionThis;
+        tabQuestionThis.setState({isLoading : true})
         callAPI(objApi, this);
     }
 
@@ -447,7 +469,7 @@ class ViewPublication extends React.Component {
                                                                                         <div className="row" id="quickview_product">
                                                                                             <div className="col-md-7 popup-gallery">
                                                                                                 <div className="product-image cloud-zoom">
-                                                                                                    {true === true &&
+                                                                                                    {this.state.pubObj.IsRecommended === true &&
                                                                                                         <div className="sale">{translate('recommended_w')}</div>
                                                                                                     }
                                                                                                     {<InnerImageZoom src={this.state.activeImage.src} />}
@@ -466,13 +488,13 @@ class ViewPublication extends React.Component {
                                                                                                 <h1 className="product-name">{this.state.pubObj.Title}</h1>
                                                                                                 {this.state.pubObj.Favorite === false && login_status == 'LOGGED_IN' ? (
                                                                                                     <div>
-                                                                                                        <a href="#add_to_wishlist" onClick={this.submitFavoriteVP}><span><i className="fas fa-heart"></i></span> {translate('viewPub_addToFav')}</a>
+                                                                                                        <a href="#" onClick={this.submitFavoriteVP}><span><i className="fas fa-heart"></i></span> {translate('viewPub_addToFav')}</a>
                                                                                                     </div>
                                                                                                 ) : (
                                                                                                         <div>
                                                                                                             {this.state.pubObj.Favorite === true ? (
                                                                                                                 <div>
-                                                                                                                    <a href="#remove_from_wishlist" onClick={this.submitFavoriteVP}><span><i className="fas fa-heart"></i></span>  {translate('viewPub_remToFav')}</a>
+                                                                                                                    <a href="#" onClick={this.submitFavoriteVP}><span><i className="fas fa-heart"></i></span>  {translate('viewPub_remToFav')}</a>
                                                                                                                 </div>
                                                                                                             ) : (null)}
                                                                                                         </div>)}
@@ -486,14 +508,14 @@ class ViewPublication extends React.Component {
                                                                                                     <span> <b>{translate('capacity_w')}: </b></span>{this.state.pubObj.Capacity} {translate('people_w')} <br />
                                                                                                 </div>
                                                                                                 <div className="review">
-                                                                                                    <span><b>{translate('prices_w')}</b><br /></span>
+                                                                                                    <span><b>{translate('prices_w')}</b></span>
                                                                                                 </div>
                                                                                                 <div className="price">
-                                                                                                    <span className="col-md-9 center-column">
-                                                                                                        {this.state.pubObj.HourPrice > 0 && translate('hourlyPrice_w')+": $" + this.state.pubObj.HourPrice + " - "}
-                                                                                                        {this.state.pubObj.DailyPrice > 0 && translate('dailyPrice_w')+" : $" + this.state.pubObj.DailyPrice + " - "}
-                                                                                                        {this.state.pubObj.WeeklyPrice > 0 && translate('weeklyPrice_w')+" : $" + this.state.pubObj.WeeklyPrice + " - "}
-                                                                                                        {this.state.pubObj.MonthlyPrice > 0 && translate('monthlyPrice_w')+" : $" + this.state.pubObj.MonthlyPrice}
+                                                                                                    <span className="col-md-4 center-column">
+                                                                                                        <b>{translate('hour_w')}</b>{this.state.pubObj.HourPrice != 0 ? " $" + this.state.pubObj.HourPrice : " -"}&nbsp;&nbsp;
+                                                                                                        <b>{translate('day_w')}</b>{this.state.pubObj.DailyPrice != 0 ? " $" + this.state.pubObj.DailyPrice : " -"}&nbsp;&nbsp;<br />
+                                                                                                        <b>{translate('week_w')}</b>{this.state.pubObj.WeeklyPrice != 0 ? " $" + this.state.pubObj.WeeklyPrice : " -"}&nbsp;&nbsp;
+                                                                                                        <b>{translate('month_w')}</b>{this.state.pubObj.MonthlyPrice != 0 ? " $" + this.state.pubObj.MonthlyPrice : " -"}&nbsp;&nbsp;
                                                                                                     </span>
                                                                                                 </div>
                                                                                                 <div className="review">
@@ -506,23 +528,48 @@ class ViewPublication extends React.Component {
                                                                                                 </div>
 
                                                                                             </div>
-                                                                                            <div className="review col-md-4" style={{ marginLeft: '60%' }}>
-                                                                                                <div className="title-page">
-                                                                                                    <span style={{ marginLeft: '20%' }}><b>{translate('viewPub_rentNow')}</b></span>
+                                                                                            <div className="review col-md-7">
+                                                                                                <span><h5>{translate('location_w')}</h5><br /></span>
+                                                                                                    {
+                                                                                                        this.state.pubObj &&
+                                                                                                        <Map objGoogleMaps={{ zoom: 17, latitude: this.state.pubObj.Location.Latitude, longitude: this.state.pubObj.Location.Longitude }} />
+                                                                                                    }
                                                                                                 </div>
-
-                                                                                                <div className="col-md-12" style={{ border: '1px solid dodgerBlue' }}>
-                                                                                                    <span><b>Plan</b></span>
+                                                                                            <div className="review col-md-1"></div>
+                                                                                            <div className="review col-md-4"><br />
+                                                                                                <div className="title-page">
+                                                                                                    <h5><span style={{ marginLeft: '20%' }}><b>{translate('viewPub_rentNow')}</b></span></h5>
+                                                                                                </div>
+                                                                                                <br />
+                                                                                                <div className="col-md-12" style={{ border: '0.5px solid dodgerBlue' }}>
+                                                                                                    <span style={{ marginLeft: '10%' }} ><b>Plan</b></span>
                                                                                                     <select style={{ marginLeft: '10%' }} className="browser" id="planChosen" onChange={this.onChange} >
                                                                                                         {this.state.pubObj.HourPrice > 0 && <option value="HourPrice"> {translate('hourlyPrice_w')+": $" + this.state.pubObj.HourPrice}</option>}
                                                                                                         {this.state.pubObj.DailyPrice > 0 && <option value="DailyPrice"> {translate('dailyPrice_w')+": $" +this.state.pubObj.DailyPrice}</option>}
                                                                                                         {this.state.pubObj.WeeklyPrice > 0 && <option value="WeeklyPrice"> {translate('weeklyPrice_w')+": $" + this.state.pubObj.WeeklyPrice}</option>}
                                                                                                         {this.state.pubObj.MonthlyPrice > 0 && <option value="MonthlyPrice"> {translate('monthlyPrice_w')+": $" + this.state.pubObj.MonthlyPrice}</option>}
                                                                                                     </select>
-                                                                                                    {this.state.planChosen == "HourPrice" ? (
+                                                                                                    {this.state.planChosen != "HourPrice" ? (
                                                                                                         <div className="cart">
+                                                                                                            <div style={{ marginLeft: '10%' }} className="add-to-cart d-flex" >
+                                                                                                                <span><b>
+                                                                                                                    {this.state.planChosen == "DailyPrice" ? translate('planChosenQuantityDescriptionDays_w'): ''}
+                                                                                                                    {this.state.planChosen == "WeeklyPrice" ? translate('planChosenQuantityDescriptionWeeks_w'): ''}
+                                                                                                                    {this.state.planChosen == "MonthlyPrice" ? translate('planChosenQuantityDescriptionMonths_w'): ''}
+                                                                                                                </b></span>
+                                                                                                                <div style={{ marginLeft: '10%' }} className="quantity">
+                                                                                                                    <input type="text" name="quantityPlan" id="quantityPlan" size="4" value={this.state.quantityPlan} onChange={(event) => this.changeQuantityPlan(event.target.value)} />
+                                                                                                                    <a id="q_up" onClick={() => this.increaseQuantityPlan()}><i className="fa fa-plus"></i></a>
+                                                                                                                    <a id="q_down" onClick={() => this.decreaseQuantityPlan()}><i className="fa fa-minus"></i></a>
+                                                                                                                </div>
+                                                                                                            </div>                                                                                                            
+                                                                                                         </div>
+                                                                                                        ) : (null) }
+                                                                                                    {this.state.planChosen == "HourPrice" ? (
+                                                                                                        <div style={{ marginLeft: '10%' }} className="cart">
                                                                                                             <div className="add-to-cart d-flex">
-                                                                                                                <span><b>{translate('hour_w')}</b></span>
+                                                                                                                <span style={{marginTop : '5%'}}><b>{translate('hour_w')}</b></span>
+                                                                                                                
                                                                                                                 <div style={{ marginLeft: '8%' }} className="browser">
                                                                                                                     <select style={{ marginLeft: '8%' }} className="browser" id="hourFromSelect" 
                                                                                                                         value={this.state.hourFromSelect} onChange={this.changeHour}>
@@ -533,7 +580,7 @@ class ViewPublication extends React.Component {
                                                                                                                         })}
                                                                                                                     </select>
                                                                                                                 </div>
-                                                                                                                <b style={{ marginLeft: '8%' }}>{translate('to_w')}</b>
+                                                                                                                <b style={{ marginLeft: '8%' ,marginTop : '5%'}}>{translate('to_w')}</b>
                                                                                                                 <div className="browser">
                                                                                                                     <select className="browser" id="hourToSelect" 
                                                                                                                     value={this.state.hourToSelect} onChange={this.changeHour}>
@@ -548,7 +595,7 @@ class ViewPublication extends React.Component {
                                                                                                         </div>
                                                                                                     ) : (null)}
                                                                                                     <div className="cart">
-                                                                                                        <div className="add-to-cart d-flex">
+                                                                                                        <div style={{ marginLeft: '10%' }} className="add-to-cart d-flex">
                                                                                                             <span><b>{translate('date_w')}</b></span>
                                                                                                                 <div style={{ marginLeft: '7%' }} className="browser">
                                                                                                                     <DatePicker placeholderText={translate('date_w')}
@@ -563,7 +610,7 @@ class ViewPublication extends React.Component {
                                                                                                     </div>
                                                                                                     
                                                                                                     <div className={this.state.pubObj.state === 3 ? 'hidden' : 'shown'}>
-                                                                                                        <div className="cart">
+                                                                                                        <div style={{ marginLeft: '10%' }} className="cart">
                                                                                                             <div className="add-to-cart d-flex">
                                                                                                                 <span><b>{translate('people_w')}</b></span>
                                                                                                                 <div style={{ marginLeft: '2%' }} className="quantity">
@@ -628,7 +675,7 @@ class ViewPublication extends React.Component {
                                                                             ) : (null)}
                                                                             {this.state.tabDisplayed === 3 ? (
                                                                                 <div id="tab-questions" className="tab-content">
-                                                                                    <TabQuestions arrQA={this.state.arrQA} login_status={this.props.login_status} saveQuestion={this.saveQuestionVP}
+                                                                                    <TabQuestions arrQA={this.state.arrQA} login_status={this.props.login_status} saveQuestionVP={this.saveQuestionVP}
                                                                                     userData={this.props.userData} isMyPublication={this.state.pubObj.IsMyPublication} triggerModal={this.triggerModal} />
                                                                                 </div>
                                                                             ) : (null)}
@@ -637,12 +684,6 @@ class ViewPublication extends React.Component {
                                                                                     <TabYoutube youtubeUrl={this.state.pubObj.VideoURL}/>
                                                                                 </div>
                                                                             ) : (null)}
-                                                                            
-                                                                            <span><h5>{translate('location_w')}</h5><br /></span>
-                                                                            {
-                                                                                this.state.pubObj &&
-                                                                                <Map objGoogleMaps={{ zoom: 17, latitude: this.state.pubObj.Location.Latitude, longitude: this.state.pubObj.Location.Longitude }} />
-                                                                            }
                                                                             <RelatedPublications relatedPublications={this.state.relatedPublications} redirectToPub={this.redirectToPub} title="Publicaciones relacionadas"/>
                                                                         </div>
                                                                     </div>

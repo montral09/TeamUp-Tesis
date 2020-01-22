@@ -1,16 +1,14 @@
 import React, { Fragment, Component } from 'react';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import { connect } from 'react-redux';
 
 // Extra
-
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import PageTitle from '../../../Layout/AppMain/PageTitle';
-
+import Pagination from '../../Common/pagination';
 import PublisherApprovTable from './PublisherApprovTable';
-import { connect } from 'react-redux';
 import { callAPI } from '../../../config/genericFunctions'
 
 // Table
-
 import {
     Row, Col,
     Card, CardBody,
@@ -26,8 +24,10 @@ class PendienteAprobacion extends Component {
         const adminMail = props.adminData.Mail
         this.state = {
             gestPendApr: [],
+            gestPendAprToDisplay : [],
             admTokenObj: admTokenObj,
-            adminMail: adminMail
+            adminMail: adminMail,
+            isLoading : true
         }
     }
 
@@ -51,6 +51,10 @@ class PendienteAprobacion extends Component {
 
     // This function will trigger when the component is mounted, to fill the data from the state
     componentDidMount() {
+        this.loadPendingPublishers();
+    }
+
+    loadPendingPublishers = () => {
         var objApi = {};
         objApi.objToSend = {
             Mail: this.state.adminMail,
@@ -63,6 +67,10 @@ class PendienteAprobacion extends Component {
         };
         objApi.functionAfterSuccess = "loadPendingPublishers";
         callAPI(objApi, this);
+    }
+
+    updateElementsToDisplay = (toDisplayArray) => {
+        this.setState({publToDisplay : toDisplayArray})
     }
 
     // This funciton will call the api to submit the publisher
@@ -103,9 +111,12 @@ class PendienteAprobacion extends Component {
                             <Card className="main-card mb-3">
                                 <CardBody>
                                     <CardTitle>Pendientes de aprobación</CardTitle>
-                                    <PublisherApprovTable pubPendApp={this.state.gestPendApr} approvePublisher={this.approvePublisher} approveAllPublishers={this.approveAllPublishers} />
+                                    <PublisherApprovTable isLoading = {this.state.isLoading} pubPendApp={this.state.gestPendAprToDisplay} approvePublisher={this.approvePublisher} approveAllPublishers={this.approveAllPublishers} />
                                 </CardBody>
                             </Card>
+                        </Col>
+                        <Col lg="12">
+                            {!this.state.isLoading ? (<Pagination originalArray = {this.state.gestPendApr} updateElementsToDisplay = {this.updateElementsToDisplay} />) : (null)} 
                         </Col>
                     </Row>
                 </ReactCSSTransitionGroup>

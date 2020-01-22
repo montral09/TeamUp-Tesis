@@ -20,12 +20,19 @@ class CreatePublication extends React.Component {
 
     constructor(props) {
         super(props);
-        var pubIsLoading = false;
+        var pubIsLoading = false; var editObject = {}; var premiumOptionSelected = null;
         if(props.publicationID){
             pubIsLoading = true;
+            editObject.publicationID = props.publicationID;
+            editObject.currentIDPlan = props.currentIDPlan;
+            editObject.IdPlan = props.IdPlan;
+            editObject.planPrice = props.planPrice;
+            editObject.stateDescription = props.stateDescription;
+            premiumOptionSelected = props.IdPlan
         }
         this.state = {
             publicationID: props.publicationID,
+            editObject : editObject,
             pubIsLoading : pubIsLoading,
             imagesURL : [],
             currentStep: 1,
@@ -47,7 +54,7 @@ class CreatePublication extends React.Component {
             spaceImages: [],
             reservationTypes: [],
             premiumOptions: [],
-            premiumOptionSelected: null,
+            premiumOptionSelected: premiumOptionSelected,
             HourPrice: 0,
             DailyPrice: 0,
             WeeklyPrice: 0,
@@ -287,6 +294,7 @@ class CreatePublication extends React.Component {
                 SUCC_PUBLICATIONUPDATED : this.props.translate('SUCC_PUBLICATIONUPDATED'),
             };
         }else{
+            objApi.fetchUrl = "api/publication";
             objApi.objToSend = {
                 "AccessToken": this.props.tokenObj.accesToken,
                 "VOPublication": {
@@ -341,7 +349,7 @@ class CreatePublication extends React.Component {
                     </Helmet>
                     {/*SEO Support End */}
                     <Header />
-                        <div className="col-md-9 center-column" id="content">
+                        <div className="col-md-9" id="content">
                             <div className="row">
                                 <div className="col-md-3">
                                     <div className="well">
@@ -361,6 +369,7 @@ class CreatePublication extends React.Component {
 
                             </div>
                         </div>
+                        <br/>
                     <Footer />
                     </>
                 ) : (                

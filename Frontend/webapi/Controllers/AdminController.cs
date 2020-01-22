@@ -30,6 +30,7 @@ namespace webapi.Controllers
                     }
                     else
                     {
+                        voResp = new VOResponseAdminLogin();
                         voResp.responseCode = EnumMessages.ERR_USRWRONGPASS.ToString();
                     }
                 }

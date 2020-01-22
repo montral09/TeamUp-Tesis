@@ -37,7 +37,9 @@ const PictureStyle = {
     width: "100%",
     height: "100%",
     "backgroundRepeat": "no-repeat",
-    "backgroundSize": "100% 100%",
+    "backgroundPositionY": "center",
+    "backgroundPositionX": "center",
+    "backgroundSize" : 'cover'
 }
 
 export default Index;

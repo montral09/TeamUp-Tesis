@@ -4,14 +4,16 @@ using System.Text;
 
 namespace backend.Data_Access.VO.Data
 {
-    public class VOReservation 
-    { 
+    public class VOReservation
+    {
         public int IdPublication { get; set; }
         public string MailCustomer { get; set; }
         public string PlanSelected { get; set; }
         public int ReservedQuantity { get; set; }
         public DateTime DateFrom { get; set; }
         public String DateFromString { get; set; }
+        public DateTime DateTo { get; set; }
+        public String DateToString { get; set; }
         public string HourFrom { get; set; }
         public string HourTo { get; set; }
         public int People { get; set; }
@@ -22,7 +24,7 @@ namespace backend.Data_Access.VO.Data
 
         public VOReservation() { }
 
-        public VOReservation(int idPublication, String mailCustomer, String planSelected, int reservedQuantity, DateTime dateFrom, string dateFromString, string hourFrom, string hourTo,
+        public VOReservation(int idPublication, String mailCustomer, String planSelected, int reservedQuantity, DateTime dateFrom, string dateFromString, DateTime dateTo, string dateToString, string hourFrom, string hourTo,
             int people, string comment, int totalPrice, int state)         
         {
             IdPublication = idPublication;
@@ -31,6 +33,8 @@ namespace backend.Data_Access.VO.Data
             ReservedQuantity = reservedQuantity;
             DateFrom = dateFrom;
             DateFromString = dateFromString;
+            DateTo = dateTo;
+            DateToString = dateToString;
             HourFrom = hourFrom;
             HourTo = hourTo;
             People = people;

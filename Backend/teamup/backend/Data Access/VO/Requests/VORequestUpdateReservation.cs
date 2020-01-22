@@ -14,6 +14,7 @@ namespace backend.Data_Access.VO
         public string HourTo { get; set; }
         public int TotalPrice { get; set; }
         public int People { get; set; }
+        public int ReservedQuantity { get; set; }
 
         public VORequestUpdateReservation() { }
         public VORequestUpdateReservation(int idReservation, string mail, DateTime dateFrom, string hourFrom, string hourTo, int totalPrice, int people, string accessToken)

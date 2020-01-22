@@ -26,7 +26,6 @@ class Browser extends React.Component {
             isLoading : false,
             buttonIsDisabled: false
         };
-        this.startSearch = this.startSearch.bind(this);
     }
     changeValue(text) {
         this.setState({ dropDownValue: text })
@@ -46,7 +45,7 @@ class Browser extends React.Component {
         callAPI(objApi, this);
     }
 
-    startSearch() {
+    startSearch = () => {
         let spaceTypeSelected = this.state.spaceTypeSelected  == "" ? "empty" :this.state.spaceTypeSelected;
         let capacity = this.state.capacity  == "" ? "empty" :this.state.capacity;
         let city = this.state.city  == "" ? "empty" :this.state.city;

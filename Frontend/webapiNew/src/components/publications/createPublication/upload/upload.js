@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
-import { toast } from 'react-toastify';
+import { withTranslate } from 'react-redux-multilingual'
+import { displayErrorMessage, displaySuccessMessage } from '../../../../services/common/genericFunctions'
 import './upload.css';
 import './drag_arrow.png';
 
@@ -20,14 +21,7 @@ class Upload extends React.Component {
     let files = event.target.files // create file object
     if ((this.state.spaceImages.length + this.state.loadedImages.length + files.length) > 7) {
       event.target.value = null // discard selected file
-      toast.error('El maximo de imagenes a subir son 7', {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      displayErrorMessage(this.props.translate('createPub_upload_maxUploadTextError'));
       return false;
 
     }
@@ -45,20 +39,13 @@ class Upload extends React.Component {
       // compare file type find doesn't matach
       if (types.every(type => files[x].type !== type)) {
         // create error message and assign to container   
-        err += files[x].type + ' no es un formato soportado\n';
+        err += files[x].type + this.props.translate('myReservedSpacesList_custPay_errorMsg2');
       }
     };
 
     if (err !== '') { // if message not empty that mean has error 
       event.target.value = null // discard selected file
-      toast.error(err, {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      displayErrorMessage(err);
       return false;
     }
     return true;
@@ -70,19 +57,12 @@ class Upload extends React.Component {
     let err = "";
     for (var x = 0; x < files.length; x++) {
       if (files[x].size > size) {
-        err += files[x].type + ' es demasiado grande, por favor elija una imagen de menor tamaño\n';
+        err += files[x].type + this.props.translate('myReservedSpacesList_custPay_errorMsg3');
       }
     };
     if (err !== '') {
       event.target.value = null
-      toast.error(err, {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      displayErrorMessage(err);
       return false
     }
 
@@ -100,14 +80,7 @@ class Upload extends React.Component {
           this.getBase64(file);
         }
       });
-      toast.success('Imagenes cargadas correctamente. ', {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-    });
+      displaySuccessMessage(this.props.translate('createPub_upload_successMsg'));
     }
   }
 
@@ -146,11 +119,11 @@ class Upload extends React.Component {
     return (
       <Fragment>
         <div className="form-group files">
-          <label>Sube tus fotos (Mínimo 1 - Máximo 7) </label>
+          <label>{this.props.translate('createPub_upload_maxUploadText')} </label>
           <input type="file" name="file" className="form-control" multiple onChange={this.onChange} />
         </div>
       </Fragment>
     )
   }
 }
-export default Upload;
+export default withTranslate(Upload);

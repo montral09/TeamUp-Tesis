@@ -38,6 +38,8 @@ namespace backend.Data_Access.VO.Data
         public bool IsMyPublication { get; set; }
         public int IdPlan { get; set; }
         public VOPreferentialPlan PreferentialPlan { get; set; }
+        public String DateTo { get; set; }
+        public bool IsRecommended { get; set; }
 
         public VOPublication() { }
 
@@ -82,10 +84,10 @@ namespace backend.Data_Access.VO.Data
             City = city;
         }
 
-        public VOPublication(int idPublication, string mail, string namePublisher, string lastNamePublisher, string phone, int spaceType, string creationDate, string title, string description, string address, string city, VOLocationCordinates location,
+        public VOPublication(int idPublication, string mail, string namePublisher, string lastNamePublisher, string phone, int spaceType, string creationDate, string dateTo, string title, string description, string address, string city, VOLocationCordinates location,
              int capacity, string videoURL, int hourPrice, int dailyPrice, int weeklyPrice, int monthlyPrice, string availability,
              List<int> facilities, List<string> imagesURL, string state, int quantityRented, List<VOReview> reviews, int ranking, int totalViews, bool individualRent, int questionsWithoutAnswer,
-             bool isMyPublication, int idPlan, VOPreferentialPlan preferentialPlan)
+             bool isMyPublication, int idPlan, VOPreferentialPlan preferentialPlan, bool isRecommended)
         {
             IdPublication = idPublication;
             Mail = mail;
@@ -94,6 +96,7 @@ namespace backend.Data_Access.VO.Data
             PhonePublisher = phone;
             SpaceType = spaceType;
             CreationDate = creationDate;
+            DateTo = dateTo;
             Title = title;
             Description = description;
             Address = address;
@@ -118,6 +121,7 @@ namespace backend.Data_Access.VO.Data
             IsMyPublication = isMyPublication;
             IdPlan = idPlan;
             PreferentialPlan = preferentialPlan;
+            IsRecommended = isRecommended;
         }
     }
 }

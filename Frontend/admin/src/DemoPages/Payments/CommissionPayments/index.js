@@ -1,6 +1,6 @@
 import React, { Fragment, Component } from 'react';
-
-import {toast} from 'react-toastify';
+import { connect } from 'react-redux';
+import classnames from 'classnames';
 
 // Extra
 
@@ -9,77 +9,147 @@ import PageTitle from '../../../Layout/AppMain/PageTitle';
 
 import CommissionPaymentsTable from './commissionPaymentsTable';
 import ApproveRejectCommissionPaymentModal from './approveRejectCommissionPayment';
+import UpdateCommissionTable from '../CommissionPayments/updateCommissionTable';
+import UpdateCommissionConfirmationModal from '../CommissionPayments/updateCommissionConfirmation'
+import Pagination from '../../Common/pagination';
 import { callAPI } from '../../../config/genericFunctions';
-import { connect } from 'react-redux';
 
 // Table
 
 import {
+    TabContent, TabPane, Nav, NavItem, NavLink,
     Row, Col,
-    Card, CardBody,
-    CardTitle
+    Card, CardBody, CardHeader
 } from 'reactstrap';
 
 class CommissionPayments extends Component {
     constructor(props) {
         super(props);
-        console.log("CommissionPayment - props:")
-        console.log(props);
-        const admTokenObj = props.admTokenObj;
-        const adminMail = props.adminData.Mail
         this.state = {
             paymentsPendingConfirmation: [],
-            admTokenObj: admTokenObj,
-            adminMail: adminMail
-        }        
+            paymentsPendingConfirmationToDisplay: [],
+            paymentsComission: [],
+            paymentsComissionToDisplay: [],
+            paymentsPendingPaid: [],
+            paymentsPendingPaidToDisplay: [],
+            admTokenObj: props.admTokenObj,
+            adminMail: props.adminData.Mail,
+            isLoading: true,
+            isLoading2: true,
+            activeTab: "1",
+            activeTabText: 'Pendientes de aprobación'
+        }
         this.modalElementAppRej = React.createRef(); // Connects the reference to the modal
-        this.approveCommissionPayment  = this.approveCommissionPayment.bind(this);
-        this.rejectCommissionPayment = this.rejectCommissionPayment.bind(this);
-        this.updateTable = this.updateTable.bind(this);
+        this.modalElementUpdate = React.createRef(); // Connects the reference to the modal
+
     }
-        
+
+    updateElementsToDisplay = (toDisplayArray) => {
+        this.setState({ paymentsPendingConfirmationToDisplay: toDisplayArray })
+    }
+    updateElementsToDisplay2 = (toDisplayArray) => {
+        this.setState({ paymentsComissionToDisplay: toDisplayArray })
+    }
+
+    /* Start comissions unpaid */
+    updateElementsToDisplay3 = (toDisplayArray) => {
+        this.setState({ paymentsPendingPaidToDisplay: toDisplayArray })
+    }
+    changeCommission = (key) => {
+        var id = key;
+        this.modalElementUpdate.current.toggleElementUpdate(id);
+    }
+
+    saveUpdatedComission = (id, comissionValue) => {
+        var objApi = {};    
+        objApi.objToSend = {
+            Mail: this.state.adminMail,
+            AccessToken: this.state.admTokenObj.accesToken,
+            IdReservation: id,
+            Price: comissionValue
+        }
+        objApi.fetchUrl = "api/reservationPaymentAdmin";
+        objApi.method = "POST";
+        objApi.successMSG = {
+            SUCC_COMMISSIONUPDATED : 'Pago actualizado correctamente',
+        };
+        objApi.functionAfterSuccess = "editCommission";
+        objApi.functionAfterError = "editCommission"
+        callAPI(objApi, this);
+    }
+    /* End comissions unpaid  */
+
     // This function will try to approve the payment
-    approveCommissionPayment (key) {
+    approveCommissionPayment = (key) => {
         var paymentData = {
             id: key,
             approved: true
         };
-        this.modalElementAppRej.current.toggleAppRej(this.props.admTokenObj, this.props.adminData, paymentData);        
+        this.modalElementAppRej.current.toggleAppRej(this.props.admTokenObj, this.props.adminData, paymentData);
     }
-
-    rejectCommissionPayment (key) {
+    rejectCommissionPayment = (key) => {
         var paymentData = {
             id: key,
             approved: false
         };
-        this.modalElementAppRej.current.toggleAppRej(this.props.admTokenObj, this.props.adminData, paymentData);  
+        this.modalElementAppRej.current.toggleAppRej(this.props.admTokenObj, this.props.adminData, paymentData);
     }
     // This function will trigger when the component is mounted, to fill the data from the state
     componentDidMount() {
-        this.updateTable()
+        this.loadPendingComissions();
+        this.loadCommissionsUnpaid();
     }
 
-    updateTable(){
+    loadPendingComissions = () => {
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.state.admTokenObj.accesToken,
-            "Mail": this.state.adminMail               
+            "Mail": this.state.adminMail
         }
         objApi.fetchUrl = "api/reservationPaymentPublisher";
         objApi.method = "PUT";
         objApi.successMSG = {
-            SUCC_COMMISSIONSSOK : '',
+            SUCC_COMMISSIONSSOK: '',
         };
         objApi.functionAfterSuccess = "getPendingCommissions";
         callAPI(objApi, this);
-    } 
+    }
 
+    loadCommissionsUnpaid = () => {
+        var objApi = {};
+        objApi.objToSend = {
+            "AccessToken": this.state.admTokenObj.accesToken,
+            "Mail": this.state.adminMail
+        }
+        objApi.fetchUrl = "api/reservationPaymentPublisher";
+        objApi.method = "PUT";
+        objApi.successMSG = {
+            SUCC_COMMISSIONSSOK: '',
+        };
+        objApi.functionAfterSuccess = "getCommissionsUnpaid";
+        callAPI(objApi, this);
+    }
+
+    toggle = (tab) => {
+        if (this.state.activeTab !== tab) {
+            var headerText = "";
+            switch (tab) {
+                case "1": headerText = "Pendientes de aprobación"; break;
+                case "2": headerText = "Pendientes de pago"; break;
+                case "3": headerText = "Todos"; break;
+            }
+            this.setState({
+                activeTab: tab,
+                activeTabText: headerText
+            });
+        }
+    }
     render() {
         return (
             <Fragment>
                 <PageTitle
-                    heading="Comisiones pendientes de confirmacion"
-                    subheading="En esta pantalla se mostrarán todos los pagos pendientes de confirmacion de comisiones."
+                    heading="Pago comisiones"
+                    subheading="En esta pantalla se mostrará toda la información de los pagos de comisiones."
                     icon="pe-7s-drawer icon-gradient bg-happy-itmeo"
                 />
                 <ReactCSSTransitionGroup
@@ -90,15 +160,67 @@ class CommissionPayments extends Component {
                     transitionEnter={false}
                     transitionLeave={false}>
                     <Row>
-                        <ApproveRejectCommissionPaymentModal ref = {this.modalElementAppRej} updateTable={this.updateTable}/>
+                        <ApproveRejectCommissionPaymentModal ref={this.modalElementAppRej} updateTable={this.loadPendingComissions} />
                         <Col lg="12">
-                            <Card className="main-card mb-3">
+                            <Card tabs="true" className="mb-3">
+                                <CardHeader className="card-header-tab">
+                                    <div className="card-header-title">
+                                        {this.state.activeTabText}
+                                    </div>
+                                    <Nav>
+                                        <NavItem>
+                                            <NavLink href="javascript:void(0);"
+                                                className={classnames({ active: this.state.activeTab === '1' })}
+                                                onClick={() => {
+                                                    this.toggle('1');
+                                                }}
+                                            >
+                                                Pendientes de aprobación
+                                                </NavLink>
+                                        </NavItem>
+                                        <NavItem>
+                                            <NavLink href="javascript:void(0);"
+                                                className={classnames({ active: this.state.activeTab === '2' })}
+                                                onClick={() => {
+                                                    this.toggle('2');
+                                                }}
+                                            >
+                                                Pendientes de pago
+                                                </NavLink>
+                                        </NavItem>
+                                        <NavItem>
+                                            <NavLink href="javascript:void(0);"
+                                                className={classnames({ active: this.state.activeTab === '3' })}
+                                                onClick={() => {
+                                                    this.toggle('3');
+                                                }}
+                                            >
+                                                Todos
+                                                </NavLink>
+                                        </NavItem>
+                                    </Nav>
+                                </CardHeader>
                                 <CardBody>
-                                    <CardTitle>Pendientes de aprobación</CardTitle>
-                                    <CommissionPaymentsTable paymentsPendingConfirmation={this.state.paymentsPendingConfirmation} rejectCommissionPayment={this.rejectCommissionPayment} approveCommissionPayment={this.approveCommissionPayment}/>                                    
+                                    <TabContent activeTab={this.state.activeTab}>
+                                        <TabPane tabId="1">
+                                            <CommissionPaymentsTable onlyView={false} isLoading={this.state.isLoading} paymentsPendingConfirmation={this.state.paymentsPendingConfirmationToDisplay} rejectCommissionPayment={this.rejectCommissionPayment} approveCommissionPayment={this.approveCommissionPayment} />
+                                            {!this.state.isLoading ? (<Pagination originalArray={this.state.paymentsPendingConfirmation} updateElementsToDisplay={this.updateElementsToDisplay} />) : (null)}
+                                        </TabPane>
+                                        <TabPane tabId="2">
+                                            <UpdateCommissionConfirmationModal ref={this.modalElementUpdate} saveUpdatedComission= {this.saveUpdatedComission}/>
+                                            <UpdateCommissionTable isLoading={this.state.isLoading2} paymentsPendingPaid={this.state.paymentsPendingPaidToDisplay} changeCommission={this.changeCommission} />
+                                            {!this.state.isLoading2 ? (<Pagination originalArray={this.state.paymentsPendingPaid} updateElementsToDisplay={this.updateElementsToDisplay3} />) : (null)}
+                                        </TabPane>
+                                        <TabPane tabId="3">
+                                            <CommissionPaymentsTable onlyView={true} isLoading={this.state.isLoading} paymentsPendingConfirmation={this.state.paymentsComissionToDisplay} rejectCommissionPayment={this.rejectCommissionPayment} approveCommissionPayment={this.approveCommissionPayment} />
+                                            {!this.state.isLoading ? (<Pagination originalArray={this.state.paymentsComission} updateElementsToDisplay={this.updateElementsToDisplay2} />) : (null)}
+                                        </TabPane>
+                                    </TabContent>
+
                                 </CardBody>
                             </Card>
                         </Col>
+
                     </Row>
                 </ReactCSSTransitionGroup>
             </Fragment>
@@ -109,7 +231,7 @@ class CommissionPayments extends Component {
 const mapStateToProps = (state) => {
     return {
         admTokenObj: state.loginData.admTokenObj,
-        adminData : state.loginData.adminData
+        adminData: state.loginData.adminData
     }
 }
 

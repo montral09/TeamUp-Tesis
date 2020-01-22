@@ -1,6 +1,7 @@
 import React from 'react';
 import {Button, Modal, ModalHeader, ModalBody, ModalFooter,
     Form, FormGroup, Label, Input, Col } from 'reactstrap';
+import DatePicker from '../viewPublication/datePicker';
 
 
 class ModalReqInfo extends React.Component {
@@ -11,15 +12,14 @@ class ModalReqInfo extends React.Component {
             modal: false,
             optionalData: {},
             textboxValue: "",
+            dateSelectValue : "",
             isLoading : false,
             buttonIsDisabled: false
         };
-        this.toggle = this.toggle.bind(this);
-        this.save = this.save.bind(this);
         this.changeModalLoadingState = this.changeModalLoadingState.bind(this);
     }
 
-    toggle(optionalData) {
+    toggle = (optionalData) => {
         if(optionalData){
             this.setState({
                 modal: !this.state.modal,
@@ -34,7 +34,7 @@ class ModalReqInfo extends React.Component {
         }
     }
 
-    changeModalLoadingState(closeModal){
+    changeModalLoadingState=(closeModal)=>{
         if(closeModal){
             this.setState({
                 modal: !this.state.modal,
@@ -49,9 +49,9 @@ class ModalReqInfo extends React.Component {
         }
     }
 
-    save() {
+    save = () => {
         if(this.props.modalConfigObj.saveFunction){
-            this.props.triggerSaveModal(this.props.modalConfigObj.saveFunction,{optionValue:this.state.optionValue, textboxValue:this.state.textboxValue })
+            this.props.triggerSaveModal(this.props.modalConfigObj.saveFunction,{optionValue:this.state.optionValue, textboxValue:this.state.textboxValue, dateSelectValue: this.state.dateSelectValue })
         }else{
             this.props.modalSave(this.state.textboxValue);
         }
@@ -61,6 +61,12 @@ class ModalReqInfo extends React.Component {
             [e.target.id]: e.target.value
           })
     }
+    handleDateChange = (e) => {
+        this.setState({
+            dateSelectValue: e
+        });
+    }
+
     render() {
         return (
 
@@ -97,7 +103,21 @@ class ModalReqInfo extends React.Component {
                                 </Col>
                             </FormGroup>
                         ) : (null)}
-
+                        {this.props.modalConfigObj.dateSelectDisplay ? 
+                        (
+                            <FormGroup row>
+                                <Label for="dateSelectValue" sm={8}>{this.props.modalConfigObj.dateSelectLabel}</Label>
+                                <Col sm={12}>
+                                    <DatePicker placeholderText="dd/MM/yyyy"
+                                        dateFormat="dd/MM/yyyy"
+                                        selected={this.state.dateSelectValue}
+                                        minDate={new Date()}
+                                        onSelect={this.handleDateChange} //when day is clicked
+                                        onChange={this.handleDateChange} //only when value has changed
+                                    />
+                                </Col>
+                            </FormGroup>
+                        ) : (null)}
                     </Form>
                     </ModalBody>
                         {this.props.modalConfigObj.login_status == 'LOGGED_IN' ? (

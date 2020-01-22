@@ -2,12 +2,11 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { logOut, updateToken } from '../../services/login/actions';
 import store from '../../services/store';
-import { MAIN_URL, MAIN_URL_WEB} from './constants';
+import { MAIN_URL, MAIN_URL_WEB, MAX_ELEMENTS_PER_TABLE} from './constants';
 
 export const handleErrors = (error, bindThis) => {
-    bindThis.setState({ generalError: true });
+    displayErrorMessage("Hubo un error, intente nuevamente");   
     window.open(MAIN_URL_WEB+"error", "_self");
-    displayErrorMessage("Hubo un error, intente nuevamente");
 }
 
 export const callAPI = (objApi, bindThis) => {
@@ -76,7 +75,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             });
         break;
         case "submitFavoriteVP":
-            bindThis.setState({ pubObj: { ...bindThis.state.pubObj, Favorite: objApi.objToSend.Code === 1 ? true : false } })
+            bindThis.setState({ pubObj: { ...bindThis.state.pubObj, Favorite: objApi.objToSend.Code === 1 ? true : false },pubIsLoading: false })
         break;
         case "confirmReservationVP":
             bindThis.setState({ isLoading: false, buttonIsDisable: false });
@@ -85,7 +84,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         break;
         case "saveAnswerVP":
         case "saveQuestionVP":
-            bindThis.modalReqInfo.current.changeModalLoadingState(true);
+            objApi.tabQuestionThis.setState({isLoading : false});
             bindThis.loadPublicationVP(bindThis.state.pubID);
         break;
 
@@ -112,12 +111,18 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         break;
 
         case "validateEmail":
-            bindThis.setState({isLoading: false});
+            bindThis.setState({isLoading: false, isValid: true});
             bindThis.props.history.push('/account/login');
         break;
 
         case "loadMessages":
-            bindThis.setState({messages: objData.Messages, loadingMessages: false});
+            var newTotalPages = Math.round(parseFloat(objData.Messages.length/MAX_ELEMENTS_PER_TABLE));
+            var newPagination = [];
+            for(var i=1;i<=newTotalPages;i++){
+                newPagination.push(i);
+            }
+            bindThis.setState({ messages: objData.Messages, loadingMessages: false,
+                messagesToDisplay: bindThis.filterPaginationArray(objData.Messages, 0), pagination: newPagination })
         break;
         
         case "saveAnswerMSG":
@@ -149,7 +154,13 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             bindThis.props.history.push('/');
         break;
         case "loadMyReservationsMRSL":
-            bindThis.setState({ reservations: objData.Reservations, loadingReservations: false })
+            var newTotalPages = Math.round(parseFloat(objData.Reservations.length/MAX_ELEMENTS_PER_TABLE));
+            var newPagination = [];
+            for(var i=1;i<=newTotalPages;i++){
+                newPagination.push(i);
+            }
+            bindThis.setState({ reservations: objData.Reservations, loadingReservations: false,
+                reservationsToDisplay: bindThis.filterPaginationArray(objData.Reservations, 0), pagination: newPagination })
         break;
         case "confirmEditReservationMRSL":
             bindThis.modalElement.current.changeModalLoadingState(true);                               
@@ -196,8 +207,8 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         case "loadMyFavoritePublications"   : bindThis.setState({ publications: objData.Publications, loadingPubs: false });   break;
         case "loadSpaceTypesFP"             : bindThis.setState({ spaceTypes: objData.spaceTypes, loadingSpaceTypes: false }); break;
         case "startSearchMP":
-            let newTotalPages = Math.round(parseFloat(objData.TotalPublications/bindThis.state.publicationsPerPage));
-            let newPagination = [];
+            var newTotalPages = Math.round(parseFloat(objData.TotalPublications/bindThis.state.publicationsPerPage));
+            var newPagination = [];
             for(var i=1;i<=newTotalPages;i++){
                 newPagination.push(i);
             }
@@ -227,7 +238,16 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             }
         break;
         case "changePubStateMPL"    : bindThis.loadMyPublications(); break;
-        case "loadMyPublications"   : bindThis.setState({ publications: objData.Publications, loadingPubs: false });   break;
+        case "loadMyPublications"   :
+            var newTotalPages = Math.round(parseFloat(objData.Publications.length/MAX_ELEMENTS_PER_TABLE));
+            var newPagination = [];
+            for(var i=1;i<=newTotalPages;i++){
+                newPagination.push(i);
+            }
+            bindThis.setState({ publications: objData.Publications, loadingPubs: false, 
+                publicationsToDisplay: bindThis.filterPaginationArray(objData.Publications, 0), pagination: newPagination });   
+        
+        break;
         case "confirmPayment"       : bindThis.ModalDetailPayment.current.changeModalLoadingState(true); bindThis.loadMyPublications(); break;
         case "saveComissionPayment":
             bindThis.ModalResComPay.current.changeModalLoadingState(true);
@@ -245,21 +265,26 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         break;
 
         case "loadMyReservationsRP":
-            bindThis.setState({ reservations: objData.Reservations, loadingReservations: false })
+            var newTotalPages = Math.round(parseFloat(objData.Reservations.length/MAX_ELEMENTS_PER_TABLE));
+            var newPagination = [];
+            for(var i=1;i<=newTotalPages;i++){
+                newPagination.push(i);
+            }
+            bindThis.setState({ reservations: objData.Reservations, loadingReservations: false,
+                reservationsToDisplay: bindThis.filterPaginationArray(objData.Reservations, 0), pagination: newPagination })
         break;
     }
 }
 
 export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>{
     //Check for expired TOKEN
-    switch(objData.responseCode){
-        case "ERR_INVALIDACCESSTOKEN":
-        case "ERR_ACCESSTOKENEXPIRED":
-        case "ERR_REFRESHTOKENEXPIRED":
-        case "ERR_INVALIDREFRESHTOKEN":
+    if (objData.responseCode == 'ERR_INVALIDACCESSTOKEN' || 
+        objData.responseCode == 'ERR_ACCESSTOKENEXPIRED' || 
+        objData.responseCode == 'ERR_REFRESHTOKENEXPIRED' ||
+        objData.responseCode == 'ERR_INVALIDREFRESHTOKEN') {
             handleExpiredToken(objApi, bindThis)
-            break;
-    }
+            return;
+        }  
 
     switch(trigger){
         case "registerUser":
@@ -275,6 +300,15 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
             bindThis.toggleButton(); objApi.dispatch({type: objApi.typeError}); 
         break;
         case "deleteUser":bindThis.toggleButton();break;
+        case "confirmReservationVP":
+            bindThis.modalSummaryElement.current.changeModalLoadingState(false);
+        break;
+        case "validateEmail":
+            bindThis.setState({isLoading: false, isvalid: false});
+        break;
+        case "saveQuestionVP":
+            objApi.tabQuestionThis.setState({isLoading : false});
+        break;        
         default:
     }
     console.log("objData.responseCode + "+objData.responseCode)
@@ -290,8 +324,13 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
 export const handleExpiredToken = (retryObjApi, bindThis) =>{
     if(retryObjApi.functionAfterSuccess == "updateExpiredToken"){
         // This is the second attempt -> Log off
-        displayErrorMessage("Su sesión expiró, por favor inicie sesión nuevamente");
         store.dispatch(logOut());
+        try {
+            displayErrorMessage (bindThis.props.translate('sessionExpired'));
+        } catch (error) {
+            displayErrorMessage ('Su sesion expiro/ Your session has expired');
+        }
+        
     }else{
         var objApi = {};
         objApi.retryObjApi = retryObjApi;
@@ -301,12 +340,16 @@ export const handleExpiredToken = (retryObjApi, bindThis) =>{
         }
         objApi.fetchUrl = "api/tokens";
         objApi.method = "PUT";
-        objApi.responseSuccess = "SUCC_TOKENSUPDATED";
-        objApi.successMessage = "";
+        objApi.successMSG = {
+            SUCC_TOKENSUPDATED : '',
+        };
         objApi.functionAfterSuccess = "updateExpiredToken";
+        objApi.errorMSG= {
+            ERR_REFRESHTOKENEXPIRED : '',
+        };
+        objApi.functionAfterError = "updateExpiredToken";
         callAPI(objApi, bindThis);
-    }
-
+    }    
 }
 
 export const displayErrorMessage = (message) =>{

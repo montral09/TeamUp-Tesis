@@ -14,14 +14,10 @@ const initState = {
     messageObj: {},
 }
 
-const loginReducer = (state = initState, action) =>{
-    console.log("action: ");console.log(action);
-    
+const loginReducer = (state = initState, action) =>{    
     let newStateObj = {...state}
     switch(action.type){
         case LOG_IN : 
-            console.log("This is the token obj:");
-            console.log(action.admTokenObj)
             newStateObj = {
                 ...state,
                 login_status: 'LOGGED_IN',
@@ -53,7 +49,6 @@ const loginReducer = (state = initState, action) =>{
             saveState(newStateObj);
         break;
     }
-    console.log("newStateObj: ");console.log(newStateObj);
     return newStateObj;
 }
 

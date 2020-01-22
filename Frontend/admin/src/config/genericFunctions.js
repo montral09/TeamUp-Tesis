@@ -2,7 +2,8 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { logOut, updateToken } from '../reducers/auth/actions';
 import store from './configureStore'
-import { MAIN_URL} from './constants'
+import { MAIN_URL, MAX_ELEMENTS_PER_TABLE} from './constants'
+import { text } from '@fortawesome/fontawesome-svg-core';
 
 export const handleErrors = (error, bindThis) => {
     displayErrorMessage('Hubo un error');
@@ -68,14 +69,17 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             }
             objApi.dispatch({ type: objApi.typeSuccess, adminData: objData.voAdmin, admTokenObj: admTokenObj});            
         break;
+        case "loadReservations":
+            bindThis.setState({ 'reservations': objData.Reservations, reservationsToDisplay: filterInitialElementsToDisplay(objData.Reservations), isLoading : false  })
+        break;
         case "loadPendingPublishers" :
             var sanitizedValues = objData.voUsers.filter(voUsr =>{
                 return voUsr.PublisherValidated == false
             })
-            bindThis.setState({ 'gestPendApr': sanitizedValues })
+            bindThis.setState({ 'gestPendApr': sanitizedValues,'gestPendAprToDisplay': filterInitialElementsToDisplay(sanitizedValues) ,isLoading: false })
         break;
         case "submitPublisher" : bindThis.setState({ gestPendApr: objApi.newArrIfSuccess }); break;
-        case "getUsers" : bindThis.setState ({...bindThis.state, arrData: objData.voUsers}); break;
+        case "getUsers" : bindThis.setState ({...bindThis.state, arrDataUsers: objData.voUsers, arrDataUsersToDisplay: filterInitialElementsToDisplay(objData.voUsers), isLoading: false}); break;
         case "updateUser" : 
             bindThis.setState({ 
                 modal: !bindThis.state.modal,
@@ -84,7 +88,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             }); 
             bindThis.props.updateTable()
             break;
-        case "loadFacilities" : bindThis.setState({ facilities: objData.facilities }); break;
+        case "loadFacilities" : bindThis.setState({ facilities: objData.facilities}); break;
         case "changePublicationTransition" :         
             bindThis.setState({
                 modal: !bindThis.state.modal,
@@ -93,8 +97,8 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             });
             bindThis.props.updateTable(); 
             break;
-        case "getPublicationsPendingApproval" : bindThis.setState({ 'publ': objData.Publications }); break;
-        case "getAllPublications" : bindThis.setState({ 'publ': objData.Publications }); break;
+        case "getPublicationsPendingApproval" : bindThis.setState({ 'publ': objData.Publications,publToDisplay: filterInitialElementsToDisplay(objData.Publications), isLoading : false  }); break;
+        case "getAllPublications" : bindThis.setState({ 'allPubl': objData.Publications, allPublToDisplay: filterInitialElementsToDisplay(objData.Publications), isLoading : false }); break;
         case "editPublication" : 
         bindThis.setState({ 
             modal: !bindThis.state.modal,
@@ -103,7 +107,11 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         }); 
         bindThis.props.updateTable()
         break;
-        case "getPreferentialPayments" :  bindThis.setState({ 'preferentialPayments': objData.Payments }); break;
+        case "getPreferentialPayments" :  
+            bindThis.setState({ 'preferentialPayments': objData.Payments, 'preferentialPaymentsFiltered': objData.Payments,
+                preferentialPaymentsToDisplay : filterInitialElementsToDisplay(objData.Payments), 
+                isLoading : false }); 
+        break;
         case "appRejPreferentialPayment" : 
             bindThis.setState({
             modal: !bindThis.state.modal,
@@ -116,8 +124,14 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             var commissions = objData.Commissions;
             var paymentsPendingConfirmation = commissions.filter(commission => {
                 return commission.CommissionState === 'PENDING CONFIRMATION'
-            });                
-            bindThis.setState({ 'paymentsPendingConfirmation': paymentsPendingConfirmation });
+            });
+            var paymentsComission = commissions.filter(commission => {
+                return commission.CommissionState != 'PENDING CONFIRMATION'
+            });               
+            bindThis.setState({ 'paymentsPendingConfirmation': paymentsPendingConfirmation, 
+                    paymentsPendingConfirmationToDisplay : filterInitialElementsToDisplay(paymentsPendingConfirmation), 
+                    paymentsComission : paymentsComission, paymentsComissionToDisplay : filterInitialElementsToDisplay(paymentsComission),
+                    isLoading : false});
             break;
         case "appRejCommissionPayment" :
             bindThis.setState({
@@ -132,35 +146,58 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             var paymentsPendingPaid = commissions.filter(commission => {
                 return commission.CommissionState === 'PENDING PAYMENT'
             });                
-            bindThis.setState({ 'paymentsPendingPaid': paymentsPendingPaid });
+            bindThis.setState({ 'paymentsPendingPaid': paymentsPendingPaid , paymentsPendingPaidToDisplay : filterInitialElementsToDisplay(paymentsPendingPaid), isLoading2 : false});
             break;
         case "editCommission" :
-            bindThis.setState({
-                modal: !bindThis.state.modal,
-                isLoading: !bindThis.state.isLoading, 
-                buttonIsDisabled: !bindThis.state.buttonIsDisabled
-            });
-            bindThis.props.updateTable(); 
+            bindThis.modalElementUpdate.current.toggleLoading(true);
+            bindThis.loadCommissionsUnpaid(); 
             break;
         case "gestPendApp":
             var sanitizedValues = objData.voUsers.filter(voUsr =>{
                 return voUsr.PublisherValidated == false
             })
-            bindThis.setState({ 'gestPendApr': sanitizedValues })
+            bindThis.setState({ 'gestPendApr': sanitizedValues , 'gestPendAprToDisplay': filterInitialElementsToDisplay(sanitizedValues) })
             break;
     } 
 }
 
-export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>{
-    //Check for expired TOKEN
-    switch(objData.responseCode){
-        case "ERR_INVALIDACCESSTOKEN":
-        case "ERR_ACCESSTOKENEXPIRED":
-        case "ERR_REFRESHTOKENEXPIRED":
-        case "ERR_INVALIDREFRESHTOKEN":
-            handleExpiredToken(objApi, bindThis)
-            break;
+export const filterInitialElementsToDisplay = (originalArray) => {
+    return originalArray.slice(0, MAX_ELEMENTS_PER_TABLE)
+}
+
+// This function will translate the diferent status to text
+export const translateStates = (states) => {
+
+    var textToReturn = "";
+    switch(states){
+        case "ACTIVE": textToReturn="Activo"; break;
+        case "FINISHED": textToReturn="Finalizado"; break;
+        case "REJECTED": textToReturn="Rechazado"; break;
+        case "PAUSED A": textToReturn="Pausado Admin"; break;
+        case "PAUSED P": textToReturn="Pausado Gestor"; break;
+        case "NOT VALIDATED" : textToReturn="Sin validar"; break;
+        case "PENDING": textToReturn="Pendiente"; break;
+        case "RESERVED": textToReturn="Reservado"; break;
+        case "IN PROGRESS": textToReturn="En progreso"; break;
+        case "CANCELED": textToReturn="Cancelado"; break;
+        case "PENDING PAYMENT" : textToReturn="Pendiente de pago"; break;
+        case "PENDING CONFIRMATION": textToReturn="Pendiente de confirmar"; break;
+        case "PAID": textToReturn="Pago"; break;
     }
+    return textToReturn;
+}
+
+export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>{
+
+    //Check for expired TOKEN
+    if (objData.responseCode == 'ERR_INVALIDACCESSTOKEN' || 
+        objData.responseCode == 'ERR_ACCESSTOKENEXPIRED' || 
+        objData.responseCode == 'ERR_REFRESHTOKENEXPIRED' ||
+        objData.responseCode == 'ERR_INVALIDREFRESHTOKEN') {
+            displayErrorMessage("Su sesión expiró, por favor inicie sesión nuevamente");
+            store.dispatch(logOut());
+            return;
+        }  
     switch(trigger){
         case "logIn":
             bindThis.toggleButton();
@@ -176,10 +213,7 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
             });
         break;
         case "editCommission":
-            bindThis.setState({
-                isLoading: !bindThis.state.isLoading, 
-                buttonIsDisabled: !bindThis.state.buttonIsDisabled 
-            });
+            bindThis.modalElementUpdate.current.toggleLoading(false);
         default:
     }
     if(objData.responseCode && objApi.errorMSG && objData.responseCode in objApi.errorMSG && objApi.errorMSG[objData.responseCode] && objApi.errorMSG[objData.responseCode] != ""){
@@ -203,8 +237,10 @@ export const handleExpiredToken = (retryObjApi, bindThis) =>{
         }
         objApi.fetchUrl = "api/tokens";
         objApi.method = "PUT";
-        objApi.responseSuccess = "SUCC_TOKENSUPDATED";
-        objApi.successMessage = "";
+        objApi.successMSG = {
+            SUCC_TOKENSUPDATED : '',
+        };
+        objApi.functionAfterError = "updateExpiredToken"
         objApi.functionAfterSuccess = "updateExpiredToken";
         callAPI(objApi, bindThis);
     }

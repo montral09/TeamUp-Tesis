@@ -28,6 +28,9 @@ namespace webapi.Controllers
             catch (GeneralException e)
             {
                 return InternalServerError(new Exception(e.Codigo));
+            } catch (Exception e)
+            {
+                return InternalServerError(new Exception("Error"));
             }
         }
 

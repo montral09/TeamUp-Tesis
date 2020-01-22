@@ -1,9 +1,12 @@
 import React, { Fragment, Component } from 'react';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import { connect } from 'react-redux';
+
+// Extra
 import PageTitle from '../../../Layout/AppMain/PageTitle';
 import AllUsersTable from './AllUsersTable';
 import ModifyUserModal from './ModifyUser';
-import { connect } from 'react-redux';
+import Pagination from '../../Common/pagination';
 import { callAPI } from '../../../config/genericFunctions'
 
 // Table
@@ -17,24 +20,25 @@ class AllUsers extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            arrData: [],
+            arrDataUsers: [],
+            arrDataUsersToDisplay: [],
             admTokenObj: this.props.admTokenObj,
-            adminData: this.props.adminData
+            adminData: this.props.adminData,
+            isLoading : true,
         }
         this.modalElement = React.createRef(); // esto hace unas magias para cambiar el estado de un componente hijo
-        this.updateTable = this.updateTable.bind(this);
     }
     
     // This function will trigger the save function inside the modal to update the values
     editUser = (key) => {
-        const userData = this.state.arrData.filter(usr => {
+        const userData = this.state.arrDataUsers.filter(usr => {
             return usr.Mail === key
         });
 
         this.modalElement.current.toggle(userData[0],this.state.admTokenObj,this.state.adminData);
     }
 
-    updateTable(){
+    loadUsers = () => {
         var objApi = {};
         objApi.objToSend = {
             Mail: this.state.adminData.Mail,
@@ -49,9 +53,13 @@ class AllUsers extends Component {
         callAPI(objApi, this);        
     }
 
+    updateElementsToDisplay = (toDisplayArray) => {
+        this.setState({arrDataUsersToDisplay : toDisplayArray})
+    }
+
     // This function will trigger when the component is mounted, to fill the data from the state
     componentDidMount() {
-        this.updateTable();
+        this.loadUsers();
     }
 
     render() {
@@ -71,14 +79,17 @@ class AllUsers extends Component {
                     transitionEnter={false}
                     transitionLeave={false}>
                     <Row>
-                        <ModifyUserModal ref = {this.modalElement} updateTable={this.updateTable}/>
+                        <ModifyUserModal ref = {this.modalElement} updateTable={this.loadUsers}/>
                         <Col lg="12">
                             <Card className="main-card mb-3">
                                 <CardBody>
                                     <CardTitle>Tabla de usuarios</CardTitle>
-                                    <AllUsersTable arrData={this.state.arrData} editUser={this.editUser} />
+                                    <AllUsersTable arrData={this.state.arrDataUsersToDisplay} editUser={this.editUser} isLoading ={this.state.isLoading} />
                                 </CardBody>
                             </Card>
+                        </Col>
+                        <Col lg="12">
+                            {!this.state.isLoading ? (<Pagination originalArray = {this.state.arrDataUsers} updateElementsToDisplay = {this.updateElementsToDisplay} />) : (null)} 
                         </Col>
                     </Row>
                 </ReactCSSTransitionGroup>

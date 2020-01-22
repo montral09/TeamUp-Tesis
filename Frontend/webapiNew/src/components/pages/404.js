@@ -1,8 +1,9 @@
 import React from 'react';
 import Header from "../header/header";
 import { Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet'
-
+import { Helmet } from 'react-helmet';
+import { withTranslate } from 'react-redux-multilingual';
+import { CONTACT_EMAIL } from '../../services/common/constants';
 
 class PageNotFound extends React.Component {
     componentDidMount() {
@@ -14,7 +15,7 @@ class PageNotFound extends React.Component {
             <>
                 {/*SEO Support*/}
                 <Helmet>
-                    <title>TeamUp! | Not Found Page</title>
+                    <title>TeamUp! | Error</title>
                     <meta name="description" content="" />
                 </Helmet>
                 {/*SEO Support End */}
@@ -27,8 +28,9 @@ class PageNotFound extends React.Component {
                             <div className="container">
                                 <div className="row">
                                     <div className="col-md-12 center-column" id="content">
-                                        <h1>La pagina que estabas buscando no se encuentra o hubo un error...</h1>
-                                        <p>Sorry, we can't find that page or something has gone wrong...</p> 
+                                    
+                                        <h1>{translate('error404_header')}</h1>
+                                        <p>{translate('error404_detail') + CONTACT_EMAIL}</p> 
                                         <div className="buttons">
                                             <div className="pull-right"><Link to="/" className="btn btn-primary">Pagina Inicial</Link></div>
                                         </div>
@@ -43,4 +45,4 @@ class PageNotFound extends React.Component {
     }
 }
 
-export default PageNotFound;
+export default withTranslate(PageNotFound);
