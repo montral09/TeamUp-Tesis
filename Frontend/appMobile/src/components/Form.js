@@ -8,7 +8,7 @@ import { displayErrorMessage } from '../common/genericFunctions';
 import languages from '../common/languages'
 import translations from '../common/translations';
 
-class Form extends Component<{}>{
+class Form extends Component{
     constructor() {
         super();
         this.state = {
@@ -30,6 +30,7 @@ class Form extends Component<{}>{
     handleChangePassword = (typedText) => {
         this.setState({ password: typedText });
     }
+    
     onSelectionsChangeLanguage = (value, index) => {
         this.setState({language: value})
         this.props.changeLanguage(value);
@@ -59,7 +60,15 @@ class Form extends Component<{}>{
     }
     render() {
         const { login_status, systemLanguage } = this.props;
-        if (login_status == 'LOGGED_IN') return this.props.navigation.navigate('Home');
+        if (login_status == 'LOGGED_IN'){
+            if (this.props.userData.PublisherValidated == true){
+                return this.props.navigation.navigate('HomeG');
+            }
+            else{
+                return this.props.navigation.navigate('HomeC');
+            }
+        } 
+
         return (
             <View style={styles.container}>
                 
@@ -71,7 +80,7 @@ class Form extends Component<{}>{
                     animating = {this.state.isLoading}
                     color = '#bc2b78'
                     size = "large"
-                    style = {loadingStyles.activityIndicator}/>
+                    style = {styles.activityIndicator}/>
                 ) : (
                     <> 
                         <TextInput style={styles.inputBox}
@@ -250,19 +259,10 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         marginBottom: 5,
     },
+    activityIndicator: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 80,
+    },
 });
-
-const loadingStyles = StyleSheet.create ({
-   container: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginTop: 70
-   },
-   activityIndicator: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      height: 80
-   }
-})

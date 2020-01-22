@@ -11,8 +11,8 @@ class SearchPublications extends React.Component {
         super(props);
         const { navigation } = this.props;
         const spaceTypeSelectParam = JSON.stringify(navigation.getParam('spaceTypeSelect', 'default value'));//props.match.params.publicationID;
-        const cityParam = JSON.stringify(navigation.getParam('city', 'default value'));
-        const capacityParam = JSON.stringify(navigation.getParam('capacity', 'default value'));
+        const cityParam = navigation.getParam('city', 'default value');
+        const capacityParam = navigation.getParam('capacity', 'default value');
         console.log("params: " + spaceTypeSelectParam)
         this.state = { 
             list: 'active',
@@ -21,8 +21,8 @@ class SearchPublications extends React.Component {
             spaceTypes : [],
             spacetypeSelected : spaceTypeSelectParam == "empty" ? "" : spaceTypeSelectParam,
             spaceTypeSelectedText : "",
-            capacity : "",//capacityParam == "empty" ? "" : capacityParam,
-            city : "",//cityParam  == "empty" ? "" : cityParam,
+            capacity : capacityParam == "empty" ? "" : capacityParam,
+            city : cityParam  == "empty" ? "" : cityParam,
             totalPublications : 10,
             spaceTypesLoaded : false,
             publicationsLoaded : false,

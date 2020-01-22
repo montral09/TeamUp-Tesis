@@ -23,10 +23,6 @@ class RecommendedPublications extends Component {
         this.setState({ generalError: true });
     }
 
-    //redirectToPub(id){
-    //    window.open('http://localhost:3000/publications/viewPublication/viewPublication/' + id, '_blank');
-    //}
-
     componentDidMount() {
         this.loadSpaceTypes();
     }
@@ -135,7 +131,7 @@ class RecommendedPublications extends Component {
                                 showsHorizontalScrollIndicator={false}
                             >   
                                 {relPubs.Publications.map((relPubsPreview) => {
-                                    return (<SpacesScrollView key={relPubsPreview.IdPublication} navigate={this.props.navigate} {...relPubsPreview}/>)
+                                    return (<SpacesScrollView key={relPubsPreview.IdPublication} type={'recommended'} navigate={this.props.navigate} {...relPubsPreview}/>)
                                 })}        
                             </ScrollView>
                         </React.Fragment>

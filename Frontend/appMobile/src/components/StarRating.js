@@ -5,23 +5,24 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 
 export default class Stars extends Component {
-  get stars() {
-    const { votes, size, color } = this.props;
-    const starsNumber = parseInt(votes);
-    const starElements = [];
-    for (let i = 0; i < 5; i++) {
-      starElements.push(
-        <Icon
-          key={`star-${i}`}
-          name={starsNumber > i ? 'star' : 'star-o'}
-          size={size}
-          color={starsNumber > i ? color : 'gray'}
-          style={styles.star}
-        />,
-      );
-    }
-    return starElements;
+
+get stars() {
+  const { votes, size, color } = this.props;
+  const starsNumber = parseInt(votes);
+  const starElements = [];
+  for (let i = 0; i < 5; i++) {
+    starElements.push(
+      <Icon
+        key={`star-${i}`}
+        name={starsNumber > i ? 'star' : 'star-o'}
+        size={size}
+        color={starsNumber > i ? color : 'gray'}
+        style={styles.star}
+      />,
+    );
   }
+  return starElements;
+}
 
   render() {
   	const { votes } = this.props;

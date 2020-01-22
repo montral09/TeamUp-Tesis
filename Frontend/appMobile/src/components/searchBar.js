@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View,Text,StyleSheet,TextInput,TouchableOpacity,Modal,Picker,TouchableHighlight,ToastAndroid} from 'react-native';
+import {View,Text,StyleSheet,TextInput,TouchableOpacity,Modal,Picker,TouchableHighlight,ToastAndroid,BackHandler} from 'react-native';
 
 import Icon from 'react-native-vector-icons/Ionicons';
 import Globals from '../Globals';
@@ -29,7 +29,16 @@ export default class SearchBar extends Component {
     }
 
     componentDidMount() {
+        BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
         this.getSpaceTypes();
+    }
+    
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+    }
+
+    handleBackButton() {
+        return true;
     }
 
     getSpaceTypes() {
@@ -69,12 +78,10 @@ export default class SearchBar extends Component {
         this.setState({spaceTypeSelect:itemValue})
     }
 
-    onChange (event){
-        const {name, type, text} = event;
-        let processedData = text;
-        this.setState({[name]: processedData})
+    handleInputChange(evt){
+        this.setState({ [evt.target.name]: evt.target.value });
     }
-
+    
     handleOnPress(visible){
         this.setState({searchPopUp: visible});
     }
@@ -91,9 +98,7 @@ export default class SearchBar extends Component {
             animationType="fade"
             transparent={true}
             visible={this.state.searchPopUp}
-            onRequestClose={() => {
-                Alert.alert('Modal has been closed.');
-            }}>
+            >
             <View style={styles.modalView}>
                 <View style={{marginBottom: 10}}>
                     <Text style={styles.reseñaText}>Opciones de búsqueda</Text>
@@ -108,19 +113,21 @@ export default class SearchBar extends Component {
                             })
                         }  
                     </Picker>
-                    <MyTextInput 
+                    <TextInput 
+                        style={styles.inputBox}
                         placeholder = "Ej: Pocitos..."
                         name="city" 
                         type="text" 
                         value={this.state.city} 
-                        onChange={this.state.onChange}
+                        onChangeText={(city) => this.setState({city})}
                     />
-                    <MyTextInput 
+                    <TextInput 
+                        style={styles.inputBox}
                         placeholder = "Capacidad"
                         name="capacity" 
                         type="text" 
                         value={this.state.capacity} 
-                        onChange={this.state.onChange}
+                        onChangeText={(capacity) => this.setState({capacity})}
                     />
                     <TouchableOpacity style={styles.button} onPress={() => {this.beginSearch()}}> 
                         <Text style={styles.buttonText}>Buscar</Text>

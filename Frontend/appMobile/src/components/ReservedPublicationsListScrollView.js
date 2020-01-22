@@ -28,7 +28,7 @@ render() {
                     <View style={styles.borderContainer}>
                         <Text style={styles.subTitleText}>Pago reserva</Text>
                         <Text style={styles.infoText}>{this.props.objReservationCustomerPayment.reservationPaymentStateText}</Text>               
-                        <TouchableOpacity style={styles.button} onPress={()=> {this.props.triggerModal("PAYRESCUST", obj.IdReservation, objReservationCustomerPayment)}}> 
+                        <TouchableOpacity style={styles.button} onPress={()=> {this.props.triggerScreen("PAYRESCUST", this.props.obj.IdReservation, this.props.objReservationCustomerPayment)}}> 
                             <Text style={styles.buttonText}>Detalles</Text>
                         </TouchableOpacity>
                     </View>

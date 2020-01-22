@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 import Globals from '../Globals';
 
-class RequestBePublisher extends Component {
+class RequestBePublisher extends Component {  
     constructor(props) {
         super(props);
         this.state = {

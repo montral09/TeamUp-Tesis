@@ -1,28 +1,28 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, StatusBar, Button } from 'react-native';
-import { createStackNavigator, createAppContainer, createDrawerNavigator } from 'react-navigation';
-import { Header } from 'react-native-elements';
-
-import MenuButton from '../components/MenuButton';
-import Banner from '../components/BannerScrollView';
+import { StyleSheet, Text, View, StatusBar } from 'react-native';
+import { createStackNavigator, createAppContainer } from 'react-navigation';
 
 import Logo from '../components/Logo';
 import Form from '../components/Form';
-import Home from './Home';
+import HomeC from './HomeC';
+import HomeG from './HomeG';
 import SignUp from './SignUp';
 import PasswordRecovery from './PasswordRecovery';
-import PublishSpaceStep2 from './PublishSpaceStep2';
 import SpaceView from './SpaceView';
 import SearchPublications from './SearchPublications';
 import ErrorScreen from './ErrorScreen';
 import ReservationPaymentComDetails from './ReservationPaymentComDetails';
 import ReservationReqInfo from './ReservationReqInfo';
 import ReservationCustResPay from './ReservationCustResPay';
+import ReserveSpace from './ReserveSpace';
+import ReserveSpaceSummary from './ReserveSpaceSummary';
+import QAAnswer from './QAAnswer';
 
 class Login extends Component{
    static navigationOptions = {
      header: null
    };
+   
    render(){
 
         return (
@@ -70,9 +70,12 @@ const styles = StyleSheet.create({
 
 const StackNavigator = createStackNavigator({
   Login: {screen: Login},
-  Home: {screen: Home, navigationOptions: ({ navigation }) => ({
+  HomeC: {screen: HomeC, navigationOptions: ({ navigation }) => ({
                               header: null,
                        })},
+  HomeG: {screen: HomeG, navigationOptions: ({ navigation }) => ({
+                            header: null,
+                      })},
   SignUp: {screen: SignUp, navigationOptions: ({ navigation }) => ({
                               header: null,
                        })},
@@ -97,6 +100,15 @@ const StackNavigator = createStackNavigator({
   ReservationReqInfo: {screen: ReservationReqInfo, navigationOptions: ({ navigation }) => ({
                               header: null,
                     })},
+  ReserveSpace: {screen: ReserveSpace, navigationOptions: ({ navigation }) => ({
+                    header: null,
+                })},
+  ReserveSpaceSummary: {screen: ReserveSpaceSummary, navigationOptions: ({ navigation }) => ({
+                  header: null,
+                })},                
+  QAAnswer: {screen: QAAnswer, navigationOptions: ({ navigation }) => ({
+                header: null,
+            })},
   ErrorScreen: {screen: ErrorScreen, navigationOptions: ({ navigation }) => ({
                               header: null,
                     })},

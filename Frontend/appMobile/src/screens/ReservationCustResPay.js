@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, ScrollView, Keyboard, TouchableOpacity, Linking} from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Keyboard, TouchableOpacity, Linking, TextInput} from 'react-native';
 
 class ReservationCustResPay extends Component {
     constructor(props) {
@@ -241,15 +241,17 @@ class ReservationCustResPay extends Component {
                             <Text style={styles.infoText}>El pago fue confirmado.</Text>
                         )
                     }
-                    <TouchableOpacity style={styles.button} onPress={()=> {this.props.navigation.goBack()}} disabled={this.state.buttonIsDisabled}> 
-                        <Text style={styles.buttonText}>Cerrar</Text>
-                    </TouchableOpacity>
-                    {this.state.objPaymentDetails.reservationPaymentStateText != "PAID" && this.state.objPaymentDetails.reservationPaymentStateText != "CANCELED" ? (
-                        <TouchableOpacity style={styles.button} onPress={()=> {this.save}} disabled={this.state.buttonIsDisabled}> 
-                            <Text style={styles.buttonText}>Guardar</Text>
+                    <View style={{flexDirection: 'row'}}>
+                        <TouchableOpacity style={styles.button} onPress={()=> {this.props.navigation.goBack()}} disabled={this.state.buttonIsDisabled}> 
+                            <Text style={styles.buttonText}>Cerrar</Text>
                         </TouchableOpacity>
-                        ) : (null)
-                    }
+                        {this.state.objPaymentDetails.reservationPaymentStateText != "PAID" && this.state.objPaymentDetails.reservationPaymentStateText != "CANCELED" ? (
+                            <TouchableOpacity style={styles.button} onPress={()=> {this.save}} disabled={this.state.buttonIsDisabled}> 
+                                <Text style={styles.buttonText}>Guardar</Text>
+                            </TouchableOpacity>
+                            ) : (null)
+                        }
+                    </View>
             </View>
         );
     }
