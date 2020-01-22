@@ -33,45 +33,18 @@ class AllReservations extends Component {
     }
 
     loadReservations() {
-        /*
-        var objApi = {};        
-        objApi.fetchUrl = "api/facilities";
-        objApi.method = "GET";
+        var objApi = {};
+        objApi.objToSend = {
+            "AccessToken": this.state.admTokenObj.accesToken,
+            "Mail": this.state.adminMail               
+        }   
+        objApi.fetchUrl = "api/reservationAdmin";
+        objApi.method = "POST";
         objApi.successMSG = {
-            SUCC_FACILITIESOK : '',
+            SUCC_RESERVATIONSOK : '',
         };
         objApi.functionAfterSuccess = "loadReservations";
-        callAPI(objApi, this); */
-        var resObj = {
-            Reservations: [
-                {
-                    "IdReservation": 1,
-                    "IdPublication": 23,
-                    "TitlePublication": "Super coworking",
-                    "StateDescription": "PENDING",
-                    "CustomerPayment": {
-                        "PaymentState": 2,
-                        "PaymentDescription": "PENDING CONFIRMATION",
-                        "PaymentComment": "",
-                        "PaymentEvidence": "https://firebasestorage.googleapis.com/v0/b/teamup-1571186671227.appspot.com/o/Payments%2FReservations%2F11%2FCustomer%2F8hzfszgjc1e3.PDF?alt=media&token=a76b1338-0465-4c24-bb99-ec139c2bca14",
-                        "PaymentDate": "10/12/2019"
-                    },
-
-                    "MailCustomer": "teamup_cliente1@yopmail.com",
-                    "MailPublisher": "teamup_gestor1@yopmail.com",
-                    "PlanSelected": "Hour",
-                    "ReservedQuantity": 0,
-                    "DateFromString": "25-06-2020",
-                    "DateToString": "25-06-2020",
-                    "HourFrom": "7",
-                    "HourTo": "11",
-                    "People": 3,
-                    "TotalPrice": 480,
-
-                }
-            ],
-            "responseCode": "SUCC_RESERVATIONSOK"
-        }
+        callAPI(objApi, this);
         this.setState ({ reservations : [], isLoading : false});
     }
          
