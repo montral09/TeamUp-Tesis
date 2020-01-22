@@ -1,14 +1,9 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, ScrollView, Keyboard, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, ScrollView, BackHandler } from 'react-native';
 import { Header } from 'react-native-elements';
 import { createDrawerNavigator, createAppContainer } from 'react-navigation';
-//import Theme from './theme';
 
-import SignUp from '../screens/SignUp';
 import Profile from '../screens/Profile';
-import PublishSpaceMaster from '../screens/PublishSpaceMaster';
-import SpaceView from '../screens/SpaceView';
-import SpaceViewDummy from '../screens/SpaceViewDummy';
 import SpaceList from '../screens/SpaceList';
 import FavoriteSpaceList from '../screens/FavoriteSpaceList';
 import ReservationSpaceList from '../screens/ReservationSpaceList';
@@ -17,17 +12,12 @@ import ReservedPublicationsList from '../screens/ReservedPublicationsList';
 import DeleteUser from '../screens/DeleteUser';
 import LogOut from '../screens/LogOut';
 
-import Globals from '../Globals';
-import SearchPublications from './SearchPublications';
-
-import MenuButton from '../components/MenuButton';
 import SearchBar from '../components/searchBar';
 import Banner from '../components/BannerScrollView';
-import SpacesScrollView from '../components/SpacesScrollView';
 import Contact from '../components/contactUs';
 import RecommendedPublications from '../components/RecommendedPublications';
 
-class Home extends Component {
+class HomeG extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -39,6 +29,18 @@ class Home extends Component {
     header: null
   };
 
+  /*componentDidMount() {
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+  }
+
+  componentWillUnmount() {
+      BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
+  }
+
+  handleBackButton() {
+      return true;
+  }*/
+
   render() {
 
     return (
@@ -46,7 +48,7 @@ class Home extends Component {
         <Header
           leftComponent={{ icon: 'menu', color: '#fff', flex: 1, onPress: () => this.props.navigation.openDrawer() }}
           centerComponent={<SearchBar parentState={this.state} onChange={this.onChange} onSelectionsChangeSpace={this.onSelectionsChangeSpace} navigate={this.props.navigation.navigate} />}
-        //rightComponent={{ icon: 'home', color: '#fff', flex:1, onPress: () => this.props.navigation.navigate('Home')}}
+          //rightComponent={{ icon: 'home', color: '#fff', flex:1, onPress: () => this.props.navigation.navigate('Home')}}
         />
         <ScrollView vertical>
           <Banner />
@@ -71,49 +73,36 @@ const styles = StyleSheet.create({
 
 const DrawerNavigator = createDrawerNavigator(
   {
-    Home: { screen: Home },
+    Home: { screen: HomeG },
     Perfil: {
       screen: Profile, navigationOptions: ({ navigation }) => ({
         header: null,
       })
     },
-    Publicar: {
+    /*Publicar: {
       screen: PublishSpaceMaster, navigationOptions: ({ navigation }) => ({
         header: null,
         title: 'Publicar espacio',
       })
-    },
+    },*/
     Publicaciones: {
       screen: SpaceList, navigationOptions: ({ navigation }) => ({
-        header: null,
-        title: 'Ver publicaciones de gestor',
-      })
-    },
-    /*SearchPublications: {screen: SearchPublications, navigationOptions: ({ navigation }) => ({
-                                header: null,
-                      })},*/
-    FavoriteSpaceList: {
-      screen: FavoriteSpaceList, navigationOptions: ({ navigation }) => ({
-        header: null,
-        title: 'Mis favoritos',
-      })
-    },
-    ReservationSpaceList: {
-      screen: ReservationSpaceList, navigationOptions: ({ navigation }) => ({
-        header: null,
-        title: 'Mis reservas',
+        title: 'Mis publicaciones',
       })
     },
     ReservedPublicationsList: {
-      screen: ReservedPublicationsList, navigationOptions: ({ navigation }) => ({
-        header: null,
-        title: 'Mis espacios reservados',
-      })
+        screen: ReservedPublicationsList, navigationOptions: ({ navigation }) => ({
+          title: 'Mis espacios reservados',
+        })
     },
-    RequestBePublisher: {
-      screen: RequestBePublisher, navigationOptions: ({ navigation }) => ({
-        header: null,
-        title: 'Quiero publicar',
+    ReservationSpaceList: {
+        screen: ReservationSpaceList, navigationOptions: ({ navigation }) => ({
+          title: 'Mis reservas',
+        })
+      },
+    FavoriteSpaceList: {
+      screen: FavoriteSpaceList, navigationOptions: ({ navigation }) => ({
+        title: 'Mis favoritos',
       })
     },
     DeleteUser: {
@@ -136,21 +125,6 @@ const DrawerNavigator = createDrawerNavigator(
         color: 'white',
       }
     }
-  });
-
+});
+  
 export default DrawerNavigator;
-
-/*<Text style={styles.titleText}>
-            Destacados
-          </Text>
-          <View style={{marginTop: 20, elevation: 3}}>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-            >
-              <SpacesScrollView imageUri={this.uri1} name='Test1'/>
-              <SpacesScrollView imageUri={this.uri2} name='Test2'/>
-              <SpacesScrollView imageUri={this.uri3} name='Test3'/>
-
-            </ScrollView>
-          </View>*/

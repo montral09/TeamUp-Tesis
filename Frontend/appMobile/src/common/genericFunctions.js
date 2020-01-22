@@ -83,7 +83,20 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
                 }catch(error){}
             }
         break;        
-        case "deleteUser": bindThis.setState({ isLoading: false }); objApi.logOut();break;
+        case "deleteUser": bindThis.setState({ isLoading: false }); objApi.logOut();
+        break;
+        case "loadInfraestructureVP": bindThis.setState({ facilities: objData.facilities, infIsLoading: false }); 
+        break;
+        case "loadPublicationVP":
+            var pubObj = objData.Publication;
+            pubObj.Favorite = objData.Favorite;
+            var defaultPlanSelected = "";
+            if (pubObj.HourPrice > 0) { defaultPlanSelected = "HourPrice"; } else if (pubObj.DailyPrice > 0) { defaultPlanSelected = "DailyPrice" } else if (pubObj.WeeklyPrice > 0) { defaultPlanSelected = "WeeklyPrice"; } else if (pubObj.MonthlyPrice > 0) { defaultPlanSelected = "MonthlyPrice"; }
+            bindThis.setState({
+                pubIsLoading: false, pubObj: pubObj, activeImage: { index: 0, src: pubObj.ImagesURL[0] },
+                relatedPublications: objData.RelatedPublications, planChosen: defaultPlanSelected, arrQA : objData.Questions
+            });
+        break;
 
     }
 }

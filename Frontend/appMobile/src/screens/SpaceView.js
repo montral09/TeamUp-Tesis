@@ -1,15 +1,20 @@
 import React, {Component} from 'react';
-import { StyleSheet,Text,View,ScrollView,Keyboard,Image,TextInput,TouchableOpacity,Modal,TouchableHighlight,ToastAndroid} from 'react-native';
+import { StyleSheet,Text,View,ScrollView,Image,TouchableOpacity,ActivityIndicator} from 'react-native';
 import { Header } from 'react-native-elements';
 import { withNavigation } from 'react-navigation';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import LoadingOverlay from 'react-native-loading-spinner-overlay';
 import { connect } from 'react-redux';
-
-import Globals from '../Globals';
+import HTML from 'react-native-render-html';
+import { callAPI } from '../common/genericFunctions';
 import MenuButton from '../components/MenuButton';
 import HeartButton from '../components/HeartButton';
 import Stars from '../components/StarRating';
+import TabQuestions from '../components/TabQuestions';
+import TabReviews from '../components/TabReviews';
+import RelatedPublications from '../components/RelatedPublications';
+
+import QAAnswer from './QAAnswer';
 
 class SpaceView extends React.Component {
 
@@ -40,6 +45,7 @@ class SpaceView extends React.Component {
             reservationComment  : "",
             totalPrice          : 0,
             arrQA               : [],
+            activeSection       : 1,
             ratingPopUp         : false,
         }
         this.bindFunctions();
@@ -47,50 +53,21 @@ class SpaceView extends React.Component {
     }
 
     bindFunctions(){
-        this.loadPublication        = this.loadPublication.bind(this);
+        this.loadPublicationVP        = this.loadPublicationVP.bind(this);
         //this.redirectToPub          = this.redirectToPub.bind(this);
         this.submitFavorite         = this.submitFavorite.bind(this);
         this.handleErrors           = this.handleErrors.bind(this);
         //this.reservationSuccess     = this.reservationSuccess.bind(this);
         this.confirmReservation     = this.confirmReservation.bind(this);
-        //this.triggerModal           = this.triggerModal.bind(this);
+        this.triggerScreen          = this.triggerScreen.bind(this);
         //this.triggerSaveModal       = this.triggerSaveModal.bind(this);
         //this.saveAnswer             = this.saveAnswer.bind(this);
-        //this.saveQuestion           = this.saveQuestion.bind(this);
-    }
-
-    loadDummyQuestions(){
-        const arrQA = [
-            {
-                Question: {
-                    UserName: "Alex",
-                    Date: "27/08/2019",
-                    Text: "Hola, esta disponible?"
-                },
-                Answer: {
-                    UserName: "Fabi",
-                    Date: "28/08/2019",
-                    Text: "Si. Saludos"
-                }
-            },
-            {
-                Question: {
-                    UserName: "Bruno",
-                    Date: "29/08/2019",
-                    Text: "Hola, esta disponible!!!?"
-                }
-            }];
-        this.setState({
-            "arrQA": arrQA
-        });
-        console.log(arrQA);
     }
 
     componentDidMount() {
-        this.loadInfraestructure();
+        this.loadInfraestructureVP();
         this.setInitialHour();
-        this.loadDummyQuestions();
-        this.loadPublication(this.state.pubID);
+        this.loadPublicationVP(this.state.pubID);
     }
 
     setInitialHour(){
@@ -148,74 +125,38 @@ class SpaceView extends React.Component {
         }
     }
 
-    loadInfraestructure() {
-        try {
-            fetch(Globals.baseURL + '/facilities').then(response => response.json()).then(data => {
-                console.log("data:" + JSON.stringify(data));
-                if (data.responseCode == "SUCC_FACILITIESOK") {
-                    this.setState({ facilities: data.facilities, infIsLoading: false });
-                } else {
-                    this.setState({ infIsLoading: false });
-                    ToastAndroid.showWithGravity(
-                        'Internal error',
-                        ToastAndroid.LONG,
-                        ToastAndroid.CENTER,
-                    );
-                }
-            }
-            ).catch(error => {
-                this.handleErrors(error);
-            }
-            )
-        } catch (error) {
-            this.handleErrors(error);
-        }
+    loadInfraestructureVP = () => {
+        var objApi = {};
+        objApi.objToSend = {}
+        objApi.fetchUrl = "api/facilities";
+        objApi.method = "GET";
+        objApi.successMSG = {
+            SUCC_FACILITIESOK : "",
+        };
+        objApi.functionAfterSuccess = "loadInfraestructureVP";
+        objApi.functionAfterError = "loadInfraestructureVP";
+        objApi.errorMSG= {}
+        callAPI(objApi, this);
     }
 
-    loadPublication(pubID) {
-        try {
-            var url = Globals.baseURL + '/publication?idPublication=' + pubID + '&mail';
-            if (this.props.userData.Mail != null) {
-                url = url + '=' + this.props.userData.Mail;
-            }
-            this.setState({ pubIsLoading: true });
-            fetch(url).then(response => response.json()).then(data => {
-                console.log("loadPublication:" + JSON.stringify(data));
-                if (data.responseCode == "SUCC_PUBLICATIONSOK") {
-                    console.log("ENTRO");
-                    var pubObj = data.Publication;
-                    pubObj.Favorite = data.Favorite;
-                    var defaultPlanSelected = "";
-                    if (pubObj.HourPrice > 0) { defaultPlanSelected = "HourPrice"; } else if (pubObj.DailyPrice > 0) { defaultPlanSelected = "DailyPrice" } else if (pubObj.WeeklyPrice > 0) { defaultPlanSelected = "WeeklyPrice"; } else if (pubObj.MonthlyPrice > 0) { defaultPlanSelected = "MonthlyPrice"; }
-                    this.setState({
-                        pubIsLoading: false, pubObj: pubObj, activeImage: { index: 0, src: pubObj.ImagesURL[0] },
-                        relatedPublications: data.RelatedPublications, planChosen: defaultPlanSelected
-                    });
-                } else {
-                    this.setState({ pubIsLoading: false });
-                    if (data.responseCode == 'ERR_SPACENOTFOUND') {
-                        this.handleErrors(data.responseCode);
-                    }
-                    if (data.Message) {
-                        this.handleErrors(data.Message);
-
-                    } else {
-                        this.handleErrors("Generic error");
-                    }
-                }
-                
-            }
-            ).catch(error => {
-                this.handleErrors(error);
-            }
-            )
-        } catch (error) {
-            ToastAndroid.showWithGravity(
-                'Internal error',
-                ToastAndroid.LONG,
-                ToastAndroid.CENTER,
-            );
+    loadPublicationVP = (pubID) => {
+        var objApi = {};
+        objApi.objToSend = {}
+        var url = 'api/publication?idPublication=' + pubID + '&mail';
+        if (this.props.userData.Mail != null) {
+            url = url + '=' + this.props.userData.Mail;
         }
+        objApi.fetchUrl = url;
+        objApi.method = "GET";
+        objApi.successMSG = {
+            SUCC_PUBLICATIONSOK : "",
+        };
+        objApi.functionAfterSuccess = "loadPublicationVP";
+        objApi.functionAfterError = "loadPublicationVP";
+        objApi.errorMSG= {}
+        if(this.state.pubIsLoading == false) this.setState({ pubIsLoading: true });
+
+        callAPI(objApi, this);
     }
 
     submitFavorite() {
@@ -249,9 +190,22 @@ class SpaceView extends React.Component {
         )
     }
 
-    /*redirectToPub(id) {
-        this.props.history.push('/publications/viewPublication/viewPublication/' + id);
-    }*/
+    triggerScreen(objTrigger){
+        var screenConfigObj = {};
+        if(objTrigger.mode === "ANSWER"){
+            screenConfigObj ={
+                title: 'Responder', mainText: 'Pregunta:' + ' "'+objTrigger.questionObj.Question+'"', mode : objTrigger.mode, saveFunction : "saveAnswerVP", textboxLabel: 'Respuesta',
+                textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :'Cancelar', confirmText :'Responder' , login_status: this.props.login_status, IdQuestion : objTrigger.questionObj.IdQuestion
+            };
+            this.props.navigation.navigate('QAAnswer', {screenConfig: screenConfigObj});
+        }else{
+            screenConfigObj ={
+                title: 'Reserva enviada', mainText: 'Su reserva ha sido enviada correctamente, revise su casilla de correo para más informacion. ',
+                textboxDisplay: false, cancelAvailable: true, cancelText : 'Entendido', mode : objTrigger.mode, saveFunction : "reservationSuccess"
+            };
+            this.props.navigation.navigate('ReservationReqInfo', {screenConfig: screenConfigObj});
+        }   
+    }
 
     changeImage(image, index) {
         this.setState({ activeImage: { index: index, src: image } })
@@ -374,32 +328,8 @@ class SpaceView extends React.Component {
         return dateConv;
     }
 
-    renderReseñas(){
-
-        return (
-        <View>
-            <Modal
-            animationType="fade"
-            transparent={true}
-            visible={this.state.ratingPopUp}
-            onRequestClose={() => {
-                Alert.alert('Modal has been closed.');
-            }}>
-            <View style={styles.modalView}>
-                <View style={{marginBottom: 10}}>
-                <Text style={styles.reseñaText}>Reseñas</Text>
-                <TouchableHighlight
-                    onPress={() => {
-                    this.handleOnPress(false);
-                    }}>
-                    <Text>Hide Modal</Text>
-                </TouchableHighlight>
-                </View>
-            </View>
-            </Modal>
-        </View>
-        )
-
+    switchActiveSection(sectionValue){
+        this.setState({activeSection:sectionValue})
     }
 
     handleOnPress(visible){
@@ -408,12 +338,7 @@ class SpaceView extends React.Component {
 
     render(){
         var loadStatus = !this.state.pubIsLoading && !this.state.infIsLoading ? false : true;
-    return (
-
-        /*<LoadingOverlay
-                    active={loadStatus}
-                    text='Cargando...'
-        >       */ 
+    return ( 
         <>
             {this.state.pubIsLoading == false && this.state.infIsLoading == false ? ( 
                 <View style={styles.container}>
@@ -432,7 +357,9 @@ class SpaceView extends React.Component {
                         </View>
                         <Image style={styles.image} source={{uri: this.state.activeImage.src}}/>
                         <Text style={styles.titleText}>{this.state.pubObj.Title}</Text>
+                        <Text style={styles.capacityText}>{this.state.pubObj.QuantityRented} veces alquilado</Text>
                         <Text style={styles.capacityText}>Capacidad: {this.state.pubObj.Capacity} personas</Text>
+                        <Text style={styles.capacityText}>Disponibilidad: {this.state.pubObj.Availability}</Text>
                         <View style={styles.popularityView}>
                             <TouchableOpacity
                                 underlayColor = 'white'
@@ -460,66 +387,79 @@ class SpaceView extends React.Component {
                             </Text>
                         </View>
                         
-                        {this.renderReseñas()}
-                        <Text style={styles.subtitleText}>Descripción</Text>
-                        <Text style={styles.descriptionText}>  
-                        {this.state.pubObj.Description}
-                        </Text>
-                        <Text style={styles.subtitleText}>Infraestructura</Text>
-                        <Text style={styles.descriptionText}> 
-                        {/*this.state.pubObj.Facilities.map((inf, index) => {
-                            const infText = this.state.facilities.filter(function (fac) {
-                                return parseInt(fac.Code) == parseInt(inf)
-                            })
-                            return (
-                                <Text key={index} style={styles.descriptionText}>
-                                    {infText[0].Description}
-                                </Text>
-                            );
-                                                   
-                        })*/}
-                        Se mostrarán todas las opciones de infraestructura 
-                        seleccionadas por el usuario
-                        </Text>
-                        <Text style={styles.subtitleText}>Preguntas</Text>
-                        
-                        {this.state.arrQA.map((pregunta, index) => {
-                            return(
-                                <>
-                                <Text key={index+pregunta.Question.UserName+"titleQ"} style={styles.questionText}>
-                                    {pregunta.Question.UserName + " "}
-                                    {pregunta.Question.Date}
-                                </Text>
-                                <Text key={index+pregunta.Question.UserName+"textQ"} style={styles.descriptionText}>     
-                                    {pregunta.Question.Text + "\n\n"}
-                                    {pregunta.Answer ? (
-                                        <>
-                                        <Text key={index+pregunta.Answer.UserName+"titleA"} style={styles.descriptionAnswerText}>
-                                            {"\t\t\t" + pregunta.Answer.UserName + " "}
-                                            {pregunta.Answer.Date + "\n"}
-                                        </Text>
-                                        <Text key={index+pregunta.Answer.UserName+"textA"} style={styles.answerText}>                    
-                                            {"\t\t\t" + pregunta.Answer.Text + "\n"}
-                                        </Text>  
-                                        </>         
-                                    ) : (null)}
-                                </Text>
-                                </>
-                            )
-                        })}
-                        <View style={styles.buttonsView}>
-                            <TouchableOpacity style={styles.button} onPress={() => {this.props.navigation.navigate('Home')}}>
-                                <Text style={styles.buttonText}>Reservar</Text>   
+                        <View style={{flexDirection: 'row'}}>
+                            <TouchableOpacity style={styles.buttonTab} onPress={() => {this.switchActiveSection(1)}}>
+                                <Text style={styles.buttonText}>Descripción</Text>   
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.button2} onPress={() => {this.props.navigation.navigate('Home')}}>
-                                <Text style={styles.buttonText}>Solicitar información</Text>   
+                            <TouchableOpacity style={styles.buttonTab} onPress={() => {this.switchActiveSection(2)}}>
+                                <Text style={styles.buttonText}>Preguntas</Text>   
                             </TouchableOpacity>
+                            <TouchableOpacity style={styles.buttonTab} onPress={() => {this.switchActiveSection(3)}}>
+                                <Text style={styles.buttonText}>Reseñas</Text>   
+                            </TouchableOpacity>                  
                         </View>
-                    </ScrollView>  
+                        
+                        {this.state.activeSection === 1 ? (
+                            <>
+                                <Text style={styles.subtitleText}>Descripción</Text>
+                                <HTML html={this.state.pubObj.Description}/>
+                                <Text style={styles.descriptionText}>{this.state.pubObj.Description}</Text>
+                                <Text style={styles.subtitleText}>Dirección</Text>
+                                <Text style={styles.descriptionText}>{this.state.pubObj.Address}</Text>
+                                <Text style={styles.subtitleText}>Servicios</Text>
+                                <>            
+                                {this.state.pubObj.Facilities.map((inf, index) => {
+                                    const infText = this.state.facilities.filter(function (fac) {
+                                        return parseInt(fac.Code) == parseInt(inf)
+                                    })
+                                    return (
+                                        <Text key={index} style={styles.descriptionText}>
+                                            {infText[0].Description}
+                                        </Text>
+                                    );
+                                                        
+                                })}
+                                </> 
+                            </>  
+                            ) : (
+                                    <>
+                                        {this.state.activeSection === 2 ? (
+                                            <>
+                                                <Text style={styles.subtitleQuestionsText}>Preguntas</Text>    
+                                                <TabQuestions arrQA={this.state.arrQA} saveQuestion={this.saveQuestionVP} triggerScreen={this.triggerScreen}
+                                                            userData={this.props.userData} isMyPublication={this.state.pubObj.IsMyPublication}/>
+                                            </>
+                                        ) : (
+                                                <>                                                
+                                                    <Text style={styles.subtitleQuestionsText}>Reseñas</Text>
+                                                    <TabReviews reviews={this.state.pubObj.Reviews}/> 
+                                                </>
+                                            )                                      
+                                        }
+                                    </>
+                                ) 
+                                               
+                        }
+
+                        <View style={styles.buttonsView}>
+                            {this.state.pubObj.IsMyPublication != true ? (
+                                <TouchableOpacity style={styles.button} onPress={() => {this.props.navigation.navigate('ReserveSpace', {pubObj:this.state.pubObj})}}>
+                                    <Text style={styles.buttonText}>Reservar</Text>   
+                                </TouchableOpacity>
+                                ) : (<Text style={styles.descriptionText}>Reserva disponible para clientes</Text>)
+                            }
+                        </View>
+                        <RelatedPublications relatedPublications={this.state.relatedPublications} push={this.props.navigation.push} title="Publicaciones relacionadas"/>
+                    </ScrollView>      
                 </View>    
-            ) : (null)}
+            ) : (<ActivityIndicator
+                    animating = {this.state.pubIsLoading}
+                    color = '#bc2b78'
+                    size = "large"
+                    style = {styles.activityIndicator}
+                 />
+                )}
         </>
-      /*  </LoadingOverlay>*/
       );
   }
 }
@@ -604,6 +544,13 @@ const styles = StyleSheet.create({
       marginBottom: 15,
       paddingLeft: 25,
     },
+    subtitleQuestionsText: {
+        fontSize: 18, 
+        fontWeight: 'bold',
+        color: '#FFF',
+        marginTop: 20,
+        paddingLeft: 25,
+    },
     reseñaView: {
       alignItems: 'flex-start',
     },
@@ -634,10 +581,8 @@ const styles = StyleSheet.create({
       paddingLeft: 45,
     },
     buttonsView: {
-      flexDirection: 'row',
       alignItems: 'center',
       paddingVertical: 20,
-      paddingLeft: 25,
     },
     button: {
         width:130,
@@ -647,18 +592,16 @@ const styles = StyleSheet.create({
         backgroundColor:'#0069c0',
         borderRadius: 15,
         marginVertical: 10,
-        marginLeft: 20,
         elevation: 3,
     },
-    button2: {
-        width:170,
-        height:30,
+    buttonTab: {
+        width:130,
+        height:50,
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor:'#0069c0',
-        borderRadius: 15,
+        //borderRadius: 15,
         marginVertical: 10,
-        marginLeft: 25,
         elevation: 3,
     },
     buttonText: {
@@ -671,5 +614,36 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingBottom: 30,
     },
+    activityIndicator: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 80,
+    },
 
 });
+
+/*{this.state.arrQA.map((pregunta, index) => {
+                            return(
+                                <>
+                                <Text key={index+pregunta.Question.UserName+"titleQ"} style={styles.questionText}>
+                                    {pregunta.Question.UserName + " "}
+                                    {pregunta.Question.Date}
+                                </Text>
+                                <Text key={index+pregunta.Question.UserName+"textQ"} style={styles.descriptionText}>     
+                                    {pregunta.Question.Text + "\n\n"}
+                                    {pregunta.Answer ? (
+                                        <>
+                                        <Text key={index+pregunta.Answer.UserName+"titleA"} style={styles.descriptionAnswerText}>
+                                            {"\t\t\t" + pregunta.Answer.UserName + " "}
+                                            {pregunta.Answer.Date + "\n"}
+                                        </Text>
+                                        <Text key={index+pregunta.Answer.UserName+"textA"} style={styles.answerText}>                    
+                                            {"\t\t\t" + pregunta.Answer.Text + "\n"}
+                                        </Text>  
+                                        </>         
+                                    ) : (null)}
+                                </Text>
+                                </>
+                            )
+                        })}*/
