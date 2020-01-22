@@ -1511,7 +1511,7 @@ namespace backend.Data_Access
                         Convert.ToInt32(dr["reservedQty"] is DBNull ? 0 : dr["reservedQty"]), Convert.ToDateTime(dr["dateFrom"]), dateConvertedFrom, dateTo, dateConvertedTo, Convert.ToString(dr["hourFrom"]),
                         Convert.ToString(dr["hourTo"]), Convert.ToInt32(dr["people"] is DBNull ? 0 : dr["people"]), Convert.ToString(dr["comment"]),
                         Convert.ToInt32(dr["totalPrice"]), Convert.ToInt32(dr["state"]), Convert.ToString(dr["description"]), Convert.ToBoolean(dr["individualRent"]), Convert.ToInt32(dr["hourPrice"]),
-                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), wasReviewed, payment, null, null);
+                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), wasReviewed, payment, null, null, null);
                     reservations.Add(voReservation);
                 }
                 dr.Close();
@@ -1603,7 +1603,7 @@ namespace backend.Data_Access
                         Convert.ToInt32(dr["reservedQty"] is DBNull ? 0 : dr["reservedQty"]), Convert.ToDateTime(dr["dateFrom"]), dateConvertedFrom, dateTo, dateConvertedTo, Convert.ToString(dr["hourFrom"]),
                         Convert.ToString(dr["hourTo"]), Convert.ToInt32(dr["people"] is DBNull ? 0 : dr["people"]), Convert.ToString(dr["comment"]),
                         Convert.ToInt32(dr["totalPrice"]), Convert.ToInt32(dr["state"]), Convert.ToString(dr["description"]), Convert.ToBoolean(dr["individualRent"]), Convert.ToInt32(dr["hourPrice"]), 
-                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), wasReviewed, payment, paymentCommission, Convert.ToString(dr["name"]));
+                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), wasReviewed, payment, paymentCommission, Convert.ToString(dr["name"]), null);
                     reservations.Add(voReservation);
                 }
                 dr.Close();
@@ -3141,6 +3141,56 @@ namespace backend.Data_Access
                 {
                     con.Close();
                 }
+            }
+        }
+
+        public List<VOReservationExtended> GetReservations()
+        {
+            {
+                List<VOReservationExtended> reservations = new List<VOReservationExtended>();
+                VOReservationExtended voReservation = null;
+                SqlConnection con = null;
+                int idReservation = 0;
+                try
+                {
+                    con = new SqlConnection(GetConnectionString());
+                    con.Open();
+
+                    String query = cns.GetAllReservations();
+                    SqlCommand selectCommand = new SqlCommand(query, con);                    
+                    SqlDataReader dr = selectCommand.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        VOPayment payment = GetReservationPaymentInfo(Convert.ToInt32(dr["idReservation"]), con);
+                        String dateConvertedFrom = Util.ConvertDateToString(Convert.ToDateTime(dr["dateFrom"]));
+                        DateTime dateTo = Convert.ToDateTime(dr["dateTo"] is DBNull ? null : dr["dateTo"]);
+                        String dateConvertedTo = "";
+                        if (DEFAULT_DATE_TIME != dateTo)
+                        {
+                            dateConvertedTo = Util.ConvertDateToString(Convert.ToDateTime(dr["dateTo"]));
+                        }
+                        voReservation = new VOReservationExtended(Convert.ToInt32(dr["idReservation"]), Convert.ToString(dr["title"]), Convert.ToInt32(dr["idPublication"]),
+                            Convert.ToString(dr["customerMail"]), Convert.ToString(dr["planSelected"]),
+                            Convert.ToInt32(dr["reservedQty"] is DBNull ? 0 : dr["reservedQty"]), Convert.ToDateTime(dr["dateFrom"]), dateConvertedFrom, dateTo, dateConvertedTo, Convert.ToString(dr["hourFrom"]),
+                            Convert.ToString(dr["hourTo"]), Convert.ToInt32(dr["people"] is DBNull ? 0 : dr["people"]), null,
+                            Convert.ToInt32(dr["totalPrice"]), Convert.ToInt32(dr["state"]), Convert.ToString(dr["description"]), false, 0,
+                            0, 0, 0, false, payment, null, null, Convert.ToString(dr["publisherMail"]));
+                        reservations.Add(voReservation);                        
+                    }
+                    dr.Close();
+                }
+                catch (Exception e)
+                {
+                    throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+                }
+                finally
+                {
+                    if (con != null)
+                    {
+                        con.Close();
+                    }
+                }
+                return reservations;
             }
         }
     }

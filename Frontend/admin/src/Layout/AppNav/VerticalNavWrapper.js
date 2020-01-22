@@ -25,16 +25,15 @@ class Nav extends Component {
                 <h5 className="app-sidebar__heading">Pagos</h5>
                 <MetisMenu content={PaymentNav} activeLinkFromLocation className="vertical-nav-menu" iconNamePrefix="" classNameStateIcon="pe-7s-angle-down"/>   
                 {/*
-
+                <h5 className="app-sidebar__heading">UI Components</h5>
+                <MetisMenu content={ComponentsNav} activeLinkFromLocation className="vertical-nav-menu" iconNamePrefix="" classNameStateIcon="pe-7s-angle-down"/>
+                <h5 className="app-sidebar__heading">Widgets</h5>
+                <MetisMenu content={WidgetsNav} activeLinkFromLocation className="vertical-nav-menu" iconNamePrefix="" classNameStateIcon="pe-7s-angle-down"/>
+                <h5 className="app-sidebar__heading">Forms</h5>
+                <MetisMenu content={FormsNav} activeLinkFromLocation className="vertical-nav-menu" iconNamePrefix="" classNameStateIcon="pe-7s-angle-down"/>
+                <h5 className="app-sidebar__heading">Charts</h5>
+                <MetisMenu content={ChartsNav} activeLinkFromLocation className="vertical-nav-menu" iconNamePrefix="" classNameStateIcon="pe-7s-angle-down"/>
                 */}
-                    <h5 className="app-sidebar__heading">UI Components</h5>
-                    <MetisMenu content={ComponentsNav} activeLinkFromLocation className="vertical-nav-menu" iconNamePrefix="" classNameStateIcon="pe-7s-angle-down"/>
-                    <h5 className="app-sidebar__heading">Widgets</h5>
-                    <MetisMenu content={WidgetsNav} activeLinkFromLocation className="vertical-nav-menu" iconNamePrefix="" classNameStateIcon="pe-7s-angle-down"/>
-                    <h5 className="app-sidebar__heading">Forms</h5>
-                    <MetisMenu content={FormsNav} activeLinkFromLocation className="vertical-nav-menu" iconNamePrefix="" classNameStateIcon="pe-7s-angle-down"/>
-                    <h5 className="app-sidebar__heading">Charts</h5>
-                    <MetisMenu content={ChartsNav} activeLinkFromLocation className="vertical-nav-menu" iconNamePrefix="" classNameStateIcon="pe-7s-angle-down"/>
             </Fragment>
         );
     }

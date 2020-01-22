@@ -394,6 +394,7 @@
     <Compile Include="Controllers\ReservationPaymentAdminController.cs" />
     <Compile Include="Controllers\ReservationPaymentPublisherController.cs" />
     <Compile Include="Controllers\ReservationPaymentCustomerController.cs" />
+    <Compile Include="Controllers\ReservationAdminController.cs" />
     <Compile Include="Controllers\ReviewController.cs" />
     <Compile Include="Controllers\ReservationPublisherController .cs" />
     <Compile Include="Controllers\ReservationCustomerController.cs" />
