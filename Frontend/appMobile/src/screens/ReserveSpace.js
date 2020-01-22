@@ -267,7 +267,24 @@ class ReserveSpace extends Component {
                                 </Picker>
                             </View>
                         </View>
-                    ) : (null)}
+                    ) : (<View style={{flexDirection: 'row', alignItems: 'center'}}>
+                            {this.state.planChosen == "DailyPrice" ? (<Text style={styles.subTitleText}>Días </Text>) : (null)}
+                            {this.state.planChosen == "WeeklyPrice" ? (<Text style={styles.subTitleText}>Semanas </Text>) : (null)}
+                            {this.state.planChosen == "MonthlyPrice" ? (<Text style={styles.subTitleText}>Meses </Text>) : (null)}
+                            <TouchableOpacity style={styles.button2} onPress={() => this.decreaseQuantityPlan()}> 
+                                <Text style={styles.buttonText}>-</Text>
+                            </TouchableOpacity>
+                            <TextInput style={styles.inputBox}
+                                underlineColorAndroid='rgba(0,0,0,0)'
+                                onChangeText={(value) => this.changeQuantityPlan(value)} 
+                                value={this.state.quantityPlan.toString()}
+                                maxLength={3}
+                            />     
+                            <TouchableOpacity style={styles.button2} onPress={() => this.increaseQuantityPlan()}> 
+                                <Text style={styles.buttonText}>+</Text>
+                            </TouchableOpacity>           
+                        </View>
+                    )}
                     </>
                     <View style={{flexDirection: 'row', alignItems: 'center'}}>
                         <Text style={styles.subTitleText}>{translations[systemLanguage].messages['date_w']} </Text>
@@ -415,3 +432,7 @@ export default connect(mapStateToProps)(ReserveSpace);
 //{this.state.pubObj.DailyPrice > 0 && this.state.pubObj.DailyPrice != '' ? (<Picker.Item key={2} value={"DailyPrice"} label={translations[systemLanguage].messages['dailyPrice_w'] + ": $" + this.state.pubObj.DailyPrice}/>):(<Picker.Item key={2} value={"test"} label={"$"}/>)}
 //{this.state.pubObj.WeeklyPrice > 0 && this.state.pubObj.WeeklyPrice != '' ? (<Picker.Item key={3} value={"WeeklyPrice"} label={translations[systemLanguage].messages['weeklyPrice_w'] + ": $" + this.state.pubObj.WeeklyPrice}/>):(<Picker.Item key={3} value={"test"} label={"$"}/>)}
 //{this.state.pubObj.MonthlyPrice > 0 && this.state.pubObj.MonthlyPrice != '' ? (<Picker.Item key={4} value={"MonthlyPrice"} label={translations[systemLanguage].messages['monthlyPrice_w'] + ": $" + this.state.pubObj.MonthlyPrice}/>):(<Picker.Item key={4} value={"test"} label={"$"}/>)}
+
+/*translations[systemLanguage].messages['planChosenQuantityDescriptionDays_w']*/
+/*translations[systemLanguage].messages['planChosenQuantityDescriptionWeeks_w']*/
+/*translations[systemLanguage].messages['planChosenQuantityDescriptionMonths_w']*/ 

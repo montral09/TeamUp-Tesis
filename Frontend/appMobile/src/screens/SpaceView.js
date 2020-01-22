@@ -5,7 +5,7 @@ import { withNavigation } from 'react-navigation';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import LoadingOverlay from 'react-native-loading-spinner-overlay';
 import { connect } from 'react-redux';
-import HTML from 'react-native-render-html';
+import HTMLView from 'react-native-htmlview';
 import { callAPI } from '../common/genericFunctions';
 import MenuButton from '../components/MenuButton';
 import HeartButton from '../components/HeartButton';
@@ -347,14 +347,17 @@ class SpaceView extends React.Component {
                         rightComponent={{ icon: 'home', color: '#fff', flex:1, onPress: () => this.props.navigation.navigate('Home')}}
                     />
                     <ScrollView>
-                        <View style={styles.recommendedView}>
-                        <Icon
-                            name="thumbs-o-up"
-                            size={18}
-                            color='white'
-                        />
-                        <Text style={styles.buttonText}> Recomendado!</Text>
-                        </View>
+                        {this.state.pubObj.IsRecommended == true ? (
+                            <View style={styles.recommendedView}>
+                            <Icon
+                                name="thumbs-o-up"
+                                size={18}
+                                color='white'
+                            />
+                            <Text style={styles.buttonText}> Recomendado!</Text>
+                            </View>
+                        ):(null)
+                        }
                         <Image style={styles.image} source={{uri: this.state.activeImage.src}}/>
                         <Text style={styles.titleText}>{this.state.pubObj.Title}</Text>
                         <Text style={styles.capacityText}>{this.state.pubObj.QuantityRented} veces alquilado</Text>
@@ -368,17 +371,19 @@ class SpaceView extends React.Component {
                                 this.handleOnPress(true);
                                 }}>
                             <Stars
-                                votes={4}
+                                votes={this.state.pubObj.Ranking}
                                 size={18}
                                 color='white'
                             />
                             </TouchableOpacity>
+                            {this.state.pubObj.IsMyPublication != true ? (
                             <HeartButton
                                 color='white'
                                 selectedColor='white'
                                 favoriteCode={this.state.pubObj.Favorite === false ? 1 : 2}
                                 submitFavorite={this.submitFavorite}
-                            />
+                            />):(null)
+                            }
                             <Text style={styles.priceText} /*onPress={() =>{this.handleOnPress(true)}}*/>   
                                 {this.state.pubObj.HourPrice > 0 && "Por Hora : $" + this.state.pubObj.HourPrice + "\n"}
                                 {this.state.pubObj.DailyPrice > 0 && "Por Día : $" + this.state.pubObj.DailyPrice + "\n"}
@@ -402,7 +407,7 @@ class SpaceView extends React.Component {
                         {this.state.activeSection === 1 ? (
                             <>
                                 <Text style={styles.subtitleText}>Descripción</Text>
-                                <HTML html={this.state.pubObj.Description}/>
+                                <HTMLView value={this.state.pubObj.Description} stylesheet={stylesHtml}/>
                                 <Text style={styles.descriptionText}>{this.state.pubObj.Description}</Text>
                                 <Text style={styles.subtitleText}>Dirección</Text>
                                 <Text style={styles.descriptionText}>{this.state.pubObj.Address}</Text>
@@ -621,6 +626,13 @@ const styles = StyleSheet.create({
         height: 80,
     },
 
+});
+
+const stylesHtml = StyleSheet.create({
+    a: {
+        fontWeight: '300',
+        color: 'white', // make links coloured pink
+    },
 });
 
 /*{this.state.arrQA.map((pregunta, index) => {

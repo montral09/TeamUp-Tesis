@@ -97,7 +97,10 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
                 relatedPublications: objData.RelatedPublications, planChosen: defaultPlanSelected, arrQA : objData.Questions
             });
         break;
-
+        case "saveAnswerVP":
+        case "saveQuestionVP":
+            bindThis.loadPublicationVP(bindThis.state.pubID);
+        break;
     }
 }
 
