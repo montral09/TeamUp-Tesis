@@ -20,8 +20,8 @@ class AllUsers extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            arrData: [],
-            arrDataToDisplay: [],
+            arrDataUsers: [],
+            arrDataUsersToDisplay: [],
             admTokenObj: this.props.admTokenObj,
             adminData: this.props.adminData,
             isLoading : true,
@@ -31,7 +31,7 @@ class AllUsers extends Component {
     
     // This function will trigger the save function inside the modal to update the values
     editUser = (key) => {
-        const userData = this.state.arrData.filter(usr => {
+        const userData = this.state.arrDataUsers.filter(usr => {
             return usr.Mail === key
         });
 
@@ -54,7 +54,7 @@ class AllUsers extends Component {
     }
 
     updateElementsToDisplay = (toDisplayArray) => {
-        this.setState({arrDataToDisplay : toDisplayArray})
+        this.setState({arrDataUsersToDisplay : toDisplayArray})
     }
 
     // This function will trigger when the component is mounted, to fill the data from the state
@@ -84,12 +84,12 @@ class AllUsers extends Component {
                             <Card className="main-card mb-3">
                                 <CardBody>
                                     <CardTitle>Tabla de usuarios</CardTitle>
-                                    <AllUsersTable arrData={this.state.arrDataToDisplay} editUser={this.editUser} isLoading ={this.state.isLoading} />
+                                    <AllUsersTable arrData={this.state.arrDataUsersToDisplay} editUser={this.editUser} isLoading ={this.state.isLoading} />
                                 </CardBody>
                             </Card>
                         </Col>
                         <Col lg="12">
-                            {!this.state.isLoading ? (<Pagination originalArray = {this.state.arrData} updateElementsToDisplay = {this.updateElementsToDisplay} />) : (null)} 
+                            {!this.state.isLoading ? (<Pagination originalArray = {this.state.arrDataUsers} updateElementsToDisplay = {this.updateElementsToDisplay} />) : (null)} 
                         </Col>
                     </Row>
                 </ReactCSSTransitionGroup>

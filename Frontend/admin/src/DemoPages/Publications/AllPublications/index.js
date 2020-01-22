@@ -25,13 +25,12 @@ class AllPublications extends Component {
         const admTokenObj = props.admTokenObj;
         const adminMail = props.adminData.Mail
         this.state = {
-            publ: [],
-            publToDisplay : [],
+            allPubl: null,
+            allPublToDisplay : null,
             admTokenObj: admTokenObj,
             adminMail: adminMail,
             spaceTypes: [],
-            facilities: [],
-            isLoading: true
+            facilities: []
         }
         this.modalElement = React.createRef(); // esto hace unas magias para cambiar el estado de un componente hijo
         this.modalElementAppRej = React.createRef();
@@ -49,7 +48,7 @@ class AllPublications extends Component {
     }          
 
     updateElementsToDisplay = (toDisplayArray) => {
-        this.setState({publToDisplay : toDisplayArray})
+        this.setState({allPublToDisplay : toDisplayArray})
     }
     // This function will trigger when the component is mounted, to fill the data from the state
     componentDidMount() {
@@ -58,6 +57,7 @@ class AllPublications extends Component {
     }
 
     loadAllPublications = () =>{
+        this.setState({allPubl: null, allPublToDisplay : null})
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.state.admTokenObj.accesToken,
@@ -75,7 +75,7 @@ class AllPublications extends Component {
 
     // This function will trigger the save function inside the modal to update the values
     editPublication = (key) => {
-        const publData = this.state.publToDisplay.filter(publ => {
+        const publData = this.state.allPublToDisplay.filter(publ => {
             return publ.IdPublication === key
         });
 
@@ -103,12 +103,12 @@ class AllPublications extends Component {
                             <Card className="main-card mb-3">
                                 <CardBody>
                                     <CardTitle>Publicaciones</CardTitle>
-                                    <AllPublicationsTable isLoading = {this.state.isLoading} publ={this.state.publToDisplay} editPublication={this.editPublication} spaceTypes={this.state.spaceTypes} publisherData = {false}/>
+                                    <AllPublicationsTable isLoading = {this.state.allPubl == null} publ={this.state.allPublToDisplay} editPublication={this.editPublication} spaceTypes={this.state.spaceTypes} publisherData = {false}/>
                                 </CardBody>
                             </Card>
                         </Col>
                         <Col lg="12">
-                            {!this.state.isLoading ? (<Pagination originalArray = {this.state.publ} updateElementsToDisplay = {this.updateElementsToDisplay} />) : (null)} 
+                            {this.state.allPubl != null ? (<Pagination originalArray = {this.state.allPubl} updateElementsToDisplay = {this.updateElementsToDisplay} />) : (null)} 
                         </Col>
                     </Row>
                 </ReactCSSTransitionGroup>

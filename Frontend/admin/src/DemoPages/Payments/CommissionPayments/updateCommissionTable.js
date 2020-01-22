@@ -19,7 +19,7 @@ const UpdateCommissionTable = ({paymentsPendingPaid, changeCommission, isLoading
                 <td>{obj.PublisherName}{"  "}{obj.PublisherLastName}</td>
                 <td>{obj.PublisherPhone}</td>
                 <td>{obj.Commission}</td>                
-                <td><a onClick={() => { changeCommission(obj.IdReservation) }}><i className="lnr lnr-pencil"></i></a></td>                
+                <td><a href="javascript:void(0);" onClick={() => { changeCommission(obj.IdReservation) }}><i className="lnr lnr-pencil"></i></a></td>                
             </tr>
             )
         })
