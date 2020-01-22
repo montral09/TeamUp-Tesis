@@ -62,5 +62,6 @@ namespace backend.Logic
         VOResponseGetMessages GetMessages(VORequestGetMessages voGetMessages);
         VOResponseUpdateCommissionAmountAdmin UpdateCommissionAmountAdmin(VORequestUpdateCommissionAmountAdmin voUpdateAmount);
         VOResponseCreatePublicationStatics CreatePublicationStatics(VORequestCreatePublicationStatics voCreatePublicationStatics);
+        VOResponseGetReservations GetReservations(VORequestGetReservations voGetReservations);
     }
 }

@@ -7,4 +7,4 @@ export const GMAP_URL = 'https://maps.googleapis.com/maps/api/js?v=3.exp&key=';
 export const MAIN_WEBSITE_NAME = 'TeamUp!';
 export const CONTACT_PHONENUMBER = '099999999';
 export const CONTACT_EMAIL = 'teamupude@gmail.com';
-export const MAX_ELEMENTS_PER_TABLE = 10;
+export const MAX_ELEMENTS_PER_TABLE = 15;

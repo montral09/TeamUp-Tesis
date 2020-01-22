@@ -1361,5 +1361,25 @@ namespace backend.Logic
                 throw e;
             }
         }
+
+        public VOResponseGetReservations GetReservations(VORequestGetReservations voGetReservations)
+        {
+            try
+            {
+                VOResponseGetReservations response = new VOResponseGetReservations();
+                String message = util.ValidAccessToken(voGetReservations.AccessToken, voGetReservations.Mail);
+                if (EnumMessages.OK.ToString().Equals(message))
+                {
+                    response.Reservations = spaces.GetReservations();
+                    message = EnumMessages.SUCC_RESERVATIONSOK.ToString();
+                }
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+        }
     }
 }

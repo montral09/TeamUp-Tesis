@@ -53,5 +53,6 @@ namespace backend.Data_Access
         void CreatePublicationStatics(VORequestCreatePublicationStatics voCreatePublicationStatics);
         string GetReservationPlanDescriptionEmail(int idPlan, int language, bool plural);
         int GetReservationPlanByDescription(string desc);
+        List<VOReservationExtended> GetReservations();
     }
 }
