@@ -706,6 +706,31 @@ namespace backend.Data_Access.Query
                 " p.idUser = u2.idUser and ps.idPaymentState = paymentCustomerState order by r.idReservation desc";
             return query;
         }
+
+        public String FinishPublications()
+        {
+            String query = "update PUBLICATIONS set state = 5 OUTPUT INSERTED.idPublication where expirationDate < getDate() and (state = 2 or state = 3 or state = 4)";
+            return query;
+        }
+
+        public String GetPublicationNameMail()
+        {
+            String query = "select u.name, u.mail, u.language, p.title from PUBLICATIONS p, USERS u where idPublication = @idPublication and u.iduser = p.idUser";
+            return query;
+        }
+
+        public String FinishReservations()
+        {
+            String query = "update RESERVATIONS set state = 4 OUTPUT INSERTED.idReservation where dateTo < getDate() and (state = 2 or state = 3)";
+            return query;
+        }
+
+        public String GetReservationNameMail()
+        {
+            String query = "select u1.name as customerName, u1.mail as customerMail, u1.language as customerLanguage, u2.name as publisherName, u2.mail as publisherMail, u2.language as publisherLanguage," +
+                " p.title from PUBLICATIONS p, RESERVATIONS r, USERS u1, USERS u2 where r.idReservation = @idReservation and r.idCustomer = u1.idUser and r.idPublication = p.idPublication and p.iduser = u2.idUser";
+            return query;
+        }
     }
 
 }

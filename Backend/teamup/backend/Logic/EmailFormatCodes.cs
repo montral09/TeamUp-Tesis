@@ -36,7 +36,11 @@ namespace backend.Logic
         public static string CODE_RESERVATION_MODIFIED_CUSTOMER { get { return "RESERVATIONMODIFIEDCUSTOMER"; } }
         public static string CODE_RESERVATION_MODIFIED_PUBLISHER { get { return "RESERVATIONMODIFIEDPUBLISHER"; } }
         public static string CODE_RESERVATION_PAID { get { return "RESERVATIONPAID"; } }
-        
+        public static string CODE_FINISH_PUBLICATION { get { return "FINISHPUBLICATION"; } }
+        public static string CODE_FINISH_RESERVATION_PUBLISHER { get { return "FINISHRESERVATIONPUBLISHER"; } }
+        public static string CODE_FINISH_RESERVATION_CUSTOMER { get { return "FINISHRESERVATIONCUSTOMER"; } }
+
+
 
     }
 }

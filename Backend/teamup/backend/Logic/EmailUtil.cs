@@ -175,6 +175,46 @@ namespace backend.Logic
             return emailBodyGeneric;
         }
 
+        public EmailDataGeneric GetFormatMailFinishPublications(String code, int language, EmailData emailData)
+        {
+            EmailDataGeneric emailBodyGeneric = daoUtil.GetEmailDataGeneric(code, language);
+            emailBodyGeneric.Body = CompleteEmailBodyFinishPublications(emailBodyGeneric.Body, emailData);
+            return emailBodyGeneric;
+        }
+
+        private string CompleteEmailBodyFinishPublications(string emailBodyGeneric, EmailData emailData)
+        {
+            if (emailBodyGeneric.Contains(ParamCodes.PUBLICATION_TITLE))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.PUBLICATION_TITLE, emailData.PublicationTitle);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.USER_NAME))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.USER_NAME, emailData.PublisherName);
+            }
+            return emailBodyGeneric;
+        }
+
+        public EmailDataGeneric GetFormatMailFinishReservations(String code, int language, EmailData emailData, bool isCustomer)
+        {
+            EmailDataGeneric emailBodyGeneric = daoUtil.GetEmailDataGeneric(code, language);
+            emailBodyGeneric.Body = CompleteEmailBodyFinishReservations(emailBodyGeneric.Body, emailData, isCustomer);
+            return emailBodyGeneric;
+        }
+
+        private string CompleteEmailBodyFinishReservations(string emailBodyGeneric, EmailData emailData, bool isCustomer)
+        {
+            if (emailBodyGeneric.Contains(ParamCodes.PUBLICATION_TITLE))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.PUBLICATION_TITLE, emailData.PublicationTitle);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.USER_NAME))
+            {
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.USER_NAME, isCustomer ? emailData.CustomerName : emailData.PublisherName);
+            }
+            return emailBodyGeneric;
+        }
+
         public static string CreateBodyEmailNewPublicationToPublisher(String name)
         {
             string body = "Hello, " + name;
