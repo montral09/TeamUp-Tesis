@@ -54,5 +54,7 @@ namespace backend.Data_Access
         string GetReservationPlanDescriptionEmail(int idPlan, int language, bool plural);
         int GetReservationPlanByDescription(string desc);
         List<VOReservationExtended> GetReservations();
+        List<EmailData> FinishPublications();
+        List<EmailData> FinishReservations();
     }
 }

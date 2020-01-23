@@ -1381,5 +1381,49 @@ namespace backend.Logic
                 throw e;
             }
         }
+
+       public void FinishPublications()
+       {
+
+            EmailDataGeneric mailData;
+            try
+            {
+                //Finish Publications
+                List<EmailData> finishedPublications = spaces.FinishPublications();
+                //Send email to publishers
+                foreach (var publication  in finishedPublications)
+                {
+                    mailData = emailUtil.GetFormatMailFinishPublications(EmailFormatCodes.CODE_FINISH_PUBLICATION, publication.PublisherLanguage, publication);
+                    emailUtil.SendEmailAsync(publication.PublisherMail, mailData.Body, mailData.Subject);
+                }
+            } catch (Exception)
+            {
+                //Dont do anything, wait for next execution
+            }
+            
+       }
+
+       public void FinishReservations()
+       {
+            EmailDataGeneric mailData;
+            try
+            {                
+                //Finish Reservations
+                List<EmailData> finishedReservations = spaces.FinishReservations();                
+                foreach (var publication in finishedReservations)
+                {
+                    //Send email to publisher
+                    mailData = emailUtil.GetFormatMailFinishReservations(EmailFormatCodes.CODE_FINISH_RESERVATION_PUBLISHER, publication.PublisherLanguage, publication, false);
+                    emailUtil.SendEmailAsync(publication.PublisherMail, mailData.Body, mailData.Subject);
+                    //Send email to customer
+                    mailData = emailUtil.GetFormatMailFinishReservations(EmailFormatCodes.CODE_FINISH_RESERVATION_CUSTOMER, publication.CustomerLanguage, publication, true);
+                    emailUtil.SendEmailAsync(publication.CustomerMail, mailData.Body, mailData.Subject);
+                }
+            }
+            catch (Exception)
+            {
+                //Dont do anything, wait for next execution
+            }
+        }
     }
 }
