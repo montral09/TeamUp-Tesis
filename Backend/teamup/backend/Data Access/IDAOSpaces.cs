@@ -56,5 +56,6 @@ namespace backend.Data_Access
         List<VOReservationExtended> GetReservations();
         List<EmailData> FinishPublications();
         List<EmailData> FinishReservations();
+        void StartReservation();
     }
 }

@@ -1425,5 +1425,18 @@ namespace backend.Logic
                 //Dont do anything, wait for next execution
             }
         }
+
+        public void StartReservation()
+        {
+            try
+            {
+                //Make reservation state = in progress
+                spaces.StartReservation();                
+            }
+            catch (Exception)
+            {
+                //Dont do anything, wait for next execution
+            }
+        }
     }
 }

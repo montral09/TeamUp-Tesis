@@ -3298,5 +3298,29 @@ namespace backend.Data_Access
             }
             return reservations;
         }
+
+        public void StartReservation()
+        {
+            SqlConnection con = null;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.StartReservation();
+                SqlCommand updateCommand = new SqlCommand(query, con);
+                updateCommand.ExecuteNonQuery();          
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+        }
     }
 }

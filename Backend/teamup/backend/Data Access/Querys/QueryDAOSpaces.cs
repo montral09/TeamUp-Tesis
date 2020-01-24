@@ -731,6 +731,12 @@ namespace backend.Data_Access.Query
                 " p.title from PUBLICATIONS p, RESERVATIONS r, USERS u1, USERS u2 where r.idReservation = @idReservation and r.idCustomer = u1.idUser and r.idPublication = p.idPublication and p.iduser = u2.idUser";
             return query;
         }
-    }
 
+        public String StartReservation()
+        {
+            String query = "update RESERVATIONS set state = 3 where dateFrom > getDate() and state = 2";
+            return query;
+        }
+        
+    }
 }

@@ -16,16 +16,19 @@ namespace webapi
         protected void Application_Start()
         {
             String con = ConfigurationManager.ConnectionStrings["ConnectionString"].ToString();
-            string fireTimePublication = ConfigurationManager.AppSettings["FIRETIME_PUBLICATIONS"];
-            string fireTimeReservations = ConfigurationManager.AppSettings["FIRETIME_RESERVATIONS"];
+            string fireTimeFinishPublication = ConfigurationManager.AppSettings["FIRETIME_FINISH_PUBLICATIONS"];
+            string fireTimeFinishReservations = ConfigurationManager.AppSettings["FIRETIME_FINISH_RESERVATIONS"];
+            string fireTimeInProgressReservations = ConfigurationManager.AppSettings["FIRETIME_INPROGRESS_RESERVATIONS"];            
+            System.Web.Http.GlobalConfiguration.Configure(WebApiConfig.Register);
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configuration.UseSqlServerStorage(con);
             _backgroundJobServer = new BackgroundJobServer();
-            RecurringJob.AddOrUpdate(() => fach.FinishPublications(), fireTimePublication);
-            RecurringJob.AddOrUpdate(() => fach.FinishReservations(), fireTimeReservations);
+            RecurringJob.AddOrUpdate(() => fach.FinishPublications(), fireTimeFinishPublication, TimeZoneInfo.Local);
+            RecurringJob.AddOrUpdate(() => fach.FinishReservations(), fireTimeFinishReservations, TimeZoneInfo.Local);
+            RecurringJob.AddOrUpdate(() => fach.StartReservation(), fireTimeInProgressReservations, TimeZoneInfo.Local);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
-            BundleConfig.RegisterBundles(BundleTable.Bundles);
+            BundleConfig.RegisterBundles(BundleTable.Bundles);            
         }
     }
 }

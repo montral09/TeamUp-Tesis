@@ -65,5 +65,6 @@ namespace backend.Logic
         VOResponseGetReservations GetReservations(VORequestGetReservations voGetReservations);
         void FinishPublications();
         void FinishReservations();
+        void StartReservation();
     }
 }
