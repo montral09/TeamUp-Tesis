@@ -1,28 +1,28 @@
 import React from 'react';
-import Header from "../../header/header";
 import { Redirect } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
-import CreatePublication from './../createPublication/createPublicationMaster';
-import FavPublicationsTable from './favPublicationsTable';
 import LoadingOverlay from 'react-loading-overlay';
-import { callAPI } from '../../../services/common/genericFunctions';
-// Multilanguage
 import { withTranslate } from 'react-redux-multilingual'
 import { compose } from 'redux';
+import CreatePublication from './../createPublication/createPublicationMaster';
+import FavPublicationsTable from './favPublicationsTable';
+import Header from "../../header/header";
+import Footer from "../../footer/footer";
+import { callAPI } from '../../../services/common/genericFunctions';
 
 class FavPublications extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            loadingPubs : true,
-            loadingSpaceTypes : true,
-            pubId : null,
-            publications : [],
-            spaceTypes : [],
-            generalError : false,
-            objPaymentDetails : {}
+            loadingPubs: true,
+            loadingSpaceTypes: true,
+            pubId: null,
+            publications: [],
+            spaceTypes: [],
+            generalError: false,
+            objPaymentDetails: {}
         }
     }
 
@@ -32,20 +32,20 @@ class FavPublications extends React.Component {
         this.loadMyFavoritePublications();
     }
 
-    loadSpaceTypesFP = () =>{
+    loadSpaceTypesFP = () => {
         var objApi = {};
         objApi.objToSend = {}
         objApi.fetchUrl = "api/spaceTypes";
         objApi.method = "GET";
         objApi.successMSG = {
-            SUCC_SPACETYPESOK : '',
+            SUCC_SPACETYPESOK: '',
         };
         objApi.functionAfterSuccess = "loadSpaceTypesFP";
-        objApi.errorMSG= {}
+        objApi.errorMSG = {}
         callAPI(objApi, this);
     }
 
-    loadMyFavoritePublications= () =>{
+    loadMyFavoritePublications = () => {
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,
@@ -54,10 +54,10 @@ class FavPublications extends React.Component {
         objApi.fetchUrl = "api/favorite";
         objApi.method = "PUT";
         objApi.successMSG = {
-            SUCC_FAVORITESOK : '',
+            SUCC_FAVORITESOK: '',
         };
         objApi.functionAfterSuccess = "loadMyFavoritePublications";
-        objApi.errorMSG= {}
+        objApi.errorMSG = {}
         objApi.logOut = this.props.logOut;
         callAPI(objApi, this);
     }
@@ -70,37 +70,38 @@ class FavPublications extends React.Component {
 
         return (
             <>
-            {this.state.pubId == null ? (
-                <>
-                {/*SEO Support*/}
-                <Helmet>
-                    <title>TeamUp | {translate('favPublications_head')}</title>
-                    <meta name="description" content="---" />
-                </Helmet>
-                {/*SEO Support End */}
-                <LoadingOverlay
-                    active={loadStatus}
-                    spinner
-                    text='Cargando...'
-                >
-                    <Header />
-                    <div className="main-content  full-width  home">
-                        <div className="pattern" >
-                            <h1>{translate('favPublications_head')}</h1>
-                            <div className="col-md-12 center-column">
-                                {(!this.state.loadingPubs && !this.state.loadingSpaceTypes) ?
-                                (<FavPublicationsTable publications={this.state.publications} spaceTypes={this.state.spaceTypes} />)
-                                : ( <p>{translate('loading_text_small')}</p>)
-                                }
+                {this.state.pubId == null ? (
+                    <>
+                        {/*SEO Support*/}
+                        <Helmet>
+                            <title>TeamUp | {translate('favPublications_head')}</title>
+                            <meta name="description" content="---" />
+                        </Helmet>
+                        {/*SEO Support End */}
+                        <LoadingOverlay
+                            active={loadStatus}
+                            spinner
+                            text='Cargando...'
+                        >
+                            <Header />
+                            <div className="main-content  full-width  home" style={{ minHeight: "50vh" }}>
+                                <div className="pattern" >
+                                    <h1>{translate('favPublications_head')}</h1>
+                                    <div className="col-md-12 center-column">
+                                        {(!this.state.loadingPubs && !this.state.loadingSpaceTypes) ?
+                                            (<FavPublicationsTable publications={this.state.publications} spaceTypes={this.state.spaceTypes} />)
+                                            : (<p>{translate('loading_text_small')}</p>)
+                                        }
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                </LoadingOverlay>
-                </>
-            ) : (
-                <CreatePublication publicationID={this.state.pubId} />
-            )}
-                
+                            <br />
+                            <Footer />
+                        </LoadingOverlay>
+                    </>
+                ) : (
+                        <CreatePublication publicationID={this.state.pubId} />
+                    )}
             </>
         );
     }

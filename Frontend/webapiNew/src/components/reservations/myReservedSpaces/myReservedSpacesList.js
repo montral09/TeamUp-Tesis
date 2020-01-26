@@ -5,8 +5,10 @@ import { connect } from 'react-redux';
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual'
 import { compose } from 'redux';
+import LoadingOverlay from 'react-loading-overlay';
 
 import Header from "../../header/header";
+import Footer from "../../footer/footer";
 import MyReservedSpacesTable from './myReservedSpacesTable';
 import ModifyReservationModal from './modifyReservationModal';
 import ModalReqInfo from '../../publications/viewPublication/modalReqInfo';
@@ -226,8 +228,13 @@ class MyReservedSpacesList extends React.Component {
                         <meta name="description" content="---" />
                     </Helmet>
                     {/*SEO Support End */}
+                    <LoadingOverlay
+                        active={this.state.loadingReservations}
+                        spinner
+                        text='Cargando...'
+                    >
                     <Header />
-                    <div className="main-content  full-width  home">
+                    <div className="main-content  full-width  home" style = {{minHeight:"50vh"}}>
                         <div className="pattern" >
                             <div className="col-md-12 center-column">
                                 <h1>{translate('myReservedSpacesList_header')}</h1>
@@ -254,6 +261,9 @@ class MyReservedSpacesList extends React.Component {
                         </div>
 
                     </div>
+                    <br />
+                    <Footer /> 
+                    </LoadingOverlay>
                 </>
             </>
         );

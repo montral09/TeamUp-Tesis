@@ -53,14 +53,18 @@ class ModifyPublicationModal extends React.Component {
                  facilitiesSelectTemp.push({label : infText[0].Description, value: element});
                  facilitiesSelect.push(infText[0].Code)
                  
-             }); }        
+             });
+             var spaceTypeSel = spaceTypes.filter(function (spaceType){
+                 return spaceType.Code == publData.SpaceType;
+             })
+             publData.SpaceTypeText = spaceTypeSel[0].Description;
+        }        
         this.setState({
             modal: !this.state.modal,
             publData: publData,
             publDataChanged: publData,
             admTokenObj: admTokenObj,
             adminData: adminData,
-            spaceTypes: spaceTypes,
             facilitiesAux : facilitiesAux,
             facilitiesSelectTemp : facilitiesSelectTemp,
             facilitiesSelect: facilitiesSelect
@@ -158,8 +162,8 @@ class ModifyPublicationModal extends React.Component {
                         <FormGroup row>
                             <Label for="SpaceType" sm={2}>Tipo de espacio</Label>
                             <Col sm={10}>
-                                <Input type="text" name="SpaceType" id="SpaceType" disabled= {this.props.disableFields}
-                                        value={this.state.publDataChanged.SpaceType || ""} onChange={this.onChange}/>
+                                <Input type="text" name="SpaceType" id="SpaceType"
+                                        value={this.state.publDataChanged.SpaceTypeText || ""} readOnly/>
                             </Col>
                         </FormGroup>
                         <FormGroup row>
@@ -177,7 +181,7 @@ class ModifyPublicationModal extends React.Component {
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label for="City" sm={2}>Ciudad</Label>
+                            <Label for="City" sm={2}>Localidad</Label>
                             <Col sm={10}>
                                 <Input type="text" name="City" id="City" disabled= {this.props.disableFields}
                                         value={this.state.publDataChanged.City || ""} onChange={this.onChange}/>

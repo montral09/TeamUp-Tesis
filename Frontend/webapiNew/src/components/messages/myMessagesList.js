@@ -7,6 +7,7 @@ import { compose } from 'redux';
 import 'react-toastify/dist/ReactToastify.css';
 import { connect } from 'react-redux';
 import Header from "../header/header";
+import Footer from "../footer/footer";
 import MyMessagesTable from './myMessagesTable';
 import LoadingOverlay from 'react-loading-overlay';
 import ModalReqInfo from '../publications/viewPublication/modalReqInfo';
@@ -18,15 +19,15 @@ class MyMessagesList extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            loadingMessages : true,
-            messages : [],
-            messagesToDisplay : [],
-            generalError : false,
+            loadingMessages: true,
+            messages: [],
+            messagesToDisplay: [],
+            generalError: false,
             modalConfigObj: {},
             pagination: [1],
             currentPage: 1
         }
-        this.modalReqInfo    = React.createRef(); // Connects the reference to the modal
+        this.modalReqInfo = React.createRef(); // Connects the reference to the modal
     }
 
     componentDidMount() {
@@ -45,30 +46,30 @@ class MyMessagesList extends React.Component {
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,
-            "Mail": this.props.userData.Mail,     
+            "Mail": this.props.userData.Mail,
         }
         objApi.fetchUrl = "api/messages";
         objApi.method = "POST";
         objApi.successMSG = {
-            SUCC_MESSAGESOK : "",
+            SUCC_MESSAGESOK: "",
         };
         objApi.functionAfterSuccess = "loadMessages";
         objApi.functionAfterError = "loadMessages";
-        objApi.errorMSG= {};
+        objApi.errorMSG = {};
         callAPI(objApi, this);
     }
-    
+
     answerMsg = (questionObj) => {
-        var modalConfigObj ={
-            title: 'Responder', mainText: <><strong>{this.props.translate('question_w')}:</strong><em>{' "'+questionObj.Question+'"'}</em></>, mode : "ANSWER", saveFunction : "saveAnswerMSG", textboxLabel: 'Respuesta',
-            textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :this.props.translate('cancel_w'), confirmText : this.props.translate('reply_w') , login_status: this.props.login_status, IdQuestion : questionObj.IdQuestion
+        var modalConfigObj = {
+            title: 'Responder', mainText: <><strong>{this.props.translate('question_w')}:</strong><em>{' "' + questionObj.Question + '"'}</em></>, mode: "ANSWER", saveFunction: "saveAnswerMSG", textboxLabel: 'Respuesta',
+            textboxDisplay: true, cancelAvailable: true, confirmAvailable: true, cancelText: this.props.translate('cancel_w'), confirmText: this.props.translate('reply_w'), login_status: this.props.login_status, IdQuestion: questionObj.IdQuestion
         };
-        this.setState({modalConfigObj : modalConfigObj},() => {this.modalReqInfo.current.toggle();})
+        this.setState({ modalConfigObj: modalConfigObj }, () => { this.modalReqInfo.current.toggle(); })
 
     }
     triggerSaveModal = (saveFunction, objData) => {
-        switch(saveFunction){
-            case "saveAnswerMSG": this.saveAnswerMSG(objData.textboxValue);break;
+        switch (saveFunction) {
+            case "saveAnswerMSG": this.saveAnswerMSG(objData.textboxValue); break;
         }
     }
     saveAnswerMSG = (answer) => {
@@ -82,11 +83,11 @@ class MyMessagesList extends React.Component {
         objApi.fetchUrl = 'api/publicationQuestions';
         objApi.method = "PUT";
         objApi.successMSG = {
-            SUCC_ANSWERCREATED : this.props.translate('SUCC_ANSWERCREATED'),
+            SUCC_ANSWERCREATED: this.props.translate('SUCC_ANSWERCREATED'),
         };
         objApi.functionAfterSuccess = "saveAnswerMSG";
         objApi.functionAfterError = "saveAnswerMSG";
-        objApi.errorMSG= {}
+        objApi.errorMSG = {}
         this.modalReqInfo.current.changeModalLoadingState(false);
         callAPI(objApi, this);
     }
@@ -96,7 +97,7 @@ class MyMessagesList extends React.Component {
         const { translate } = this.props;
         return (
 
-                <>
+            <>
                 {/*SEO Support*/}
                 <Helmet>
                     <title>TeamUp | {translate('myMessages_title')}</title>
@@ -109,7 +110,7 @@ class MyMessagesList extends React.Component {
                     text='Cargando...'
                 >
                     <Header />
-                    <div className="main-content  full-width  home">
+                    <div className="main-content  full-width  home" style={{ minHeight: "50vh" }}>
                         <div className="pattern" >
                             <h1>{translate('myMessages_title')}</h1>
                             <div className="col-md-12 center-column">
@@ -117,7 +118,7 @@ class MyMessagesList extends React.Component {
                                     modalConfigObj={this.state.modalConfigObj} />
                                 {(!this.state.loadingMessages) ?
                                     (<MyMessagesTable messages={this.state.messages} answerMsg={this.answerMsg} />)
-                                : ( <div style={{ height:"100ph", display:"block", width:"100ph" }}> <p>{translate('loading_text_small')}</p></div>)
+                                    : (<div style={{ height: "100ph", display: "block", width: "100ph" }}> <p>{translate('loading_text_small')}</p></div>)
                                 }
                                 <br />
                                 <div className="row pagination-results">
@@ -135,8 +136,10 @@ class MyMessagesList extends React.Component {
                             </div>
                         </div>
                     </div>
+                    <br />
+                    <Footer />
                 </LoadingOverlay>
-                </>
+            </>
         );
     }
 }

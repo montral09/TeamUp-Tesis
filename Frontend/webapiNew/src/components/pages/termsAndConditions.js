@@ -1,13 +1,12 @@
 import React from 'react';
 import Header from "../header/header";
 import Footer from "../footer/footer";
-import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet'
 
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual'
 
-class AboutUs extends React.Component {
+class TermsAndConditions extends React.Component {
     componentDidMount() {
         window.scrollTo(0, 0);
     }
@@ -17,7 +16,7 @@ class AboutUs extends React.Component {
             <>
                 {/*SEO Support*/}
                 <Helmet>
-                    <title>TeamUp! | {translate('about_us')}</title>
+                    <title>TeamUp! | {translate('termsandcond_header')}</title>
                     <meta name="description" content="-" />
                 </Helmet>
                 {/*SEO Support End */}
@@ -30,8 +29,8 @@ class AboutUs extends React.Component {
                             <div className="container">
                                 <div className="row">         
                                     <div className="col-md-12 center-column" id="content">   
-                                        <h1>{translate('about_us')}</h1>              
-                                        {translate('about_mainText')}
+                                        <h1>{translate('termsandcond_main_header')}</h1>              
+                                        {translate('termsandcond_mainText')}
                                     </div>
                                 </div>
                             </div>
@@ -44,4 +43,4 @@ class AboutUs extends React.Component {
     }
 }
 
-export default withTranslate(AboutUs);
+export default withTranslate(TermsAndConditions);

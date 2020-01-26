@@ -23,7 +23,7 @@ const AllUsersTable = ({arrData, editUser, isLoading}) =>{
                 <td>{usr.Address}</td>
                 <td>{usr.CheckPublisher ? 'Si' : 'No'}</td>
                 <td>{usr.MailValidated ? 'Si' : 'No'}</td>
-                <td><a onClick={() => { editUser(usr.Mail) }}><i className="lnr lnr-pencil"></i></a></td>
+                <td><a href='javascript:void(0);' onClick={() => { editUser(usr.Mail) }}><i className="lnr lnr-pencil"></i></a></td>
             </tr>
             )
         })

@@ -45,7 +45,6 @@ class AllReservations extends Component {
         };
         objApi.functionAfterSuccess = "loadReservations";
         callAPI(objApi, this);
-        this.setState ({ reservations : [], isLoading : false});
     }
          
 

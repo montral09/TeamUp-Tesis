@@ -132,7 +132,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
                     paymentsPendingConfirmationToDisplay : filterInitialElementsToDisplay(paymentsPendingConfirmation), 
                     paymentsComission : paymentsComission, paymentsComissionToDisplay : filterInitialElementsToDisplay(paymentsComission),
                     isLoading : false});
-            break;
+        break;
         case "appRejCommissionPayment" :
             bindThis.setState({
                 modal: !bindThis.state.modal,
@@ -140,24 +140,27 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
                 buttonIsDisabled: !bindThis.state.buttonIsDisabled
             });
             bindThis.props.updateTable(); 
-            break;
+        break;
         case "getCommissionsUnpaid" :
             var commissions = objData.Commissions;
             var paymentsPendingPaid = commissions.filter(commission => {
                 return commission.CommissionState === 'PENDING PAYMENT'
             });                
             bindThis.setState({ 'paymentsPendingPaid': paymentsPendingPaid , paymentsPendingPaidToDisplay : filterInitialElementsToDisplay(paymentsPendingPaid), isLoading2 : false});
-            break;
+        break;
         case "editCommission" :
             bindThis.modalElementUpdate.current.toggleLoading(true);
-            bindThis.loadCommissionsUnpaid(); 
+        bindThis.loadCommissionsUnpaid(); 
             break;
         case "gestPendApp":
             var sanitizedValues = objData.voUsers.filter(voUsr =>{
                 return voUsr.PublisherValidated == false
             })
             bindThis.setState({ 'gestPendApr': sanitizedValues , 'gestPendAprToDisplay': filterInitialElementsToDisplay(sanitizedValues) })
-            break;
+        break;
+        case "loadSpaceTypes":
+            bindThis.setState({ spaceTypes: objData.spaceTypes })
+        break;
     } 
 }
 

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Table, Progress } from 'reactstrap';
-
+import {translateStates} from '../../../config/genericFunctions';
 
 // This component will render the table with the values passed as parameters -props-
 const AllReservationsTable = ({elements, isLoading}) =>{
@@ -23,12 +23,12 @@ const AllReservationsTable = ({elements, isLoading}) =>{
                 <td>{obj.DateToString}</td>
                 <td>{obj.People}</td>
                 <td>{obj.TotalPrice}</td>
-                <td>{obj.StateDescription}</td>
+                <td>{translateStates(obj.StateDescription)}</td>
             </tr>
             )
         })
     ) : (
-        isLoading ? (<tr><td colSpan={columnsName.length}><Progress className="mb-3" animated value={100} /></td></tr>) : (<tr><td colSpan={columnsName.length}>PENDIENTE DE REALIZAR</td></tr>)
+        isLoading ? (<tr><td colSpan={columnsName.length}><Progress className="mb-3" animated value={100} /></td></tr>) : (<tr><td colSpan={8}>No se encontraron elementos</td></tr>)
         );
     return(
     <Table hover className="mb-0" responsive = {true}>

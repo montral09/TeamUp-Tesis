@@ -11,6 +11,7 @@ import Header from "../../header/header";
 import CreatePublication from './../createPublication/createPublicationMaster';
 import MyPublicationTable from './myPublicationTable';
 import ModalDetailPayment from './modalDetailPayment';
+import Footer from "../../footer/footer";
 import { callAPI } from '../../../services/common/genericFunctions';
 import { MAX_ELEMENTS_PER_TABLE } from '../../../services/common/constants'
 
@@ -85,13 +86,16 @@ class MyPublicationsList extends React.Component {
     }
 
     changePubStateMPL = (pubState, pubId) => {
-        var message = ""; var nextState = "";
+        var message = ""; var nextState = ""; var succMsg = "";
         if (pubState === "ACTIVE") {
             message = this.props.translate('myPublications_pausePubMsg');
             nextState = "PAUSED P";
+            succMsg = this.props.translate('SUCC_PUBLICATIONUPDATEDP');
         } else if (pubState === "PAUSED P") {
             message = this.props.translate('myPublications_resumePubMsg');
             nextState = "ACTIVE";
+            succMsg = this.props.translate('SUCC_PUBLICATIONUPDATEDR');
+
         }
         if (window.confirm(message)) {
             this.setState({ loadingPubs: !this.state.loadingPubs });
@@ -108,7 +112,7 @@ class MyPublicationsList extends React.Component {
             objApi.fetchUrl = "api/publication";
             objApi.method = "PUT";
             objApi.successMSG = {
-                SUCC_PUBLICATIONUPDATED: this.props.translate('SUCC_PUBLICATIONUPDATED'),
+                SUCC_PUBLICATIONUPDATED: succMsg,
             };
             objApi.functionAfterSuccess = "changePubStateMPL";
             callAPI(objApi, this);
@@ -163,7 +167,8 @@ class MyPublicationsList extends React.Component {
                             text='Cargando...'
                         >
                             <Header />
-                            <div className="main-content  full-width  home">
+
+                            <div className="main-content  full-width  home" style = {{minHeight:"70vh"}}>
                                 <div className="pattern" >
                                     <h1>{translate('myPublications_header')}</h1>
                                     <div className="col-md-12 center-column">
@@ -189,12 +194,15 @@ class MyPublicationsList extends React.Component {
                                     </div>
                                 </div>
                             </div>
+                        <br />
+                        <Footer />
                         </LoadingOverlay>
                     </>
                 ) : (
                         <CreatePublication publicationID={this.state.pubId} currentIDPlan={this.state.currentIDPlan} IdPlan={this.state.IdPlan}
                             planPrice={this.state.planPrice} />
                     )}
+               
             </>
         );
     }
