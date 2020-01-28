@@ -241,7 +241,7 @@ namespace backend.Data_Access.Query
         {
             StringBuilder query = new StringBuilder();
             query = query.Append("select p.title, r.idReservation, r.idPublication, r.idCustomer, rp.description as planSelected, r.reservedQty, r.dateFrom, r.dateTo, r.hourFrom, r.HourTo," +
-                " r.people, r.comment, r.totalPrice, r.state, rs.description, s.individualRent, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, r.paymentCustomerState, ps.description as customerPaymentDesc, u.name from RESERVATIONS r, PUBLICATIONS p, RESERVATION_STATES rs, SPACE_TYPES s, PAYMENT_STATES ps, RESERVATION_PLANS rp ");
+                " r.people, r.comment, r.totalPrice, r.state, rs.description, s.individualRent, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, r.paymentCustomerState, ps.description as customerPaymentDesc, u.name, u.mail from RESERVATIONS r, PUBLICATIONS p, RESERVATION_STATES rs, SPACE_TYPES s, PAYMENT_STATES ps, RESERVATION_PLANS rp ");
             if (idCustomer != 0)
             {
                 query.Append(" , USERS U where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) and rs.idReservationState = r.state and p.spaceType = s.idSpaceType and r.planSelected = rp.idReservationPlan and r.idCustomer = @idCustomer and ps.idPaymentState = paymentCustomerState and u.idUser = r.idCustomer order by r.idReservation desc");

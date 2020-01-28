@@ -66,5 +66,6 @@ namespace backend.Logic
         void FinishPublications();
         void FinishReservations();
         void StartReservation();
+        void Test();
     }
 }

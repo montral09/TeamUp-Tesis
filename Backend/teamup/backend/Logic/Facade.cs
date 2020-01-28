@@ -8,6 +8,8 @@ using backend.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Net;
+using System.Net.Mail;
 using System.Threading.Tasks;
 
 namespace backend.Logic
@@ -1437,6 +1439,30 @@ namespace backend.Logic
             {
                 //Dont do anything, wait for next execution
             }
+        }
+
+        public void Test()
+        {
+            try
+            {
+                MailMessage mm = new MailMessage("teamupude@gmail.com", "teamup_cliente1@yopmail.com");
+
+                mm.Body = "prueba";
+                mm.Subject = "prueba";
+                mm.IsBodyHtml = true;
+                SmtpClient smtp = new SmtpClient();
+                smtp.Host = "smtp.gmail.com";
+                smtp.EnableSsl = true;
+                NetworkCredential NetworkCred = new NetworkCredential("teamupude@gmail.com", "TeamUp20..");
+                smtp.UseDefaultCredentials = true;
+                smtp.Credentials = NetworkCred;
+                smtp.Port = 587;
+                smtp.Send(mm);
+            } catch (Exception e)
+            {
+                
+            }
+
         }
     }
 }
