@@ -22,8 +22,8 @@ namespace webapi.Controllers
                 /* fach.FinishPublications();
                  fach.FinishReservations();
                  fach.StartReservation();*/
-                //fach.Test();
-                return null;                
+                fach.Test();
+                return Ok();
             }
             catch (GeneralException e)
             {

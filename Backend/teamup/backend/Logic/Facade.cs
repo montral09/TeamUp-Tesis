@@ -1458,9 +1458,10 @@ namespace backend.Logic
                 smtp.Credentials = NetworkCred;
                 smtp.Port = 587;
                 smtp.Send(mm);
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
-                
+
             }
 
         }

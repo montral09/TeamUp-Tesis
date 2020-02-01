@@ -110,19 +110,20 @@ namespace backend.Data_Access.Query
             if (voGetPublicationsFilter.Facilities != null && voGetPublicationsFilter.Facilities.Count != 0)
             {
                 string facilities = Util.CreateFacilitiesString(voGetPublicationsFilter.Facilities);
-                query.Append("and pf.idFacility in (") .Append(facilities).Append(") and pf.idPublication = p.idPublication group by p.idPublication having count(distinct pf.idFacility) = ").Append(voGetPublicationsFilter.Facilities.Count);
+                query.Append("and pf.idFacility in (").Append(facilities).Append(") and pf.idPublication = p.idPublication group by p.idPublication having count(distinct pf.idFacility) = ").Append(voGetPublicationsFilter.Facilities.Count);
 
-            }            
+            }
             return query.ToString();
         }
-        
+
         public String GetPublicationsWithFilter(VORequestGetPublicationsWithFilters voGetPublicationsFilter, int maxPublicationsPage, int state)
         {
             StringBuilder query = new StringBuilder();
             string selectColumns = "p.idPublication, u.name, u.lastName, u.mail, u.phone, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.city, p.totalViews, p.expirationDate, s.individualRent ";
             query = query.Append("select ");
-            query.Append(selectColumns).Append ("from PUBLICATIONS p,  Users u, SPACE_TYPES s ");
-            if (voGetPublicationsFilter.Facilities != null && voGetPublicationsFilter.Facilities.Count != 0) {
+            query.Append(selectColumns).Append("from PUBLICATIONS p,  Users u, SPACE_TYPES s ");
+            if (voGetPublicationsFilter.Facilities != null && voGetPublicationsFilter.Facilities.Count != 0)
+            {
                 query.Append(", PUBLICATION_FACILITIES pf ");
             }
             query.Append("where p.idUser = u.idUser and s.idSpaceType = p.spaceType ");
@@ -148,7 +149,7 @@ namespace backend.Data_Access.Query
                 query.Append("and pf.idFacility in (").Append(facilities).Append(")  and pf.idPublication = p.idPublication group by ").Append(selectColumns).Append("having count(distinct pf.idFacility) = ").Append(voGetPublicationsFilter.Facilities.Count);
 
             }
-           // query.Append(" order by p.idPublication offset ").Append((voGetPublicationsFilter.PageNumber) * maxPublicationsPage).Append(" rows fetch next ").Append(maxPublicationsPage).Append(" rows only ");
+            // query.Append(" order by p.idPublication offset ").Append((voGetPublicationsFilter.PageNumber) * maxPublicationsPage).Append(" rows fetch next ").Append(maxPublicationsPage).Append(" rows only ");
             return query.ToString();
         }
 
@@ -167,7 +168,7 @@ namespace backend.Data_Access.Query
             return query.ToString();
         }
 
-        public String GetRelatedSpaces ()
+        public String GetRelatedSpaces()
         {
             String query = "select p.idPublication, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, " +
                 "p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.city, p.totalViews from PUBLICATIONS p where " +
@@ -204,7 +205,7 @@ namespace backend.Data_Access.Query
                 "address = @address, locationLat = @locationLat, locationLong = @locationLong, capacity = @capacity, " +
                 "videoURL = @videoURL, hourPrice = @hourPrice, dailyPrice = @dailyPrice, weeklyPrice = @weeklyPrice, " +
                 "monthlyPrice = @monthlyPrice, availability = @availability, city = @city where idPublication = @idPublication";
-            return query;            
+            return query;
         }
 
         public String DeleteImages(string currentImagesURL)
@@ -245,14 +246,15 @@ namespace backend.Data_Access.Query
             if (idCustomer != 0)
             {
                 query.Append(" , USERS U where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) and rs.idReservationState = r.state and p.spaceType = s.idSpaceType and r.planSelected = rp.idReservationPlan and r.idCustomer = @idCustomer and ps.idPaymentState = paymentCustomerState and u.idUser = r.idCustomer order by r.idReservation desc");
-            } else if (idPublisher != 0)
+            }
+            else if (idPublisher != 0)
             {
                 query.Append(", USERS u2, USERS u where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) and rs.idReservationState = r.state and p.spaceType = s.idSpaceType and r.planSelected = rp.idReservationPlan and p.idUser = u2.idUser and u2.idUser = @idPublisher and ps.idPaymentState = paymentCustomerState and r.idCustomer = u.idUser order by r.idReservation desc");
             }
             return query.ToString();
         }
 
-        public String GetPublicationsPublisher ()
+        public String GetPublicationsPublisher()
         {
             string query = "select idPublication from PUBLICATIONS where idUser = @idUser";
             return query;
@@ -278,7 +280,7 @@ namespace backend.Data_Access.Query
         }
 
         public String UpdateReservation()
-        {           
+        {
             String query = "update RESERVATIONS set reservedQty = @reservedQty, dateFrom = @dateFrom, hourFrom = @hourFrom, hourTo = @hourTo, totalPrice = @totalPrice, people = @people " +
                 "where idReservation = @idReservation and state in (1, 2, 3)";
             return query;
@@ -333,14 +335,14 @@ namespace backend.Data_Access.Query
         {
             String query = "select count(q.idQuestion) as qty from PUBLICATION_QUESTIONS q left join PUBLICATION_ANSWERS a " +
                 "on a.idQuestion = q.idQuestion where q.idPublication = @idPublication and a.idQuestion is null";
-                
+
             return query;
         }
 
         public String GetPublicationPlans()
         {
             String query = "select idPlan, name, price, days from PUBLICATION_PLANS";
-            return query;            
+            return query;
         }
 
         public String GetDaysPlan()
@@ -360,7 +362,7 @@ namespace backend.Data_Access.Query
             String query = "select idPrefPayments from PREFERENTIAL_PAYMENTS where idPublication = @idPublication";
             return query;
         }
-        
+
         public String UpdatePreferentialPayment(string comment, string url)
         {
             StringBuilder query = new StringBuilder();
@@ -386,7 +388,7 @@ namespace backend.Data_Access.Query
                 query.Append(", paymentRejectedReason = @paymentRejectedReason ");
             }
             query.Append("where idPrefPayments = @idPrefPayments");
-            return query.ToString();           
+            return query.ToString();
         }
 
         public String UpdatePublicationDueToPayment()
@@ -427,7 +429,7 @@ namespace backend.Data_Access.Query
                 query.Append(",paymentCustomerEvidence = @evidence");
             }
             query.Append(",paymentCustomerDate = getdate()");
-           
+
             query.Append(" where idReservation = @idReservation");
             return query.ToString();
         }
@@ -435,7 +437,7 @@ namespace backend.Data_Access.Query
         public String GetPublisherFromReservation()
         {
             String query = "select u.name, u.lastName, u.mail, u.language from USERS u, RESERVATIONS r, PUBLICATIONS p " +
-                "where r.idReservation = @idReservation and r.idPublication = p.idPublication and p.idUser = u.idUser";                
+                "where r.idReservation = @idReservation and r.idPublication = p.idPublication and p.idUser = u.idUser";
             return query;
         }
 
@@ -461,7 +463,8 @@ namespace backend.Data_Access.Query
         {
             StringBuilder query = new StringBuilder();
             query = query.Append("update RESERVATIONS set paymentCustomerState = @paymentCustomerState ");
-            if (rejectedReason != null) {
+            if (rejectedReason != null)
+            {
                 query.Append(", paymentCustomerRejectedReason = @paymentCustomerRejectedReason ");
             }
             query.Append("where idReservation = @idReservation");
@@ -600,13 +603,14 @@ namespace backend.Data_Access.Query
             return query;
         }
 
-        public String UpdateCommissionAmountAdmin (bool isPaid)
+        public String UpdateCommissionAmountAdmin(bool isPaid)
         {
             String query = "";
             if (isPaid)
             {
                 query = "update RESERVATIONS set commission = @commission, paymentCommissionDate = getdate(), commissionPaymentState = 3 where idReservation = @idReservation";
-            } else
+            }
+            else
             {
                 query = "update RESERVATIONS set commission = @commission where idReservation = @idReservation";
             }
@@ -635,7 +639,7 @@ namespace backend.Data_Access.Query
             String query = "insert into publication_facilities (idPublication, idFacility) values (@idPublication, @idFacility)";
             return query;
         }
-        
+
         public String DeleteFacilities()
         {
             String query = "delete from PUBLICATION_FACILITIES where idPublication = @idPublication";
@@ -677,7 +681,7 @@ namespace backend.Data_Access.Query
             String query = "select price from PUBLICATION_PLANS where idPlan = @idPlan";
             return query;
         }
-        
+
         public String DeletePreferentialPlan()
         {
             String query = "delete from PREFERENTIAL_PAYMENTS where idPublication = @idPublication";
@@ -737,6 +741,6 @@ namespace backend.Data_Access.Query
             String query = "update RESERVATIONS set state = 3 where dateFrom > getDate() and state = 2";
             return query;
         }
-        
+
     }
 }

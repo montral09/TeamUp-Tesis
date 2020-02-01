@@ -3309,7 +3309,7 @@ namespace backend.Data_Access
                 con.Open();
                 String query = cns.StartReservation();
                 SqlCommand updateCommand = new SqlCommand(query, con);
-                updateCommand.ExecuteNonQuery();          
+                updateCommand.ExecuteNonQuery();
             }
             catch (Exception e)
             {
