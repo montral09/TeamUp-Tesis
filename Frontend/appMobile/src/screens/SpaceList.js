@@ -139,6 +139,7 @@ loadSpaceTypes() {
                   ToastAndroid.LONG,
                   ToastAndroid.CENTER,
                 );
+                this.loadMyPublications();
             } else{
                 this.handleErrors('Hubo un error');
                 //this.setState({loadingPubs: !this.state.loadingPubs});

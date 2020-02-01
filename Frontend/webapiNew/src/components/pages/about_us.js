@@ -17,12 +17,12 @@ class AboutUs extends React.Component {
             <>
                 {/*SEO Support*/}
                 <Helmet>
-                    <title>TeamUp! | About us Page</title>
+                    <title>TeamUp! | {translate('about_us')}</title>
                     <meta name="description" content="-" />
                 </Helmet>
                 {/*SEO Support End */}
                 <Header />
-                <div className="main-content  full-width  home">
+                <div className="main-content  full-width  home" style={{ minHeight: "70vh" }}>
                     <div className="background-content"></div>
                     <div className="background">
                         <div className="shadow"></div>

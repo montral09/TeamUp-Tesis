@@ -103,6 +103,8 @@ var module = {
             ERR_MAILALREADYEXIST : 'Ese correo ya esta en uso, por favor elija otro.',
             SUCC_USRCREATED: 'Usuario creado correctamente, por favor revise su correo para activar la cuenta ',
             SUCC_EMAILVALIDATED: 'Correo validado correctamente',
+            SUCC_PUBLICATIONUPDATEDP : 'Su publicacion ha sido pausada correctamente',
+            SUCC_PUBLICATIONUPDATEDR : 'Su publicacion ha sido reanudada correctamente',
             SUCC_PUBLICATIONUPDATED : 'Su publicación ha sido actualizada correctamente, revise su casilla de correo para más informacion. ',
             SUCC_PUBLICATIONCREATED : 'Su publicación ha sido creada correctamente, revise su casilla de correo para más informacion. ',
             SUCC_RESERVATIONUPDATED1 : 'Reserva modificada correctamente',
@@ -333,6 +335,9 @@ var module = {
             error404_header: 'La pagina que estabas buscando no se encuentra o hubo un error...',
             error404_detail : 'En caso de persistir el problema contactarse con ',
             sessionExpired : 'Su sesion expiro',
+            termsandcond_header : 'Términos y condiciones',
+            termsandcond_main_header: 'Términos y condiciones',
+            termsandcond_mainText : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
         }
     },
     en: {
@@ -439,6 +444,8 @@ var module = {
             ERR_MAILALREADYEXIST : 'This email is already in use, please choose antoher one.',
             SUCC_USRCREATED: 'User successfully created, please check your email to activate the account ',
             SUCC_EMAILVALIDATED: 'Email successfully sent',
+            SUCC_PUBLICATIONUPDATEDP : 'Your publication has been successfully paused',
+            SUCC_PUBLICATIONUPDATEDR : 'Your publication has been successfully activated',
             SUCC_PUBLICATIONUPDATED : 'Your publication has been successfully updated, check your email for further information. ',
             SUCC_PUBLICATIONCREATED : 'Your publication has been successfully created, check your email for further information. ',
             SUCC_RESERVATIONUPDATED1 : 'Reservation successfully modified',
@@ -669,6 +676,9 @@ var module = {
             error404_header: 'The page you are searching is not available or an error has ocurred...',
             error404_detail : 'If the problem persists get in contact with ',
             sessionExpired : 'Your session has expired',
+            termsandcond_header : 'Terms and conditions',
+            termsandcond_main_header: 'Terms and conditions',
+            termsandcond_mainText : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
         }
     }
 }

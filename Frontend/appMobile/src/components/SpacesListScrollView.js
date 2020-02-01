@@ -41,9 +41,6 @@ class SpacesListScrollView extends Component {
                         <View style={{flexDirection: 'row'}}>
                             {this.props.parentData.State === 'ACTIVE' ? (
                                     <>
-                                        <TouchableOpacity style={styles.button}> 
-                                            <Text style={styles.buttonText}>Editar</Text>
-                                        </TouchableOpacity>
                                         <TouchableOpacity style={styles.button} onPress={() => this.props.changePubState(this.props.parentData.State, this.props.parentData.IdPub)}> 
                                             <Text style={styles.buttonText}>Pausar</Text>
                                         </TouchableOpacity>

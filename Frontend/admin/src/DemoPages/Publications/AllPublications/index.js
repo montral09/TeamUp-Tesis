@@ -29,11 +29,24 @@ class AllPublications extends Component {
             allPublToDisplay : null,
             admTokenObj: admTokenObj,
             adminMail: adminMail,
-            spaceTypes: [],
+            spaceTypes: null,
             facilities: []
         }
         this.modalElement = React.createRef(); // esto hace unas magias para cambiar el estado de un componente hijo
         this.modalElementAppRej = React.createRef();
+    }
+
+    loadSpaceTypes = () => {
+        var objApi = {};
+        objApi.objToSend = {}
+        objApi.fetchUrl = "api/spaceTypes";
+        objApi.method = "GET";
+        objApi.successMSG = {
+            SUCC_SPACETYPESOK : '',
+        };
+        objApi.functionAfterSuccess = "loadSpaceTypes";
+        objApi.errorMSG= {}
+        callAPI(objApi, this);
     }
 
     loadInfraestructure() {
@@ -53,7 +66,8 @@ class AllPublications extends Component {
     // This function will trigger when the component is mounted, to fill the data from the state
     componentDidMount() {
         this.loadAllPublications();
-        this.loadInfraestructure()
+        this.loadInfraestructure();
+        this.loadSpaceTypes();
     }
 
     loadAllPublications = () =>{
@@ -78,8 +92,7 @@ class AllPublications extends Component {
         const publData = this.state.allPublToDisplay.filter(publ => {
             return publ.IdPublication === key
         });
-
-        this.modalElement.current.toggle(publData[0],this.state.admTokenObj,this.props.adminData, this.state.spaceTypes, this.state.facilities);
+        this.modalElement.current.toggle(publData[0], this.state.admTokenObj, this.props.adminData, this.state.spaceTypes, this.state.facilities);
     }
 
     render() {

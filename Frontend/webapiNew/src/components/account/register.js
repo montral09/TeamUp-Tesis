@@ -1,15 +1,13 @@
 ﻿import React from 'react';
-import Header from "../header/header";
 import { Redirect } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-import { connect } from 'react-redux';
-import { callAPI, displayErrorMessage } from '../../services/common/genericFunctions';
-// Multilanguage
 import { withTranslate } from 'react-redux-multilingual'
 import { compose } from 'redux';
+import { connect } from 'react-redux';
+import Header from "../header/header";
+import { callAPI, displayErrorMessage } from '../../services/common/genericFunctions';
+import {MAIN_URL_WEB} from '../../services/common/constants';
 
 class Register extends React.Component {
 
@@ -182,7 +180,7 @@ class Register extends React.Component {
                                                             <hr></hr>
                                                             <p>{translate('register_termsMsg1')}
                                                                 <em> {translate('registerYourself_w')}</em> {translate('register_termsMsg2')}
-                                                                <a href="" target="_blank"> {translate('register_termsMsg3')}</a>
+                                                                <a href={MAIN_URL_WEB+'termsAndConditions'} target="_blank"> {translate('register_termsMsg3')}</a>
                                                             </p>
                                                             <div className="mb-5" ></div>
                                                         </div>

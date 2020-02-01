@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
-import {View,Text,Image,StyleSheet} from 'react-native';
+import {View,Text,Image,StyleSheet,TouchableOpacity} from 'react-native';
 
 export default class SpacesScrollView extends Component {
 
     render (){
-        const { Capacity, Title, IdPublication, ImagesURL, City} = this.props;
+        const { Capacity, Title, IdPublication, ImagesURL, City, type} = this.props;
         //const { relatedPublications } = this.props;
         return (
                 <View style={styles.spacesContainer}>
@@ -16,11 +16,21 @@ export default class SpacesScrollView extends Component {
                         <Text style={{color: 'white'}}>{City}</Text>
                         <Text style={{color: 'white'}}>{Capacity}</Text>
                     </View>
+                    <View style={{alignItems: 'center'}}>
+                        {type === 'recommended' ? (
+                                <TouchableOpacity style={styles.button} onPress={()=>this.props.navigate('SpaceView', {PubId: IdPublication})}> 
+                                    <Text style={styles.buttonText}>Ver</Text>
+                                </TouchableOpacity>
+                            ) : (
+                                <TouchableOpacity style={styles.button} onPress={()=>this.props.push('SpaceView', {PubId: IdPublication})}> 
+                                    <Text style={styles.buttonText}>Ver</Text>
+                                </TouchableOpacity>
+                            )
+                        }  
+                    </View>
                 </View>    
         );
     }
-
-        //return null;
 }
 
 const styles = StyleSheet.create({
@@ -49,6 +59,22 @@ const styles = StyleSheet.create({
         paddingLeft: 10,
         paddingTop: 10,
         color: 'white',
+    },
+    button: {
+        width:100,
+        height:30,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor:'#0069c0',
+        borderRadius: 15,
+        marginVertical: 20,
+        elevation: 3,
+        paddingHorizontal: 5,
+    },
+    buttonText: {
+        fontSize:16,
+        fontWeight:'500',
+        color:'#ffffff'
     },
 
 });
