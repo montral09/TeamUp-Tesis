@@ -1,6 +1,14 @@
 import React, { Fragment, Component } from 'react';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { connect } from 'react-redux';
+import classnames from 'classnames';
+
+// Table
+import {
+    TabContent, TabPane, Nav, NavItem, NavLink,
+    Row, Col,
+    Card, CardBody, CardHeader
+} from 'reactstrap';
 
 // Extra
 import PageTitle from '../../../Layout/AppMain/PageTitle';
@@ -9,12 +17,7 @@ import ApproveRejectPreferentialPaymentModal from './approveRejectPreferentialPa
 import { callAPI } from '../../../config/genericFunctions';
 import Pagination from '../../Common/pagination';
 
-// Table
-import {
-    Row, Col,
-    Card, CardBody,
-    CardTitle
-} from 'reactstrap';
+
 
 class PreferentialPayments extends Component {
     constructor(props) {
@@ -24,11 +27,16 @@ class PreferentialPayments extends Component {
         const admTokenObj = props.admTokenObj;
         const adminMail = props.adminData.Mail
         this.state = {
-            preferentialPayments: [],
-            preferentialPaymentsToDisplay: [],
+            preferentialPaymentsPendPay: null,
+            preferentialPaymentsPendPayToDisplay: null,
+            preferentialPaymentsPendConf: null,
+            preferentialPaymentsPendConfToDisplay: null,
+            paymentsAll : null,
+            paymentsAllToDisplay : null,
             admTokenObj: admTokenObj,
             adminMail: adminMail,
-            isLoading : true
+            activeTab: "1",
+            activeTabText: 'Pendientes de aprobación'
         }
         this.modalElement = React.createRef(); // Connects the reference to the modal
         this.modalElementAppRej = React.createRef(); // Connects the reference to the modal
@@ -75,11 +83,26 @@ class PreferentialPayments extends Component {
         callAPI(objApi, this);       
     } 
 
+    toggle = (tab) => {
+        if (this.state.activeTab !== tab) {
+            var headerText = "";
+            switch (tab) {
+                case "1": headerText = "Pendientes de aprobación"; break;
+                case "2": headerText = "Pendientes de pago"; break;
+                case "3": headerText = "Todos"; break;
+            }
+            this.setState({
+                activeTab: tab,
+                activeTabText: headerText
+            });
+        }
+    }
+
     render() {
         return (
             <Fragment>
                 <PageTitle
-                    heading="Pagos plalnes preferenciales"
+                    heading="Pagos planes preferenciales"
                     subheading="En esta pantalla se mostrará la información de pagos de planes preferenciales."
                     icon="pe-7s-drawer icon-gradient bg-happy-itmeo"
                 />
@@ -93,15 +116,63 @@ class PreferentialPayments extends Component {
                     <Row>
                         <ApproveRejectPreferentialPaymentModal ref = {this.modalElementAppRej} updateTable={this.loadPreferentialPayments}/>
                         <Col lg="12">
-                            <Card className="main-card mb-3">
+                            <Card tabs="true" className="mb-3">
+                                <CardHeader className="card-header-tab">
+                                    <div className="card-header-title">
+                                        {this.state.activeTabText}
+                                    </div>
+                                    <Nav>
+                                        <NavItem>
+                                            <NavLink href="javascript:void(0);"
+                                                className={classnames({ active: this.state.activeTab === '1' })}
+                                                onClick={() => {
+                                                    this.toggle('1');
+                                                }}
+                                            >
+                                                Pendientes de aprobación
+                                                </NavLink>
+                                        </NavItem>
+                                        <NavItem>
+                                            <NavLink href="javascript:void(0);"
+                                                className={classnames({ active: this.state.activeTab === '2' })}
+                                                onClick={() => {
+                                                    this.toggle('2');
+                                                }}
+                                            >
+                                                Pendientes de pago
+                                                </NavLink>
+                                        </NavItem>
+                                        <NavItem>
+                                            <NavLink href="javascript:void(0);"
+                                                className={classnames({ active: this.state.activeTab === '3' })}
+                                                onClick={() => {
+                                                    this.toggle('3');
+                                                }}
+                                            >
+                                                Todos
+                                                </NavLink>
+                                        </NavItem>
+                                    </Nav>
+                                </CardHeader>
                                 <CardBody>
-                                    <CardTitle>Pendientes de aprobación</CardTitle>
-                                    <PreferentialPaymentsTable isLoading = {this.state.isLoading} preferentialPayments={this.state.preferentialPaymentsToDisplay} rejectPreferentialPayment={this.rejectPreferentialPayment} approvePreferentialPayment={this.approvePreferentialPayment}/>
+                                    <TabContent activeTab={this.state.activeTab}>
+                                        <TabPane tabId="1">
+                                            <PreferentialPaymentsTable mode='pendingConf' isLoading = {this.state.preferentialPaymentsPendConf == null} preferentialPayments={this.state.preferentialPaymentsPendConfToDisplay} rejectPreferentialPayment={this.rejectPreferentialPayment} approvePreferentialPayment={this.approvePreferentialPayment}/>
+                                            {this.state.preferentialPaymentsPendConf != null ? (<Pagination originalArray = {this.state.preferentialPaymentsPendConf} updateElementsToDisplay = {this.updateElementsToDisplay} />) : (null)} 
+                                        </TabPane>
+                                        <TabPane tabId="2">
+                                            <PreferentialPaymentsTable mode='pendingPay' isLoading = {this.state.preferentialPaymentsPendPay == null} preferentialPayments={this.state.preferentialPaymentsPendPayToDisplay} rejectPreferentialPayment={this.rejectPreferentialPayment} approvePreferentialPayment={this.approvePreferentialPayment}/>
+                                            {this.state.preferentialPaymentsPendPay != null ? (<Pagination originalArray = {this.state.preferentialPaymentsPendPay} updateElementsToDisplay = {this.updateElementsToDisplay} />) : (null)} 
+                                        </TabPane>
+                                        <TabPane tabId="3">
+                                            <PreferentialPaymentsTable mode='all' isLoading = {this.state.paymentsAll == null} preferentialPayments={this.state.paymentsAllToDisplay} rejectPreferentialPayment={this.rejectPreferentialPayment} approvePreferentialPayment={this.approvePreferentialPayment}/>
+                                            {this.state.paymentsAll != null ? (<Pagination originalArray = {this.state.paymentsAll} updateElementsToDisplay = {this.updateElementsToDisplay} />) : (null)} 
+
+                                        </TabPane>
+                                    </TabContent>
+
                                 </CardBody>
                             </Card>
-                        </Col>
-                        <Col lg="12">
-                            {!this.state.isLoading ? (<Pagination originalArray = {this.state.preferentialPaymentsFiltered} updateElementsToDisplay = {this.updateElementsToDisplay} />) : (null)} 
                         </Col>
                     </Row>
                 </ReactCSSTransitionGroup>

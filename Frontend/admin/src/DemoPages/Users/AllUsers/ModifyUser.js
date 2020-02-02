@@ -14,17 +14,31 @@ class ModifyUserModal extends React.Component {
 
         this.state = {
             modal: false,
+            isLoading : false,
+            buttonIsDisabled : false,
             userData: {},
             userDataChanged: {},
             admTokenObj: {},
             adminData: {}
         };
-
-        this.toggle = this.toggle.bind(this);
-        this.save = this.save.bind(this);
     }
 
-    toggle(userData,admTokenObj,adminData) {
+    changeModalLoadingState = (closeModal) => {
+        if (closeModal) {
+            this.setState({
+                modal: !this.state.modal,
+                isLoading: !this.state.isLoading,
+                buttonIsDisabled: !this.state.buttonIsDisabled
+            })
+        } else {
+            this.setState({
+                isLoading: !this.state.isLoading,
+                buttonIsDisabled: !this.state.buttonIsDisabled
+            })
+        }
+    }
+
+    toggle = (userData,admTokenObj,adminData) => {
         this.setState({
             modal: !this.state.modal,
             userData: userData,
@@ -34,9 +48,7 @@ class ModifyUserModal extends React.Component {
         });
     }
 
-    save() {
-        console.log("save - this.state: ");
-        console.log(this.state);
+    save = () => {
         let {Mail, Name, LastName, Phone, Rut, RazonSocial, Address, CheckPublisher, PublisherValidated, MailValidated, Active  } = this.state.userDataChanged;
         var objApi = {};
         objApi.objToSend = {
@@ -55,7 +67,6 @@ class ModifyUserModal extends React.Component {
             AdminMail: this.state.adminData.Mail,
             Active: Active
         }
-        console.log(objApi)
         objApi.fetchUrl = "api/updateUserAdmin";
         objApi.method = "PUT";
         objApi.successMSG = {
@@ -63,9 +74,10 @@ class ModifyUserModal extends React.Component {
         };
         objApi.functionAfterSuccess = "updateUser";
         objApi.functionAfterError = "updateUser";
-            objApi.errorMSG= {
-                ERR_MAILALREADYEXIST : 'Ese correo ya esta en uso, por favor elija otro.'
-            }
+        objApi.errorMSG= {
+            ERR_MAILALREADYEXIST : 'Ese correo ya esta en uso, por favor elija otro.'
+        }
+        this.changeModalLoadingState(false);
         callAPI(objApi, this);
     }
     
@@ -90,7 +102,7 @@ class ModifyUserModal extends React.Component {
                     <ModalBody>
                     <Form>
                         <FormGroup row>
-                            <Label for="Mail" sm={2}>Email</Label>
+                            <Label for="Mail" sm={2}>Mail</Label>
                             <Col sm={10}>
                                 <Input type="email" name="Mail" id="Mail"
                                         value={this.state.userDataChanged.Mail} onChange={this.onChange}/>
@@ -125,14 +137,14 @@ class ModifyUserModal extends React.Component {
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label for="RazonSocial" sm={2}>Razon Social</Label>
+                            <Label for="RazonSocial" sm={2}>Razón Social</Label>
                             <Col sm={10}>
                                 <Input type="text" name="RazonSocial" id="RazonSocial"
                                         value={this.state.userDataChanged.RazonSocial || ""} onChange={this.onChange}/>
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label for="Address" sm={2}>Direccion</Label>
+                            <Label for="Address" sm={2}>Dirección</Label>
                             <Col sm={10}>
                                 <Input type="text" name="Address" id="Address"
                                         value={this.state.userDataChanged.Address || ""} onChange={this.onChange}/>
@@ -141,7 +153,7 @@ class ModifyUserModal extends React.Component {
 
 
                         <FormGroup row>
-                            <Label for="CheckPublisher" sm={2}>Es Gestor</Label>
+                            <Label for="CheckPublisher" sm={2}>Es gestor</Label>
                             <Col sm={{size: 10}}>
                                 <FormGroup check>
                                     <Label check>
@@ -152,7 +164,7 @@ class ModifyUserModal extends React.Component {
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label for="MailValidated" sm={2}>Mail Validado</Label>
+                            <Label for="MailValidated" sm={2}>Mail validado</Label>
                             <Col sm={{size: 10}}>
                                 <FormGroup check>
                                     <Label check>
@@ -165,8 +177,13 @@ class ModifyUserModal extends React.Component {
                     </Form>
                     </ModalBody>
                     <ModalFooter>
-                        <Button color="link" onClick={this.toggle}>Cancel</Button>
-                        <Button color="primary" onClick={this.save}>Guardar</Button>
+                        <Button color="link" disabled={this.state.buttonIsDisabled} onClick={this.toggle}>Cancelar</Button>
+                        <Button color="primary" disabled={this.state.buttonIsDisabled} onClick={this.save}>Guardar
+                            &nbsp;
+                            {this.state.isLoading &&
+                                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            }
+                        </Button>
                     </ModalFooter>
                 </Modal>
             </span>

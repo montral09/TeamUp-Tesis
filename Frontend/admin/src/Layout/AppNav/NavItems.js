@@ -1,7 +1,7 @@
 export const PublNav = [
     {
         icon: 'pe-7s-up-arrow',
-        label: 'Pendiente Aprobacion',
+        label: 'Pendiente Aprobación',
         to: '#/publications/publicationApprov',
     },
     {
@@ -22,7 +22,7 @@ export const ResNav = [
 export const GestNav = [
     {
         icon: 'pe-7s-up-arrow',
-        label: 'Pendiente Aprobacion',
+        label: 'Pendiente Aprobación',
         to: '#/publishers/pendienteaprobacion',
     },
 ];  

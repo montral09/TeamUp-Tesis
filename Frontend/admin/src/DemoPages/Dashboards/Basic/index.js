@@ -64,7 +64,7 @@ class AnalyticsDashboard1 extends Component {
             dropdownOpen: false,
             arrDataUsers: null,
             publ: null,
-            preferentialPayments: null,
+            preferentialPaymentsPendConf: null,
             allPubl: null,
             paymentsPendingConfirmation: null
         };
@@ -128,7 +128,7 @@ class AnalyticsDashboard1 extends Component {
         callAPI(objApi, this);
     }
     loadPreferentialPayments = () => {
-        this.setState({ preferentialPayments: null })
+        this.setState({ paymentsPendingConfirmation: null })
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.state.admTokenObj.accesToken,
@@ -262,14 +262,14 @@ class AnalyticsDashboard1 extends Component {
                                                     <i className="lnr lnr-diamond icon-gradient bg-premium-dark"> </i>
                                                 </div>
                                                 <div className="widget-numbers">
-                                                    {this.state.preferentialPayments == null ? ("--") : (this.state.preferentialPayments.length)}
+                                                    {this.state.preferentialPaymentsPendConf == null ? ("--") : (this.state.preferentialPaymentsPendConf.length)}
                                                 </div>
                                                 <div className="widget-subheading">
                                                     Pagos preferenciales pendientes aprobación
                                             </div>
                                             </div>
                                             <div className="widget-progress-wrapper mt-3">
-                                                {this.state.preferentialPayments == null ? (<Progress className="progress-bar-sm progress-bar-animated-alt" color="primary"
+                                                {this.state.preferentialPaymentsPendConf == null ? (<Progress className="progress-bar-sm progress-bar-animated-alt" color="primary"
                                                     value="100" />) : (null)}
                                             </div>
                                         </div>

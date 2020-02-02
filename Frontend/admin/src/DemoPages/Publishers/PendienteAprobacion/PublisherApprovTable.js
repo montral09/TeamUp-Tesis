@@ -15,7 +15,7 @@ const PublisherApprovTable = ({pubPendApp, approvePublisher, approveAllPublisher
                 <td>{publ.Rut}</td>
                 <td>{publ.RazonSocial}</td>
                 <td>{publ.Address}</td>
-                <td><a onClick={() => { approvePublisher(publ.Mail) }}><i className="lnr-checkmark-circle"></i></a></td>
+                <td><a href="javascript:void(0);" onClick={() => { approvePublisher(publ.Mail) }}><i className="lnr-checkmark-circle"></i></a></td>
             </tr>
             )
         })
@@ -32,7 +32,7 @@ const PublisherApprovTable = ({pubPendApp, approvePublisher, approveAllPublisher
             <th>Correo</th>
             <th>Telefono</th>
             <th>RUT</th>
-            <th>Razon Social</th>
+            <th>Razón Social</th>
             <th>Dirección</th>
             <th>Aprobar</th>
           </tr>

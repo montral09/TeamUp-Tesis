@@ -2,11 +2,16 @@ import React, { Fragment, Component } from 'react';
 import { connect } from 'react-redux';
 import classnames from 'classnames';
 
-// Extra
+// Table
+import {
+    TabContent, TabPane, Nav, NavItem, NavLink,
+    Row, Col,
+    Card, CardBody, CardHeader
+} from 'reactstrap';
 
+// Extra
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import PageTitle from '../../../Layout/AppMain/PageTitle';
-
 import CommissionPaymentsTable from './commissionPaymentsTable';
 import ApproveRejectCommissionPaymentModal from './approveRejectCommissionPayment';
 import UpdateCommissionTable from '../CommissionPayments/updateCommissionTable';
@@ -14,13 +19,7 @@ import UpdateCommissionConfirmationModal from '../CommissionPayments/updateCommi
 import Pagination from '../../Common/pagination';
 import { callAPI } from '../../../config/genericFunctions';
 
-// Table
 
-import {
-    TabContent, TabPane, Nav, NavItem, NavLink,
-    Row, Col,
-    Card, CardBody, CardHeader
-} from 'reactstrap';
 
 class CommissionPayments extends Component {
     constructor(props) {
@@ -28,14 +27,12 @@ class CommissionPayments extends Component {
         this.state = {
             paymentsPendingConfirmation: [],
             paymentsPendingConfirmationToDisplay: [],
-            paymentsComission: [],
-            paymentsComissionToDisplay: [],
-            paymentsPendingPaid: [],
-            paymentsPendingPaidToDisplay: [],
+            paymentsComission: null,
+            paymentsComissionToDisplay: null,
+            paymentsPendingPaid: null,
+            paymentsPendingPaidToDisplay: null,
             admTokenObj: props.admTokenObj,
             adminMail: props.adminData.Mail,
-            isLoading: true,
-            isLoading2: true,
             activeTab: "1",
             activeTabText: 'Pendientes de aprobación'
         }
@@ -203,17 +200,17 @@ class CommissionPayments extends Component {
                                 <CardBody>
                                     <TabContent activeTab={this.state.activeTab}>
                                         <TabPane tabId="1">
-                                            <CommissionPaymentsTable onlyView={false} isLoading={this.state.isLoading} paymentsPendingConfirmation={this.state.paymentsPendingConfirmationToDisplay} rejectCommissionPayment={this.rejectCommissionPayment} approveCommissionPayment={this.approveCommissionPayment} />
-                                            {!this.state.isLoading ? (<Pagination originalArray={this.state.paymentsPendingConfirmation} updateElementsToDisplay={this.updateElementsToDisplay} />) : (null)}
+                                            <CommissionPaymentsTable onlyView={false} isLoading={this.state.paymentsComissionToDisplay == null} paymentsPendingConfirmation={this.state.paymentsPendingConfirmationToDisplay} rejectCommissionPayment={this.rejectCommissionPayment} approveCommissionPayment={this.approveCommissionPayment} />
+                                            {this.state.paymentsComission != null ? (<Pagination originalArray={this.state.paymentsPendingConfirmation} updateElementsToDisplay={this.updateElementsToDisplay} />) : (null)}
                                         </TabPane>
                                         <TabPane tabId="2">
                                             <UpdateCommissionConfirmationModal ref={this.modalElementUpdate} saveUpdatedComission= {this.saveUpdatedComission}/>
-                                            <UpdateCommissionTable isLoading={this.state.isLoading2} paymentsPendingPaid={this.state.paymentsPendingPaidToDisplay} changeCommission={this.changeCommission} />
-                                            {!this.state.isLoading2 ? (<Pagination originalArray={this.state.paymentsPendingPaid} updateElementsToDisplay={this.updateElementsToDisplay3} />) : (null)}
+                                            <UpdateCommissionTable isLoading={this.state.paymentsPendingPaidToDisplay == null} paymentsPendingPaid={this.state.paymentsPendingPaidToDisplay} changeCommission={this.changeCommission} />
+                                            {this.state.paymentsPendingPaid != null ? (<Pagination originalArray={this.state.paymentsPendingPaid} updateElementsToDisplay={this.updateElementsToDisplay3} />) : (null)}
                                         </TabPane>
                                         <TabPane tabId="3">
-                                            <CommissionPaymentsTable onlyView={true} isLoading={this.state.isLoading} paymentsPendingConfirmation={this.state.paymentsComissionToDisplay} rejectCommissionPayment={this.rejectCommissionPayment} approveCommissionPayment={this.approveCommissionPayment} />
-                                            {!this.state.isLoading ? (<Pagination originalArray={this.state.paymentsComission} updateElementsToDisplay={this.updateElementsToDisplay2} />) : (null)}
+                                            <CommissionPaymentsTable onlyView={true} isLoading={this.state.paymentsComissionToDisplay == null} paymentsPendingConfirmation={this.state.paymentsComissionToDisplay} rejectCommissionPayment={this.rejectCommissionPayment} approveCommissionPayment={this.approveCommissionPayment} />
+                                            {this.state.paymentsComission != null ? (<Pagination originalArray={this.state.paymentsComission} updateElementsToDisplay={this.updateElementsToDisplay2} />) : (null)}
                                         </TabPane>
                                     </TabContent>
 
