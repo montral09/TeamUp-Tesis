@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using backend.Data_Access.VO;
 using backend.Data_Access.VO.Data;
 using backend.Logic;
+using backend.Logic.Entities;
 
 namespace backend.Data_Access.Query
 {
@@ -17,18 +18,18 @@ namespace backend.Data_Access.Query
         string UpdateUser(User user, String newMail);
         String ValidateDeletion(String mail);
         void DeleteUser(String mail);
-        List<VOPublisher> GetPublishers();
-        List<VOCustomer> GetCustomers();
+        List<User> GetPublishers();
         void ApprovePublishers(List<String> mails);
         Admin GetAdmin(String mail, String password);
         void RequestPublisher(String mail);
-        VOTokens CreateTokens(String mail);
+        Tokens CreateTokens(String mail);
         bool ValidAccessToken(String mail, String accessToken);
         string UpdatePassword(String mail);
         int ValidateEmail(String activationCode);
-        void UpdateUserAdmin(VORequestUpdateUserAdmin voRequest);
-        List<VOUserAdmin> GetUsers();
-        User GetUserData(VORequestGetUserData voRequestUserData);
+        void UpdateUserAdmin(string mail, string name, string lastName, string phone, bool checkPublisher,
+                        string rut, string razonSocial, string address, bool mailValidated, bool publisherValidated, bool active);
+        List<User> GetUsers();
+        User GetUserData(string accessToken);
         bool IsPublisher(String mail);
         int GetIdLanguageByDescription(String descLanguage);
 

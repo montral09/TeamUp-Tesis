@@ -61,12 +61,6 @@ namespace backend.Data_Access.Query
             return query;
         }
 
-        public String GetCustomers()
-        {
-            String query = "select * from USERS  WHERE checkPublisher = 0 and active = 1";
-            return query;
-        }
-
         public String ApprovePublishers()
         {
             String query = "update USERS set publisherValidated = 1 where mail = @publisherMail";

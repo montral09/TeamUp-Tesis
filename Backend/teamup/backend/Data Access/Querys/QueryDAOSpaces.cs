@@ -1,6 +1,7 @@
 ﻿using backend.Data_Access.VO;
 using backend.Logic;
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace backend.Data_Access.Query
@@ -12,13 +13,7 @@ namespace backend.Data_Access.Query
             String query = "select idSpaceType, description, individualRent from SPACE_TYPES";
             return query;
         }
-
-        public String GetReservationPlans()
-        {
-            String query = "select idReservationPlan, description from RESERVATION_PLANS";
-            return query;
-        }
-
+   
         public String GetFacilities()
         {
             String query = "select idFacility, description, icon from FACILITIES";
@@ -82,11 +77,12 @@ namespace backend.Data_Access.Query
             return query;
         }
 
-        public String GetQuantityPublicationsWithFilter(VORequestGetPublicationsWithFilters voGetPublicationsFilter, int state)
+        public String GetQuantityPublicationsWithFilter(int state, int spaceType, int capacity, List<int> facilities,
+            string city, int pageNumber, int publicationsPerPage)
         {
             StringBuilder query = new StringBuilder();
             query = query.Append("select count(p.idPublication) as quantity from PUBLICATIONS p  ");
-            if (voGetPublicationsFilter.Facilities != null && voGetPublicationsFilter.Facilities.Count != 0)
+            if (facilities != null && facilities.Count != 0)
             {
                 query.Append(", PUBLICATION_FACILITIES pf ");
             }
@@ -95,34 +91,34 @@ namespace backend.Data_Access.Query
             {
                 query.Append("and p.state = @state ");
             }
-            if (voGetPublicationsFilter.SpaceType != 0)
+            if (spaceType != 0)
             {
                 query.Append("and p.spaceType = @spaceType ");
             }
-            if (voGetPublicationsFilter.Capacity != 0)
+            if (capacity != 0)
             {
                 query.Append("and p.capacity >= @capacity ");
             }
-            if (!String.IsNullOrEmpty(voGetPublicationsFilter.City))
+            if (!String.IsNullOrEmpty(city))
             {
                 query.Append("and p.city = @city ");
             }
-            if (voGetPublicationsFilter.Facilities != null && voGetPublicationsFilter.Facilities.Count != 0)
+            if (facilities != null && facilities.Count != 0)
             {
-                string facilities = Util.CreateFacilitiesString(voGetPublicationsFilter.Facilities);
-                query.Append("and pf.idFacility in (").Append(facilities).Append(") and pf.idPublication = p.idPublication group by p.idPublication having count(distinct pf.idFacility) = ").Append(voGetPublicationsFilter.Facilities.Count);
+                string facilitiesChain = Util.CreateFacilitiesString(facilities);
+                query.Append("and pf.idFacility in (").Append(facilitiesChain).Append(") and pf.idPublication = p.idPublication group by p.idPublication having count(distinct pf.idFacility) = ").Append(facilities.Count);
 
             }
             return query.ToString();
         }
 
-        public String GetPublicationsWithFilter(VORequestGetPublicationsWithFilters voGetPublicationsFilter, int maxPublicationsPage, int state)
+        public String GetPublicationsWithFilter(List<int> facilities, int spaceType, int capacity, string city,  int maxPublicationsPage, int state)
         {
             StringBuilder query = new StringBuilder();
             string selectColumns = "p.idPublication, u.name, u.lastName, u.mail, u.phone, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.city, p.totalViews, p.expirationDate, s.individualRent ";
             query = query.Append("select ");
             query.Append(selectColumns).Append("from PUBLICATIONS p,  Users u, SPACE_TYPES s ");
-            if (voGetPublicationsFilter.Facilities != null && voGetPublicationsFilter.Facilities.Count != 0)
+            if (facilities != null && facilities.Count != 0)
             {
                 query.Append(", PUBLICATION_FACILITIES pf ");
             }
@@ -131,22 +127,22 @@ namespace backend.Data_Access.Query
             {
                 query.Append("and p.state = @state ");
             }
-            if (voGetPublicationsFilter.SpaceType != 0)
+            if (spaceType != 0)
             {
                 query.Append("and p.spaceType = @spaceType ");
             }
-            if (voGetPublicationsFilter.Capacity != 0)
+            if (capacity != 0)
             {
                 query.Append("and p.capacity >= @capacity ");
             }
-            if (!String.IsNullOrEmpty(voGetPublicationsFilter.City))
+            if (!String.IsNullOrEmpty(city))
             {
                 query.Append("and p.city = @city ");
             }
-            if (voGetPublicationsFilter.Facilities != null && voGetPublicationsFilter.Facilities.Count != 0)
+            if (facilities != null && facilities.Count != 0)
             {
-                string facilities = Util.CreateFacilitiesString(voGetPublicationsFilter.Facilities);
-                query.Append("and pf.idFacility in (").Append(facilities).Append(")  and pf.idPublication = p.idPublication group by ").Append(selectColumns).Append("having count(distinct pf.idFacility) = ").Append(voGetPublicationsFilter.Facilities.Count);
+                string facilitiesChain = Util.CreateFacilitiesString(facilities);
+                query.Append("and pf.idFacility in (").Append(facilitiesChain).Append(")  and pf.idPublication = p.idPublication group by ").Append(selectColumns).Append("having count(distinct pf.idFacility) = ").Append(facilities.Count);
 
             }
             // query.Append(" order by p.idPublication offset ").Append((voGetPublicationsFilter.PageNumber) * maxPublicationsPage).Append(" rows fetch next ").Append(maxPublicationsPage).Append(" rows only ");

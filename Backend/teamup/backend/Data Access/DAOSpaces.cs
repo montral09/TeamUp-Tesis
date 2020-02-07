@@ -4,6 +4,7 @@ using backend.Data_Access.VO.Data;
 using backend.Data_Access.VO.Requests;
 using backend.Exceptions;
 using backend.Logic;
+using backend.Logic.Entities;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -43,10 +44,10 @@ namespace backend.Data_Access
             return con;
         }
 
-        public List<VOSpaceType> GetSpaceTypes()
+        public List<SpaceType> GetSpaceTypes()
         {
             SqlConnection con = null;
-            List<VOSpaceType> spaceTypes = new List<VOSpaceType>();
+            List<SpaceType> spaceTypes = new List<SpaceType>();
             try
             {
                 con = new SqlConnection(GetConnectionString());
@@ -54,11 +55,11 @@ namespace backend.Data_Access
                 String query = cns.GetSpacesTypes();
                 SqlCommand selectCommand = new SqlCommand(query, con);
                 SqlDataReader dr = selectCommand.ExecuteReader();
-                VOSpaceType voSpaceType;
+                SpaceType spaceType;
                 while (dr.Read())
                 {
-                    voSpaceType = new VOSpaceType(Convert.ToInt32(dr["idSpaceType"]), Convert.ToString(dr["description"]), Convert.ToBoolean(dr["individualRent"]));
-                    spaceTypes.Add(voSpaceType);
+                    spaceType = new SpaceType(Convert.ToInt32(dr["idSpaceType"]), Convert.ToString(dr["description"]), Convert.ToBoolean(dr["individualRent"]));
+                    spaceTypes.Add(spaceType);
                 }
                 dr.Close();
             }
@@ -75,44 +76,11 @@ namespace backend.Data_Access
             }
             return spaceTypes;
         }
-
-        public List<VOReservationType> GetReservationTypes()
+        
+        public List<Facility> GetFacilities()
         {
             SqlConnection con = null;
-            List<VOReservationType> reservationTypes = new List<VOReservationType>();
-            try
-            {
-                con = new SqlConnection(GetConnectionString());
-                con.Open();
-                String query = cns.GetReservationPlans();
-                SqlCommand selectCommand = new SqlCommand(query, con);
-                SqlDataReader dr = selectCommand.ExecuteReader();
-                VOReservationType voReservationType;
-                while (dr.Read())
-                {
-                    voReservationType = new VOReservationType(Convert.ToInt32(dr["idReservationPlan"]), Convert.ToString(dr["description"]));
-                    reservationTypes.Add(voReservationType);
-                }
-                dr.Close();
-            }
-            catch (Exception)
-            {
-                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
-            }
-            finally
-            {
-                if (con != null)
-                {
-                    con.Close();
-                }
-            }
-            return reservationTypes;
-        }
-
-        public List<VOFacility> GetFacilities()
-        {
-            SqlConnection con = null;
-            List<VOFacility> facilities = new List<VOFacility>();
+            List<Facility> facilities = new List<Facility>();
             try
             {
                 con = new SqlConnection(GetConnectionString());
@@ -120,11 +88,11 @@ namespace backend.Data_Access
                 String query = cns.GetFacilities();
                 SqlCommand selectCommand = new SqlCommand(query, con);
                 SqlDataReader dr = selectCommand.ExecuteReader();
-                VOFacility voFacility;
+                Facility facility;
                 while (dr.Read())
                 {
-                    voFacility = new VOFacility(Convert.ToInt32(dr["idFacility"]), Convert.ToString(dr["description"]), Convert.ToString(dr["icon"]));
-                    facilities.Add(voFacility);
+                    facility = new Facility(Convert.ToInt32(dr["idFacility"]), Convert.ToString(dr["description"]), Convert.ToString(dr["icon"]));
+                    facilities.Add(facility);
                 }
                 dr.Close();
             }
@@ -142,7 +110,7 @@ namespace backend.Data_Access
             return facilities;
         }
 
-        public async Task<Dictionary<string, string>> CreatePublicationAsync(VORequestCreatePublication voCreatePublication, User user)
+        public async Task<Dictionary<string, string>> CreatePublicationAsync(Publication publication, User user)
         {
             Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
             SqlConnection con = null;
@@ -155,44 +123,43 @@ namespace backend.Data_Access
                 con.Open();
                 objTrans = con.BeginTransaction();
                 String query = cns.CreatePublication();
-                String mail = voCreatePublication.VOPublication.Mail;
-                DateTime expirationDate = CalculateExpirationDatePublication(voCreatePublication.VOPublication.IdPlan, con, objTrans);
+                DateTime expirationDate = CalculateExpirationDatePublication(publication.IdPlan, con, objTrans);
                 SqlCommand insertCommand = new SqlCommand(query, con);
                 List<SqlParameter> prm = new List<SqlParameter>()
                     {
                         new SqlParameter("@idUser", SqlDbType.VarChar) {Value = user.IdUser},
-                        new SqlParameter("@spaceType", SqlDbType.Int) {Value = voCreatePublication.VOPublication.SpaceType},
-                        new SqlParameter("@title", SqlDbType.VarChar) {Value = voCreatePublication.VOPublication.Title},
-                        new SqlParameter("@description", SqlDbType.VarChar) {Value = voCreatePublication.VOPublication.Description},
-                        new SqlParameter("@address", SqlDbType.VarChar) {Value = voCreatePublication.VOPublication.Address},
-                        new SqlParameter("@locationLat", SqlDbType.Decimal) {Value = voCreatePublication.VOPublication.Location.Latitude},
-                        new SqlParameter("@locationLong", SqlDbType.Decimal) {Value = voCreatePublication.VOPublication.Location.Longitude},
-                        new SqlParameter("@capacity", SqlDbType.Int) {Value = voCreatePublication.VOPublication.Capacity},
-                        new SqlParameter("@videoURL", SqlDbType.VarChar) {Value = voCreatePublication.VOPublication.VideoURL},
-                        new SqlParameter("@hourPrice", SqlDbType.Int) {Value = voCreatePublication.VOPublication.HourPrice},
-                        new SqlParameter("@dailyPrice", SqlDbType.Int) {Value = voCreatePublication.VOPublication.DailyPrice},
-                        new SqlParameter("@weeklyPrice", SqlDbType.Int) {Value = voCreatePublication.VOPublication.WeeklyPrice},
-                        new SqlParameter("@monthlyPrice", SqlDbType.Int) {Value = voCreatePublication.VOPublication.MonthlyPrice},
-                        new SqlParameter("@availability", SqlDbType.VarChar) {Value = voCreatePublication.VOPublication.Availability},
-                        new SqlParameter("@city", SqlDbType.VarChar) {Value = voCreatePublication.VOPublication.City},
+                        new SqlParameter("@spaceType", SqlDbType.Int) {Value = publication.SpaceType},
+                        new SqlParameter("@title", SqlDbType.VarChar) {Value = publication.Title},
+                        new SqlParameter("@description", SqlDbType.VarChar) {Value = publication.Description},
+                        new SqlParameter("@address", SqlDbType.VarChar) {Value = publication.Address},
+                        new SqlParameter("@locationLat", SqlDbType.Decimal) {Value = publication.Location.Latitude},
+                        new SqlParameter("@locationLong", SqlDbType.Decimal) {Value = publication.Location.Longitude},
+                        new SqlParameter("@capacity", SqlDbType.Int) {Value = publication.Capacity},
+                        new SqlParameter("@videoURL", SqlDbType.VarChar) {Value = publication.VideoURL},
+                        new SqlParameter("@hourPrice", SqlDbType.Int) {Value = publication.HourPrice},
+                        new SqlParameter("@dailyPrice", SqlDbType.Int) {Value = publication.DailyPrice},
+                        new SqlParameter("@weeklyPrice", SqlDbType.Int) {Value = publication.WeeklyPrice},
+                        new SqlParameter("@monthlyPrice", SqlDbType.Int) {Value = publication.MonthlyPrice},
+                        new SqlParameter("@availability", SqlDbType.VarChar) {Value = publication.Availability},
+                        new SqlParameter("@city", SqlDbType.VarChar) {Value = publication.City},
                         new SqlParameter("@expirationDate", SqlDbType.DateTime) {Value = expirationDate}
                     };
                 insertCommand.Parameters.AddRange(prm.ToArray());
                 insertCommand.Transaction = objTrans;
                 int idPublication = Convert.ToInt32(insertCommand.ExecuteScalar());
-                foreach (var facility in voCreatePublication.VOPublication.Facilities)
+                foreach (var facility in publication.Facilities)
                 {
                     InsertFacility(idPublication, facility, con, objTrans);
                 }
-                bool isFreePreferentialPlan = IsFreePreferentialPlan(voCreatePublication.VOPublication.IdPlan, con, objTrans);
+                bool isFreePreferentialPlan = IsFreePreferentialPlan(publication.IdPlan, con, objTrans);
                 // If Plan <> FREE, insert preferential payment
                 if (!isFreePreferentialPlan)
                 {
-                    prefPlanPrice = CreatePreferentialPayment(idPublication, voCreatePublication.VOPublication.IdPlan, con, objTrans);
+                    prefPlanPrice = CreatePreferentialPayment(idPublication, publication.IdPlan, con, objTrans);
                 }
                 // Store images
                 StorageUtil storageUtil = new StorageUtil();
-                List<string> urls = await storageUtil.StoreImageAsync(voCreatePublication.Images, user.IdUser, idPublication);
+                List<string> urls = await storageUtil.StoreImageAsync(publication.Images, user.IdUser, idPublication);
                 InsertImages(con, objTrans, idPublication, urls);
                 objTrans.Commit();
                 expirationDateString = Util.ConvertDateToString(expirationDate);
@@ -266,7 +233,7 @@ namespace backend.Data_Access
             insertCommand.Parameters.AddRange(prm.ToArray());
             insertCommand.Transaction = objTrans;
             insertCommand.ExecuteNonQuery();
-            VOPreferentialPlan prefPlan = GetPreferentialPlanInfo(idPublication, con, objTrans);
+            PreferentialPlan prefPlan = GetPreferentialPlanInfo(idPublication, con, objTrans);
             SetPreferentialPlanPrice(idPublication, idPlan, prefPlan.Price, con, objTrans);
             return prefPlan.Price;
         }
@@ -394,12 +361,12 @@ namespace backend.Data_Access
             return facilities;
         }
 
-        public List<VOPublication> GetPublisherSpaces(string mail)
+        public List<Publication> GetPublisherSpaces(string mail)
         {
             SqlConnection con = null;
-            List<VOPublication> publications = new List<VOPublication>();
+            List<Publication> publications = new List<Publication>();
             Util util = new Util();
-            VOPreferentialPlan voPreferentialPlan;
+            PreferentialPlan preferentialPlan;
             try
             {
                 con = new SqlConnection(GetConnectionString());
@@ -414,7 +381,7 @@ namespace backend.Data_Access
                 };
                 selectCommand.Parameters.Add(parametroMail);
                 SqlDataReader dr = selectCommand.ExecuteReader();
-                VOPublication voPublication;
+                Publication publication;
                 string creationDateString;
                 while (dr.Read())
                 {
@@ -438,19 +405,19 @@ namespace backend.Data_Access
                         images.Add(accessURL);
                     }
                     drImages.Close();
-                    VOLocationCordinates voLocation = new VOLocationCordinates(Convert.ToDecimal(dr["locationLat"]), Convert.ToDecimal(dr["locationLong"]));
-                    List<VOReview> reviews = GetReviews(idPublication, con);
+                    LocationCordinates location = new LocationCordinates(Convert.ToDecimal(dr["locationLat"]), Convert.ToDecimal(dr["locationLong"]));
+                    List<Review> reviews = GetReviews(idPublication, con);
                     int ranking = util.GetRanking(reviews);
                     int questionsWithoutAnswer = GetQuestionsWithoutAnswer(idPublication, con);
-                    voPreferentialPlan = GetPreferentialPlanInfo(idPublication, con, null);
+                    preferentialPlan = GetPreferentialPlanInfo(idPublication, con, null);
                     DateTime creationDate = Convert.ToDateTime(dr["creationDate"]);
                     creationDateString = Util.ConvertDateToString(creationDate);
                     DateTime dateTo = Convert.ToDateTime(dr["expirationDate"]);
                     String dateToString = Util.ConvertDateToString(dateTo);
-                    voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), null, null, null, null, Convert.ToInt32(dr["spaceType"]), creationDateString, dateToString, Convert.ToString(dr["title"]), Convert.ToString(dr["description"]), Convert.ToString(dr["address"]), Convert.ToString(dr["city"]),
-                        voLocation, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
-                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, Convert.ToString(dr["state"]), 0, reviews, ranking, Convert.ToInt32(dr["totalViews"]), false, questionsWithoutAnswer, false, idPlan, voPreferentialPlan, false);
-                    publications.Add(voPublication);
+                    publication = new Publication(Convert.ToInt32(dr["idPublication"]), 0, null, null, null, null, Convert.ToInt32(dr["spaceType"]), creationDateString, dateToString, Convert.ToString(dr["title"]), Convert.ToString(dr["description"]), Convert.ToString(dr["address"]),
+                        location, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
+                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, Convert.ToString(dr["state"]), 0, reviews, ranking, Convert.ToString(dr["city"]), Convert.ToInt32(dr["totalViews"]), false, questionsWithoutAnswer, false, idPlan, preferentialPlan, false);
+                    publications.Add(publication);                   
                 }
                 dr.Close();
             }
@@ -468,9 +435,9 @@ namespace backend.Data_Access
             return publications;
         }
 
-        private VOPayment GetCommissionPayment(int idReservation, SqlConnection con)
+        private Payment GetCommissionPayment(int idReservation, SqlConnection con)
         {
-            VOPayment voPayment = null;
+            Payment payment = null;
             try
             {
                 string paymentDateString = null;
@@ -492,7 +459,7 @@ namespace backend.Data_Access
                         DateTime paymentDate = Convert.ToDateTime(dr["paymentCommissionDate"]);
                         paymentDateString = Util.ConvertDateToString(paymentDate);
                     }
-                    voPayment = new VOPayment(Convert.ToInt32(dr["commissionPaymentState"]), Convert.ToString(dr["description"]), Convert.ToString(dr["commissionComment"]), Convert.ToString(dr["commissionEvidence"]), paymentDateString, Convert.ToInt32(dr["commission"]));
+                    payment = new Payment(Convert.ToInt32(dr["commissionPaymentState"]), Convert.ToString(dr["description"]), Convert.ToString(dr["commissionComment"]), Convert.ToString(dr["commissionEvidence"]), paymentDateString, Convert.ToInt32(dr["commission"]));
                 }
                 dr.Close();
             }
@@ -500,12 +467,12 @@ namespace backend.Data_Access
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
-            return voPayment;
+            return payment;
         }
 
-        private VOPreferentialPlan GetPreferentialPlanInfo(int idPublication, SqlConnection con, SqlTransaction objTrans)
+        private PreferentialPlan GetPreferentialPlanInfo(int idPublication, SqlConnection con, SqlTransaction objTrans)
         {
-            VOPreferentialPlan voPreferentialPlan = null;
+            PreferentialPlan preferentialPlan = null;
             try
             {
                 string paymentDateString = null;
@@ -531,7 +498,7 @@ namespace backend.Data_Access
                             DateTime paymentDate = Convert.ToDateTime(dr["paymentDate"]);
                             paymentDateString = Util.ConvertDateToString(paymentDate);
                         }
-                        voPreferentialPlan = new VOPreferentialPlan(Convert.ToInt32(dr["idPlan"]), Convert.ToString(dr["planDescription"]), Convert.ToInt32(dr["state"]),
+                        preferentialPlan = new PreferentialPlan(Convert.ToInt32(dr["idPlan"]), Convert.ToString(dr["planDescription"]), Convert.ToInt32(dr["state"]),
                                 Convert.ToString(dr["paymentDescription"]), Convert.ToInt32(dr["price"]), Convert.ToInt32(dr["planPrice"]), paymentDateString, Convert.ToString(dr["comment"]), Convert.ToString(dr["evidence"]));
                     }
                 }
@@ -555,7 +522,7 @@ namespace backend.Data_Access
                         plan = Convert.ToString(drPlan["name"]);
                     }
                     drPlan.Close();
-                    voPreferentialPlan = new VOPreferentialPlan(PLAN_FREE, plan, 0, null, 0, 0, null, null, null);
+                    preferentialPlan = new PreferentialPlan(PLAN_FREE, plan, 0, null, 0, 0, null, null, null);
                 }
                 dr.Close();
             }
@@ -563,12 +530,12 @@ namespace backend.Data_Access
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
-            return voPreferentialPlan;
+            return preferentialPlan;
         }
 
-        public VOPublication GetSpace(int idSpace, User user, bool addVisit)
+        public Publication GetSpace(int idSpace, User user, bool addVisit)
         {
-            VOPublication voPublication = null;
+            Publication publication = null;
             SqlConnection con = null;
             string creationDateString;
             try
@@ -607,8 +574,8 @@ namespace backend.Data_Access
                         images.Add(accessURL);
                     }
                     drImages.Close();
-                    VOLocationCordinates voLocation = new VOLocationCordinates(Convert.ToDecimal(dr["locationLat"]), Convert.ToDecimal(dr["locationLong"]));
-                    List<VOReview> reviews = GetReviews(idPublication, con);
+                    LocationCordinates location = new LocationCordinates(Convert.ToDecimal(dr["locationLat"]), Convert.ToDecimal(dr["locationLong"]));
+                    List<Review> reviews = GetReviews(idPublication, con);
                     int ranking = util.GetRanking(reviews);
                     int quantityRented = GetQuantityReserved(idPublication, con);
                     if (addVisit)
@@ -621,9 +588,9 @@ namespace backend.Data_Access
                     DateTime dateTo = Convert.ToDateTime(dr["expirationDate"]);
                     String dateToString = Util.ConvertDateToString(dateTo);
                     bool isRecommended = IsRecommended(Convert.ToInt32(dr["idPublication"]), con);
-                    voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), null, null, null, null, Convert.ToInt32(dr["spaceType"]), creationDateString, dateToString, Convert.ToString(dr["title"]), Convert.ToString(dr["description"]), Convert.ToString(dr["address"]), Convert.ToString(dr["city"]),
-                        voLocation, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
-                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, null, quantityRented, reviews, ranking, Convert.ToInt32(dr["totalViews"]), Convert.ToBoolean(dr["individualRent"]), 0, isMyPublication, 0, null, isRecommended);
+                    publication = new Publication(Convert.ToInt32(dr["idPublication"]), 0, null, null, null, null, Convert.ToInt32(dr["spaceType"]), creationDateString, dateToString, Convert.ToString(dr["title"]), Convert.ToString(dr["description"]), Convert.ToString(dr["address"]), 
+                        location, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
+                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, null, quantityRented, reviews, ranking, Convert.ToString(dr["city"]), Convert.ToInt32(dr["totalViews"]), Convert.ToBoolean(dr["individualRent"]), 0, isMyPublication, 0, null, isRecommended);                    
                 }
                 dr.Close();
             }
@@ -638,7 +605,7 @@ namespace backend.Data_Access
                     con.Close();
                 }
             }
-            return voPublication;
+            return publication;
         }
 
         public void AddOneVisit(int idPublication, SqlConnection con)
@@ -662,9 +629,9 @@ namespace backend.Data_Access
             }
         }
 
-        public VOPublicationAdmin UpdateStatePublication(int idPublication, string rejectedReason, int newCodeState, bool isAdmin)
+        public Publication UpdateStatePublication(int idPublication, string rejectedReason, int newCodeState, bool isAdmin)
         {
-            VOPublicationAdmin voPublication = null;
+            Publication publication = null;
             SqlConnection con = null;
             string rejectedReasonAux = "";
             string creationDateString;
@@ -702,11 +669,10 @@ namespace backend.Data_Access
                     while (dr.Read())
                     {
                         DateTime creationDate = Convert.ToDateTime(dr["creationDate"]);
-                        creationDateString = Util.ConvertDateToString(creationDate);
-                        voPublication = new VOPublicationAdmin(idPublication, Convert.ToInt64(dr["idUser"]), Convert.ToString(dr["mail"]),
-                         0, creationDateString, Convert.ToString(dr["title"]), null, null,
-                        null, 0, null, 0,
-                        0, 0, 0, null, null, null, null, null, Convert.ToString(dr["name"]), null, null);
+                        creationDateString = Util.ConvertDateToString(creationDate);                        
+                        publication = new Publication(idPublication, Convert.ToInt64(dr["idUser"]), Convert.ToString(dr["mail"]), Convert.ToString(dr["name"]), null, null,
+                            0, creationDateString, null, Convert.ToString(dr["title"]), null, null, null, 0, null, 0, 0, 0, 0, null, null, null, null, 0, null, 0, null,
+                            0, false, 0, false, 0, null, false);
                     }
                     dr.Close();
                 }
@@ -722,36 +688,37 @@ namespace backend.Data_Access
                     con.Close();
                 }
             }
-            return voPublication;
+            return publication;
         }
 
-        public VOResponseGetPublicationsWithFilters GetPublicationsWithFilters(VORequestGetPublicationsWithFilters voGetPublicationsFilter)
+        public Tuple<List<Publication>, int> GetPublicationsWithFilters(int spaceType, int capacity, List<int> facilities,
+            string city, int pageNumber, string stateDescription, int publicationsPerPage)
         {
-            VOResponseGetPublicationsWithFilters response = new VOResponseGetPublicationsWithFilters();
-            List<VOPublication> publications = new List<VOPublication>();
-            VOPublication voPublication = null;
+            Tuple<List<Publication>, int> result = null;
+            List<Publication> publications = new List<Publication>();
+            Publication publication = null;
             SqlConnection con = null;
             Util util = new Util();
             int state = 0;
-            int MAX_PUBLICATIONS_PAGE = voGetPublicationsFilter.PublicationsPerPage;
+            int MAX_PUBLICATIONS_PAGE = publicationsPerPage;
             string creationDateString;
             try
             {
                 con = new SqlConnection(GetConnectionString());
                 con.Open();
-                if (voGetPublicationsFilter.State != null)
+                if (stateDescription != null)
                 {
-                    state = util.ConvertState(voGetPublicationsFilter.State);
+                    state = util.ConvertState(stateDescription);
                 }
                 int qty = 0;
-                String queryQuantity = cns.GetQuantityPublicationsWithFilter(voGetPublicationsFilter, state);
+                String queryQuantity = cns.GetQuantityPublicationsWithFilter(state, spaceType, capacity, facilities, city, pageNumber, publicationsPerPage);
                 SqlCommand selectCommandQuantity = new SqlCommand(queryQuantity, con);
                 List<SqlParameter> prmQty = new List<SqlParameter>()
                     {
-                        new SqlParameter("@spaceType", SqlDbType.Int) { Value = voGetPublicationsFilter.SpaceType},
-                        new SqlParameter("@capacity", SqlDbType.Int) {Value = voGetPublicationsFilter.Capacity},
+                        new SqlParameter("@spaceType", SqlDbType.Int) { Value = spaceType},
+                        new SqlParameter("@capacity", SqlDbType.Int) {Value = capacity},
                         new SqlParameter("@state", SqlDbType.Int) {Value = state},
-                        new SqlParameter("@city", SqlDbType.VarChar) {Value = voGetPublicationsFilter.City ?? ""},
+                        new SqlParameter("@city", SqlDbType.VarChar) {Value = city ?? ""},
                     };
                 selectCommandQuantity.Parameters.AddRange(prmQty.ToArray());
                 SqlDataReader drQty = selectCommandQuantity.ExecuteReader();
@@ -760,16 +727,15 @@ namespace backend.Data_Access
                     qty = Convert.ToInt32(drQty["quantity"]);
                 }
                 drQty.Close();
-                response.TotalPublications = qty;
 
-                String query = cns.GetPublicationsWithFilter(voGetPublicationsFilter, MAX_PUBLICATIONS_PAGE, state);
+                String query = cns.GetPublicationsWithFilter(facilities, spaceType, capacity, city, MAX_PUBLICATIONS_PAGE, state);
                 SqlCommand selectCommand = new SqlCommand(query, con);
                 List<SqlParameter> prm = new List<SqlParameter>()
                  {
-                    new SqlParameter("@spaceType", SqlDbType.Int) { Value = voGetPublicationsFilter.SpaceType},
-                    new SqlParameter("@capacity", SqlDbType.Int) {Value = voGetPublicationsFilter.Capacity},
+                    new SqlParameter("@spaceType", SqlDbType.Int) { Value = spaceType},
+                    new SqlParameter("@capacity", SqlDbType.Int) {Value = capacity},
                     new SqlParameter("@state", SqlDbType.Int) {Value = state},
-                    new SqlParameter("@city", SqlDbType.VarChar) {Value = voGetPublicationsFilter.City ?? ""},
+                    new SqlParameter("@city", SqlDbType.VarChar) {Value = city ?? ""},
                 };
                 selectCommand.Parameters.AddRange(prm.ToArray());
                 SqlDataReader dr = selectCommand.ExecuteReader();
@@ -777,7 +743,7 @@ namespace backend.Data_Access
                 {
                     List<String> images = new List<string>();
                     int idPublication = Convert.ToInt32(dr["idPublication"]);
-                    List<int> facilities = GetFacilitiesPublication(idPublication, con);
+                    List<int> facilitiesId = GetFacilitiesPublication(idPublication, con);
                     String queryImages = cns.GetImages();
                     SqlCommand selectCommandImages = new SqlCommand(queryImages, con);
                     SqlParameter parametroImages = new SqlParameter()
@@ -794,8 +760,8 @@ namespace backend.Data_Access
                         images.Add(accessURL);
                     }
                     drImages.Close();
-                    VOLocationCordinates voLocation = new VOLocationCordinates(Convert.ToDecimal(dr["locationLat"]), Convert.ToDecimal(dr["locationLong"]));
-                    List<VOReview> reviews = GetReviews(idPublication, con);
+                    LocationCordinates location = new LocationCordinates(Convert.ToDecimal(dr["locationLat"]), Convert.ToDecimal(dr["locationLong"]));
+                    List<Review> reviews = GetReviews(idPublication, con);
                     int ranking = util.GetRanking(reviews);
                     int quantityRented = GetQuantityReserved(idPublication, con);
                     DateTime creationDate = Convert.ToDateTime(dr["creationDate"]);
@@ -803,14 +769,17 @@ namespace backend.Data_Access
                     DateTime dateTo = Convert.ToDateTime(dr["expirationDate"]);
                     String dateToString = Util.ConvertDateToString(dateTo);
                     bool isRecommended = IsRecommended(Convert.ToInt32(dr["idPublication"]), con);
-                    VOPreferentialPlan voPreferentialPlan = GetPreferentialPlanInfo(idPublication, con, null);
-                    voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), Convert.ToString(dr["mail"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToInt32(dr["spaceType"]), creationDateString, dateToString, Convert.ToString(dr["title"]), Convert.ToString(dr["description"]), Convert.ToString(dr["address"]), Convert.ToString(dr["city"]),
-                        voLocation, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
-                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, null, quantityRented, reviews, ranking, Convert.ToInt32(dr["totalViews"]), Convert.ToBoolean(dr["individualRent"]), 0, false, 0, voPreferentialPlan, isRecommended);
-                    publications.Add(voPublication);
+                    PreferentialPlan preferentialPlan = GetPreferentialPlanInfo(idPublication, con, null);                    
+                    publication = new Publication(Convert.ToInt32(dr["idPublication"]), 0, Convert.ToString(dr["mail"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToInt32(dr["spaceType"]), creationDateString, dateToString, Convert.ToString(dr["title"]), Convert.ToString(dr["description"]), Convert.ToString(dr["address"]), 
+                        location, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
+                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]),
+                        facilitiesId, images, null, quantityRented, reviews, ranking, Convert.ToString(dr["city"]), Convert.ToInt32(dr["totalViews"]), Convert.ToBoolean(dr["individualRent"]), 0, false,
+                        0, preferentialPlan, isRecommended);
+                    publications.Add(publication);
                 }
                 dr.Close();
-                response.Publications = publications;
+               result = Tuple.Create(publications, qty);
+
             }
             catch (Exception e)
             {
@@ -823,7 +792,7 @@ namespace backend.Data_Access
                     con.Close();
                 }
             }
-            return response;
+            return result;
 
         }
 
@@ -885,9 +854,9 @@ namespace backend.Data_Access
             }
         }
 
-        public List<VOReview> GetReviews(int idPublication, SqlConnection con)
+        public List<Review> GetReviews(int idPublication, SqlConnection con)
         {
-            List<VOReview> reviews = new List<VOReview>();
+            List<Review> reviews = new List<Review>();
             try
             {
                 String query = cns.GetReviews();
@@ -900,11 +869,11 @@ namespace backend.Data_Access
                 };
                 selectCommand.Parameters.Add(param);
                 SqlDataReader dr = selectCommand.ExecuteReader();
-                VOReview voReview;
+                Review review;
                 while (dr.Read())
                 {
-                    voReview = new VOReview(Convert.ToString(dr["mail"]), Convert.ToString(dr["name"]), Convert.ToInt32(dr["rating"]), Convert.ToString(dr["review"]), Convert.ToInt32(dr["idReservation"]));
-                    reviews.Add(voReview);
+                    review = new Review(Convert.ToString(dr["mail"]), Convert.ToString(dr["name"]), Convert.ToInt32(dr["rating"]), Convert.ToString(dr["review"]), Convert.ToInt32(dr["idReservation"]));
+                    reviews.Add(review);
                 }
                 dr.Close();
             }
@@ -944,9 +913,9 @@ namespace backend.Data_Access
         }
 
 
-        public List<VOPublication> GetRelatedSpaces(int idPublication, int capacity, int spaceType, string city)
+        public List<Publication> GetRelatedSpaces(int idPublication, int capacity, int spaceType, string city)
         {
-            List<VOPublication> related = new List<VOPublication>();
+            List<Publication> related = new List<Publication>();
             SqlConnection con = null;
             Util util = new Util();
             try
@@ -964,7 +933,7 @@ namespace backend.Data_Access
                 };
                 selectCommand.Parameters.AddRange(prm.ToArray());
                 SqlDataReader dr = selectCommand.ExecuteReader();
-                VOPublication voPublication;
+                Publication publication;
                 string creationDateString;
                 while (dr.Read())
                 {
@@ -986,15 +955,15 @@ namespace backend.Data_Access
                         images.Add(accessURL);
                     }
                     drImages.Close();
-                    VOLocationCordinates voLocation = new VOLocationCordinates(Convert.ToDecimal(dr["locationLat"]), Convert.ToDecimal(dr["locationLong"]));
-                    List<VOReview> reviews = GetReviews(idPublication, con);
+                    LocationCordinates location = new LocationCordinates(Convert.ToDecimal(dr["locationLat"]), Convert.ToDecimal(dr["locationLong"]));
+                    List<Review> reviews = GetReviews(idPublication, con);
                     int ranking = util.GetRanking(reviews);
                     DateTime creationDate = Convert.ToDateTime(dr["creationDate"]);
                     creationDateString = Util.ConvertDateToString(creationDate);
-                    voPublication = new VOPublication(Convert.ToInt32(dr["idPublication"]), null, null, null, null, Convert.ToInt32(dr["spaceType"]), creationDateString, null, Convert.ToString(dr["title"]), Convert.ToString(dr["description"]), Convert.ToString(dr["address"]), Convert.ToString(dr["city"]),
-                        voLocation, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
-                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, null, 0, reviews, ranking, Convert.ToInt32(dr["totalViews"]), false, 0, false, 0, null, false);
-                    related.Add(voPublication);
+                    publication = new Publication(Convert.ToInt32(dr["idPublication"]), 0, null, null, null, null, Convert.ToInt32(dr["spaceType"]), creationDateString, null, Convert.ToString(dr["title"]), Convert.ToString(dr["description"]), Convert.ToString(dr["address"]), 
+                        location, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
+                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]), facilities, images, null, 0, reviews, ranking, Convert.ToString(dr["city"]), Convert.ToInt32(dr["totalViews"]), false, 0, false, 0, null, false);
+                    related.Add(publication);
                 }
                 dr.Close();
             }
@@ -1005,7 +974,7 @@ namespace backend.Data_Access
             return related;
         }
 
-        public void UpdateFavorite(VORequestUpdateFavorite voUpdateFavorite, long idUser)
+        public void UpdateFavorite(int code, int idPublication, long idUser)
         {
             SqlConnection con = null;
             try
@@ -1013,7 +982,7 @@ namespace backend.Data_Access
                 con = new SqlConnection(GetConnectionString());
                 con.Open();
                 string query = "";
-                if (voUpdateFavorite.Code == 1)
+                if (code == 1)
                 {
                     //Insert
                     query = cns.AddFavorite();
@@ -1026,7 +995,7 @@ namespace backend.Data_Access
                 SqlCommand updateCommand = new SqlCommand(query, con);
                 List<SqlParameter> prm = new List<SqlParameter>()
                 {
-                        new SqlParameter("@idPublication", SqlDbType.Int) {Value = voUpdateFavorite.IdPublication},
+                        new SqlParameter("@idPublication", SqlDbType.Int) {Value = idPublication},
                         new SqlParameter("@idUser", SqlDbType.Int) {Value = idUser}
                 };
                 updateCommand.Parameters.AddRange(prm.ToArray());
@@ -1045,12 +1014,12 @@ namespace backend.Data_Access
             }
         }
 
-        public async Task<Dictionary<string, string>> UpdatePublication(VORequestUpdatePublication voUpdatePublication, User user)
+        public async Task<Dictionary<string, string>> UpdatePublication(Publication publication, List<Image> images, List<string> imagesURL, User user)
         {
             Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
             SqlConnection con = null;
             SqlTransaction objTrans = null;
-            int idPublication = voUpdatePublication.Publication.IdPublication;
+            int idPublication = publication.IdPublication;
             StorageUtil storageUtil = new StorageUtil();
             string currentImagesURL = "";
             try
@@ -1060,14 +1029,14 @@ namespace backend.Data_Access
                 objTrans = con.BeginTransaction();
                 string queryImages = "";
                 //Step 1: delete images
-                if (voUpdatePublication.ImagesURL == null)
+                if (imagesURL == null)
                 {
                     // If there is no URL, it means that all images were deleted
                     queryImages = cns.DeleteAllImages();
                 }
                 else
                 {
-                    currentImagesURL = StorageUtil.CreateImagesURLString(voUpdatePublication.ImagesURL);
+                    currentImagesURL = StorageUtil.CreateImagesURLString(imagesURL);
                     // Some or none image were deleted
                     queryImages = cns.DeleteImages(currentImagesURL);
                 }
@@ -1081,36 +1050,36 @@ namespace backend.Data_Access
                 deleteCommand.Transaction = objTrans;
                 deleteCommand.ExecuteNonQuery();
                 //Step 2: insert images
-                if (voUpdatePublication.Base64Images != null)
+                if (images != null && images.Count != 0)
                 {
-                    List<string> urls = await storageUtil.StoreImageAsync(voUpdatePublication.Base64Images, user.IdUser, idPublication);
+                    List<string> urls = await storageUtil.StoreImageAsync(images, user.IdUser, idPublication);
                     InsertImages(con, objTrans, idPublication, urls);
                 }
                 //Step 3: delete facilities
                 DeleteFacilities(idPublication, con, objTrans);
                 //Step 4: insert facilities
-                foreach (var facility in voUpdatePublication.Publication.Facilities)
+                foreach (var facility in publication.Facilities)
                 {
                     InsertFacility(idPublication, facility, con, objTrans);
                 }
                 //Step 6: update preferential plan
-                VOPreferentialPlan currentPreferentialPlan = GetPreferentialPlanInfo(idPublication, con, objTrans);
+                PreferentialPlan currentPreferentialPlan = GetPreferentialPlanInfo(idPublication, con, objTrans);
                 int currentPreferentialPlanId = currentPreferentialPlan.IdPlan;
-                if (currentPreferentialPlanId != voUpdatePublication.Publication.IdPlan)
+                if (currentPreferentialPlanId != publication.IdPlan)
                 {
                     bool paid = currentPreferentialPlan.StateCode == PAYMENT_PAID_STATE;
-                    int newPlanPrice = GetPriceByPlanId(voUpdatePublication.Publication.IdPlan, con, objTrans);
+                    int newPlanPrice = GetPriceByPlanId(publication.IdPlan, con, objTrans);
                     bool upgradingPlan = currentPreferentialPlan.Price < newPlanPrice;
                     if (paid && upgradingPlan)
                     {
                         //Step 6.1: recalculate price
                         int daysLeft = GetDaysLeftPublication(idPublication, con, objTrans);
-                        List<VOPublicationPlan> publicationPlans = GetPublicationPlans();
-                        VOPreferentialPlan prefPlan = GetPreferentialPlanInfo(idPublication, con, objTrans);
+                        List<PublicationPlan> publicationPlans = GetPublicationPlans();
+                        PreferentialPlan prefPlan = GetPreferentialPlanInfo(idPublication, con, objTrans);
                         bool oldPricePaid = prefPlan.StateCode == PAYMENT_PAID_STATE ? true : false;
                         int newPrice = Util.RecalculatePrice(newPlanPrice, daysLeft, currentPreferentialPlanId, publicationPlans);
                         //Step 6.2: update preferential plan and payment
-                        UpdatePreferentialPlanUpgraded(idPublication, voUpdatePublication.Publication.IdPlan, newPrice, con, objTrans);
+                        UpdatePreferentialPlanUpgraded(idPublication, publication.IdPlan, newPrice, con, objTrans);
                     }
                     else
                     {
@@ -1120,32 +1089,30 @@ namespace backend.Data_Access
                             if (isFreeCurrentPlan)
                             {
                                 //If current plan is free, create a preferential plan
-                                CreatePreferentialPayment(idPublication, voUpdatePublication.Publication.IdPlan, con, objTrans);
-
-
+                                CreatePreferentialPayment(idPublication, publication.IdPlan, con, objTrans);
                             }
                             else
                             {
                                 //If current plan it is not free
-                                bool isFreeNewPlan = IsFreePreferentialPlan(voUpdatePublication.Publication.IdPlan, con, objTrans);
+                                bool isFreeNewPlan = IsFreePreferentialPlan(publication.IdPlan, con, objTrans);
                                 if (!upgradingPlan)
                                 {
                                     if (isFreeNewPlan)
                                     {
                                         //Delete preferential plan and update publication price = 0
                                         DeletePreferentialPlan(idPublication, con, objTrans);
-                                        SetPreferentialPlanPrice(idPublication, voUpdatePublication.Publication.IdPlan, 0, con, objTrans);
+                                        SetPreferentialPlanPrice(idPublication, publication.IdPlan, 0, con, objTrans);
                                     }
                                     else
                                     {
                                         //Update preferential plan and update publication price
-                                        UpdatePreferentialPlanUpgraded(idPublication, voUpdatePublication.Publication.IdPlan, newPlanPrice, con, objTrans);
+                                        UpdatePreferentialPlanUpgraded(idPublication, publication.IdPlan, newPlanPrice, con, objTrans);
                                     }
                                 }
                                 else
                                 {
                                     //Update preferential plan and update publication price
-                                    UpdatePreferentialPlanUpgraded(idPublication, voUpdatePublication.Publication.IdPlan, newPlanPrice, con, objTrans);
+                                    UpdatePreferentialPlanUpgraded(idPublication, publication.IdPlan, newPlanPrice, con, objTrans);
                                 }
                             }
                         }
@@ -1158,20 +1125,20 @@ namespace backend.Data_Access
                 List<SqlParameter> prm = new List<SqlParameter>()
                     {
                         new SqlParameter("@idPublication", SqlDbType.Int) {Value = idPublication},
-                        new SqlParameter("@spaceType", SqlDbType.Int) {Value = voUpdatePublication.Publication.SpaceType},
-                        new SqlParameter("@title", SqlDbType.VarChar) {Value = voUpdatePublication.Publication.Title},
-                        new SqlParameter("@description", SqlDbType.VarChar) {Value = voUpdatePublication.Publication.Description},
-                        new SqlParameter("@address", SqlDbType.VarChar) {Value = voUpdatePublication.Publication.Address},
-                        new SqlParameter("@locationLat", SqlDbType.Decimal) {Value = voUpdatePublication.Publication.Location.Latitude},
-                        new SqlParameter("@locationLong", SqlDbType.Decimal) {Value = voUpdatePublication.Publication.Location.Longitude},
-                        new SqlParameter("@capacity", SqlDbType.Int) {Value = voUpdatePublication.Publication.Capacity},
-                        new SqlParameter("@videoURL", SqlDbType.VarChar) {Value = voUpdatePublication.Publication.VideoURL},
-                        new SqlParameter("@hourPrice", SqlDbType.Int) {Value = voUpdatePublication.Publication.HourPrice},
-                        new SqlParameter("@dailyPrice", SqlDbType.Int) {Value = voUpdatePublication.Publication.DailyPrice},
-                        new SqlParameter("@weeklyPrice", SqlDbType.Int) {Value = voUpdatePublication.Publication.WeeklyPrice},
-                        new SqlParameter("@monthlyPrice", SqlDbType.Int) {Value = voUpdatePublication.Publication.MonthlyPrice},
-                        new SqlParameter("@availability", SqlDbType.VarChar) {Value = voUpdatePublication.Publication.Availability},
-                        new SqlParameter("@city", SqlDbType.VarChar) {Value = voUpdatePublication.Publication.City}
+                        new SqlParameter("@spaceType", SqlDbType.Int) {Value = publication.SpaceType},
+                        new SqlParameter("@title", SqlDbType.VarChar) {Value = publication.Title},
+                        new SqlParameter("@description", SqlDbType.VarChar) {Value = publication.Description},
+                        new SqlParameter("@address", SqlDbType.VarChar) {Value = publication.Address},
+                        new SqlParameter("@locationLat", SqlDbType.Decimal) {Value = publication.Location.Latitude},
+                        new SqlParameter("@locationLong", SqlDbType.Decimal) {Value = publication.Location.Longitude},
+                        new SqlParameter("@capacity", SqlDbType.Int) {Value = publication.Capacity},
+                        new SqlParameter("@videoURL", SqlDbType.VarChar) {Value = publication.VideoURL},
+                        new SqlParameter("@hourPrice", SqlDbType.Int) {Value = publication.HourPrice},
+                        new SqlParameter("@dailyPrice", SqlDbType.Int) {Value = publication.DailyPrice},
+                        new SqlParameter("@weeklyPrice", SqlDbType.Int) {Value = publication.WeeklyPrice},
+                        new SqlParameter("@monthlyPrice", SqlDbType.Int) {Value = publication.MonthlyPrice},
+                        new SqlParameter("@availability", SqlDbType.VarChar) {Value = publication.Availability},
+                        new SqlParameter("@city", SqlDbType.VarChar) {Value = publication.City}
                     };
                 updateCommand.Parameters.AddRange(prm.ToArray());
                 updateCommand.Transaction = objTrans;
@@ -1216,7 +1183,7 @@ namespace backend.Data_Access
                 String dateTo = Util.ConvertDateToString(Convert.ToDateTime(dr["expirationDate"]));
                 result[ParamCodes.DATE_TO] = dateTo;
                 result[ParamCodes.AVAILABILITY] = Convert.ToString(dr["availability"]);
-                VOPreferentialPlan preferentialPlan = GetPreferentialPlanInfo(idPublication, con, null);
+                PreferentialPlan preferentialPlan = GetPreferentialPlanInfo(idPublication, con, null);
                 result[ParamCodes.PREFERENTIAL_PLAN] = preferentialPlan.Description;
                 result[ParamCodes.PRICE] = Convert.ToInt32(dr["planPrice"]).ToString();
             }
@@ -1351,7 +1318,7 @@ namespace backend.Data_Access
             deleteCommand.ExecuteNonQuery();
         }
 
-        public void CreateReservation(VORequestCreateReservation voCreateReservation, User user, int idPlan)
+        public void CreateReservation(Reservation reservation, User user, int idPlan)
         {
             SqlConnection con = null;
             SqlTransaction objTrans = null;
@@ -1362,20 +1329,20 @@ namespace backend.Data_Access
                 objTrans = con.BeginTransaction();
                 String query = cns.CreateReservation();
                 SqlCommand insertCommand = new SqlCommand(query, con);
-                int reservationCommission = Util.CalculateReservationCommission(voCreateReservation.VOReservation.TotalPrice);
+                int reservationCommission = Util.CalculateReservationCommission(reservation.TotalPrice);
                 List<SqlParameter> prm = new List<SqlParameter>()
                     {
-                        new SqlParameter("@idPublication", SqlDbType.Int) {Value = voCreateReservation.VOReservation.IdPublication},
+                        new SqlParameter("@idPublication", SqlDbType.Int) {Value = reservation.IdPublication},
                         new SqlParameter("@idCustomer", SqlDbType.Int) {Value = user.IdUser},
                         new SqlParameter("@planSelected", SqlDbType.Int) {Value = idPlan},
-                        new SqlParameter("@dateFrom", SqlDbType.DateTime) {Value = voCreateReservation.VOReservation.DateFrom},
-                        new SqlParameter("@hourFrom", SqlDbType.VarChar) {Value = voCreateReservation.VOReservation.HourFrom},
-                        new SqlParameter("@hourTo", SqlDbType.VarChar) {Value = voCreateReservation.VOReservation.HourTo},
-                        new SqlParameter("@people", SqlDbType.Int) {Value = voCreateReservation.VOReservation.People},
-                        new SqlParameter("@comment", SqlDbType.VarChar) {Value = voCreateReservation.VOReservation.Comment},
-                        new SqlParameter("@totalPrice", SqlDbType.Int) {Value = voCreateReservation.VOReservation.TotalPrice},
+                        new SqlParameter("@dateFrom", SqlDbType.DateTime) {Value = reservation.DateFrom},
+                        new SqlParameter("@hourFrom", SqlDbType.VarChar) {Value = reservation.HourFrom},
+                        new SqlParameter("@hourTo", SqlDbType.VarChar) {Value = reservation.HourTo},
+                        new SqlParameter("@people", SqlDbType.Int) {Value =reservation.People},
+                        new SqlParameter("@comment", SqlDbType.VarChar) {Value = reservation.Comment},
+                        new SqlParameter("@totalPrice", SqlDbType.Int) {Value = reservation.TotalPrice},
                         new SqlParameter("@commission", SqlDbType.Int) {Value = reservationCommission},
-                        new SqlParameter("@reservedQty", SqlDbType.Int) {Value = voCreateReservation.VOReservation.ReservedQuantity}
+                        new SqlParameter("@reservedQty", SqlDbType.Int) {Value = reservation.ReservedQuantity}
 
                     };
                 insertCommand.Parameters.AddRange(prm.ToArray());
@@ -1478,10 +1445,10 @@ namespace backend.Data_Access
 
         }
 
-        public List<VOReservationExtended> GetReservationsCustomer(VORequestGetReservationsCustomer voGetReservationsCustomer, long idCustomer)
+        public List<ReservationExtended> GetReservationsCustomer(string mail, long idCustomer)
         {
-            List<VOReservationExtended> reservations = new List<VOReservationExtended>();
-            VOReservationExtended voReservation = null;
+            List<ReservationExtended> reservations = new List<ReservationExtended>();
+            ReservationExtended reservation = null;
             SqlConnection con = null;
             int idReservation = 0;
             bool wasReviewed = false;
@@ -1504,7 +1471,7 @@ namespace backend.Data_Access
                 {
                     idReservation = Convert.ToInt32(dr["idReservation"]);
                     wasReviewed = ReservationWasReviewed(idReservation, con);
-                    VOPayment payment = GetReservationPaymentInfo(idReservation, con);
+                    Payment payment = GetReservationPaymentInfo(idReservation, con);
                     String dateConvertedFrom = Util.ConvertDateToString(Convert.ToDateTime(dr["dateFrom"]));
                     DateTime dateTo = Convert.ToDateTime(dr["dateTo"] is DBNull ? null : dr["dateTo"]);
                     String dateConvertedTo = "";
@@ -1512,13 +1479,13 @@ namespace backend.Data_Access
                     {
                         dateConvertedTo = Util.ConvertDateToString(Convert.ToDateTime(dr["dateTo"]));
                     }
-                    voReservation = new VOReservationExtended(idReservation, Convert.ToString(dr["title"]), Convert.ToInt32(dr["idPublication"]),
-                        Convert.ToString(voGetReservationsCustomer.Mail), Convert.ToString(dr["planSelected"]),
+                    reservation = new ReservationExtended(idReservation, Convert.ToString(dr["title"]), Convert.ToInt32(dr["idPublication"]),
+                        mail, Convert.ToString(dr["planSelected"]),
                         Convert.ToInt32(dr["reservedQty"] is DBNull ? 0 : dr["reservedQty"]), Convert.ToDateTime(dr["dateFrom"]), dateConvertedFrom, dateTo, dateConvertedTo, Convert.ToString(dr["hourFrom"]),
                         Convert.ToString(dr["hourTo"]), Convert.ToInt32(dr["people"] is DBNull ? 0 : dr["people"]), Convert.ToString(dr["comment"]),
                         Convert.ToInt32(dr["totalPrice"]), Convert.ToInt32(dr["state"]), Convert.ToString(dr["description"]), Convert.ToBoolean(dr["individualRent"]), Convert.ToInt32(dr["hourPrice"]),
                         Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), wasReviewed, payment, null, null, null);
-                    reservations.Add(voReservation);
+                    reservations.Add(reservation);
                 }
                 dr.Close();
             }
@@ -1537,11 +1504,11 @@ namespace backend.Data_Access
 
         }
 
-        private VOPayment GetReservationPaymentInfo(int idReservation, SqlConnection con)
+        private Payment GetReservationPaymentInfo(int idReservation, SqlConnection con)
         {
             string query = cns.GetReservationPaymentInfo();
             SqlCommand selectCommand = new SqlCommand(query, con);
-            VOPayment payment = null;
+            Payment payment = null;
             string paymentDateString = null;
             SqlParameter param = new SqlParameter()
             {
@@ -1559,22 +1526,22 @@ namespace backend.Data_Access
                     DateTime paymentDate = Convert.ToDateTime(dr["paymentCustomerDate"]);
                     paymentDateString = Util.ConvertDateToString(paymentDate);
                 }
-                payment = new VOPayment(Convert.ToInt32(dr["paymentCustomerState"]), Convert.ToString(dr["description"]), Convert.ToString(dr["paymentCustomerComment"]), Convert.ToString(dr["paymentCustomerEvidence"]), paymentDateString, 0);
+                payment = new Payment(Convert.ToInt32(dr["paymentCustomerState"]), Convert.ToString(dr["description"]), Convert.ToString(dr["paymentCustomerComment"]), Convert.ToString(dr["paymentCustomerEvidence"]), paymentDateString, 0);
             }
             dr.Close();
 
             return payment;
         }
 
-        public List<VOReservationExtended> GetReservationsPublisher(VORequestGetReservationsPublisher voGetReservationsPublisher, long idUser)
+        public List<ReservationExtended> GetReservationsPublisher(long idUser)
         {
-            List<VOReservationExtended> reservations = new List<VOReservationExtended>();
-            VOReservationExtended voReservation;
+            List<ReservationExtended> reservations = new List<ReservationExtended>();
+            ReservationExtended reservation;
             SqlConnection con = null;
             int idReservation;
             bool wasReviewed;
-            VOPayment payment;
-            VOPayment paymentCommission;
+            Payment payment;
+            Payment paymentCommission;
             String dateConvertedFrom;
             String dateConvertedTo;
             try
@@ -1604,13 +1571,13 @@ namespace backend.Data_Access
                         dateConvertedTo = Util.ConvertDateToString(Convert.ToDateTime(dr["dateTo"]));
                     }
                     paymentCommission = GetCommissionPayment(idReservation, con);
-                    voReservation = new VOReservationExtended(Convert.ToInt32(dr["idReservation"]), Convert.ToString(dr["title"]), Convert.ToInt32(dr["idPublication"]),
+                    reservation = new ReservationExtended(Convert.ToInt32(dr["idReservation"]), Convert.ToString(dr["title"]), Convert.ToInt32(dr["idPublication"]),
                         Convert.ToString(dr["mail"]), Convert.ToString(dr["planSelected"]),
                         Convert.ToInt32(dr["reservedQty"] is DBNull ? 0 : dr["reservedQty"]), Convert.ToDateTime(dr["dateFrom"]), dateConvertedFrom, dateTo, dateConvertedTo, Convert.ToString(dr["hourFrom"]),
                         Convert.ToString(dr["hourTo"]), Convert.ToInt32(dr["people"] is DBNull ? 0 : dr["people"]), Convert.ToString(dr["comment"]),
                         Convert.ToInt32(dr["totalPrice"]), Convert.ToInt32(dr["state"]), Convert.ToString(dr["description"]), Convert.ToBoolean(dr["individualRent"]), Convert.ToInt32(dr["hourPrice"]),
                         Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), wasReviewed, payment, paymentCommission, Convert.ToString(dr["name"]), null);
-                    reservations.Add(voReservation);
+                    reservations.Add(reservation);
                 }
                 dr.Close();
 
@@ -1722,7 +1689,8 @@ namespace backend.Data_Access
             }
         }
 
-        public UsersReservationBasicData UpdateReservation(VORequestUpdateReservation voUpdateReservation)
+        public UsersReservationBasicData UpdateReservation(int idReservation, DateTime dateFrom, string hourFrom,
+                        string hourTo, int totalPrice, int people, int reservedQuantity)
         {
             SqlConnection con = null;
             SqlTransaction objTrans = null;
@@ -1736,19 +1704,19 @@ namespace backend.Data_Access
                 SqlCommand updateCommand = new SqlCommand(query, con);
                 List<SqlParameter> prm = new List<SqlParameter>()
                 {
-                    new SqlParameter("@idReservation", SqlDbType.Int) {Value = voUpdateReservation.IdReservation},
-                    new SqlParameter("@dateFrom", SqlDbType.DateTime) {Value = voUpdateReservation.DateFrom},
-                    new SqlParameter("@hourFrom", SqlDbType.VarChar) {Value = voUpdateReservation.HourFrom},
-                    new SqlParameter("@hourTo", SqlDbType.VarChar) {Value = voUpdateReservation.HourTo},
-                    new SqlParameter("@totalPrice", SqlDbType.Int) {Value = voUpdateReservation.TotalPrice},
-                    new SqlParameter("@people", SqlDbType.Int) {Value = voUpdateReservation.People},
-                    new SqlParameter("@reservedQty", SqlDbType.Int) {Value = voUpdateReservation.ReservedQuantity},
+                    new SqlParameter("@idReservation", SqlDbType.Int) {Value = idReservation},
+                    new SqlParameter("@dateFrom", SqlDbType.DateTime) {Value = dateFrom},
+                    new SqlParameter("@hourFrom", SqlDbType.VarChar) {Value = hourFrom},
+                    new SqlParameter("@hourTo", SqlDbType.VarChar) {Value = hourTo},
+                    new SqlParameter("@totalPrice", SqlDbType.Int) {Value = totalPrice},
+                    new SqlParameter("@people", SqlDbType.Int) {Value = people},
+                    new SqlParameter("@reservedQty", SqlDbType.Int) {Value = reservedQuantity},
                 };
                 updateCommand.Parameters.AddRange(prm.ToArray());
                 updateCommand.Transaction = objTrans;
                 updateCommand.ExecuteNonQuery();
                 objTrans.Commit();
-                result = GetUsersReservationBasicData(voUpdateReservation.IdReservation);
+                result = GetUsersReservationBasicData(idReservation);
                 return result;
             }
             catch (Exception e)
@@ -1769,7 +1737,7 @@ namespace backend.Data_Access
             }
         }
 
-        public void CreateReview(VORequestCreateReview voCreateReview, long idUser)
+        public void CreateReview(Review review, long idUser)
         {
             SqlConnection con = null;
             try
@@ -1780,10 +1748,10 @@ namespace backend.Data_Access
                 SqlCommand insertCommand = new SqlCommand(query, con);
                 List<SqlParameter> prm = new List<SqlParameter>()
                     {
-                        new SqlParameter("@idReservation", SqlDbType.Int) {Value = voCreateReview.VOReview.IdReservation},
+                        new SqlParameter("@idReservation", SqlDbType.Int) {Value = review.IdReservation},
                         new SqlParameter("@idUser", SqlDbType.Int) {Value = idUser},
-                        new SqlParameter("@rating", SqlDbType.VarChar) {Value = voCreateReview.VOReview.Rating},
-                        new SqlParameter("@review", SqlDbType.VarChar) {Value = voCreateReview.VOReview.Review},
+                        new SqlParameter("@rating", SqlDbType.VarChar) {Value = review.Rating},
+                        new SqlParameter("@review", SqlDbType.VarChar) {Value = review.ReviewDescription},
                     };
                 insertCommand.Parameters.AddRange(prm.ToArray());
                 insertCommand.ExecuteNonQuery();
@@ -1801,7 +1769,7 @@ namespace backend.Data_Access
             }
         }
 
-        public void CreatePublicationQuestion(VORequestCreatePublicationQuestion voCreatePublicationQuestion, long idUser)
+        public void CreatePublicationQuestion(int idPublication, string question, long idUser)
         {
             SqlConnection con = null;
             try
@@ -1812,9 +1780,9 @@ namespace backend.Data_Access
                 SqlCommand insertCommand = new SqlCommand(query, con);
                 List<SqlParameter> prm = new List<SqlParameter>()
                     {
-                        new SqlParameter("@idPublication", SqlDbType.Int) {Value = voCreatePublicationQuestion.IdPublication},
+                        new SqlParameter("@idPublication", SqlDbType.Int) {Value = idPublication},
                         new SqlParameter("@idUser", SqlDbType.Int) {Value = idUser},
-                        new SqlParameter("@question", SqlDbType.VarChar) {Value = voCreatePublicationQuestion.Question},
+                        new SqlParameter("@question", SqlDbType.VarChar) {Value = question},
                     };
                 insertCommand.Parameters.AddRange(prm.ToArray());
                 insertCommand.ExecuteNonQuery();
@@ -1832,7 +1800,7 @@ namespace backend.Data_Access
             }
         }
 
-        public User CreatePublicationAnswer(VORequestCreatePublicationAnswer voCreatePublicationAnswer)
+        public User CreatePublicationAnswer(int idQuestion, string answer)
         {
             SqlConnection con = null;
             try
@@ -1843,12 +1811,12 @@ namespace backend.Data_Access
                 SqlCommand insertCommand = new SqlCommand(query, con);
                 List<SqlParameter> prm = new List<SqlParameter>()
                     {
-                        new SqlParameter("@idQuestion", SqlDbType.Int) {Value = voCreatePublicationAnswer.IdQuestion},
-                        new SqlParameter("@answer", SqlDbType.VarChar) {Value = voCreatePublicationAnswer.Answer},
+                        new SqlParameter("@idQuestion", SqlDbType.Int) {Value = idQuestion},
+                        new SqlParameter("@answer", SqlDbType.VarChar) {Value = answer},
                     };
                 insertCommand.Parameters.AddRange(prm.ToArray());
                 insertCommand.ExecuteNonQuery();
-                User user = GetUserByQuestion(voCreatePublicationAnswer.IdQuestion, con);
+                User user = GetUserByQuestion(idQuestion, con);
                 return user;
             }
             catch (Exception e)
@@ -1884,9 +1852,9 @@ namespace backend.Data_Access
             return user;
         }
 
-        public List<VOPublicationQuestion> GetPublicationQuestions(int idPublication)
+        public List<PublicationQuestion> GetPublicationQuestions(int idPublication)
         {
-            List<VOPublicationQuestion> questions = new List<VOPublicationQuestion>();
+            List<PublicationQuestion> questions = new List<PublicationQuestion>();
             SqlConnection con = null;
             Util util = new Util();
             try
@@ -1903,10 +1871,10 @@ namespace backend.Data_Access
                 };
                 selectCommand.Parameters.Add(param);
                 SqlDataReader dr = selectCommand.ExecuteReader();
-                VOPublicationQuestion voQuestion;
+                PublicationQuestion question;
                 while (dr.Read())
                 {
-                    VOAnswer answer = null; ;
+                    Answer answer = null; ;
                     String queryAnswers = cns.GetAnswers();
                     SqlCommand selectCommandAnswers = new SqlCommand(queryAnswers, con);
                     SqlParameter paramAnswers = new SqlParameter()
@@ -1920,12 +1888,12 @@ namespace backend.Data_Access
                     while (drAnswer.Read())
                     {
                         string creationDateAnswer = Util.ConvertDateToString(Convert.ToDateTime(drAnswer["creationDate"]));
-                        answer = new VOAnswer(Convert.ToString(drAnswer["answer"]), creationDateAnswer);
+                        answer = new Answer(Convert.ToString(drAnswer["answer"]), creationDateAnswer);
                     }
                     drAnswer.Close();
                     string creationDate = Util.ConvertDateToString(Convert.ToDateTime(dr["creationDate"]));
-                    voQuestion = new VOPublicationQuestion(Convert.ToInt32(dr["idQuestion"]), Convert.ToString(dr["name"]), Convert.ToString(dr["question"]), creationDate, answer);
-                    questions.Add(voQuestion);
+                    question = new PublicationQuestion(Convert.ToInt32(dr["idQuestion"]), Convert.ToString(dr["name"]), Convert.ToString(dr["question"]), creationDate, answer);
+                    questions.Add(question);
                 }
                 dr.Close();
             }
@@ -1992,10 +1960,10 @@ namespace backend.Data_Access
             return qty;
         }
 
-        public List<VOPublicationPlan> GetPublicationPlans()
+        public List<PublicationPlan> GetPublicationPlans()
         {
             SqlConnection con = null;
-            List<VOPublicationPlan> plans = new List<VOPublicationPlan>();
+            List<PublicationPlan> plans = new List<PublicationPlan>();
             try
             {
                 con = new SqlConnection(GetConnectionString());
@@ -2003,11 +1971,11 @@ namespace backend.Data_Access
                 String query = cns.GetPublicationPlans();
                 SqlCommand selectCommand = new SqlCommand(query, con);
                 SqlDataReader dr = selectCommand.ExecuteReader();
-                VOPublicationPlan voPlan;
+                PublicationPlan plan;
                 while (dr.Read())
                 {
-                    voPlan = new VOPublicationPlan(Convert.ToInt32(dr["idPlan"]), Convert.ToString(dr["name"]), Convert.ToInt32(dr["price"]), Convert.ToInt32(dr["days"]));
-                    plans.Add(voPlan);
+                    plan = new PublicationPlan(Convert.ToInt32(dr["idPlan"]), Convert.ToString(dr["name"]), Convert.ToInt32(dr["price"]), Convert.ToInt32(dr["days"]));
+                    plans.Add(plan);
                 }
                 dr.Close();
             }
@@ -2025,7 +1993,7 @@ namespace backend.Data_Access
             return plans;
         }
 
-        public async Task UpdatePreferentialPayment(VORequestUpdatePreferentialPayment voUpdatePayment)
+        public async Task UpdatePreferentialPayment(int idPublicaton, string comment, Image evidence)
         {
             SqlConnection con = null;
             SqlTransaction objTrans = null;
@@ -2037,17 +2005,17 @@ namespace backend.Data_Access
                 con = new SqlConnection(GetConnectionString());
                 con.Open();
                 objTrans = con.BeginTransaction();
-                int idPayment = GetIdPreferentialPayment(voUpdatePayment.IdPublication, con, objTrans);
-                if (voUpdatePayment.Evidence != null)
+                int idPayment = GetIdPreferentialPayment(idPublicaton, con, objTrans);
+                if (evidence != null)
                 {
                     // Insert evidence
-                    url = await storageUtil.StoreEvidencePaymentPlanAsync(voUpdatePayment.Evidence, idPayment, voUpdatePayment.IdPublication);
+                    url = await storageUtil.StoreEvidencePaymentPlanAsync(evidence, idPayment, idPublicaton);
                 }
-                if (voUpdatePayment.Comment != null)
+                if (comment != null)
                 {
-                    commentAux = voUpdatePayment.Comment;
+                    commentAux = comment;
                 }
-                string query = cns.UpdatePreferentialPayment(voUpdatePayment.Comment, url);
+                string query = cns.UpdatePreferentialPayment(comment, url);
                 SqlCommand updateCommand = new SqlCommand(query, con);
                 List<SqlParameter> prm = new List<SqlParameter>()
                 {
@@ -2136,36 +2104,36 @@ namespace backend.Data_Access
             return id;
         }
 
-        public async Task<UserBasicData> PayReservationCustomer(VORequestPayReservationCustomer voPayReservationCustomer, long idUser)
+        public async Task<UserBasicData> PayReservationCustomer(int idReservation, string comment, Image evidence, long idUser)
         {
             SqlConnection con = null;
             StorageUtil storageUtil = new StorageUtil();
             string url = "";
             string commentAux = "";
-            if (voPayReservationCustomer.Comment != null)
+            if (comment != null)
             {
-                commentAux = voPayReservationCustomer.Comment;
+                commentAux = comment;
             }
             try
             {
                 con = new SqlConnection(GetConnectionString());
                 con.Open();
-                if (voPayReservationCustomer.Evidence != null)
+                if (evidence != null)
                 {
                     // Insert evidence
-                    url = await storageUtil.StoreEvidencePaymentReservationCustomerAsync(voPayReservationCustomer.Evidence, idUser, voPayReservationCustomer.IdReservation);
+                    url = await storageUtil.StoreEvidencePaymentReservationCustomerAsync(evidence, idUser, idReservation);
                 }
-                string query = cns.PayReservationCustomer(voPayReservationCustomer.Comment, url);
+                string query = cns.PayReservationCustomer(comment, url);
                 SqlCommand updateCommand = new SqlCommand(query, con);
                 List<SqlParameter> prm = new List<SqlParameter>()
                     {
-                    new SqlParameter("@idReservation", SqlDbType.Int) {Value = voPayReservationCustomer.IdReservation},
+                    new SqlParameter("@idReservation", SqlDbType.Int) {Value = idReservation},
                     new SqlParameter("@comment", SqlDbType.VarChar) {Value = commentAux},
                     new SqlParameter("@evidence", SqlDbType.VarChar) {Value = url},
                     };
                 updateCommand.Parameters.AddRange(prm.ToArray());
                 updateCommand.ExecuteNonQuery();
-                UserBasicData user = GetPublisherFromReservation(voPayReservationCustomer.IdReservation, con);
+                UserBasicData user = GetPublisherFromReservation(idReservation, con);
                 return user;
             }
             catch (Exception e)
@@ -2209,30 +2177,30 @@ namespace backend.Data_Access
             return user;
         }
 
-        public async Task PayReservationPublisher(VORequestPayReservationPublisher voPayReservationPublisher, long idUser)
+        public async Task PayReservationPublisher(int idReservation, string comment, Image evidence, long idUser)
         {
             SqlConnection con = null;
             StorageUtil storageUtil = new StorageUtil();
             string url = "";
             string commentAux = "";
-            if (voPayReservationPublisher.Comment != null)
+            if (comment != null)
             {
-                commentAux = voPayReservationPublisher.Comment;
+                commentAux = comment;
             }
             try
             {
                 con = new SqlConnection(GetConnectionString());
                 con.Open();
-                if (voPayReservationPublisher.Evidence != null)
+                if (evidence != null)
                 {
                     // Insert evidence
-                    url = await storageUtil.StoreEvidencePaymentReservationPublisherAsync(voPayReservationPublisher.Evidence, idUser, voPayReservationPublisher.IdReservation);
+                    url = await storageUtil.StoreEvidencePaymentReservationPublisherAsync(evidence, idUser, idReservation);
                 }
-                string query = cns.PayReservationPublisher(voPayReservationPublisher.Comment, url);
+                string query = cns.PayReservationPublisher(comment, url);
                 SqlCommand updateCommand = new SqlCommand(query, con);
                 List<SqlParameter> prm = new List<SqlParameter>()
                     {
-                    new SqlParameter("@idReservation", SqlDbType.Int) {Value = voPayReservationPublisher.IdReservation},
+                    new SqlParameter("@idReservation", SqlDbType.Int) {Value = idReservation},
                     new SqlParameter("@comment", SqlDbType.VarChar) {Value = commentAux},
                     new SqlParameter("@evidence", SqlDbType.VarChar) {Value = url},
                     };
@@ -2252,30 +2220,30 @@ namespace backend.Data_Access
             }
         }
 
-        public UserBasicData UpdatePaymentCustomer(VORequestUpdatePaymentCustomer voUpdatePayment)
-        {
+        public UserBasicData UpdatePaymentCustomer(int idReservation, bool approved, string rejectedReason)
+        {            
             SqlConnection con = null;
             UserBasicData user;
             try
             {
                 string rejectedReasonAux = "";
-                if (voUpdatePayment.RejectedReason != null)
+                if (rejectedReason != null)
                 {
-                    rejectedReasonAux = voUpdatePayment.RejectedReason;
+                    rejectedReasonAux = rejectedReason;
                 }
                 con = new SqlConnection(GetConnectionString());
                 con.Open();
-                string query = cns.UpdatePaymentCustomer(voUpdatePayment.RejectedReason);
+                string query = cns.UpdatePaymentCustomer(rejectedReason);
                 SqlCommand updateCommand = new SqlCommand(query, con);
                 List<SqlParameter> prm = new List<SqlParameter>()
                 {
-                new SqlParameter("@idReservation", SqlDbType.Int) {Value = voUpdatePayment.IdReservation},
-                new SqlParameter("@paymentCustomerState", SqlDbType.Int) {Value = voUpdatePayment.Approved ? PAYMENT_PAID_STATE : PAYMENT_REJECTED_STATE},
+                new SqlParameter("@idReservation", SqlDbType.Int) {Value = idReservation},
+                new SqlParameter("@paymentCustomerState", SqlDbType.Int) {Value = approved ? PAYMENT_PAID_STATE : PAYMENT_REJECTED_STATE},
                 new SqlParameter("@paymentCustomerRejectedReason", SqlDbType.VarChar) {Value = rejectedReasonAux},
                 };
                 updateCommand.Parameters.AddRange(prm.ToArray());
                 updateCommand.ExecuteNonQuery();
-                user = GetCustomerFromReservation(voUpdatePayment.IdReservation, con);
+                user = GetCustomerFromReservation(idReservation, con);
                 return user;
 
 
@@ -2349,10 +2317,10 @@ namespace backend.Data_Access
             return user;
         }
 
-        public List<VOPublicationPaymentAdmin> GetPublicationPlanPayments()
+        public List<PublicationPaymentAdmin> GetPublicationPlanPayments()
         {
             SqlConnection con = null;
-            List<VOPublicationPaymentAdmin> payments = new List<VOPublicationPaymentAdmin>();
+            List<PublicationPaymentAdmin> payments = new List<PublicationPaymentAdmin>();
             string paymentDateString = null;
             try
             {
@@ -2361,7 +2329,7 @@ namespace backend.Data_Access
                 String query = cns.GetPublicationPlanPayments();
                 SqlCommand selectCommand = new SqlCommand(query, con);
                 SqlDataReader dr = selectCommand.ExecuteReader();
-                VOPublicationPaymentAdmin voPayment;
+                PublicationPaymentAdmin payment;
                 while (dr.Read())
                 {
                     paymentDateString = null;
@@ -2369,11 +2337,11 @@ namespace backend.Data_Access
                     {
                         paymentDateString = Util.ConvertDateToString(Convert.ToDateTime(dr["paymentDate"]));
                     }
-                    voPayment = new VOPublicationPaymentAdmin(Convert.ToInt32(dr["idPublication"]), Convert.ToString(dr["title"]), Convert.ToString(dr["mail"]),
+                    payment = new PublicationPaymentAdmin(Convert.ToInt32(dr["idPublication"]), Convert.ToString(dr["title"]), Convert.ToString(dr["mail"]),
                          Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToString(dr["planName"]),
                          Convert.ToString(dr["description"]), Convert.ToInt32(dr["planPrice"]), Convert.ToString(dr["comment"]),
                          Convert.ToString(dr["evidence"]), paymentDateString);
-                    payments.Add(voPayment);
+                    payments.Add(payment);
                 }
                 dr.Close();
             }
@@ -2391,10 +2359,10 @@ namespace backend.Data_Access
             return payments;
         }
 
-        public List<VOCommissionPaymentAdmin> GetCommissionPaymentsAdmin()
+        public List<CommissionPaymentAdmin> GetCommissionPaymentsAdmin()
         {
             SqlConnection con = null;
-            List<VOCommissionPaymentAdmin> commissions = new List<VOCommissionPaymentAdmin>();
+            List<CommissionPaymentAdmin> commissions = new List<CommissionPaymentAdmin>();
             string paymentDateString = null;
             try
             {
@@ -2403,7 +2371,7 @@ namespace backend.Data_Access
                 String query = cns.GetCommissionPaymentsAdmin();
                 SqlCommand selectCommand = new SqlCommand(query, con);
                 SqlDataReader dr = selectCommand.ExecuteReader();
-                VOCommissionPaymentAdmin voCommission;
+                CommissionPaymentAdmin commission;
                 while (dr.Read())
                 {
                     paymentDateString = null;
@@ -2411,11 +2379,11 @@ namespace backend.Data_Access
                     {
                         paymentDateString = Util.ConvertDateToString(Convert.ToDateTime(dr["paymentCommissionDate"]));
                     }
-                    voCommission = new VOCommissionPaymentAdmin(Convert.ToInt32(dr["idReservation"]), Convert.ToString(dr["title"]), Convert.ToString(dr["mail"]),
+                    commission = new CommissionPaymentAdmin(Convert.ToInt32(dr["idReservation"]), Convert.ToString(dr["title"]), Convert.ToString(dr["mail"]),
                          Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToInt32(dr["commission"]),
                          Convert.ToString(dr["description"]), Convert.ToString(dr["commissionComment"]),
                          Convert.ToString(dr["commissionEvidence"]), paymentDateString);
-                    commissions.Add(voCommission);
+                    commissions.Add(commission);
                 }
                 dr.Close();
             }
@@ -2433,10 +2401,10 @@ namespace backend.Data_Access
             return commissions;
         }
 
-        public List<VOPublication> GetFavorites(long idUser)
+        public List<Publication> GetFavorites(long idUser)
         {
             SqlConnection con = null;
-            List<VOPublication> favorites = new List<VOPublication>();
+            List<Publication> favorites = new List<Publication>();
             Util util = new Util();
             try
             {
@@ -2452,16 +2420,17 @@ namespace backend.Data_Access
                 };
                 selectCommand.Parameters.Add(param);
                 SqlDataReader dr = selectCommand.ExecuteReader();
-                VOPublication voPublication;
+                Publication publication;
                 while (dr.Read())
                 {
                     int idPublication = Convert.ToInt32(dr["idPublication"]);
-                    List<VOReview> reviews = GetReviews(idPublication, con);
+                    List<Review> reviews = GetReviews(idPublication, con);
                     int ranking = util.GetRanking(reviews);
-                    voPublication = new VOPublication(idPublication, Convert.ToInt32(dr["spaceType"]), Convert.ToString(dr["title"]), Convert.ToString(dr["city"]),
-                        Convert.ToString(dr["address"]), Convert.ToInt32(dr["capacity"]), Convert.ToInt32(dr["hourPrice"]),
-                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), ranking);
-                    favorites.Add(voPublication);
+                    publication = new Publication(idPublication, 0, null, null, null, null, Convert.ToInt32(dr["spaceType"]), null, null, Convert.ToString(dr["title"]), null,
+                        Convert.ToString(dr["address"]), null, Convert.ToInt32(dr["capacity"]), null, Convert.ToInt32(dr["hourPrice"]),
+                        Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), null, null, null, null, 0, null,
+                        ranking, Convert.ToString(dr["city"]), 0, false, 0, false, 0, null, false);
+                    favorites.Add(publication);
                 }
                 dr.Close();
             }
@@ -2479,43 +2448,43 @@ namespace backend.Data_Access
             return favorites;
         }
 
-        public List<VOSpaceTypeRecommended> GetRecommendedPublications()
+        public List<SpaceTypeRecommended> GetRecommendedPublications()
         {
             SqlConnection con = null;
-            List<VOSpaceTypeRecommended> recommendedList = new List<VOSpaceTypeRecommended>();
-            VOSpaceTypeRecommended recommended;
-            List<VORecommended> offices;
-            List<VORecommended> coworking;
-            List<VORecommended> meetingRooms;
-            List<VORecommended> events;
+            List<SpaceTypeRecommended> recommendedList = new List<SpaceTypeRecommended>();
+            SpaceTypeRecommended recommended;
+            List<Recommended> offices;
+            List<Recommended> coworking;
+            List<Recommended> meetingRooms;
+            List<Recommended> events;
             try
             {
                 con = new SqlConnection(GetConnectionString());
                 con.Open();
                 String query = cns.GetPublicationsRecommended();
                 offices = GetRecommendedSpaceType(query, con, PUBLICATION_OFFICE);
-                recommended = new VOSpaceTypeRecommended
+                recommended = new SpaceTypeRecommended
                 {
                     SpaceType = PUBLICATION_OFFICE,
                     Publications = offices
                 };
                 recommendedList.Add(recommended);
                 coworking = GetRecommendedSpaceType(query, con, PUBLICATION_COWORKING);
-                recommended = new VOSpaceTypeRecommended
+                recommended = new SpaceTypeRecommended
                 {
                     SpaceType = PUBLICATION_COWORKING,
                     Publications = coworking
                 };
                 recommendedList.Add(recommended);
                 meetingRooms = GetRecommendedSpaceType(query, con, PUBLICATION_MEETING_ROOM);
-                recommended = new VOSpaceTypeRecommended
+                recommended = new SpaceTypeRecommended
                 {
                     SpaceType = PUBLICATION_MEETING_ROOM,
                     Publications = meetingRooms
                 };
                 recommendedList.Add(recommended);
                 events = GetRecommendedSpaceType(query, con, PUBLICATION_EVENTS);
-                recommended = new VOSpaceTypeRecommended
+                recommended = new SpaceTypeRecommended
                 {
                     SpaceType = PUBLICATION_EVENTS,
                     Publications = events
@@ -2536,11 +2505,11 @@ namespace backend.Data_Access
             return recommendedList;
         }
 
-        private List<VORecommended> GetRecommendedSpaceType(string query, SqlConnection con, int spaceType)
+        private List<Recommended> GetRecommendedSpaceType(string query, SqlConnection con, int spaceType)
         {
-            List<VORecommended> spaceTypeList = new List<VORecommended>(MAX_TOTAL);
-            List<VORecommended> spaceTypeListAux = new List<VORecommended>();
-            VORecommended voPublication;
+            List<Recommended> spaceTypeList = new List<Recommended>(MAX_TOTAL);
+            List<Recommended> spaceTypeListAux = new List<Recommended>();
+            Recommended publication;
             try
             {
                 SqlDataReader dr;
@@ -2555,8 +2524,8 @@ namespace backend.Data_Access
                 dr = selectCommandGold.ExecuteReader();
                 while (dr.Read())
                 {
-                    voPublication = BuildRecommended(dr, con);
-                    spaceTypeListAux.Add(voPublication);
+                    publication = BuildRecommended(dr, con);
+                    spaceTypeListAux.Add(publication);
                 }
                 dr.Close();
                 int addedSilver = 0;
@@ -2592,8 +2561,8 @@ namespace backend.Data_Access
                 dr = selectCommandSilver.ExecuteReader();
                 while (dr.Read())
                 {
-                    voPublication = BuildRecommended(dr, con);
-                    spaceTypeListAux.Add(voPublication);
+                    publication = BuildRecommended(dr, con);
+                    spaceTypeListAux.Add(publication);
                 }
                 dr.Close();
                 if (spaceTypeListAux.Count != 0)
@@ -2624,8 +2593,8 @@ namespace backend.Data_Access
                     dr = selectCommandBronze.ExecuteReader();
                     while (dr.Read())
                     {
-                        voPublication = BuildRecommended(dr, con);
-                        spaceTypeListAux.Add(voPublication);
+                        publication = BuildRecommended(dr, con);
+                        spaceTypeListAux.Add(publication);
                     }
                     dr.Close();
                     if (spaceTypeListAux.Count != 0)
@@ -2661,8 +2630,8 @@ namespace backend.Data_Access
                     dr = selectCommandFree.ExecuteReader();
                     while (dr.Read())
                     {
-                        voPublication = BuildRecommended(dr, con);
-                        spaceTypeListAux.Add(voPublication);
+                        publication = BuildRecommended(dr, con);
+                        spaceTypeListAux.Add(publication);
                     }
                     dr.Close();
                     if (spaceTypeListAux.Count != 0)
@@ -2694,15 +2663,15 @@ namespace backend.Data_Access
             return spaceTypeList;
         }
 
-        private VORecommended BuildRecommended(SqlDataReader dr, SqlConnection con)
+        private Recommended BuildRecommended(SqlDataReader dr, SqlConnection con)
         {
-            VORecommended voPublication;
+            Recommended publication;
             List<string> images;
             int idPublication = Convert.ToInt32(dr["idPublication"]);
             images = GetImages(idPublication, con);
-            voPublication = new VORecommended(idPublication, Convert.ToString(dr["title"]), Convert.ToString(dr["address"]), Convert.ToString(dr["city"]),
+            publication = new Recommended(idPublication, Convert.ToString(dr["title"]), Convert.ToString(dr["address"]), Convert.ToString(dr["city"]),
                 Convert.ToInt32(dr["capacity"]), images);
-            return voPublication;
+            return publication;
         }
 
         private List<String> GetImages(int idPublication, SqlConnection con)
@@ -2727,41 +2696,41 @@ namespace backend.Data_Access
             return images;
         }
 
-        public UserBasicData UpdatePreferentialPaymentAdmin(VORequestUpdatePreferentialPaymentAdmin voUpdatePayment)
+        public UserBasicData UpdatePreferentialPaymentAdmin(int idPublication, bool approved, string rejectedReason)
         {
             SqlConnection con = null;
             SqlTransaction objTrans = null;
             string rejectedReasonAux = "";
-            if (voUpdatePayment.RejectedReason != null)
+            if (rejectedReason != null)
             {
-                rejectedReasonAux = voUpdatePayment.RejectedReason;
+                rejectedReasonAux = rejectedReason;
             }
             try
             {
                 con = new SqlConnection(GetConnectionString());
                 con.Open();
                 objTrans = con.BeginTransaction();
-                int idPayment = GetIdPreferentialPayment(voUpdatePayment.IdPublication, con, objTrans);
+                int idPayment = GetIdPreferentialPayment(idPublication, con, objTrans);
                 int idPreferentialPlan = GetIdPreferentialPlan(idPayment, con, objTrans);
-                string query = cns.UpdatePreferentialPaymentAdmin(voUpdatePayment.RejectedReason);
+                string query = cns.UpdatePreferentialPaymentAdmin(rejectedReason);
                 SqlCommand updateCommand = new SqlCommand(query, con);
                 List<SqlParameter> prm = new List<SqlParameter>()
                     {
-                    new SqlParameter("@state", SqlDbType.Int) {Value =  voUpdatePayment.Approved ? PAYMENT_PAID_STATE : PAYMENT_REJECTED_STATE},
+                    new SqlParameter("@state", SqlDbType.Int) {Value =  approved ? PAYMENT_PAID_STATE : PAYMENT_REJECTED_STATE},
                     new SqlParameter("@idPrefPayments", SqlDbType.Int) {Value = idPayment},
                     new SqlParameter("@paymentRejectedReason", SqlDbType.VarChar) {Value = rejectedReasonAux},
                     };
                 updateCommand.Parameters.AddRange(prm.ToArray());
                 updateCommand.Transaction = objTrans;
                 updateCommand.ExecuteNonQuery();
-                if (voUpdatePayment.Approved)
+                if (approved)
                 {
                     string queryPubl = cns.UpdatePublicationDueToPayment();
                     SqlCommand updateCommandPubl = new SqlCommand(queryPubl, con);
                     DateTime expirationDatePublication = CalculateExpirationDatePublication(idPreferentialPlan, con, objTrans);
                     List<SqlParameter> prmPubl = new List<SqlParameter>()
                     {
-                        new SqlParameter("@idPublication", SqlDbType.Int) {Value = voUpdatePayment.IdPublication},
+                        new SqlParameter("@idPublication", SqlDbType.Int) {Value = idPublication},
                         new SqlParameter("@idPlan", SqlDbType.Int) {Value = idPreferentialPlan},
                         new SqlParameter("@expirationDate", SqlDbType.DateTime) {Value = expirationDatePublication},
                     };
@@ -2770,7 +2739,7 @@ namespace backend.Data_Access
                     updateCommandPubl.ExecuteNonQuery();
                 }
                 objTrans.Commit();
-                UserBasicData user = GetPublisherFromPublication(voUpdatePayment.IdPublication, con);
+                UserBasicData user = GetPublisherFromPublication(idPublication, con);
                 return user;
             }
             catch (Exception e)
@@ -2791,29 +2760,29 @@ namespace backend.Data_Access
             }
         }
 
-        public UserBasicData UpdatePaymentCommissionAdmin(VORequestUpdatePaymentCommissionAdmin voUpdatePayment)
+        public UserBasicData UpdatePaymentCommissionAdmin(int idReservation, bool approved, string rejectedReason)
         {
             SqlConnection con = null;
             string rejectedReasonAux = "";
-            if (voUpdatePayment.RejectedReason != null)
+            if (rejectedReason != null)
             {
-                rejectedReasonAux = voUpdatePayment.RejectedReason;
+                rejectedReasonAux = rejectedReason;
             }
             try
             {
                 con = new SqlConnection(GetConnectionString());
                 con.Open();
-                string query = cns.UpdatePaymentCommissionAdmin(voUpdatePayment.RejectedReason);
+                string query = cns.UpdatePaymentCommissionAdmin(rejectedReason);
                 SqlCommand updateCommand = new SqlCommand(query, con);
                 List<SqlParameter> prm = new List<SqlParameter>()
                     {
-                    new SqlParameter("@commissionPaymentState", SqlDbType.Int) {Value =  voUpdatePayment.Approved ? PAYMENT_PAID_STATE : PAYMENT_REJECTED_STATE},
-                    new SqlParameter("@idReservation", SqlDbType.Int) {Value = voUpdatePayment.IdReservation},
+                    new SqlParameter("@commissionPaymentState", SqlDbType.Int) {Value =  approved ? PAYMENT_PAID_STATE : PAYMENT_REJECTED_STATE},
+                    new SqlParameter("@idReservation", SqlDbType.Int) {Value = idReservation},
                     new SqlParameter("@paymentCommissionRejectedReason", SqlDbType.VarChar) {Value = rejectedReasonAux},
                     };
                 updateCommand.Parameters.AddRange(prm.ToArray());
                 updateCommand.ExecuteNonQuery();
-                UserBasicData user = GetPublisherFromReservation(voUpdatePayment.IdReservation, con);
+                UserBasicData user = GetPublisherFromReservation(idReservation, con);
                 return user;
             }
             catch (Exception e)
@@ -2829,10 +2798,10 @@ namespace backend.Data_Access
             }
         }
 
-        public List<VOMessage> GetMessages(VORequestGetMessages voGetMessages, bool isPublisher, long idUser)
+        public List<Message> GetMessages(bool isPublisher, long idUser)
         {
 
-            List<VOMessage> messages = new List<VOMessage>();
+            List<Message> messages = new List<Message>();
             SqlConnection con = null;
             Util util = new Util();
             try
@@ -2850,13 +2819,13 @@ namespace backend.Data_Access
                 };
                 selectCommand.Parameters.Add(param);
                 SqlDataReader dr = selectCommand.ExecuteReader();
-                VOMessage question;
+                Message question;
                 while (dr.Read())
                 {
                     // 2: get answer for each question, if any
-                    VOAnswer answer = GetAnswer(con, Convert.ToInt32(dr["idQuestion"]));
+                    Answer answer = GetAnswer(con, Convert.ToInt32(dr["idQuestion"]));
                     string creationDate = Util.ConvertDateToString(Convert.ToDateTime(dr["creationDate"]));
-                    question = new VOMessage(Convert.ToInt32(dr["idPublication"]), Convert.ToString(dr["title"]), false, Convert.ToInt32(dr["idQuestion"]), Convert.ToString(dr["name"]), Convert.ToString(dr["question"]), creationDate, answer);
+                    question = new Message(Convert.ToInt32(dr["idPublication"]), Convert.ToString(dr["title"]), false, Convert.ToInt32(dr["idQuestion"]), Convert.ToString(dr["name"]), Convert.ToString(dr["question"]), creationDate, answer);
                     messages.Add(question);
                 }
                 dr.Close();
@@ -2890,9 +2859,9 @@ namespace backend.Data_Access
                         while (drQuestion.Read())
                         {
                             int idQuestion = Convert.ToInt32(drQuestion["idQuestion"]);
-                            VOAnswer answer = GetAnswer(con, idQuestion);
+                            Answer answer = GetAnswer(con, idQuestion);
                             string creationDate = Util.ConvertDateToString(Convert.ToDateTime(drQuestion["creationDate"]));
-                            question = new VOMessage(Convert.ToInt32(drPub["idPublication"]), Convert.ToString(drQuestion["title"]), true, Convert.ToInt32(drQuestion["idQuestion"]), Convert.ToString(drQuestion["name"]), Convert.ToString(drQuestion["question"]), creationDate, answer);
+                            question = new Message(Convert.ToInt32(drPub["idPublication"]), Convert.ToString(drQuestion["title"]), true, Convert.ToInt32(drQuestion["idQuestion"]), Convert.ToString(drQuestion["name"]), Convert.ToString(drQuestion["question"]), creationDate, answer);
                             messages.Add(question);
                         }
                         drQuestion.Close();
@@ -2909,9 +2878,9 @@ namespace backend.Data_Access
         }
 
 
-        private VOAnswer GetAnswer(SqlConnection con, int idQuestion)
+        private Answer GetAnswer(SqlConnection con, int idQuestion)
         {
-            VOAnswer answer = null;
+            Answer answer = null;
             String queryAnswers = cns.GetAnswers();
             SqlCommand selectCommandAnswers = new SqlCommand(queryAnswers, con);
             SqlParameter paramAnswers = new SqlParameter()
@@ -2925,7 +2894,7 @@ namespace backend.Data_Access
             while (drAnswer.Read())
             {
                 string creationDateAnswer = Util.ConvertDateToString(Convert.ToDateTime(drAnswer["creationDate"]));
-                answer = new VOAnswer(Convert.ToString(drAnswer["answer"]), creationDateAnswer);
+                answer = new Answer(Convert.ToString(drAnswer["answer"]), creationDateAnswer);
             }
             drAnswer.Close();
             return answer;
@@ -3045,20 +3014,20 @@ namespace backend.Data_Access
             }
         }
 
-        public void UpdateCommissionAmountAdmin(VORequestUpdateCommissionAmountAdmin voUpdateAmount)
+        public void UpdateCommissionAmountAdmin(int idReservation, int price)
         {
             SqlConnection con = null;
             try
             {
                 con = new SqlConnection(GetConnectionString());
                 con.Open();
-                bool isPaid = voUpdateAmount.Price == 0 ? true : false;
+                bool isPaid = price == 0 ? true : false;
                 String query = cns.UpdateCommissionAmountAdmin(isPaid);
                 SqlCommand updateCommand = new SqlCommand(query, con);
                 List<SqlParameter> param = new List<SqlParameter>()
                 {
-                    new SqlParameter("@commission", SqlDbType.Int) {Value =  voUpdateAmount.Price},
-                    new SqlParameter("@idReservation", SqlDbType.Int) {Value = voUpdateAmount.IdReservation}
+                    new SqlParameter("@commission", SqlDbType.Int) {Value =  price},
+                    new SqlParameter("@idReservation", SqlDbType.Int) {Value = idReservation}
                 };
                 updateCommand.Parameters.AddRange(param.ToArray());
                 updateCommand.ExecuteNonQuery();
@@ -3152,11 +3121,11 @@ namespace backend.Data_Access
             }
         }
 
-        public List<VOReservationExtended> GetReservations()
+        public List<ReservationExtended> GetReservations()
         {
             {
-                List<VOReservationExtended> reservations = new List<VOReservationExtended>();
-                VOReservationExtended voReservation = null;
+                List<ReservationExtended> reservations = new List<ReservationExtended>();
+                ReservationExtended reservation = null;
                 SqlConnection con = null;
                 try
                 {
@@ -3168,7 +3137,7 @@ namespace backend.Data_Access
                     SqlDataReader dr = selectCommand.ExecuteReader();
                     while (dr.Read())
                     {
-                        VOPayment payment = GetReservationPaymentInfo(Convert.ToInt32(dr["idReservation"]), con);
+                        Payment payment = GetReservationPaymentInfo(Convert.ToInt32(dr["idReservation"]), con);
                         String dateConvertedFrom = Util.ConvertDateToString(Convert.ToDateTime(dr["dateFrom"]));
                         DateTime dateTo = Convert.ToDateTime(dr["dateTo"] is DBNull ? null : dr["dateTo"]);
                         String dateConvertedTo = "";
@@ -3176,13 +3145,13 @@ namespace backend.Data_Access
                         {
                             dateConvertedTo = Util.ConvertDateToString(Convert.ToDateTime(dr["dateTo"]));
                         }
-                        voReservation = new VOReservationExtended(Convert.ToInt32(dr["idReservation"]), Convert.ToString(dr["title"]), Convert.ToInt32(dr["idPublication"]),
+                        reservation = new ReservationExtended(Convert.ToInt32(dr["idReservation"]), Convert.ToString(dr["title"]), Convert.ToInt32(dr["idPublication"]),
                             Convert.ToString(dr["customerMail"]), Convert.ToString(dr["planSelected"]),
                             Convert.ToInt32(dr["reservedQty"] is DBNull ? 0 : dr["reservedQty"]), Convert.ToDateTime(dr["dateFrom"]), dateConvertedFrom, dateTo, dateConvertedTo, Convert.ToString(dr["hourFrom"]),
                             Convert.ToString(dr["hourTo"]), Convert.ToInt32(dr["people"] is DBNull ? 0 : dr["people"]), null,
                             Convert.ToInt32(dr["totalPrice"]), Convert.ToInt32(dr["state"]), Convert.ToString(dr["description"]), false, 0,
                             0, 0, 0, false, payment, null, null, Convert.ToString(dr["publisherMail"]));
-                        reservations.Add(voReservation);
+                        reservations.Add(reservation);
                     }
                     dr.Close();
                 }

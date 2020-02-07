@@ -3,7 +3,6 @@ using backend.Data_Access.Query;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Text;
 using System.Configuration;
 using System.Data;
 using backend.Exceptions;

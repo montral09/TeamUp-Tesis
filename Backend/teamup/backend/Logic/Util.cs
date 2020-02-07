@@ -1,4 +1,5 @@
 ﻿using backend.Data_Access.VO.Data;
+using backend.Logic.Entities;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -89,7 +90,7 @@ namespace backend.Logic
             }
         }
 
-        public int GetRanking(List<VOReview> reviews)
+        public int GetRanking(List<Review> reviews)
         {
             int ranking = 0;
             int totalRankings = 0;
@@ -162,11 +163,11 @@ namespace backend.Logic
         /// <param name="currentPreferentialPlan"></param>
         /// <param name="preferentialPlans"></param>
         /// <returns> amount to be paid </returns>
-        internal static int RecalculatePrice(int newPlanPrice, int daysLeft, int currentPreferentialPlan, List<VOPublicationPlan> preferentialPlans)
+        internal static int RecalculatePrice(int newPlanPrice, int daysLeft, int currentPreferentialPlan, List<PublicationPlan> preferentialPlans)
         {
             int currentPlanPricePerDay = 0;
             int newTotalPrice;
-            foreach (VOPublicationPlan publicationPlan in preferentialPlans)
+            foreach (PublicationPlan publicationPlan in preferentialPlans)
             {
                 if (publicationPlan.IdPlan == currentPreferentialPlan)
                 {

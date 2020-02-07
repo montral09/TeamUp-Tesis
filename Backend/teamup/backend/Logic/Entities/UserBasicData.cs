@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace backend.Logic
+namespace backend.Logic.Entities
 {
     public class UserBasicData
     {

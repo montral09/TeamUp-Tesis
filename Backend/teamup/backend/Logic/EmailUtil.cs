@@ -1,5 +1,6 @@
 ﻿using backend.Data_Access;
 using backend.Data_Access.VO.Data;
+using backend.Logic.Entities;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
