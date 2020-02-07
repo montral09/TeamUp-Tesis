@@ -77,7 +77,7 @@ class ApproveRejectCommissionPayment extends React.Component {
                         {!this.state.paymentData.approved ? 
                         (
                             <FormGroup row>
-                                <Label for="rejectedReason" sm={2}>Razon de rechazo</Label>
+                                <Label for="rejectedReason" sm={2}>Motivo de rechazo</Label>
                                 <Col sm={10}>
                                     <Input type="textarea" name="rejectedReason" id="rejectedReason"
                                             value={this.state.rejectedReason || ""} onChange={this.onChange}/>

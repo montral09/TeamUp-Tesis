@@ -16,13 +16,9 @@ class ModalDetailPayment extends React.Component {
             isLoading: false,
             buttonIsDisabled: false
         };
-        this.toggle = this.toggle.bind(this);
-        this.save = this.save.bind(this);
-        this.changeModalLoadingState = this.changeModalLoadingState.bind(this);
-        this.getBase64 = this.getBase64.bind(this);
     }
 
-    toggle(objPaymentDetails) {
+    toggle =(objPaymentDetails)=> {
         if (!this.state.isLoading) {
             this.setState({
                 modal: !this.state.modal,
@@ -30,7 +26,7 @@ class ModalDetailPayment extends React.Component {
             });
         }
     }
-    changeModalLoadingState(closeModal) {
+    changeModalLoadingState = (closeModal) => {
         if (closeModal) {
             this.setState({
                 modal: !this.state.modal,
@@ -45,7 +41,7 @@ class ModalDetailPayment extends React.Component {
         }
     }
 
-    save() {
+    save = () =>{
         this.changeModalLoadingState(false);
         this.props.confirmPayment(this.state.objPaymentDetails);
     }
@@ -129,7 +125,7 @@ class ModalDetailPayment extends React.Component {
 
     }
 
-    getBase64(file) {
+    getBase64 = (file) => {
         var f = file; // FileList object
         var reader = new FileReader();
         // Closure to capture the file information.

@@ -24,21 +24,16 @@ class ModifyPublicationModal extends React.Component {
             facilitiesSelectTemp: [],
             facilitiesSelect: []
         };
-        this.toggle = this.toggle.bind(this);
-        this.save = this.save.bind(this);
-        this.handleSelectChange = this.handleSelectChange.bind(this)
-        this.deleteImage = this.deleteImage.bind(this);
-       
     }
 
-    deleteImage(id){
+    deleteImage = (id) =>{
         var tempImgArr = this.state.publDataChanged.ImagesURL.filter(function(value, index){
             return index != id;
         });
         this.onChange({target :{value:tempImgArr, name:"ImagesURL"}});
     }
 
-    toggle(publData, admTokenObj, adminData, spaceTypes, facilities) {
+    toggle = (publData, admTokenObj, adminData, spaceTypes, facilities) => {
         var facilitiesAux = []
         var facilitiesSelectTemp = []
         var facilitiesSelect = []
@@ -57,6 +52,7 @@ class ModifyPublicationModal extends React.Component {
              var spaceTypeSel = spaceTypes.filter(function (spaceType){
                  return spaceType.Code == publData.SpaceType;
              })
+             
              publData.SpaceTypeText = spaceTypeSel[0].Description;
         }        
         this.setState({
@@ -71,7 +67,7 @@ class ModifyPublicationModal extends React.Component {
         });
     }
 
-    handleSelectChange(facilitiesSelectTemp){
+    handleSelectChange = (facilitiesSelectTemp) =>{
         var values = [];
         for (var i = 0, l = facilitiesSelectTemp.length; i < l; i++) {
             values.push(facilitiesSelectTemp[i].value);
@@ -82,7 +78,7 @@ class ModifyPublicationModal extends React.Component {
         })
     } 
 
-    save() {        
+    save = () => {        
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.state.admTokenObj.accesToken,
@@ -142,7 +138,7 @@ class ModifyPublicationModal extends React.Component {
         return (
             <span className="d-inline-block mb-2 mr-2">
                 <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
-                    <ModalHeader toggle={this.toggle}>Cambiar datos de publicacion</ModalHeader>
+                    <ModalHeader toggle={this.toggle}>Cambiar datos de publicación</ModalHeader>
                     <ModalBody>
                     <Form>
                         <FormGroup row>
@@ -239,8 +235,8 @@ class ModifyPublicationModal extends React.Component {
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label for="Availability" sm={2}>Disponibilidad</Label>
-                            <Col sm={10}>
+                            <Label for="Availability" sm={3}>Disponibilidad</Label>
+                            <Col sm={9}>
                                 <Input type="textarea" name="Availability" id="Availability" disabled= {this.props.disableFields}
                                         value={this.state.publDataChanged.Availability || ""} onChange={this.onChange}/>
                             </Col>
@@ -259,7 +255,7 @@ class ModifyPublicationModal extends React.Component {
                             })
                         }
                         <FormGroup>
-                            <Label for="facilitiesSelect" >Infraestructura</Label>
+                            <Label for="facilitiesSelect" >Servicios</Label>
                             <Select	
                                 isMulti
                                 options={this.state.facilitiesAux}

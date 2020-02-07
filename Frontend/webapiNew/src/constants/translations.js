@@ -202,7 +202,7 @@ var module = {
             login_errorMsg1 : 'Por favor ingrese correo y contraseña',
             login_errorMsg2 : 'Formato de email incorrecto',
             modify_heaader : 'Modificar datos',
-            modify_mailLanguage : 'Idioma de los correos electrónnicos',
+            modify_mailLanguage : 'Idioma de los correos electrónicos',
             register_checkErrorMsg1: 'Por favor ingrese los campos obligatorios (*)',
             register_checkErrorMsg2: 'Su nombre debe contener solo letras',
             register_checkErrorMsg3: 'Nombre demasiado corto',
