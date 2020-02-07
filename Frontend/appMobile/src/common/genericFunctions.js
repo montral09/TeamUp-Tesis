@@ -1,4 +1,4 @@
-import { MAIN_URL, MAIN_URL_WEB} from './constants';
+import { MAIN_URL, MAIN_URL_WEB, MAX_ELEMENTS_PER_TABLE} from './constants';
 import { showMessage, hideMessage } from "react-native-flash-message";
 
 export const handleErrors = (error, bindThis) => {
@@ -100,6 +100,28 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         case "saveAnswerVP":
         case "saveQuestionVP":
             bindThis.loadPublicationVP(bindThis.state.pubID);
+        break;
+        case "loadMyReservationsMRSL":
+            var newTotalPages = Math.round(parseFloat(objData.Reservations.length/MAX_ELEMENTS_PER_TABLE));
+            var newPagination = [];
+            for(var i=1;i<=newTotalPages;i++){
+                newPagination.push(i);
+            }
+            bindThis.setState({ reservations: objData.Reservations, loadingReservations: false,
+                reservationsToDisplay: bindThis.filterPaginationArray(objData.Reservations, 0), pagination: newPagination })
+        break;
+        case "loadMyReservationsRP":
+            var newTotalPages = Math.round(parseFloat(objData.Reservations.length/MAX_ELEMENTS_PER_TABLE));
+            var newPagination = [];
+            for(var i=1;i<=newTotalPages;i++){
+                newPagination.push(i);
+            }
+            bindThis.setState({ reservations: objData.Reservations/*, loadingReservations: false,
+            reservationsToDisplay: bindThis.filterPaginationArray(objData.Reservations, 0), pagination: newPagination */})
+        break;
+        case "saveCustReservationPayment":
+            bindThis.ModalCustResPay.current.changeModalLoadingState(true);
+            bindThis.loadMyReservationsMRSL();
         break;
     }
 }

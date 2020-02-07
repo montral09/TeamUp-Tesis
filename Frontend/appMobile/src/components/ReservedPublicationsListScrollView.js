@@ -1,12 +1,11 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, ScrollView, Keyboard, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import { connect } from 'react-redux';
 
 // This component will render the table with the values passed as parameters -props-
 class ReservedPublicationsListScrollView extends Component {
     constructor(props) {
         super(props);
-
     }
 
 render() {

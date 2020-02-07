@@ -1,13 +1,15 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, ScrollView, Keyboard, TouchableOpacity, Linking, TextInput} from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Keyboard, TouchableOpacity, Linking, TextInput, Dimensions} from 'react-native';
+import { callAPI } from '../common/genericFunctions';
 
 class ReservationCustResPay extends Component {
     constructor(props) {
         super(props);
         const { navigation } = this.props;
+        const objPaymentDetailsParam = navigation.getParam('auxParam', 'default value');
         this.state = {
             modal: false,
-            objPaymentDetails: {},
+            objPaymentDetails: objPaymentDetailsParam,
             reservationComment: "",
             isLoading: false,
             buttonIsDisabled: false
@@ -44,8 +46,31 @@ class ReservationCustResPay extends Component {
 
     save() {
         this.changeModalLoadingState(false);
-        this.props.saveCustReservationPayment(this.state.objPaymentDetails);
+        this.saveCustReservationPayment(this.state.objPaymentDetails);
     }
+
+    saveCustReservationPayment = (objPaymentDetails) => {
+        var objApi = {};
+        objApi.objToSend = {
+            "AccessToken": this.props.tokenObj.accesToken,
+            "Mail": this.props.userData.Mail,
+            "IdReservation": objPaymentDetails.IdReservation,
+            "Comment": objPaymentDetails.paymentComment || "",
+            "Evidence": {
+                "Base64String": objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Base64String : "",
+                "Extension": objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Extension : ""
+            }
+        }
+        objApi.fetchUrl = "api/reservationPaymentCustomer";
+        objApi.method = "POST";
+        objApi.successMSG = {
+            SUCC_PAYMENTUPDATED: this.props.translate('SUCC_PAYMENTUPDATED'),
+        };
+        objApi.functionAfterSuccess = "saveCustReservationPayment";
+        callAPI(objApi, this);
+    }
+
+
 
     // Upload image functions
     maxSelectFile = (event) => {
@@ -178,80 +203,100 @@ class ReservationCustResPay extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <Text style={styles.titleText}>Detalle pago de la reserva</Text>
-                <View style={{flexDirection:'row'}}>
-                    <Text style={styles.infoText}>Monto</Text>
-                    <TextInput style={styles.inputBox} 
-                        underlineColorAndroid='rgba(0,0,0,0)'
-                        placeholder='Monto'
-                        placeholderTextColor="#ffffff"
-                        value={this.state.objPaymentDetails.reservationPaymentAmmount}
-                        editable = {false}
-                    />
-                </View>
-                <View style={{flexDirection:'row'}}>
-                    <Text style={styles.infoText}>Estatus del pago</Text>
-                    <TextInput style={styles.inputBox} 
-                        underlineColorAndroid='rgba(0,0,0,0)'
-                        placeholder='Estatus del pago'
-                        placeholderTextColor="#ffffff"
-                        value={this.state.objPaymentDetails.reservationPaymentStateText}
-                        editable = {false}
-                    />
-                </View>
-                <View style={{flexDirection:'row'}}>
-                    <Text style={styles.infoText}>Fecha de pago</Text>
-                    <TextInput style={styles.inputBox} 
-                        underlineColorAndroid='rgba(0,0,0,0)'
-                        placeholder='Fecha de pago'
-                        placeholderTextColor="#ffffff"
-                        value={this.state.objPaymentDetails.reservationpaymentDate == null ? "Pendiente" : this.state.objPaymentDetails.reservationpaymentDate}
-                        editable = {false}
-                    />
-                </View>
+                <View style={{alignItems: 'flex-start', marginLeft: 15}}>
+                    <Text style={styles.titleText}>Detalle pago de la reserva</Text>
+                    <View style={{flexDirection:'row', alignItems: 'center'}}>
+                        <View style={{flex:1}}>
+                            <Text style={styles.infoText}>Monto </Text>
+                        </View>
+                        <View style={{flex:1}}>
+                            <TextInput style={styles.inputBox} 
+                                underlineColorAndroid='rgba(0,0,0,0)'
+                                placeholder='Monto'
+                                placeholderTextColor="#ffffff"
+                                value={this.state.objPaymentDetails.reservationPaymentAmmount.toString()}
+                                editable = {false}
+                            />
+                        </View>
+                    </View>
+                    <View style={{flexDirection:'row', alignItems: 'center'}}>
+                        <View style={{flex:1}}>
+                            <Text style={styles.infoText}>Estatus del pago </Text>
+                        </View>
+                        <View style={{flex:1}}>
+                            <TextInput style={styles.inputBox} 
+                                underlineColorAndroid='rgba(0,0,0,0)'
+                                placeholder='Estatus del pago'
+                                placeholderTextColor="#ffffff"
+                                value={this.state.objPaymentDetails.reservationPaymentStateText}
+                                editable = {false}
+                            />
+                        </View>
+                    </View>
+                    <View style={{flexDirection:'row', alignItems: 'center'}}>
+                        <View style={{flex:1}}>
+                            <Text style={styles.infoText}>Fecha de pago </Text>
+                        </View>
+                        <View style={{flex:1}}>
+                            <TextInput style={styles.inputBox} 
+                                underlineColorAndroid='rgba(0,0,0,0)'
+                                placeholder='Fecha de pago'
+                                placeholderTextColor="#ffffff"
+                                value={this.state.objPaymentDetails.reservationpaymentDate == null ? "Pendiente" : this.state.objPaymentDetails.reservationpaymentDate.toString()}
+                                editable = {false}
+                            />
+                        </View>
+                    </View>
 
                     {this.state.objPaymentDetails.paymentDocument ? (
-                        <View style={{flexDirection:'row'}}>
-                            <Text style={styles.infoText}>Documento subido</Text>
-                            <Text style={styles.infoText} onPress={() => Linking.openURL(this.state.objPaymentDetails.paymentDocument)}>Archivo subido</Text>
+                        <View style={{flexDirection:'row', alignItems: 'center'}}>
+                            <View style={{flex:1}}>
+                                <Text style={styles.infoText}>Documento subido </Text>
+                            </View>
+                            <View style={{flex:1}}>
+                                <Text style={styles.infoText} onPress={() => Linking.openURL(this.state.objPaymentDetails.paymentDocument)}>Archivo subido</Text>
+                            </View>
                         </View>
                     ) : (null)}
                     {this.state.objPaymentDetails.reservationPaymentStateText != "PAID" && this.state.objPaymentDetails.reservationPaymentStateText != "CANCELED" ? (
-                        <View style={{flexDirection:'row'}}>
-                            <Text style={styles.infoText}>Documento prueba</Text>
-                            <Text style={styles.infoText} /*onPress={() => Linking.openURL(this.state.objPaymentDetails.paymentDocumentNew)}*/>Subir Imagen</Text>
+                        <View style={{flexDirection:'row', alignItems: 'center'}}>
+                            <View style={{flex:1}}>
+                                <Text style={styles.infoText}>Documento prueba </Text>
+                            </View>
+                            <View style={{flex:1}}>
+                                <Text style={styles.infoText} /*onPress={() => Linking.openURL(this.state.objPaymentDetails.paymentDocumentNew)}*/>Subir Imagen</Text>
+                            </View>
                         </View>
                         // value={this.state.objPaymentDetails.paymentDocumentNew} onChange={this.onChange} />   
                     ) : (null)}
-                    <View style={{flexDirection:'row'}}>
-                        <Text style={styles.infoText}>Comentario (opcional)</Text>
-                        <TextInput style={styles.inputBox} 
-                            multiline = {true}
-                            numberOfLines = {4}
-                            underlineColorAndroid='rgba(0,0,0,0)'
-                            placeholder='Comentario'
-                            placeholderTextColor="#ffffff"
-                            value={this.state.objPaymentDetails.reservationpaymentDate == null ? "Pendiente" : this.state.objPaymentDetails.reservationpaymentDate}
-                            editable = {this.state.objPaymentDetails.reservationPaymentStateText == "PAID" || this.state.objPaymentDetails.reservationPaymentStateText == "CANCELED" ? true : false}
-                        />
-                    </View>
+                    <Text style={styles.infoText2}>Comentario (opcional)</Text>
+                    <TextInput style={styles.inputBox2} 
+                        multiline = {true}
+                        numberOfLines = {4}
+                        underlineColorAndroid='rgba(0,0,0,0)'
+                        placeholder='Comentario'
+                        placeholderTextColor="#ffffff"
+                        value={this.state.objPaymentDetails.reservationpaymentDate == null ? "Pendiente" : this.state.objPaymentDetails.reservationpaymentDate}
+                        editable = {this.state.objPaymentDetails.reservationPaymentStateText == "PAID" || this.state.objPaymentDetails.reservationPaymentStateText == "CANCELED" ? true : false}
+                    />
                     {this.state.objPaymentDetails.reservationPaymentStateText != "PAID" && this.state.objPaymentDetails.reservationPaymentStateText != "CANCELED" ? (
                             <Text style={styles.infoText}>Atencion! El pago deberá ser confirmado por el gestor.{'\n'}Puede adjuntar una imagen/pdf y agregar un comentario.</Text>
                         ) : (
                             <Text style={styles.infoText}>El pago fue confirmado.</Text>
                         )
                     }
-                    <View style={{flexDirection: 'row'}}>
-                        <TouchableOpacity style={styles.button} onPress={()=> {this.props.navigation.goBack()}} disabled={this.state.buttonIsDisabled}> 
-                            <Text style={styles.buttonText}>Cerrar</Text>
+                </View>   
+                <View style={{flexDirection: 'row'}}>
+                    <TouchableOpacity style={styles.button} onPress={()=> {this.props.navigation.goBack()}} disabled={this.state.buttonIsDisabled}> 
+                        <Text style={styles.buttonText}>Cancelar</Text>
+                    </TouchableOpacity>
+                    {this.state.objPaymentDetails.reservationPaymentStateText != "PAID" && this.state.objPaymentDetails.reservationPaymentStateText != "CANCELED" ? (
+                        <TouchableOpacity style={styles.button} onPress={()=> {this.save}} disabled={this.state.buttonIsDisabled}> 
+                            <Text style={styles.buttonText}>Guardar</Text>
                         </TouchableOpacity>
-                        {this.state.objPaymentDetails.reservationPaymentStateText != "PAID" && this.state.objPaymentDetails.reservationPaymentStateText != "CANCELED" ? (
-                            <TouchableOpacity style={styles.button} onPress={()=> {this.save}} disabled={this.state.buttonIsDisabled}> 
-                                <Text style={styles.buttonText}>Guardar</Text>
-                            </TouchableOpacity>
-                            ) : (null)
-                        }
-                    </View>
+                        ) : (null)
+                    }
+                </View>        
             </View>
         );
     }
@@ -280,8 +325,21 @@ const styles = StyleSheet.create({
   infoText:{
     color: "#FFF",
   },
+  infoText2:{
+    color: "#FFF",
+    marginTop: 10,
+  },
   inputBox: {
-    width:300,
+    width:180,
+    backgroundColor:'rgba(255,255,255,0.3)',
+    borderRadius: 25,
+    paddingHorizontal: 16,
+    fontSize: 16,
+    color:'#ffffff',
+    marginVertical: 10
+  },
+  inputBox2: {
+    width: Dimensions.get('window').width - 20,
     backgroundColor:'rgba(255,255,255,0.3)',
     borderRadius: 25,
     paddingHorizontal: 16,
