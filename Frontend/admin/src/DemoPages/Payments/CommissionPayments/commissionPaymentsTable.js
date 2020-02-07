@@ -19,7 +19,7 @@ const CommissionPaymentsTable = ({paymentsPendingConfirmation, approveCommission
         }
         return (colToReturn)
     });
-    const arrDataAppList = paymentsPendingConfirmation.length ? (
+    const arrDataAppList = paymentsPendingConfirmation != null && paymentsPendingConfirmation.length ? (
         paymentsPendingConfirmation.map( obj => {
             return(
             <tr key={obj.IdReservation}>

@@ -3,7 +3,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { logOut, updateToken } from '../reducers/auth/actions';
 import store from './configureStore'
 import { MAIN_URL, MAX_ELEMENTS_PER_TABLE} from './constants'
-import { text } from '@fortawesome/fontawesome-svg-core';
 
 export const handleErrors = (error, bindThis) => {
     displayErrorMessage('Hubo un error');
@@ -82,10 +81,10 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         case "getUsers" : bindThis.setState ({...bindThis.state, arrDataUsers: objData.voUsers, arrDataUsersToDisplay: filterInitialElementsToDisplay(objData.voUsers), isLoading: false}); break;
         case "updateUser" : 
             bindThis.setState({ 
-                modal: !bindThis.state.modal,
                 userData: bindThis.state.userData, 
                 userDataChanged: bindThis.state.userData
             }); 
+            bindThis.changeModalLoadingState(true);
             bindThis.props.updateTable()
             break;
         case "loadFacilities" : bindThis.setState({ facilities: objData.facilities}); break;
@@ -107,10 +106,20 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         }); 
         bindThis.props.updateTable()
         break;
-        case "getPreferentialPayments" :  
-            bindThis.setState({ 'preferentialPayments': objData.Payments, 'preferentialPaymentsFiltered': objData.Payments,
-                preferentialPaymentsToDisplay : filterInitialElementsToDisplay(objData.Payments), 
-                isLoading : false }); 
+        case "getPreferentialPayments" :
+            var paymentsPendingConfirmation = objData.Payments.filter(ppayment => {
+                return ppayment.PreferentialPlanState === 'PENDING CONFIRMATION'
+            });
+
+            var paymentsPendingPay = objData.Payments.filter(ppayment => {
+                return ppayment.PreferentialPlanState === 'PENDING PAYMENT'
+            });
+
+            var paymentsAll = objData.Payments;
+
+            bindThis.setState({ 'preferentialPaymentsPendPay': paymentsPendingPay, preferentialPaymentsPendPayToDisplay : filterInitialElementsToDisplay(paymentsPendingPay), 'paymentsAll' : paymentsAll, 
+                                paymentsAllToDisplay : filterInitialElementsToDisplay(paymentsAll), 'preferentialPaymentsPendConf' : paymentsPendingConfirmation, 
+                                'preferentialPaymentsPendConfToDisplay' : filterInitialElementsToDisplay(paymentsPendingConfirmation)}); 
         break;
         case "appRejPreferentialPayment" : 
             bindThis.setState({
@@ -130,9 +139,8 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             });               
             bindThis.setState({ 'paymentsPendingConfirmation': paymentsPendingConfirmation, 
                     paymentsPendingConfirmationToDisplay : filterInitialElementsToDisplay(paymentsPendingConfirmation), 
-                    paymentsComission : paymentsComission, paymentsComissionToDisplay : filterInitialElementsToDisplay(paymentsComission),
-                    isLoading : false});
-            break;
+                    paymentsComission : paymentsComission, paymentsComissionToDisplay : filterInitialElementsToDisplay(paymentsComission)});
+        break;
         case "appRejCommissionPayment" :
             bindThis.setState({
                 modal: !bindThis.state.modal,
@@ -140,24 +148,27 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
                 buttonIsDisabled: !bindThis.state.buttonIsDisabled
             });
             bindThis.props.updateTable(); 
-            break;
+        break;
         case "getCommissionsUnpaid" :
             var commissions = objData.Commissions;
             var paymentsPendingPaid = commissions.filter(commission => {
                 return commission.CommissionState === 'PENDING PAYMENT'
             });                
-            bindThis.setState({ 'paymentsPendingPaid': paymentsPendingPaid , paymentsPendingPaidToDisplay : filterInitialElementsToDisplay(paymentsPendingPaid), isLoading2 : false});
-            break;
+            bindThis.setState({ 'paymentsPendingPaid': paymentsPendingPaid , paymentsPendingPaidToDisplay : filterInitialElementsToDisplay(paymentsPendingPaid)});
+        break;
         case "editCommission" :
             bindThis.modalElementUpdate.current.toggleLoading(true);
-            bindThis.loadCommissionsUnpaid(); 
+        bindThis.loadCommissionsUnpaid(); 
             break;
         case "gestPendApp":
             var sanitizedValues = objData.voUsers.filter(voUsr =>{
                 return voUsr.PublisherValidated == false
             })
             bindThis.setState({ 'gestPendApr': sanitizedValues , 'gestPendAprToDisplay': filterInitialElementsToDisplay(sanitizedValues) })
-            break;
+        break;
+        case "loadSpaceTypes":
+            bindThis.setState({ spaceTypes: objData.spaceTypes })
+        break;
     } 
 }
 

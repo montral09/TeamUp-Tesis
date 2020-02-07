@@ -19,6 +19,7 @@ import NotFoundPage from './pages/404';
 import DeleteUser from './account/deleteUser';
 import MyMessagesList from './messages/myMessagesList';
 import AboutUs from './pages/about_us';
+import TermsAndConditions from './pages/termsAndConditions';
 
 const Page = () => {
   return (
@@ -41,6 +42,7 @@ const Page = () => {
         <Route path="/publications/favPublications" component={FavPublications} />
         <Route path="/messages" component={MyMessagesList} />
         <Route path="/about_us" component={AboutUs} />
+        <Route path="/termsAndConditions" component={TermsAndConditions} />
         <Route component={NotFoundPage} />
       </Switch>
     </>

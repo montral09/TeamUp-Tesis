@@ -4,7 +4,7 @@ import { Table, Progress } from 'reactstrap';
 
 // This component will render the table with the values passed as parameters -props-
 const AllUsersTable = ({arrData, editUser, isLoading}) =>{
-    const columnsName = ['Mail','Nombre','Apellido','Telefono','RUT','Razon Social','Direccion','Es Gestor','Mail Validado','Editar'];
+    const columnsName = ['Mail','Nombre','Apellido','Telefono','RUT','Razón Social','Dirección','Es Gestor','Mail Validado','Editar'];
 
     const columnsTable = columnsName.map( colName => {
         return (<th key={colName}>{colName}</th>)
@@ -23,7 +23,7 @@ const AllUsersTable = ({arrData, editUser, isLoading}) =>{
                 <td>{usr.Address}</td>
                 <td>{usr.CheckPublisher ? 'Si' : 'No'}</td>
                 <td>{usr.MailValidated ? 'Si' : 'No'}</td>
-                <td><a onClick={() => { editUser(usr.Mail) }}><i className="lnr lnr-pencil"></i></a></td>
+                <td><a href='javascript:void(0);' onClick={() => { editUser(usr.Mail) }}><i className="lnr lnr-pencil"></i></a></td>
             </tr>
             )
         })

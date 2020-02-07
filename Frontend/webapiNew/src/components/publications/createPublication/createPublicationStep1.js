@@ -61,7 +61,7 @@ class CreatePublicationStep1 extends React.Component {
             <FormGroup>
                 <Label for="description">{translate('desription_w')}</Label>
                 <ReactQuill  name="description" id="description" value={this.props.parentState.description}
-                  onChange={() => this.handleRichTextChange} />
+                  onChange={this.handleRichTextChange} />
             </FormGroup>
             <FormGroup>
                 <Label for="capacity">{translate('capacity_w')} (*)</Label>
@@ -69,7 +69,7 @@ class CreatePublicationStep1 extends React.Component {
                     value ={this.props.parentState.capacity}/>
             </FormGroup>
             <FormGroup>
-                <Label for="facilitiesSelect" >{translate('infraestructure_w')}</Label>
+                <Label for="facilitiesSelect" >{translate('services_w')}</Label>
                 <Select	
                     isMulti
 					options={facilitiesAux}

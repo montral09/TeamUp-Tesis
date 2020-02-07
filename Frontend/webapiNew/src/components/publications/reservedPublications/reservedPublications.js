@@ -8,6 +8,7 @@ import LoadingOverlay from 'react-loading-overlay';
 import { withTranslate } from 'react-redux-multilingual'
 import MyReservedSpacesTable from '../../reservations/myReservedSpaces/myReservedSpacesTable'
 import Header from "../../header/header";
+import Footer from "../../footer/footer";
 import ModalReqInfo from '../viewPublication/modalReqInfo';
 import ModalResCustPay from './modalResCustPay'
 import ModalResComPay from './modalResComPay';
@@ -232,7 +233,7 @@ class MyReservedPublications extends React.Component {
                     text={translate('loading_text_small')}
                 >
                     <Header />
-                    <div className="main-content  full-width  home">
+                    <div className="main-content  full-width  home" style = {{minHeight:"50vh"}}>
                         <div className="pattern" >
                             <div className="col-md-12 center-column">
                                 <h1>{translate('res_publications_title')}</h1>
@@ -259,6 +260,8 @@ class MyReservedPublications extends React.Component {
                         </div>
 
                     </div>
+                  <br />
+                 <Footer /> 
                 </LoadingOverlay >
             </>
         );

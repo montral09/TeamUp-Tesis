@@ -9,7 +9,7 @@ const UpdateCommissionTable = ({paymentsPendingPaid, changeCommission, isLoading
     const columnsTable = columnsName.map( colName => {
         return (<th key={colName}>{colName}</th>)
     });
-    const arrDataAppList = paymentsPendingPaid.length ? (
+    const arrDataAppList = paymentsPendingPaid != null && paymentsPendingPaid.length ? (
         paymentsPendingPaid.map( obj => {
             return(
             <tr key={obj.IdReservation}>

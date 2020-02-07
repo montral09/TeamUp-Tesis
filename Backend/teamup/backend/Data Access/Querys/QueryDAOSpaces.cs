@@ -480,7 +480,7 @@ namespace backend.Data_Access.Query
             String query = "select p.idPublication, p.title, u.mail, u.name, u.lastName, u.phone, ppl.name as planName, ps.description, " +
                 "p.planPrice, pp.comment, pp.evidence, pp.paymentDate from PUBLICATIONS p, USERS u, PUBLICATION_PLANS ppl, PREFERENTIAL_PAYMENTS pp, " +
                 "PAYMENT_STATES ps where pp.idPublication = p.idPublication and p.idUser = u.idUser and " +
-                "ppl.idPlan = pp.idPlan and pp.state = ps.idPaymentState and pp.state = 2 order by pp.paymentDate desc";
+                "ppl.idPlan = pp.idPlan and pp.state = ps.idPaymentState and (pp.state = 1 or pp.state = 2 or pp.state = 3) order by pp.paymentDate desc";
             return query;
 
         }
@@ -694,6 +694,16 @@ namespace backend.Data_Access.Query
         public String GetPublicationInfoAfterUpdate()
         {
             String query = "select p.availability, p.expirationDate, p.planPrice from PUBLICATIONS p";
+            return query;
+        }
+
+        public String GetAllReservations()
+        {
+            String query = "select p.title, r.idReservation, r.idPublication, r.idCustomer, rp.description as planSelected, r.reservedQty, r.dateFrom, r.dateTo, r.hourFrom, r.HourTo," +
+                " r.people, r.totalPrice, r.state, rs.description, r.paymentCustomerState, ps.description as customerPaymentDesc, u1.mail as customerMail, u2.mail as publisherMail from" +
+                " RESERVATIONS r, PUBLICATIONS p, RESERVATION_STATES rs, SPACE_TYPES s, PAYMENT_STATES ps, RESERVATION_PLANS rp, USERS u1, USERS u2" +
+                " where r.idPublication = p.idPublication and rs.idReservationState = r.state and p.spaceType = s.idSpaceType and r.planSelected = rp.idReservationPlan and u1.idUser = r.idCustomer and" +
+                " p.idUser = u2.idUser and ps.idPaymentState = paymentCustomerState order by r.idReservation desc";
             return query;
         }
     }

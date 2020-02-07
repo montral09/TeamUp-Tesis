@@ -84,7 +84,7 @@ class ApproveRejectPublicationModal extends React.Component {
                         {this.state.pubData.type == 'REJECT' ? 
                         (
                             <FormGroup row>
-                                <Label for="RejectReason" sm={2}>Razon de rechazo</Label>
+                                <Label for="RejectReason" sm={2}>Motivo de rechazo</Label>
                                 <Col sm={10}>
                                     <Input type="textarea" name="RejectReason" id="RejectReason"
                                             value={this.state.RejectReason || ""} onChange={this.onChange}/>

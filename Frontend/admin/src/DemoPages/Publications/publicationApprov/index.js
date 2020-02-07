@@ -47,7 +47,19 @@ class PublPendApprov extends Component {
         objApi.functionAfterSuccess = "loadFacilities";
         callAPI(objApi, this);
     }
-
+    
+    loadSpaceTypes = () => {
+        var objApi = {};
+        objApi.objToSend = {}
+        objApi.fetchUrl = "api/spaceTypes";
+        objApi.method = "GET";
+        objApi.successMSG = {
+            SUCC_SPACETYPESOK : '',
+        };
+        objApi.functionAfterSuccess = "loadSpaceTypes";
+        objApi.errorMSG= {}
+        callAPI(objApi, this);
+    }
     // This function will try to approve an specific publication
     approvePublication = (key) => {
         var pubData = {
@@ -68,7 +80,8 @@ class PublPendApprov extends Component {
     // This function will trigger when the component is mounted, to fill the data from the state
     componentDidMount() {
         this.loadPublicationsPendingApproval();
-        this.loadInfraestructure()
+        this.loadInfraestructure();
+        this.loadSpaceTypes();
     }
 
     loadPublicationsPendingApproval = () =>{
