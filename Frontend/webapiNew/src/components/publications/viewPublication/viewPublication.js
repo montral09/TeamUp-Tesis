@@ -55,7 +55,7 @@ class ViewPublication extends React.Component {
         this.modalSummaryElement = React.createRef(); // Connects the reference to the modal
     }
 
-    componentDidMount() {
+    componentWillMount() {
         this.loadInfraestructureVP();
         this.loadPublicationVP(this.state.pubID);
         this.setInitialHour();
