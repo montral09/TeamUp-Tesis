@@ -22,10 +22,12 @@ class CreatePublicationStep1 extends React.Component {
         }
     }
 
+    // This function will handle the richtext change
     handleRichTextChange = (value) =>{
         this.props.onChange({target :{value:value, id:"description", options : value}})
     }
 
+    // This function will handle the select change
     handleSelectChange =(value) =>{
         this.setState({ value });
         this.props.onChange({target :{value:value, id:"facilitiesSelect", options : this.props.parentState.facilities}})
@@ -47,7 +49,7 @@ class CreatePublicationStep1 extends React.Component {
             <p className="h4 mb-4 text-center">{translate('createPub_DataFromYourSpace')} - {translate('createPub_stepHeader')} 1</p>
             <FormGroup>
                 <Label for="spaceTypeSelect">{translate('createPub_step1_chooseSpaceText')}</Label>
-                <Input type="select" name="spaceTypeSelect" id="spaceTypeSelect" onChange={this.props.onChange} defaultValue = {this.props.parentState.spaceTypeSelect} >
+                <Input type="select" name="spaceTypeSelect" id="spaceTypeSelect" onChange={this.props.onChange} defaultValue = {this.props.parentState.spaceTypeSelect} disabled = {this.props.parentState.cpMode == 'split'} >
                     {this.props.parentState.spaceTypes.map((space, key) => {
                         return <option key={key} value={space.Code}>{space.Description}</option>;
                     })}

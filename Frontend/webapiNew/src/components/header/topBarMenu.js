@@ -18,6 +18,7 @@ class TopBarMenu extends React.Component {
 	}
 }
 
+// Mapping the current state to props, to retrieve useful information from the state
 const mapStateToProps = (state) =>{
     return{
         login_status: state.loginData.login_status,

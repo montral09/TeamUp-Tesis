@@ -31,6 +31,7 @@ class Browser extends React.Component {
         this.setState({ dropDownValue: text })
     }
 
+    // This function will call the API
     loadSpaceTypesBR() {
         var objApi = {};
         objApi.objToSend = {}
@@ -45,6 +46,7 @@ class Browser extends React.Component {
         callAPI(objApi, this);
     }
 
+    // This function will redirect to next screen using different filteres on the URL
     startSearch = () => {
         let spaceTypeSelected = this.state.spaceTypeSelected  == "" ? "empty" :this.state.spaceTypeSelected;
         let capacity = this.state.capacity  == "" ? "empty" :this.state.capacity;
@@ -52,11 +54,13 @@ class Browser extends React.Component {
         this.props.history.push('/publications/listPublications/mainPublications/'+spaceTypeSelected +'/'+capacity+'/'+city);
     }
 
+    // This function will handle the onchange event from the fields
     onChange = (e) => {
         this.setState({
             [e.target.id]: e.target.value
         });
     }
+    
     render() {
         const { translate } = this.props;
         return (

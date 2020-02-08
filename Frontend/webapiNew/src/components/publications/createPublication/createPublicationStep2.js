@@ -39,14 +39,14 @@ class CreatePublicationStep2 extends React.Component {
         Geocode.setRegion("uy");
         Geocode.enableDebug();
     }
-    
+    // This function will handle the image delete behavior
     deleteImage(id){
         var tempImgArr = this.props.parentState.imagesURL.filter(function(value, index){
             return index != id;
         });
         this.props.onChange({target :{value:tempImgArr, id:"imagesURL"}});
     }
-
+    // This function will check if the url from YT it's properly formed
     matchYoutubeUrl(input) {
         let url = input.target.value;
         var p = /(?:https?:\/\/)?(?:youtu\.be\/|(?:www\.|m\.)?youtube\.com\/(?:watch|v|embed)(?:\.php)?(?:\?.*v=|\/))([a-zA-Z0-9\-_]+)/;
@@ -60,9 +60,10 @@ class CreatePublicationStep2 extends React.Component {
         }
     }
 
+    // This function will validate if the location coorrect
     validateLocation(){
         if(this.state.locationText ==""){
-            toast.error("Por favor ingrese la ubicacion", {
+            toast.error(this.props.translate('createPub_step2_locationErrorTxt'), {
                 position: "top-right",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -108,8 +109,9 @@ class CreatePublicationStep2 extends React.Component {
         }
     }
 
+    // This function will load the location
     functionLoadLocation(e){
-        // if the location was valid and you try to input again -) need to validate again
+        // if the location was valid and you try to input again -> need to validate again
         if(this.state.locationTextValidated){
             this.props.onChange({target :{value:"",id:"locationText"}});
             this.props.onChange({target :{value:0,id:"geoLat"}});
@@ -151,7 +153,7 @@ class CreatePublicationStep2 extends React.Component {
                 <Col md={8}>
                     <FormGroup>
                     <Label for="locationSearch">{translate('location2_w')} (*)</Label>
-                    <LocationSearchInput onChange={this.props.onChange} city={this.props.parentState.city}/>
+                    <LocationSearchInput onChange={this.props.onChange} city={this.props.parentState.city} disabled = {this.props.parentState.cpMode == 'split'}/>
                     </FormGroup>
                 </Col>
                 <Col md={8}>
@@ -163,7 +165,7 @@ class CreatePublicationStep2 extends React.Component {
                             </InputGroupAddon>
                             <Input {...(this.state.locationTextSuccess ? {valid :true} : {})} {...(this.state.locationTextError ? {invalid :true} : {})} 
                                     type="text" name="locationText" placeholder="ej: 18 de julio 2233" id="locationText"
-                                    value ={this.state.locationText} onChange={this.functionLoadLocation}/>
+                                    value ={this.state.locationText} onChange={this.functionLoadLocation} disabled = {this.props.parentState.cpMode == 'split'}/>
                         </InputGroup>
                     </FormGroup>
                 </Col>

@@ -148,6 +148,7 @@ class MyReservedSpacesList extends React.Component {
         }
     }
 
+    // This function will call the API
     saveCancelMRSL = (commentValue) => {
         var objApi = {};
         objApi.objToSend = {
@@ -169,6 +170,7 @@ class MyReservedSpacesList extends React.Component {
         callAPI(objApi, this);
     }
 
+    // This function will call the API
     saveRateMRSL = (optionValue, commentValue) => {
         if (!optionValue) {
             optionValue = 5;
@@ -192,7 +194,8 @@ class MyReservedSpacesList extends React.Component {
         this.modalReqInfo.current.changeModalLoadingState(false);
         callAPI(objApi, this);
     }
-
+    
+    // This function will call the API
     saveCustReservationPayment = (objPaymentDetails) => {
         var objApi = {};
         objApi.objToSend = {

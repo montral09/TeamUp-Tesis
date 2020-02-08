@@ -28,11 +28,10 @@ class PageNotFound extends React.Component {
                             <div className="container">
                                 <div className="row">
                                     <div className="col-md-12 center-column" id="content">
-                                    
                                         <h1>{translate('error404_header')}</h1>
                                         <p>{translate('error404_detail') + CONTACT_EMAIL}</p> 
                                         <div className="buttons">
-                                            <div className="pull-right"><Link to="/" className="btn btn-primary">Pagina Inicial</Link></div>
+                                            <div className="pull-right"><Link to="/" className="btn btn-primary">Home</Link></div>
                                         </div>
                                     </div>
                                 </div>

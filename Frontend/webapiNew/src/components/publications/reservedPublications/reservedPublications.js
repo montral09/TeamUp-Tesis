@@ -42,6 +42,7 @@ class MyReservedPublications extends React.Component {
         this.loadMyReservationsRP();
     }
 
+    // This function will call the API
     loadMyReservationsRP = () => {
         var objApi = {};
         objApi.objToSend = {
@@ -71,7 +72,7 @@ class MyReservedPublications extends React.Component {
     modalSave = () => {
         this.modalReqInfo.current.changeModalLoadingState(true);
     }
-
+    // This function will trigger the modal depending of the values passed
     triggerModal = (mode, IdReservation, auxParam) => {
         let { translate } = this.props
         var modalConfigObj = {};
@@ -100,6 +101,7 @@ class MyReservedPublications extends React.Component {
         }
     }
 
+    // This function will call the API
     saveCancelRP = (commentValue) => {
         var objApi = {};
         objApi.objToSend = {
@@ -122,6 +124,7 @@ class MyReservedPublications extends React.Component {
         callAPI(objApi, this);
     }
 
+    // This function will call the API
     saveConfirmRP = (dateSelectValue) => {
         if (dateSelectValue == "") {
             displayErrorMessage(this.props.translate('reservedPublications_confirmModal_dateSelectMissingErr'));
@@ -147,13 +150,15 @@ class MyReservedPublications extends React.Component {
         }
 
     }
-
+    // This function will trigger the proper api calls for each function
     triggerSaveModal = (saveFunction, objData) => {
         switch (saveFunction) {
             case "saveCancelRP": this.saveCancelRP(objData.textboxValue); break;
             case "saveConfirmRP": this.saveConfirmRP(objData.dateSelectValue); break;
         }
     }
+
+    // This function will call the API
     saveComissionPayment = (objPaymentDetails) => {
         var objApi = {};
         objApi.objToSend = {
@@ -176,6 +181,8 @@ class MyReservedPublications extends React.Component {
         this.ModalResComPay.current.changeModalLoadingState(false);
         callAPI(objApi, this);
     }
+
+    // This function will call the API
     rejetPayment = (objPaymentDetails) => {
         var objApi = {};
         objApi.objToSend = {
@@ -194,6 +201,7 @@ class MyReservedPublications extends React.Component {
         callAPI(objApi, this);
     }
 
+    // This function will call the API
     confirmPaymentRP = (objPaymentDetails) => {
         var objApi = {};
         objApi.objToSend = {
@@ -267,6 +275,8 @@ class MyReservedPublications extends React.Component {
         );
     }
 }
+
+// Mapping the current state to props, to retrieve useful information from the state
 const mapStateToProps = (state) => {
     return {
         login_status: state.loginData.login_status,

@@ -22,6 +22,7 @@ class CreatePublication extends React.Component {
         super(props);
         var pubIsLoading = false; var editObject = {}; var premiumOptionSelected = null;
         if(props.publicationID){
+            // When is on edit mode, load the following values
             pubIsLoading = true;
             editObject.publicationID = props.publicationID;
             editObject.currentIDPlan = props.currentIDPlan;
@@ -60,10 +61,12 @@ class CreatePublication extends React.Component {
             WeeklyPrice: 0,
             MonthlyPrice: 0,
             maxSteps: 5,
-            generalError : false
+            generalError : false,
+            cpMode : props.cpMode || 'create'
         }
     }
 
+    // This function will call the API
     loadPublicationCP = (pubID) => {
         var objApi = {};
         objApi.objToSend = {}
@@ -78,6 +81,7 @@ class CreatePublication extends React.Component {
         callAPI(objApi, this);
     }
 
+    // Validate if evey element was populated on each step
     validateStep = () =>{
         var isValid = false;
         try{
@@ -112,7 +116,7 @@ class CreatePublication extends React.Component {
         }
         return isValid;
     }
-
+    // Trigger next step
     _nextStep = () => {
         if(this.validateStep() == true){
             let currentStep = this.state.currentStep;
@@ -122,11 +126,11 @@ class CreatePublication extends React.Component {
                 currentStep: currentStep
             })
         }else{
-            displayErrorMessage('Por favor complete los campos obligatorios ');
+            displayErrorMessage(this.props.translate('createPub_stepNextError'));
         }
 
     }
-
+    // Trigger previous step
     _previousStep = () => {
         let currentStep = this.state.currentStep
         // If the current step is 2 or 3, then subtract one on "previous" button click
@@ -145,14 +149,14 @@ class CreatePublication extends React.Component {
                 <button
                     className="btn btn-secondary"
                     type="button" onClick={this._previousStep} disabled={this.state.buttonIsDisable}>
-                    Atras
+                    {this.props.translate('back_w')}
             </button>
             )
         }
         // ...else return nothing
         return null;
     }
-
+    // Obtain the next button
     get nextButton() {
         let currentStep = this.state.currentStep;
         // If the current step is not the last step, then render the "next" button
@@ -161,14 +165,14 @@ class CreatePublication extends React.Component {
                 <button
                     className="btn btn-primary float-right"
                     type="button" onClick={this._nextStep}>
-                    Siguiente
+                    {this.props.translate('next_w')}
             </button>
             )
         }
         // ...else render nothing
         return null;
     }
-
+    // Obtain the end button
     get endButton() {
         let currentStep = this.state.currentStep;
         // If the current step is the last step, then render the "end" button
@@ -177,7 +181,8 @@ class CreatePublication extends React.Component {
                 <button
                     className="btn btn-primary float-right"
                     type="button" onClick={this.submitPublicationCP} disabled={this.state.buttonIsDisable}>
-                    Finalizar&nbsp;&nbsp;
+                    {this.props.translate('finalize_w')}
+                    &nbsp;&nbsp;
                     { this.state.isLoading &&  
                     <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                     }
@@ -197,7 +202,8 @@ class CreatePublication extends React.Component {
             this.loadPublicationCP(this.state.publicationID);
         }
     }
-    
+
+    // This function will handle the onchange event from the fields
     onChange = (e) => {
         var targetValue = e.target.value;
         switch(e.target.id){
@@ -215,6 +221,7 @@ class CreatePublication extends React.Component {
         });
     }
 
+    // This function will call the API
     loadSpaceTypesCP() {
         var objApi = {};
         objApi.objToSend = {}
@@ -228,6 +235,7 @@ class CreatePublication extends React.Component {
         callAPI(objApi, this);
     }
 
+    // This function will call the API
     loadInfraestructureCP() {
         var objApi = {};
         objApi.objToSend = {}
@@ -241,6 +249,7 @@ class CreatePublication extends React.Component {
         callAPI(objApi, this);
     }
 
+    // This function will call the API
     loadPremiumOptionsCP() {
         var objApi = {};
         objApi.objToSend = {}
@@ -254,13 +263,14 @@ class CreatePublication extends React.Component {
         callAPI(objApi, this);
     }
 
+    // This function will call the API
     submitPublicationCP = () => {
         var objApi = {};
         objApi.fetchUrl = "api/publications";
         objApi.functionAfterSuccess = "submitPublicationCP";
         objApi.functionAfterError = "submitPublicationCP";
         objApi.errorMSG= {}
-        if(this.state.publicationID){
+        if(this.state.cpMode == 'edit'){
             // this is an edit
             objApi.objToSend = {
                 "AccessToken": this.props.tokenObj.accesToken,
@@ -293,7 +303,7 @@ class CreatePublication extends React.Component {
             objApi.successMSG = {
                 SUCC_PUBLICATIONUPDATED : this.props.translate('SUCC_PUBLICATIONUPDATED'),
             };
-        }else{
+        }else if(this.state.cpMode =='create'){
             objApi.fetchUrl = "api/publication";
             objApi.objToSend = {
                 "AccessToken": this.props.tokenObj.accesToken,
@@ -324,6 +334,10 @@ class CreatePublication extends React.Component {
             objApi.successMSG = {
                 SUCC_PUBLICATIONCREATED : this.props.translate('SUCC_PUBLICATIONCREATED'),
             };
+        }else{
+            // is split
+            alert('Modo SPLIT no terminado')
+            return;
         }
         this.setState({ isLoading: true, buttonIsDisable: true });
         callAPI(objApi, this);
@@ -344,7 +358,7 @@ class CreatePublication extends React.Component {
                     <>
                     {/*SEO Support*/}
                     <Helmet>
-                        <title>TeamUp | {translate('createPub_main_header')}</title>
+                        <title>TeamUp | {translate('createPub_main_header_'+this.state.cpMode)}</title>
                         <meta name="description" content="---" />
                     </Helmet>
                     {/*SEO Support End */}
@@ -385,6 +399,8 @@ class CreatePublication extends React.Component {
         );
     }
 }
+
+// Mapping the current state to props, to retrieve useful information from the state
 const mapStateToProps = (state) => {
     return {
         login_status: state.loginData.login_status,

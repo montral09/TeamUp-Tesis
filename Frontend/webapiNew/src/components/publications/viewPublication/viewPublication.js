@@ -61,18 +61,19 @@ class ViewPublication extends React.Component {
         window.scrollTo(0, 0);
     }
 
+    // Function to set the initial hour on the select hour field
     setInitialHour() {
         var today = new Date();
         var hourFromSelect = today.getHours();
         this.changeHour({ target: { value: hourFromSelect, id: "hourFromSelect" } })
     }
 
+    // This function will handle the onchange event from the fields
     onChange = (e) => {
         this.setState({
             [e.target.id]: e.target.value
         });
     }
-
     handleChange = (e) => {
         this.setState({
             date: e
@@ -110,6 +111,8 @@ class ViewPublication extends React.Component {
             this.setState({ quantityPlan: parseInt(value) });
         }
     }
+
+    // This function will call the API 
     loadInfraestructureVP = () => {
         var objApi = {};
         objApi.objToSend = {}
@@ -123,6 +126,8 @@ class ViewPublication extends React.Component {
         objApi.errorMSG = {}
         callAPI(objApi, this);
     }
+
+    // This function will call the API
     loadPublicationVP = (pubID) => {
         var objApi = {};
         objApi.objToSend = {}
@@ -143,6 +148,7 @@ class ViewPublication extends React.Component {
         callAPI(objApi, this);
     }
 
+    // This function will call the API
     submitFavoriteVP = () => {
         var objApi = {};
         var code = this.state.pubObj.Favorite === false ? 1 : 2;
@@ -178,9 +184,11 @@ class ViewPublication extends React.Component {
         this.setState({ tabDisplayed: tab })
     }
 
-    reservationSuccess = (textboxValue, modalRef) =>{
+    reservationSuccess = (textboxValue, modalRef) => {
         this.modalReqInfo.current.changeModalLoadingState(true);
     }
+
+    // This function will call the API
     confirmReservationVP = (comment) => {
         var objApi = {}; var PlanSelected = "";
         switch (this.state.planChosen) {
@@ -325,13 +333,13 @@ class ViewPublication extends React.Component {
         var modalConfigObj = {};
         if (objTrigger.mode === "ANSWER") {
             modalConfigObj = {
-                title: 'Responder', mainText: <><strong>Pregunta:</strong><em>{' "' + objTrigger.questionObj.Question + '"'}</em></>, mode: objTrigger.mode, saveFunction: "saveAnswerVP", textboxLabel: 'Respuesta',
-                textboxDisplay: true, cancelAvailable: true, confirmAvailable: true, cancelText: 'Cancelar', confirmText: 'Responder', login_status: this.props.login_status, IdQuestion: objTrigger.questionObj.IdQuestion
+                title: this.props.translate('reply_w'), mainText: <><strong>{this.props.translate('question_w')}</strong><em>{' "' + objTrigger.questionObj.Question + '"'}</em></>, mode: objTrigger.mode, saveFunction: "saveAnswerVP", textboxLabel: this.props.translate('answer_w'),
+                textboxDisplay: true, cancelAvailable: true, confirmAvailable: true, cancelText: this.props.translate('cancel_w'), confirmText: this.props.translate('reply_w'), login_status: this.props.login_status, IdQuestion: objTrigger.questionObj.IdQuestion
             };
         } else {
             modalConfigObj = {
-                title: 'Reserva enviada', mainText: 'Su reserva ha sido enviada correctamente, revise su casilla de correo para más informacion. ',
-                textboxDisplay: false, cancelAvailable: true, cancelText: 'Entendido', mode: objTrigger.mode, saveFunction: "reservationSuccess"
+                title: this.props.translate('reservation_modal_title'), mainText: this.props.translate('reservation_modal_mainText'),
+                textboxDisplay: false, cancelAvailable: true, cancelText: this.props.translate('reservation_modal_ok'), mode: objTrigger.mode, saveFunction: "reservationSuccess"
             };
         }
         this.setState({ modalConfigObj: modalConfigObj }, () => { this.modalReqInfo.current.toggle(); })
@@ -344,6 +352,7 @@ class ViewPublication extends React.Component {
         }
     }
 
+    // This function will call the API
     saveAnswerVP = (answer) => {
         var objApi = {};
         objApi.objToSend = {
@@ -364,6 +373,7 @@ class ViewPublication extends React.Component {
         callAPI(objApi, this);
     }
 
+    // This function will call the API
     saveQuestionVP = (question, tabQuestionThis) => {
         var objApi = {};
         objApi.objToSend = {
@@ -413,7 +423,7 @@ class ViewPublication extends React.Component {
                 <LoadingOverlay
                     active={loadStatus}
                     spinner
-                    text='Cargando...'
+                    text={translate('loading_text_small')}
                 >
                     {this.state.pubIsLoading == false && this.state.infIsLoading == false ? (
                         <>
@@ -467,18 +477,21 @@ class ViewPublication extends React.Component {
                                                                                             </div>
                                                                                             <div className="col-md-5 product-center clearfix">
                                                                                                 <h1 className="product-name">{this.state.pubObj.Title}</h1>
-                                                                                                {this.state.pubObj.Favorite === false && login_status == 'LOGGED_IN' ? (
-                                                                                                    <div>
-                                                                                                        <a href="#" onClick={this.submitFavoriteVP}><span><i className="fas fa-heart"></i></span> {translate('viewPub_addToFav')}</a>
-                                                                                                    </div>
-                                                                                                ) : (
+                                                                                                {this.state.pubObj.IsMyPublication != true ? (
+                                                                                                    this.state.pubObj.Favorite === false && login_status == 'LOGGED_IN' ? (
                                                                                                         <div>
-                                                                                                            {this.state.pubObj.Favorite === true ? (
-                                                                                                                <div>
-                                                                                                                    <a href="#" onClick={this.submitFavoriteVP}><span><i className="fas fa-heart"></i></span>  {translate('viewPub_remToFav')}</a>
-                                                                                                                </div>
-                                                                                                            ) : (null)}
-                                                                                                        </div>)}
+                                                                                                            <a href="#" onClick={this.submitFavoriteVP}><span><i className="fas fa-heart"></i></span> {translate('viewPub_addToFav')}</a>
+                                                                                                        </div>
+                                                                                                    ) : (
+                                                                                                            <div>
+                                                                                                                {this.state.pubObj.Favorite === true ? (
+                                                                                                                    <div>
+                                                                                                                        <a href="#" onClick={this.submitFavoriteVP}><span><i className="fas fa-heart"></i></span>  {translate('viewPub_remToFav')}</a>
+                                                                                                                    </div>
+                                                                                                                ) : (null)}
+                                                                                                            </div>)
+                                                                                                ) : (null)}
+
 
                                                                                                 <div className="description">{this.state.pubObj.QuantityRented} {translate('viewPub_timesRented')}</div>
 
@@ -661,10 +674,13 @@ class ViewPublication extends React.Component {
                                                                             ) : (null)}
                                                                             {this.state.tabDisplayed === 4 ? (
                                                                                 <div id="tab-youtube" className="tab-content">
-                                                                                    <TabYoutube youtubeUrl={this.state.pubObj.VideoURL} />
+                                                                                    {this.state.pubObj.VideoURL ? (
+                                                                                        <TabYoutube youtubeUrl={this.state.pubObj.VideoURL} />
+                                                                                    ) : (<p>{this.props.translate('viewPub_noVideos')}</p>)}
                                                                                 </div>
                                                                             ) : (null)}
-                                                                            <RelatedPublications relatedPublications={this.state.relatedPublications} redirectToPub={this.redirectToPub} title="Publicaciones relacionadas" />
+                                                                            <RelatedPublications relatedPublications={this.state.relatedPublications} redirectToPub={this.redirectToPub} title={translate('viewPub_relatedPublications')} />
+                                                                            <RelatedPublications relatedPublications={this.state.relatedPublications} redirectToPub={this.redirectToPub} title={translate('viewPub_splitSpaces')} />
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -691,6 +707,7 @@ class ViewPublication extends React.Component {
     }
 }
 
+// Mapping the current state to props, to retrieve useful information from the state
 const mapStateToProps = (state) => {
     return {
         login_status: state.loginData.login_status,

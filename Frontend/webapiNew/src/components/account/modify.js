@@ -8,7 +8,7 @@ import languages from '../../api/languages'
 
 import { connect } from 'react-redux';
 // Multilanguage
-import { withTranslate } from 'react-redux-multilingual'
+import { withTranslate } from 'react-redux-multilingual';
 import { compose } from 'redux';
 import { callAPI, displayErrorMessage } from '../../services/common/genericFunctions';
 
@@ -38,13 +38,14 @@ class Modify extends React.Component {
         window.scrollTo(0, 0);
     }
 
+    // This function will handle the onchange event from the fields
     onChange = (e) => {
         this.setState({
             [e.target.id]: e.target.value
         })
     }
 
-    // Validate if all the required inputs are inputted, returns true or false
+    // Function to validate the required inputs are fulfilled
     checkRequiredInputs = () => {
         let returnValue = false;
         let message = "";
@@ -98,6 +99,8 @@ class Modify extends React.Component {
         }
         return returnValue;
     }
+
+    // This function will call the API
     modifyUser = () => {
         if (!this.checkRequiredInputs()) {
             var objApi = {};
@@ -201,6 +204,8 @@ class Modify extends React.Component {
         );
     }
 }
+
+// Mapping the current state to props, to retrieve useful information from the state
 const mapStateToProps = (state) => {
     return {
         login_status: state.loginData.login_status,
@@ -209,6 +214,7 @@ const mapStateToProps = (state) => {
     }
 }
 
+// Mapping the dispatch elements to prop, to trigger some of the redux functions
 const mapDispatchToProps = (dispatch) =>{
     return{
         modifyData : (userData) => { dispatch (modifyData(userData))},

@@ -3,6 +3,8 @@ import OwlCarousel from 'react-owl-carousel2';
 import 'react-owl-carousel2/src/owl.carousel.css';
 import $ from 'jquery';
 import ViewImagesPreview from './viewImagesPrev';
+// Multilanguage
+import { withTranslate } from 'react-redux-multilingual';
 
 class ViewImages extends React.Component {
 	constructor(props) {
@@ -25,7 +27,7 @@ class ViewImages extends React.Component {
     
  	render() {
 
-        const {loadedImages, deleteImage} = this.props;
+        const {loadedImages, deleteImage, translate} = this.props;
 		const options = {
 	    	slideSpeed: 500,
 	    	margin: 30,
@@ -47,7 +49,7 @@ class ViewImages extends React.Component {
 			<React.Fragment>
 				{loadedImages.length > 0 ?
 					<div className="box clearfix box-with-products with-scroll box-no-advanced">
-						<div className="box-heading">Fotos guardadas</div>
+						<div className="box-heading">{translate('viewImages_imagesSaved')}</div>
 						<p className="next" onClick={() => this.refs.carousel.next()}><span></span></p>
 						<p className="prev" onClick={() => this.refs.carousel.prev()}><span></span></p>
 						<div className="strip-line"></div>
@@ -77,4 +79,4 @@ class ViewImages extends React.Component {
 }
 
 
-export default ViewImages;
+export default withTranslate(ViewImages);

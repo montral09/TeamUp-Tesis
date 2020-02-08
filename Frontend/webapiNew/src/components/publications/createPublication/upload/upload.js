@@ -51,6 +51,7 @@ class Upload extends React.Component {
     return true;
 
   }
+  // This function will check the max filesize allowed
   checkFileSize = (event) => {
     let files = event.target.files
     let size = 1500000;
@@ -84,6 +85,7 @@ class Upload extends React.Component {
     }
   }
 
+  // Convert to Base64
   getBase64(file) {
     var f = file; // FileList object
     var reader = new FileReader();

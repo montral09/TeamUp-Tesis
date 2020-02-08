@@ -22,6 +22,7 @@ class ModifyReservationModal extends React.Component {
         };
     }
 
+    // This function will toggle on or off the modal and save the paymentdetails if any
     toggle = (resData, tokenObj, userData)  => {
         if (resData != null) {
             if(resData.DateFromString) {
@@ -66,6 +67,7 @@ class ModifyReservationModal extends React.Component {
         return price;
     }
 
+    // This function will handle the onchange event from the fields
     handleChange = (e) => {
         this.setState({
                 dateFrom: e
@@ -137,6 +139,7 @@ class ModifyReservationModal extends React.Component {
         });
     }
 
+    // This function will handle the onchange event from the fields
     onChange = (e) => {
         var valueToUpdate = e.target.value;
         if (e.target.name == 'People' && (valueToUpdate == '' || isNaN(valueToUpdate) || parseInt(valueToUpdate) <= 0)) {
@@ -149,7 +152,8 @@ class ModifyReservationModal extends React.Component {
             }
           }, () => {this.calculatePrice()})
     }
-
+    
+    // This function will toggle on or off the modal and also the loading states
     changeModalLoadingState = (closeModal)  => {
         if(closeModal){
             this.setState({

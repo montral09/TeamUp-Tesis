@@ -51,6 +51,7 @@ class MainPublications extends React.Component {
         };
     }
 
+    // This function will handle the onchange event from the fields
     onChange = (e) => {
         const targetId = e.target.id;
         this.setState({
@@ -62,6 +63,7 @@ class MainPublications extends React.Component {
         });
     }
 
+    // This function will handle the grid or list view selector
 	handleView(view) {
 		localStorage.setItem("view", view);
 		if(view === 'grid') {
@@ -76,11 +78,12 @@ class MainPublications extends React.Component {
         this.loadInfraestructureMP();
         this.loadSpaceTypesMP();
     }
-
+    // This function will redirect the user to the selected publication
     redirectToPub= (id) =>{
         this.props.history.push('/publications/viewPublication/viewPublication/'+id);
     }
 
+    // This function will call the API
     startSearchMP= () => {
         var objApi = {};
         objApi.objToSend = {
@@ -105,6 +108,7 @@ class MainPublications extends React.Component {
         callAPI(objApi, this);
     }
 
+    // This function will call the API
     loadInfraestructureMP = () => {
         var objApi = {};
         objApi.objToSend = {}
@@ -117,7 +121,8 @@ class MainPublications extends React.Component {
         objApi.errorMSG= {}
         callAPI(objApi, this);
     }
-
+    
+    // This function will call the API
     loadSpaceTypesMP = () => {
         var objApi = {};
         objApi.objToSend = {}

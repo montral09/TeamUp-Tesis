@@ -25,12 +25,14 @@ class Login extends React.Component {
         window.scrollTo(0, 0);
     }
 
+    // This function will handle the onchange event from the fields
     onChange = (e) => {
         this.setState({
             [e.target.name]: e.target.value
         })
     }
 
+    // Function to validate the required inputs are fulfilled
     checkRequiredInputs() {
         let returnValue = false;
         let message = "";
@@ -49,12 +51,15 @@ class Login extends React.Component {
         return returnValue;
     }
 
+    // This function will call the API using Redux
     login = () =>  {
         if (!this.checkRequiredInputs()) {
             this.toggleButton();
             this.props.logIn(this.state);
         }
     }
+
+    // Change the button status
     toggleButton = () =>   {
         this.setState({
             isLoading: !this.state.isLoading,

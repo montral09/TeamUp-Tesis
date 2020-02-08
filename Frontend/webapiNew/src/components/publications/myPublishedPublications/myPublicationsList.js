@@ -33,7 +33,8 @@ class MyPublicationsList extends React.Component {
             planPrice: null,
             pagination: [1],
             currentPage: 1,
-            stateDescription: null
+            stateDescription: null,
+            cpMode : ''
         }
         this.ModalDetailPayment = React.createRef(); // Connects the reference to the modal
     }
@@ -44,6 +45,7 @@ class MyPublicationsList extends React.Component {
         this.loadMyPublications();
     }
 
+    // This function will call the API
     loadSpaceTypesMPL = () => {
         var objApi = {};
         objApi.objToSend = {}
@@ -57,6 +59,7 @@ class MyPublicationsList extends React.Component {
         callAPI(objApi, this);
     }
 
+    // This function will call the API
     loadMyPublications = () => {
         var objApi = {};
         objApi.objToSend = {
@@ -82,9 +85,14 @@ class MyPublicationsList extends React.Component {
     }
 
     editPublication = (pubId, currentIDPlan, IdPlan, planPrice) => {
-        this.setState({ pubId, currentIDPlan, IdPlan, planPrice })
+        this.setState({ pubId, currentIDPlan, IdPlan, planPrice, cpMode: 'edit' })
     }
 
+    splitPublication = (pubId, currentIDPlan, IdPlan, planPrice) => {
+        this.setState({ pubId, currentIDPlan, IdPlan, planPrice, cpMode : 'split' })
+    }
+
+    // This function will call the API
     changePubStateMPL = (pubState, pubId) => {
         var message = ""; var nextState = ""; var succMsg = "";
         if (pubState === "ACTIVE") {
@@ -119,6 +127,7 @@ class MyPublicationsList extends React.Component {
         }
     }
 
+    // This function will call the API
     confirmPayment = (objPaymentDetails) => {
         var objApi = {};
         objApi.objToSend = {
@@ -174,7 +183,7 @@ class MyPublicationsList extends React.Component {
                                     <div className="col-md-12 center-column">
                                         <ModalDetailPayment ref={this.ModalDetailPayment} confirmPayment={this.confirmPayment} isPublisher={true} />
                                         {(!this.state.loadingPubs && !this.state.loadingSpaceTypes) ?
-                                            (<MyPublicationTable changePubState={this.changePubStateMPL} editPublication={this.editPublication} triggerModalDetailPayment={this.triggerModalDetailPayment}
+                                            (<MyPublicationTable changePubState={this.changePubStateMPL} editPublication={this.editPublication} splitPublication={this.splitPublication} triggerModalDetailPayment={this.triggerModalDetailPayment}
                                                 publications={this.state.publicationsToDisplay} spaceTypes={this.state.spaceTypes} />)
                                             : (<p>{translate('loading_text_small')}</p>)
                                         }
@@ -200,13 +209,15 @@ class MyPublicationsList extends React.Component {
                     </>
                 ) : (
                         <CreatePublication publicationID={this.state.pubId} currentIDPlan={this.state.currentIDPlan} IdPlan={this.state.IdPlan}
-                            planPrice={this.state.planPrice} />
+                            planPrice={this.state.planPrice} cpMode={this.state.cpMode} />
                     )}
                
             </>
         );
     }
 }
+
+// Mapping the current state to props, to retrieve useful information from the state
 const mapStateToProps = (state) => {
     return {
         login_status: state.loginData.login_status,

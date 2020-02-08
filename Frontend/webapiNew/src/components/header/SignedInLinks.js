@@ -23,6 +23,7 @@ const SignedInLinks = (props) =>{
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
+    // This function will call the API
     const requestBePublisher = () =>{
         var objApi = {};
         objApi.objToSend = {
@@ -88,6 +89,7 @@ const SignedInLinks = (props) =>{
     )
 }
 
+// Mapping the current state to props, to retrieve useful information from the state
 const mapStateToProps = (state) => {
     return {
         userData: state.loginData.userData,
@@ -95,6 +97,7 @@ const mapStateToProps = (state) => {
     }
 }
 
+// Mapping the dispatch elements to prop, to trigger some of the redux functions
 const mapDispatchToProps = (dispatch) =>{
     return {
         logOut: () => dispatch(logOut())

@@ -15,7 +15,8 @@ class RecommendedPublications extends React.Component {
             generalError            : false,
         }
     }
-    
+
+    // This function will redirect to the publication clicked
     redirectToPub = (id) =>{
         window.open(MAIN_URL_WEB+'publications/viewPublication/viewPublication/' + id, '_blank');
     }
@@ -24,6 +25,7 @@ class RecommendedPublications extends React.Component {
         this.loadSpaceTypesRP();
     }
 
+    // This function will call the API
     loadSpaceTypesRP = () => {
         var objApi = {};
         objApi.objToSend = {}
@@ -37,6 +39,7 @@ class RecommendedPublications extends React.Component {
         callAPI(objApi, this);
     }
 
+    // This function will call the API
     loadRecommendedPubs = () =>{
         var objApi = {};
         objApi.objToSend = {}
