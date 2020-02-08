@@ -1,20 +1,23 @@
 import React from 'react';
-import Header from "../../header/header";
 import { Redirect } from 'react-router-dom';
 import { withRouter } from "react-router";
 import { Helmet } from 'react-helmet';
 import { connect } from 'react-redux';
-import Footer from "../../footer/footer";
+import LoadingOverlay from 'react-loading-overlay';
+// Multilanguage
+import { withTranslate } from 'react-redux-multilingual';
+import { compose } from 'redux';
+import {Alert} from 'reactstrap';
+
 import CreatePublicationStep1 from './createPublicationStep1';
 import CreatePublicationStep2 from './createPublicationStep2';
 import CreatePublicationStep3 from './createPublicationStep3';
 import CreatePublicationStep4 from './createPublicationStep4';
 import CreatePublicationStep5 from './createPublicationStep5';
-import LoadingOverlay from 'react-loading-overlay';
+import Header from "../../header/header";
+import Footer from "../../footer/footer";
 import { callAPI, displayErrorMessage } from '../../../services/common/genericFunctions';
-// Multilanguage
-import { withTranslate } from 'react-redux-multilingual'
-import { compose } from 'redux';
+
 
 class CreatePublication extends React.Component {
 
@@ -303,7 +306,7 @@ class CreatePublication extends React.Component {
             objApi.successMSG = {
                 SUCC_PUBLICATIONUPDATED : this.props.translate('SUCC_PUBLICATIONUPDATED'),
             };
-        }else if(this.state.cpMode =='create'){
+        }else if(this.state.cpMode =='create' || this.state.cpMode == 'split'){
             objApi.fetchUrl = "api/publication";
             objApi.objToSend = {
                 "AccessToken": this.props.tokenObj.accesToken,
@@ -327,6 +330,7 @@ class CreatePublication extends React.Component {
                     "IdPlan": parseInt(this.state.premiumOptionSelected),
                     "Availability": this.state.availability,
                     "Facilities": this.state.facilitiesSelect,
+                    'IdParentPublication' : this.state.publicationID || null
                 },
                 "Images": this.state.spaceImages
             }
@@ -334,10 +338,6 @@ class CreatePublication extends React.Component {
             objApi.successMSG = {
                 SUCC_PUBLICATIONCREATED : this.props.translate('SUCC_PUBLICATIONCREATED'),
             };
-        }else{
-            // is split
-            alert('Modo SPLIT no terminado')
-            return;
         }
         this.setState({ isLoading: true, buttonIsDisable: true });
         callAPI(objApi, this);
@@ -369,7 +369,13 @@ class CreatePublication extends React.Component {
                                     <div className="well">
                                     </div>
                                 </div>
-                                <div className="col-md-9">
+                                <div className="col-md-9" style={{ marginTop: '2%' }}>
+                                    {this.state.cpMode == 'split' ? (
+                                        <Alert color="info">
+                                            {translate('createPub_splitPubMSg')}
+                                        </Alert>
+                                    ) : (null)}
+
                                     <CreatePublicationStep1 parentState={this.state} onChange={this.onChange} />
                                     <CreatePublicationStep2 parentState={this.state} onChange={this.onChange} />
                                     <CreatePublicationStep3 parentState={this.state} onChange={this.onChange} />

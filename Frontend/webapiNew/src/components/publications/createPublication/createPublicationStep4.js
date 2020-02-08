@@ -50,8 +50,8 @@ class CreatePublicationStep3 extends React.Component {
       <>
         <p className="h4 mb-4 text-center">{translate('createPub_step4_header')}</p>
         {this.props.parentState.cpMode == 'split' ? (
-          translate('createPub_step4_splitSpace')
-        ) : (
+          <div style={{ marginBottom: '4%' }}>{translate('createPub_step4_splitSpace')}</div> 
+          ) : (
           <PricingTable highlightColor='#1976D2'>
             {this.props.parentState.premiumOptions.map((premOpc, key) => {
               return (

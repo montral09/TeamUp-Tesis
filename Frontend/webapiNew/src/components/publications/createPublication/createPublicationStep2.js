@@ -153,7 +153,11 @@ class CreatePublicationStep2 extends React.Component {
                 <Col md={8}>
                     <FormGroup>
                     <Label for="locationSearch">{translate('location2_w')} (*)</Label>
-                    <LocationSearchInput onChange={this.props.onChange} city={this.props.parentState.city} disabled = {this.props.parentState.cpMode == 'split'}/>
+                    {this.props.parentState.cpMode == 'split' ? (
+                        <Input value ={this.props.parentState.city} disabled ={true} />
+                    ) : (
+                        <LocationSearchInput onChange={this.props.onChange} city={this.props.parentState.city}/>
+                    )}
                     </FormGroup>
                 </Col>
                 <Col md={8}>
