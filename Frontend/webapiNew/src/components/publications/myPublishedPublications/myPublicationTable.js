@@ -44,8 +44,8 @@ const MyPublicationTable = (props) =>{
                 {objPayment.plan == 'FREE' ? (
                     <td colSpan="2">Plan Free</td>
                 ) : (<>
-                    <td>{translate('payState_'+objPayment.paymentStatus.replace(/\s/g,''))}</td>
-                    {obj.State.replace(/\s/g,'') == 'NOTVALIDATED'
+                    <td>{obj.IsChildPublication != true ? (translate('payState_'+objPayment.paymentStatus.replace(/\s/g,''))) : (null)}</td>
+                    {obj.State.replace(/\s/g,'') == 'NOTVALIDATED' && obj.IsChildPublication != true
                         ? (<td colSpan="1"></td>) : (
                             <td><a href="#" onClick={() => props.triggerModalDetailPayment(objPayment)}> <span><i className="col-md-1 fa fa-align-justify"></i></span> {translate('details_w')}</a></td> 
                         )
@@ -61,7 +61,7 @@ const MyPublicationTable = (props) =>{
                     <>
                     <td><a href="#" onClick={() => props.changePubState(obj.State, obj.IdPublication)}><span><i className="col-md-1 fa fa-pause"></i></span> {translate('pause_w')}</a></td>
                     <td><a href="#" onClick={() => props.editPublication(obj.IdPublication,obj.IdPlan , obj.PreferentialPlan.IdPlan, obj.PreferentialPlan.Price, obj.PreferentialPlan.StateDescription)}> <span><i className="col-md-1 fa fa-pencil-alt"></i></span> {translate('edit_w')}</a></td> 
-                    <td><a href="#" onClick={() => props.splitPublication(obj.IdPublication,obj.IdPlan , obj.PreferentialPlan.IdPlan, obj.PreferentialPlan.Price, obj.PreferentialPlan.StateDescription)}> <span><i className="col-md-1 fas fa-columns"></i></span> {translate('split_w')}</a></td> 
+                    <td> {obj.IsChildPublication == true ? (null) : (<a href="#" onClick={() => props.splitPublication(obj.IdPublication,obj.IdPlan , obj.PreferentialPlan.IdPlan, obj.PreferentialPlan.Price, obj.PreferentialPlan.StateDescription)}> <span><i className="col-md-1 fas fa-columns"></i></span> {translate('split_w')}</a>)}</td> 
                     </>
                 ) : (
                     <>

@@ -36,6 +36,7 @@ class ViewPublication extends React.Component {
             quantityPlan: 1,
             tabDisplayed: 1,
             relatedPublications: [],
+            otherPublicationConfig : [],
             facilities: [],
             pubIsLoading: true,
             infIsLoading: true,
@@ -679,8 +680,8 @@ class ViewPublication extends React.Component {
                                                                                     ) : (<p>{this.props.translate('viewPub_noVideos')}</p>)}
                                                                                 </div>
                                                                             ) : (null)}
+                                                                            <RelatedPublications relatedPublications={this.state.otherPublicationConfig} redirectToPub={this.redirectToPub} title={translate('viewPub_splitSpaces')} />
                                                                             <RelatedPublications relatedPublications={this.state.relatedPublications} redirectToPub={this.redirectToPub} title={translate('viewPub_relatedPublications')} />
-                                                                            <RelatedPublications relatedPublications={this.state.relatedPublications} redirectToPub={this.redirectToPub} title={translate('viewPub_splitSpaces')} />
                                                                         </div>
                                                                     </div>
                                                                 </div>
