@@ -12,7 +12,7 @@ namespace backend.Data_Access.Query
             String query = "select idSpaceType, description, individualRent from SPACE_TYPES";
             return query;
         }
-   
+
         public String GetFacilities()
         {
             String query = "select idFacility, description, icon from FACILITIES";
@@ -23,7 +23,7 @@ namespace backend.Data_Access.Query
         {
             StringBuilder query = new StringBuilder();
             query.Append("insert into PUBLICATIONS (idUser, spaceType, creationDate, title, description, address, locationLat, locationLong, ");
-            query.Append("capacity, videoURL, hourPrice, dailyPrice, weeklyPrice, monthlyPrice, availability, state, city, expirationDate ");
+            query.Append("capacity, videoURL, hourPrice, dailyPrice, weeklyPrice, monthlyPrice, availability, state, city, expirationDate) ");
             query.Append("output INSERTED.idPublication VALUES(@idUser, @spaceType, getdate(), @title, @description, @address, ");
             query.Append("@locationLat, @locationLong, @capacity, @videoURL, @hourPrice, @dailyPrice, @weeklyPrice, ");
             query.Append("@monthlyPrice, @availability, 1, @city, @expirationDate)");
@@ -119,7 +119,7 @@ namespace backend.Data_Access.Query
             return query.ToString();
         }
 
-        public String GetPublicationsWithFilter(List<int> facilities, int spaceType, int capacity, string city,  int maxPublicationsPage, int state)
+        public String GetPublicationsWithFilter(List<int> facilities, int spaceType, int capacity, string city, int maxPublicationsPage, int state)
         {
             StringBuilder query = new StringBuilder();
             string selectColumns = "p.idPublication, u.name, u.lastName, u.mail, u.phone, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.city, p.totalViews, p.expirationDate, s.individualRent ";
@@ -254,7 +254,7 @@ namespace backend.Data_Access.Query
             query.Append("select p.title, r.idReservation, r.idPublication, r.idCustomer, rp.description as planSelected, r.reservedQty, r.dateFrom, ");
             query.Append("r.dateTo, r.hourFrom, r.HourTo, r.people, r.comment, r.totalPrice, r.state, rs.description, s.individualRent, ");
             query.Append("p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, r.paymentCustomerState, ps.description as customerPaymentDesc, ");
-            query.Append("u.name, u.mail from RESERVATIONS r, PUBLICATIONS p, RESERVATION_STATES rs, SPACE_TYPES s, PAYMENT_STATES ps, RESERVATION_PLANS rp ");                
+            query.Append("u.name, u.mail from RESERVATIONS r, PUBLICATIONS p, RESERVATION_STATES rs, SPACE_TYPES s, PAYMENT_STATES ps, RESERVATION_PLANS rp ");
             if (idCustomer != 0)
             {
                 query.Append(", USERS U where r.idPublication = p.idPublication and r.dateFrom > DATEADD(month, -6, GETDATE()) and rs.idReservationState = r.state ");
@@ -340,7 +340,7 @@ namespace backend.Data_Access.Query
 
         public String GetAnswers()
         {
-            String query = "select a.answer, a.creationDate from PUBLICATION_ANSWERS a where a.idQuestion = @idQuestion order by a.creationDate desc";                
+            String query = "select a.answer, a.creationDate from PUBLICATION_ANSWERS a where a.idQuestion = @idQuestion order by a.creationDate desc";
             return query;
         }
 
@@ -801,7 +801,7 @@ namespace backend.Data_Access.Query
         {
             StringBuilder query = new StringBuilder();
             query.Append("insert into PREFERENTIAL_PAYMENTS(idPublication, idPlan, state) values ");
-            query.Append("(@idPublication, @idPlan, (select state from PREFERENTIAL_PAYMENTS where idPublication = @idParentPublication)");           
+            query.Append("(@idPublication, @idPlan, (select state from PREFERENTIAL_PAYMENTS where idPublication = @idParentPublication)");
             return query.ToString();
         }
 
@@ -815,6 +815,29 @@ namespace backend.Data_Access.Query
         {
             String query = "select idPrefPayments from PREFERENTIAL_PAYMENTS where idPublication = @idParentPublication and state = 3";
             return query;
+        }
+
+        public String IsChildPublication()
+        {
+            String query = "select idPublication from OTHER_CONFIGURATION_PUBLICATIONS where idChildPublication = @idChildPublication";
+            return query;
+        }
+
+        public String GetIdOtherPublicationConfig()
+        {
+            StringBuilder query = new StringBuilder();
+            query.Append("select idPublication, idChildPublication from other_configuration_publications where ");
+            query.Append("idPublication = @idPublication or idChildPublication = @idPublication");
+            return query.ToString();
+        }
+
+        public String GetOtherPublicationConfig()
+        {
+            StringBuilder query = new StringBuilder();
+            query.Append("select p.idPublication, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, ");
+            query.Append("p.capacity, p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.city, p.totalViews ");
+            query.Append("from PUBLICATIONS p where p.idPublication = @idPublication and p.state = 2");
+            return query.ToString();
         }
     }
 }

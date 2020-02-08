@@ -10,7 +10,7 @@ namespace backend.Data_Access
     {
         List<SpaceType> GetSpaceTypes();
         List<Facility> GetFacilities();
-        Task<Dictionary<string, string>> CreatePublicationAsync(Publication publication, User user, List<Image> images);
+        Task<Dictionary<string, string>> CreatePublicationAsync(Publication publication, User user, List<Image> images, List<String> imagesURL);
         List<Publication> GetPublicationsPendingApproval();
         List<Publication> GetPublisherSpaces(string mail);
         Publication GetSpace(int idSpace, User user, bool addVisit);
@@ -55,5 +55,6 @@ namespace backend.Data_Access
         List<EmailData> FinishPublications();
         List<EmailData> FinishReservations();
         void StartReservation();
+        List<Publication> GetOtherPublicationConfig(int idPublication);
     }
 }

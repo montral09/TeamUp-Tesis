@@ -47,6 +47,7 @@ namespace backend.Logic.Converters.EntityToVO
             }            
             voPublication.DateTo = publication.DateTo;
             voPublication.IsRecommended = publication.IsRecommended;
+            voPublication.IsChildPublication = publication.IsChildPublication;
             return voPublication;
         }
 

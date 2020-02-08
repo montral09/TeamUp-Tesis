@@ -632,7 +632,7 @@ namespace backend.Logic
                     User user = users.Find(voCreatePublication.VOPublication.Mail);
                     Publication publication = VOPublicationToPublicationConverter.Convert(voCreatePublication.VOPublication, voCreatePublication.Images);
                     List<Image> images = VOImageToImageConverter.Convert(voCreatePublication.Images);
-                    publicationInfo = await spaces.CreatePublicationAsync(publication, user, images);
+                    publicationInfo = await spaces.CreatePublicationAsync(publication, user, images, voCreatePublication.ImagesURL);
                     string publicationPlan = spaces.GetPublicationPlanById(voCreatePublication.VOPublication.IdPlan);
                     Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
                     keyValuePairs[ParamCodes.USER_NAME] = user.Name;
@@ -746,6 +746,8 @@ namespace backend.Logic
                     response.RelatedPublications = PublicationToVOPublicationConverter.Convert(related);
                     List<PublicationQuestion> questions = spaces.GetPublicationQuestions(idPublication);
                     response.Questions = QuestionToVOQuestionConverter.Convert(questions);
+                    List<Publication> otherPublications = spaces.GetOtherPublicationConfig(idPublication);
+                    response.OtherPublicationConfig = PublicationToVOPublicationConverter.Convert(otherPublications);
                     response.responseCode = EnumMessages.SUCC_PUBLICATIONSOK.ToString();
                 }
                 else

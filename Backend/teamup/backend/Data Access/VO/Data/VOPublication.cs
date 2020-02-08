@@ -41,6 +41,7 @@ namespace backend.Data_Access.VO.Data
         public String DateTo { get; set; }
         public bool IsRecommended { get; set; }
         public int IdParentPublication { get; set; }
+        public bool IsChildPublication { get; set; }
 
         public VOPublication() { }
 
