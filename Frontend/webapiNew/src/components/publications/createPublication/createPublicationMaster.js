@@ -332,7 +332,8 @@ class CreatePublication extends React.Component {
                     "Facilities": this.state.facilitiesSelect,
                     'IdParentPublication' : this.state.publicationID || null
                 },
-                "Images": this.state.spaceImages
+                "Images": this.state.spaceImages,
+                "ImagesURL" : this.state.imagesURL
             }
             objApi.method = "POST";
             objApi.successMSG = {
