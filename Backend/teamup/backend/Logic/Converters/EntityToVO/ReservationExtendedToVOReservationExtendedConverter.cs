@@ -44,9 +44,12 @@ namespace backend.Logic.Converters.EntityToVO
         public static List<VOReservationExtended> Convert(List<ReservationExtended> reservations)
         {            
             List<VOReservationExtended> voReservations = new List<VOReservationExtended>();
-            foreach (var reservation in reservations)
+            if (reservations != null && reservations.Count != 0)
             {
-                voReservations.Add(Convert(reservation));
+                foreach (var reservation in reservations)
+                {
+                    voReservations.Add(Convert(reservation));
+                }
             }
             return voReservations;
         }

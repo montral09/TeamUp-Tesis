@@ -20,9 +20,12 @@ namespace backend.Logic.Converters.EntityToVO
         public static List<VOFacility> Convert (List<Facility> facilities)
         {
             List<VOFacility> voFacilities = new List<VOFacility>();
-            foreach (var facility in facilities)
+            if (facilities != null && facilities.Count != 0)
             {
-                voFacilities.Add(Convert(facility));
+                foreach (var facility in facilities)
+                {
+                    voFacilities.Add(Convert(facility));
+                }
             }
             return voFacilities;
         }

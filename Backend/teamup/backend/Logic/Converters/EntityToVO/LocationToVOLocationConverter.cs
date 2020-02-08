@@ -7,12 +7,19 @@ namespace backend.Logic.Converters.EntityToVO
     {
         public static VOLocationCordinates Convert(LocationCordinates location)
         {
-            VOLocationCordinates voLocation = new VOLocationCordinates
+            if (location != null)
             {
-                Latitude = location.Latitude,
-                Longitude = location.Longitude
-            };
-            return voLocation;
+                VOLocationCordinates voLocation = new VOLocationCordinates
+                {
+                    Latitude = location.Latitude,
+                    Longitude = location.Longitude
+                };
+                return voLocation;
+            } else
+            {
+                return null;
+            }
+            
         }
     }
 }

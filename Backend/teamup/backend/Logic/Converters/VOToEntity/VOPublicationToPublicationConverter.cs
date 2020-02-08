@@ -1,11 +1,12 @@
 ﻿using backend.Data_Access.VO.Data;
 using backend.Logic.Entities;
+using System.Collections.Generic;
 
 namespace backend.Logic.Converters.VOToEntity
 {
     public static class VOPublicationToPublicationConverter
     {
-        public static Publication Convert(VOPublication voPublication)
+        public static Publication Convert(VOPublication voPublication, List<VOImage> images)
         {
             Publication publication = new Publication();
             publication.IdPublication = voPublication.IdPublication;
@@ -25,6 +26,7 @@ namespace backend.Logic.Converters.VOToEntity
             publication.IdPlan = voPublication.IdPlan;
             publication.Availability = voPublication.Availability;
             publication.Facilities = voPublication.Facilities;
+            publication.IdParentPublication = voPublication.IdParentPublication;
             return publication;
         }
 

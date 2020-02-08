@@ -199,5 +199,81 @@ namespace backend.Data_Access
                 }
             }
         }
+
+        public int ConvertStatePublication(string state)
+        {
+            SqlConnection con = null;
+            int stateCode = 0;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.ConvertStatePublication();
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                SqlParameter param = new SqlParameter()
+                {
+                    ParameterName = "@state",
+                    Value = state,
+                    SqlDbType = SqlDbType.VarChar
+                };
+                selectCommand.Parameters.Add(param);
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                while (dr.Read())
+                {
+                    stateCode = Convert.ToInt32(dr["idSpaceState"]);
+                }
+                dr.Close();
+                return stateCode;
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        public int ConvertStateReservation(string state)
+        {
+            SqlConnection con = null;
+            int stateCode = 0;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.ConvertStateReservation();
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                SqlParameter param = new SqlParameter()
+                {
+                    ParameterName = "@state",
+                    Value = state,
+                    SqlDbType = SqlDbType.VarChar
+                };
+                selectCommand.Parameters.Add(param);
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                while (dr.Read())
+                {
+                    stateCode = Convert.ToInt32(dr["idReservationState"]);
+                }
+                dr.Close();
+                return stateCode;
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+        }
     }
 }

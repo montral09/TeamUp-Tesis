@@ -1,5 +1,4 @@
 ﻿using backend.Data_Access.VO;
-using backend.Data_Access.VO.Data;
 using backend.Logic.Entities;
 using System;
 using System.Collections.Generic;
@@ -11,8 +10,8 @@ namespace backend.Data_Access
     {
         List<SpaceType> GetSpaceTypes();
         List<Facility> GetFacilities();
-        Task<Dictionary<string, string>> CreatePublicationAsync(Publication publication, User user);
-        List<VOPublicationAdmin> GetPublicationsPendingApproval(VORequestPublicationPendindApproval voPublicationPendingApproval);
+        Task<Dictionary<string, string>> CreatePublicationAsync(Publication publication, User user, List<Image> images);
+        List<Publication> GetPublicationsPendingApproval();
         List<Publication> GetPublisherSpaces(string mail);
         Publication GetSpace(int idSpace, User user, bool addVisit);
         Publication UpdateStatePublication(int idPublication, string rejectedreason, int newCodeState, bool isAdmin);

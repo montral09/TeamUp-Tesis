@@ -43,9 +43,12 @@ namespace backend.Logic.Converters.EntityToVO
         public static List<VOSpaceTypeRecommended> Convert (List<SpaceTypeRecommended> recommended)
         {
             List<VOSpaceTypeRecommended> voRecommended = new List<VOSpaceTypeRecommended>();
-            foreach (var rec in recommended)
+            if (recommended != null && recommended.Count != 0)
             {
-                voRecommended.Add(Convert(rec));
+                foreach (var rec in recommended)
+                {
+                    voRecommended.Add(Convert(rec));
+                }
             }
             return voRecommended;
         }

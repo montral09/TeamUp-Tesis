@@ -8,23 +8,33 @@ namespace backend.Logic.Converters.EntityToVO
     {
         public static VOPublicationQuestion Convert(PublicationQuestion question)
         {
-            VOPublicationQuestion voQuestion = new VOPublicationQuestion
+            if (question != null)
             {
-                IdQuestion = question.IdQuestion,
-                Name = question.Name,
-                Question = question.Question,
-                CreationDate = question.CreationDate,
-                Answer = AnswerToVOAnswerConverter.Convert(question.Answer),
-            };
-            return voQuestion;
+                VOPublicationQuestion voQuestion = new VOPublicationQuestion
+                {
+                    IdQuestion = question.IdQuestion,
+                    Name = question.Name,
+                    Question = question.Question,
+                    CreationDate = question.CreationDate,
+                    Answer = AnswerToVOAnswerConverter.Convert(question.Answer),
+                };
+                return voQuestion;
+            } else
+            {
+                return null;
+            }
+           
         }
 
         public static List<VOPublicationQuestion> Convert(List<PublicationQuestion> questions)
         {
             List<VOPublicationQuestion> voQuestions = new List<VOPublicationQuestion>();
-            foreach (var question in questions)
+            if (questions != null && questions.Count != 0)
             {
-            voQuestions.Add(Convert(question));
+                foreach (var question in questions)
+                {
+                    voQuestions.Add(Convert(question));
+                }
             }
             return voQuestions;
         }

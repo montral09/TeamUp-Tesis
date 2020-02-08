@@ -29,9 +29,12 @@ namespace backend.Logic.Converters.EntityToVO
         public static List<VOPublicationPaymentAdmin> Convert(List<PublicationPaymentAdmin> payments)
         {
             List<VOPublicationPaymentAdmin> voPayments = new List<VOPublicationPaymentAdmin>();
-            foreach (var payment in payments)
+            if (payments != null && payments.Count != 0)
             {
-                voPayments.Add(Convert(payment));
+                foreach (var payment in payments)
+                {
+                    voPayments.Add(Convert(payment));
+                }
             }
             return voPayments;
         }

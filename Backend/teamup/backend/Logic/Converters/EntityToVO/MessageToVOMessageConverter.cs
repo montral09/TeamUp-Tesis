@@ -25,9 +25,12 @@ namespace backend.Logic.Converters.EntityToVO
         public static List<VOMessage> Convert(List<Message> messages)
         {
             List<VOMessage> voMessages = new List<VOMessage>();
-            foreach (var message in messages)
+            if (messages != null && messages.Count != 0)
             {
-                voMessages.Add(Convert(message));
+                foreach (var message in messages)
+                {
+                    voMessages.Add(Convert(message));
+                }
             }
             return voMessages;
         }

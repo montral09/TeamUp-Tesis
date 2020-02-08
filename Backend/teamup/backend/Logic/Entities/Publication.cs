@@ -40,14 +40,14 @@ namespace backend.Logic.Entities
         public String DateTo { get; set; }
         public bool IsRecommended { get; set; }
         public string City { get; set; }
-        public List<Image> Images { get; set; }
+        public int IdParentPublication { get; set; }
 
         public Publication() { }
 
         public Publication(int idPublication, long idUser, string mail, string namePublisher, string lastNamePublisher, string phone, int spaceType, string creationDate, string dateTo, string title, string description, string address, LocationCordinates location,
              int capacity, string videoURL, int hourPrice, int dailyPrice, int weeklyPrice, int monthlyPrice, string availability,
              List<int> facilities, List<string> imagesURL, string state, int quantityRented, List<Review> reviews, int ranking, string city, int totalViews, bool individualRent, int questionsWithoutAnswer,
-             bool isMyPublication, int idPlan, PreferentialPlan preferentialPlan, bool isRecommended)
+             bool isMyPublication, int idPlan, PreferentialPlan preferentialPlan, bool isRecommended, int idParentPublication)
         {
             IdPublication = idPublication;
             IdUser = idUser;
@@ -83,6 +83,7 @@ namespace backend.Logic.Entities
             IdPlan = idPlan;
             PreferentialPlan = preferentialPlan;
             IsRecommended = isRecommended;
+            IdParentPublication = idParentPublication;
         }        
     }
 }

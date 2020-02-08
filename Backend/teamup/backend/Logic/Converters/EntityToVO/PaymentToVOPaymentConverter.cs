@@ -7,16 +7,23 @@ namespace backend.Logic.Converters.EntityToVO
     {
         public static VOPayment Convert(Payment payment)
         {
-            VOPayment voPayment = new VOPayment
+            if (payment != null)
             {
-                PaymentState = payment.PaymentState,
-                PaymentDescription  = payment.PaymentDescription,
-                PaymentComment = payment.PaymentComment,
-                PaymentEvidence = payment.PaymentEvidence,
-                PaymentDate = payment.PaymentDate,
-                Commission = payment.Commission
-            };
-            return voPayment;
+                VOPayment voPayment = new VOPayment
+                {
+                    PaymentState = payment.PaymentState,
+                    PaymentDescription = payment.PaymentDescription,
+                    PaymentComment = payment.PaymentComment,
+                    PaymentEvidence = payment.PaymentEvidence,
+                    PaymentDate = payment.PaymentDate,
+                    Commission = payment.Commission
+                };
+                return voPayment;
+            } else
+            {
+                return null;
+            }
+            
         }
     }
 }

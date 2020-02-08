@@ -35,8 +35,12 @@ namespace backend.Logic
             spaces = new DAOSpaces();
             util = new DAOUtil();
         }
-
-        /* This function will check if the user email is exists*/
+        
+        /// <summary>
+        /// Checks if the user email exists
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <returns> true is user exists </returns>
         public bool UserExists(string mail)
         {
             try
@@ -55,7 +59,11 @@ namespace backend.Logic
                 throw e;
             }
         }
-
+        /// <summary>
+        /// Checks if the user email of admin exists
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <returns> true if admin exists</returns>
         public bool AdminExists(string mail)
         {
             try
@@ -74,6 +82,11 @@ namespace backend.Logic
                 throw e;
             }
         }
+        /// <summary>
+        /// Returns if mail is validated 
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <returns> true if mail is validated </returns>
         public bool IsMailValidated(String mail)
         {
             try
@@ -92,7 +105,12 @@ namespace backend.Logic
                 throw e;
             }
         }
-        /* This function will return the user or null if user/password doesn't match  */
+        /// <summary>
+        /// Returns the user or null if user/password doesn't match
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <param name="password"></param>
+        /// <returns> Generated tokens </returns>
         public VOResponseLogin ValidUserLogin(string mail, string password)
         {
             VOResponseLogin result = null;
@@ -116,7 +134,11 @@ namespace backend.Logic
             return result;
         }
 
-        /* This function creates a new user (publisher, or customer)  */
+        /// <summary>
+        /// Creates a new user (publisher, or customer) and 
+        /// sends mail to user with an activation link
+        /// </summary>
+        /// <param name="voUser"></param>
         public VOResponseUserCreate CreateUser(VORequestUserCreate voUser)
         {
             VOResponseUserCreate response = new VOResponseUserCreate();
@@ -150,7 +172,10 @@ namespace backend.Logic
             }            
         }
 
-        /* This function updates data from an specific user  */
+        /// <summary>
+        /// Updates user data and sends mail to user with an activation link
+        /// </summary>
+        /// <param name="voUser"></param>
         public VOResponseUserUpdate UpdateUser(VORequestUserUpdate voUser)
         {
 
@@ -194,7 +219,11 @@ namespace backend.Logic
             }
         }
 
-        /* This function set user as inactive. There is no physical deletion from DB  */
+        /// <summary>
+        /// Set user as inactive and sends mail to user.
+        /// There is no physical deletion from DB
+        /// </summary>
+        /// <param name="voUserDelete"></param>
         public VOResponseUserDelete DeleteUser(VORequestUserDelete voUserDelete)
         {
             try
@@ -228,7 +257,11 @@ namespace backend.Logic
             }
         }
 
-        /* This function obtains all Publishers  */
+        /// <summary>
+        /// Gets publishers pending confirmation
+        /// </summary>
+        /// <param name="voRequestGetPublishers"></param>
+        /// <returns></returns>
         public VOResponseGetPublishers GetPublishers(VORequestGetPublishers voRequestGetPublishers)
         {
             try
@@ -252,7 +285,10 @@ namespace backend.Logic
 
         }
         
-        /* This function recieve a list of Publishers to be approved  */
+        /// <summary>
+        /// Approve publishers and sends emails to each one of them
+        /// </summary>
+        /// <param name="voPublishers"></param>
         public VOResponseApprovePublishers ApprovePublishers(VORequestApprovePublishers voPublishers)
         {
             try
@@ -284,7 +320,12 @@ namespace backend.Logic
             }
         }
 
-        /* This function returns admin user  */
+        /// <summary>
+        /// Returns admin user and their tokens
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <param name="password"></param>
+        /// <returns> User data and their tokens</returns>
         public VOResponseAdminLogin GetAdmin(string mail, string password)
         {
             VOResponseAdminLogin result = new VOResponseAdminLogin();
@@ -322,7 +363,10 @@ namespace backend.Logic
             }
         }
 
-        /*This function update a customer who wants to be a publisher*/
+        /// <summary>
+        /// Updates a customer who wants to be a publisher
+        /// </summary>
+        /// <param name="voRequestRequestPublisher"></param>
         public VOResponseRequestPublisher RequestPublisher(VORequestRequestPublisher voRequestRequestPublisher)
         {
             try
@@ -343,7 +387,10 @@ namespace backend.Logic
             }
         }
 
-        /*This function return all types of spaces*/
+        /// <summary>
+        /// Returns space types
+        /// </summary>
+        /// <returns> Space types</returns>
         public List<VOSpaceType> GetSpaceTypes()
         {
             List<VOSpaceType> voSpaceTypes;
@@ -359,6 +406,10 @@ namespace backend.Logic
             return voSpaceTypes;
         }        
 
+        /// <summary>
+        /// Creates tokens for an user
+        /// </summary>
+        /// <param name="mail"></param>
         public void CreateTokens(String mail)
         {
             try
@@ -371,6 +422,10 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Creates a new temporal password and sends it to the user
+        /// </summary>
+        /// <param name="voPasswordRecovery"></param>
         public VOResponsePasswordRecovery RecoverPassword(VORequestPasswordRecovery voPasswordRecovery)
         {
             VOResponsePasswordRecovery result = new VOResponsePasswordRecovery();
@@ -404,6 +459,10 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Validate email from an activation link
+        /// </summary>
+        /// <param name="voValidateEmail"></param>
         public int ValidateEmail(VORequestValidateEmail voValidateEmail)
         {
             try
@@ -416,6 +475,10 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Updates user info (used by admin)
+        /// </summary>
+        /// <param name="voRequestUpdate"></param>
         public string UpdateUserAdmin(VORequestUpdateUserAdmin voRequestUpdate)
         {
             VOResponseUpdateUserAdmin voResp = new VOResponseUpdateUserAdmin();
@@ -444,7 +507,11 @@ namespace backend.Logic
             }
         }
 
-        /* This function obtains all users  */
+        /// <summary>
+        /// Get all users (publisher and customers)
+        /// </summary>
+        /// <param name="voRequest"></param>
+        /// <returns> All users created</returns>
         public VOResponseGetUsers GetUsers(VORequestGetUsers voRequest)
         {
             VOResponseGetUsers response = new VOResponseGetUsers();
@@ -466,6 +533,11 @@ namespace backend.Logic
             return response;
         }
 
+        /// <summary>
+        /// Return user data from a particular user
+        /// </summary>
+        /// <param name="voRequestUserData"></param>
+        /// <returns> User data</returns>
         public VOResponseGetUserData GetUserData(VORequestGetUserData voRequestUserData)
         {
             VOResponseGetUserData response = new VOResponseGetUserData();
@@ -491,6 +563,11 @@ namespace backend.Logic
             return response;
         }
 
+        /// <summary>
+        /// Update tokens from user
+        /// </summary>
+        /// <param name="voTokensUpdate"></param>
+        /// <returns> Tokens </returns>
         public VOResponseTokensUpdate UpdateTokens(VORequestTokensUpdate voTokensUpdate)
         {
             VOResponseTokensUpdate response = new VOResponseTokensUpdate();
@@ -517,6 +594,10 @@ namespace backend.Logic
             return response;
         }
 
+        /// <summary>
+        /// Get facilities
+        /// </summary>
+        /// <returns> Facilities </returns>
         public VOResponseGetFacilities GetFacilities()
         {
             VOResponseGetFacilities response = new VOResponseGetFacilities();
@@ -534,6 +615,10 @@ namespace backend.Logic
             return response;
         }
 
+        /// <summary>
+        /// Creates a new publication and send mail to publisher and admin
+        /// </summary>
+        /// <param name="voCreatePublication"></param>
         public async Task<VOResponseCreatePublication> CreatePublication(VORequestCreatePublication voCreatePublication)
         {
             VOResponseCreatePublication response = new VOResponseCreatePublication();
@@ -545,8 +630,9 @@ namespace backend.Logic
                     Dictionary<string, string> publicationInfo;
                     EmailDataGeneric mailData;                   
                     User user = users.Find(voCreatePublication.VOPublication.Mail);
-                    Publication publication = VOPublicationToPublicationConverter.Convert(voCreatePublication.VOPublication);
-                    publicationInfo = await spaces.CreatePublicationAsync(publication, user);
+                    Publication publication = VOPublicationToPublicationConverter.Convert(voCreatePublication.VOPublication, voCreatePublication.Images);
+                    List<Image> images = VOImageToImageConverter.Convert(voCreatePublication.Images);
+                    publicationInfo = await spaces.CreatePublicationAsync(publication, user, images);
                     string publicationPlan = spaces.GetPublicationPlanById(voCreatePublication.VOPublication.IdPlan);
                     Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
                     keyValuePairs[ParamCodes.USER_NAME] = user.Name;
@@ -574,6 +660,11 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Returns publication that hasnt been approved yet
+        /// </summary>
+        /// <param name="voPublicationPendingApproval"></param>
+        /// <returns>Publications pending approval </returns>
         public VOResponsePublicationPendingApproval GetPublicationsPendingApproval(VORequestPublicationPendindApproval voPublicationPendingApproval)
         {
             VOResponsePublicationPendingApproval response = new VOResponsePublicationPendingApproval();
@@ -582,7 +673,9 @@ namespace backend.Logic
                 String message = util.ValidAccessToken(voPublicationPendingApproval.AccessToken, voPublicationPendingApproval.AdminMail);
                 if (EnumMessages.OK.ToString().Equals(message))
                 {
-                    response.Publications = spaces.GetPublicationsPendingApproval(voPublicationPendingApproval);
+                    List<Publication> publications = spaces.GetPublicationsPendingApproval();
+                    List<VOPublication> voPublications = PublicationToVOPublicationConverter.Convert(publications);
+                    response.Publications = voPublications;
                     message = EnumMessages.SUCC_PUBLICATIONSOK.ToString();
                 }
                 response.responseCode = message;
@@ -594,6 +687,11 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Returns spaces from a publisher
+        /// </summary>
+        /// <param name="voRequestGetPublisherSpaces"></param>
+        /// <returns> Publisher's spaces</returns>
         public VOResponseGetPublisherSpaces GetPublisherSpaces(VORequestGetPublisherSpaces voRequestGetPublisherSpaces)
         {
             VOResponseGetPublisherSpaces response = new VOResponseGetPublisherSpaces();
@@ -617,6 +715,12 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Returns a publication by an idPublication
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <param name="mail"></param>
+        /// <returns> Publication </returns>
         public VOResponseGetSpace GetSpace(int idPublication, string mail)
         {
             VOResponseGetSpace response = new VOResponseGetSpace();
@@ -656,6 +760,10 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Updates the state from a publication and sends email to publisher
+        /// </summary>
+        /// <param name="voUpdateStatePublication"></param>
         public VOResponseUpdateStatePublication UpdateStatePublication(VORequestUpdateStatePublication voUpdateStatePublication)
         {
             VOResponseUpdateStatePublication response = new VOResponseUpdateStatePublication();
@@ -669,9 +777,8 @@ namespace backend.Logic
                     {
                         isAdmin = true;
                     }
-                    Util util = new Util();
-                    int oldCodeState = util.ConvertState(voUpdateStatePublication.OldState);
-                    int newCodeState = util.ConvertState(voUpdateStatePublication.NewState);
+                    int oldCodeState = util.ConvertStatePublication(voUpdateStatePublication.OldState);
+                    int newCodeState = util.ConvertStatePublication(voUpdateStatePublication.NewState);
                     Publication publisherData = spaces.UpdateStatePublication(voUpdateStatePublication.IdPublication, voUpdateStatePublication.RejectedReason, newCodeState, isAdmin);
                     message = EnumMessages.SUCC_PUBLICATIONUPDATED.ToString();
                     if (publisherData != null) {
@@ -700,6 +807,11 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Returns publications that match certain criteria
+        /// </summary>
+        /// <param name="voGetPublicationsFilter"></param>
+        /// <returns> Publication </returns>
         public VOResponseGetPublicationsWithFilters GetPublicationsWithFilters(VORequestGetPublicationsWithFilters voGetPublicationsFilter)
         {
             {
@@ -722,6 +834,11 @@ namespace backend.Logic
             }
 
         }
+
+        /// <summary>
+        /// Add or remove from favorites
+        /// </summary>
+        /// <param name="voUpdateFavorite"></param>
         public VOResponseUpdateFavorite UpdateFavorite(VORequestUpdateFavorite voUpdateFavorite)
         {
             try
@@ -743,6 +860,10 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Updates a publication and sends email to publisher and admin
+        /// </summary>
+        /// <param name="voUpdatePublication"></param>
         public async Task<VOResponseUpdatePublication> UpdatePublication(VORequestUpdatePublication voUpdatePublication)
         {
             try
@@ -753,7 +874,7 @@ namespace backend.Logic
                 {
                     Dictionary<string, string> publicationInfo;
                     User user = users.Find(voUpdatePublication.Publication.Mail);
-                    Publication publication = VOPublicationToPublicationConverter.Convert(voUpdatePublication.Publication);
+                    Publication publication = VOPublicationToPublicationConverter.Convert(voUpdatePublication.Publication, voUpdatePublication.Base64Images);
                     List<Image> images = VOImageToImageConverter.Convert(voUpdatePublication.Base64Images);
                     publicationInfo = await spaces.UpdatePublication(publication, images, voUpdatePublication.ImagesURL, user);
                     User publisher = spaces.GetPublisherByPublication(voUpdatePublication.Publication.IdPublication);                    
@@ -783,6 +904,10 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Create a reservation and sends email to publisher and customer
+        /// </summary>
+        /// <param name="voCreateReservation"></param>
         public VOResponseCreateReservation CreateReservation(VORequestCreateReservation voCreateReservation)
         {
             VOResponseCreateReservation response = new VOResponseCreateReservation();
@@ -836,6 +961,11 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Returns all reservations from customer
+        /// </summary>
+        /// <param name="voGetReservationsCustomer"></param>
+        /// <returns> Reservations </returns>
         public VOResponseGetReservationsCustomer GetReservationsCustomer(VORequestGetReservationsCustomer voGetReservationsCustomer)
         {
             {
@@ -861,6 +991,11 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Returns reserved publications from a publisher
+        /// </summary>
+        /// <param name="voGetReservationsPublisher"></param>
+        /// <returns> Reservations </returns>
         public VOResponseGetReservationsPublisher GetReservationsPublisher(VORequestGetReservationsPublisher voGetReservationsPublisher)
         {
             VOResponseGetReservationsPublisher response = new VOResponseGetReservationsPublisher();
@@ -883,6 +1018,11 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Udpates state from a reservation and sends mail to customer.
+        /// If the update was made by the admin, sends email to publisher as well
+        /// </summary>
+        /// <param name="voUpdateStateReservation"></param>
         public VOResponseUpdateStateReservation UpdateStateReservation(VORequestUpdateStateReservation voUpdateStateReservation)
         {
             VOResponseUpdateStateReservation response = new VOResponseUpdateStateReservation();
@@ -892,7 +1032,6 @@ namespace backend.Logic
                 String message = util.ValidAccessToken(voUpdateStateReservation.AccessToken, voUpdateStateReservation.Mail);
                 if (EnumMessages.OK.ToString().Equals(message))
                 {
-                    Util util = new Util();
                     int oldCodeRservation = util.ConvertStateReservation(voUpdateStateReservation.OldState);
                     int newCodeReservation = util.ConvertStateReservation(voUpdateStateReservation.NewState);
                     UsersReservationBasicData usersData = spaces.UpdateStateReservation(voUpdateStateReservation.IdReservation, voUpdateStateReservation.CanceledReason, newCodeReservation, voUpdateStateReservation.NewState, voUpdateStateReservation.DateTo);
@@ -937,6 +1076,10 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Updates reservation data and sends email to customer and publisher
+        /// </summary>
+        /// <param name="voUpdateReservation"></param>
         public VOResponseUpdateReservation UpdateReservation(VORequestUpdateReservation voUpdateReservation)
         {
             try
@@ -986,6 +1129,10 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Creates a review
+        /// </summary>
+        /// <param name="voCreateReview"></param>
         public VOResponseCreateReview CreateReview(VORequestCreateReview voCreateReview)
         {
             try
@@ -1008,6 +1155,10 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Creates a question to a publication and sends email to publisher
+        /// </summary>
+        /// <param name="voCreatePublicationQuestion"></param>
         public VOResponseCreatePublicationQuestion CreatePublicationQuestion(VORequestCreatePublicationQuestion voCreatePublicationQuestion)
         {
             try
@@ -1036,6 +1187,11 @@ namespace backend.Logic
                 throw e;
             }
         }
+
+        /// <summary>
+        /// Creates an answer to a publication and sends email to customer
+        /// </summary>
+        /// <param name="voCreatePublicationAnswer"></param>
         public VOResponseCreatePublicationAnswer CreatePublicationAnswer(VORequestCreatePublicationAnswer voCreatePublicationAnswer)
         {
             try
@@ -1063,6 +1219,10 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Returns all publication plans
+        /// </summary>
+        /// <returns> Publication plans options </returns>
         public VOResponseGetPublicationPlans GetPublicationPlans()
         {
             VOResponseGetPublicationPlans response = new VOResponseGetPublicationPlans();
@@ -1080,6 +1240,10 @@ namespace backend.Logic
             return response;
         }
 
+        /// <summary>
+        /// Updates preferential plan payment and sends mail to admin
+        /// </summary>
+        /// <param name="voUpdatePayment"></param>
         public async Task<VOResponseUpdatePreferentialPayment> UpdatePreferentialPayment(VORequestUpdatePreferentialPayment voUpdatePayment)
         {
             try
@@ -1107,6 +1271,10 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Updates reservation payment and sends to publisher
+        /// </summary>
+        /// <param name="voPayReservationCustomer"></param>
         public async Task<VOResponsePayReservationCustomer> PayReservationCustomer(VORequestPayReservationCustomer voPayReservationCustomer)
         {
             try
@@ -1135,6 +1303,10 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Updates commission payment and sends email to admin
+        /// </summary>
+        /// <param name="voPayReservationPublisher"></param>
         public async Task<VOResponsePayReservationPublisher> PayReservationPublisher(VORequestPayReservationPublisher voPayReservationPublisher)
         {
             VOResponsePayReservationPublisher response = new VOResponsePayReservationPublisher();
@@ -1163,6 +1335,10 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Confirm reservation payment and sends email to customer 
+        /// </summary>
+        /// <param name="voUpdatePayment"></param>
         public VOResponseUpdatePaymentCustomer UpdatePaymentCustomer(VORequestUpdatePaymentCustomer voUpdatePayment)
         {
             try
@@ -1199,6 +1375,11 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Returns publication plans with theirs prices
+        /// </summary>
+        /// <param name="voGetPayment"></param>
+        /// <returns> Publications plans</returns>
         public VOResponseGetPublicationPlanPayments GetPublicationPlanPayments(VORequestGetPublicationPlanPayments voGetPayment)
         {
             VOResponseGetPublicationPlanPayments response = new VOResponseGetPublicationPlanPayments();
@@ -1221,6 +1402,11 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Returnes all commissions payments
+        /// </summary>
+        /// <param name="voGetPayment"></param>
+        /// <returns> Commissions payments </returns>
         public VOResponseGetCommissionPayments GetCommissionPayments(VORequestGetCommissionPayments voGetPayment)
         {
             VOResponseGetCommissionPayments response = new VOResponseGetCommissionPayments();
@@ -1243,6 +1429,11 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Returns favorites from an user
+        /// </summary>
+        /// <param name="voGetFavorite"></param>
+        /// <returns> Favorites </returns>
         public VOResponseGetFavorites GetFavorites(VORequestGetFavorite voGetFavorite)
         {
             VOResponseGetFavorites response = new VOResponseGetFavorites();
@@ -1266,6 +1457,10 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Returns recommendes publications
+        /// </summary>
+        /// <returns> Recommended publications </returns>
         public VOResponseGetRecommendedPublications GetRecommendedPublications()
         {
             VOResponseGetRecommendedPublications response = new VOResponseGetRecommendedPublications();
@@ -1284,6 +1479,11 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Updates preferential publication payment state (approve or reject) and
+        /// sends mail to publisher
+        /// </summary>
+        /// <param name="voUpdatePayment"></param>
         public VOResponseUpdatePreferentialPaymentAdmin UpdatePreferentialPaymentAdmin(VORequestUpdatePreferentialPaymentAdmin voUpdatePayment)
         {
             try
@@ -1322,6 +1522,11 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Updates commission payment state (approve or reject) and
+        /// sends mail to publisher
+        /// </summary>
+        /// <param name="voUpdatePayment"></param>
         public VOResponseUpdatePaymentCommissionAdmin UpdatePaymentCommissionAdmin(VORequestUpdatePaymentCommissionAdmin voUpdatePayment)
         {
             try
@@ -1358,6 +1563,11 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Returns messages of publications
+        /// </summary>
+        /// <param name="voGetMessages"></param>
+        /// <returns> Messages </returns>
         public VOResponseGetMessages GetMessages(VORequestGetMessages voGetMessages)
         {            
             try
@@ -1383,6 +1593,10 @@ namespace backend.Logic
 
         }
 
+        /// <summary>
+        /// Updates amount of commission
+        /// </summary>
+        /// <param name="voUpdateAmount"></param>
         public VOResponseUpdateCommissionAmountAdmin UpdateCommissionAmountAdmin(VORequestUpdateCommissionAmountAdmin voUpdateAmount)
         {
             try
@@ -1402,6 +1616,7 @@ namespace backend.Logic
                 throw e;
             }
         }
+
 
         public VOResponseCreatePublicationStatics CreatePublicationStatics(VORequestCreatePublicationStatics voCreatePublicationStatics)
         {
@@ -1423,6 +1638,11 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Returns all reservations
+        /// </summary>
+        /// <param name="voGetReservations"></param>
+        /// <returns> Reservations </returns>
         public VOResponseGetReservations GetReservations(VORequestGetReservations voGetReservations)
         {
             try
@@ -1445,6 +1665,9 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Updates finished publications state 
+        /// </summary>
        public void FinishPublications()
        {
 
@@ -1466,6 +1689,9 @@ namespace backend.Logic
             
        }
 
+        /// <summary>
+        /// Updates finished reservations state
+        /// </summary>
        public void FinishReservations()
        {
             EmailDataGeneric mailData;
@@ -1489,6 +1715,9 @@ namespace backend.Logic
             }
         }
 
+        /// <summary>
+        /// Update reservations state to in progress
+        /// </summary>
         public void StartReservation()
         {
             try

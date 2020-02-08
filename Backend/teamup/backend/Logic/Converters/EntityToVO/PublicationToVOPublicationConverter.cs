@@ -9,8 +9,8 @@ namespace backend.Logic.Converters.EntityToVO
         public static VOPublication Convert(Publication publication)
         {
             VOPublication voPublication = new VOPublication();
-            voPublication.IdPublication = voPublication.IdPublication;
-            voPublication.IdUser = voPublication.IdUser;
+            voPublication.IdPublication = publication.IdPublication;
+            voPublication.IdUser = publication.IdUser;
             voPublication.Mail = publication.Mail;
             voPublication.NamePublisher = publication.NamePublisher;
             voPublication.LastNamePublisher = publication.LastNamePublisher;
@@ -41,7 +41,10 @@ namespace backend.Logic.Converters.EntityToVO
             voPublication.QuestionsWithoutAnswer = publication.QuestionsWithoutAnswer;
             voPublication.IsMyPublication = publication.IsMyPublication;
             voPublication.IdPlan = publication.IdPlan;
-            voPublication.PreferentialPlan = PreferentialPlanToVOPreferentialPlanConverter.Convert(publication.PreferentialPlan);
+            if (publication.PreferentialPlan != null)
+            {
+                voPublication.PreferentialPlan = PreferentialPlanToVOPreferentialPlanConverter.Convert(publication.PreferentialPlan);
+            }            
             voPublication.DateTo = publication.DateTo;
             voPublication.IsRecommended = publication.IsRecommended;
             return voPublication;
@@ -50,9 +53,12 @@ namespace backend.Logic.Converters.EntityToVO
         public static List<VOPublication> Convert(List<Publication> publications)
         {
             List<VOPublication> voPublications = new List<VOPublication>();
-            foreach (var pub in publications)
+            if (publications != null && publications.Count != 0)
             {
-                voPublications.Add(Convert(pub));
+                foreach (var pub in publications)
+                {
+                    voPublications.Add(Convert(pub));
+                }
             }
             return voPublications;
         }

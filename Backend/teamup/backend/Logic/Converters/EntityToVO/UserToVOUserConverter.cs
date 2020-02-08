@@ -28,9 +28,12 @@ namespace backend.Logic.Converters.EntityToVO
         public static List<VOUser> Convert(List<User> users)
         {
             List<VOUser> voUsers = new List<VOUser>();
-            foreach (var user in users)
+            if (users != null && users.Count != 0)
             {
-                voUsers.Add(Convert(user));
+                foreach (var user in users)
+                {
+                    voUsers.Add(Convert(user));
+                }
             }
             return voUsers;
         }

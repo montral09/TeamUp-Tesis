@@ -20,9 +20,12 @@ namespace backend.Logic.Converters.EntityToVO
         public static List<VOSpaceType> Convert (List<SpaceType> spaceTypes)
         {
             List<VOSpaceType> voSpaceTypes = new List<VOSpaceType>();
-            foreach (var spaceType in spaceTypes)
+            if (spaceTypes != null && spaceTypes.Count != 0)
             {
-                voSpaceTypes.Add(Convert(spaceType));
+                foreach (var spaceType in spaceTypes)
+                {
+                    voSpaceTypes.Add(Convert(spaceType));
+                }
             }
             return voSpaceTypes;
         }

@@ -21,9 +21,12 @@ namespace backend.Logic.Converters.EntityToVO
         public static List<VOPublicationPlan> Convert(List<PublicationPlan> pPlans)
         {
             List<VOPublicationPlan> voPlans = new List<VOPublicationPlan>();
-            foreach (var pPlan in pPlans)
+            if (pPlans != null && pPlans.Count != 0)
             {
-                voPlans.Add(Convert(pPlan));
+                foreach (var pPlan in pPlans)
+                {
+                    voPlans.Add(Convert(pPlan));
+                }
             }
             return voPlans;
         }

@@ -8,5 +8,7 @@ namespace backend.Data_Access
         String ValidAccessToken(String accessToken, String mail);
         String ValidRefreshToken(String refreshToken, String mail);
         EmailDataGeneric GetEmailDataGeneric(String code, int language);
+        int ConvertStatePublication(string state);
+        int ConvertStateReservation(string state);
     }
 }

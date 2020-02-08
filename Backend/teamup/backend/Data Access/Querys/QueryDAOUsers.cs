@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace backend.Data_Access.Query
 {
@@ -22,9 +23,11 @@ namespace backend.Data_Access.Query
 
         public String User()
         {
-            String query = "select u.idUser, u.mail, u.name, u.lastName, u.password, u.phone, u.rut, u.razonSocial, u.address, u.checkPublisher, u.mailValidated, u.publisherValidated, u.active, l.description, l.idLanguage from USERS u, LANGUAGES l where " +
-                "mail=@mail and u.language = l.idlanguage";
-            return query;
+            StringBuilder query = new StringBuilder();
+            query.Append("select u.idUser, u.mail, u.name, u.lastName, u.password, u.phone, u.rut, u.razonSocial, u.address, ");
+            query.Append("u.checkPublisher, u.mailValidated, u.publisherValidated, u.active, l.description, l.idLanguage ");
+            query.Append("from USERS u, LANGUAGES l where mail=@mail and u.language = l.idlanguage");
+            return query.ToString();
         }
 
         public String InsertUser()
@@ -39,8 +42,10 @@ namespace backend.Data_Access.Query
         }
         public String UpdateUser()
         {
-            String query = "update USERS set mail = @mail, name = @name, lastName = @lastName, phone = @phone, rut = @rut, razonSocial = @razonSocial, address = @address, language = @language WHERE idUser = @idUser ";
-            return query;
+            StringBuilder query = new StringBuilder();
+            query.Append("update USERS set mail = @mail, name = @name, lastName = @lastName, phone = @phone, rut = @rut, ");
+            query.Append("razonSocial = @razonSocial, address = @address, language = @language WHERE idUser = @idUser ");
+            return query.ToString();
         }
 
         public String DeleteUser()
@@ -93,9 +98,10 @@ namespace backend.Data_Access.Query
 
         public String CreateTokens()
         {
-            String query = "update USERS set accessToken=@accessToken, accessTokenExpiration=@accessTokenExpiration," +
-                " refreshToken=@refreshToken, refreshTokenExpiration=@refreshTokenExpiration where mail = @mail";
-            return query;
+            StringBuilder query = new StringBuilder();
+            query.Append("update USERS set accessToken=@accessToken, accessTokenExpiration=@accessTokenExpiration, ");
+            query.Append("refreshToken=@refreshToken, refreshTokenExpiration=@refreshTokenExpiration where mail = @mail");
+            return query.ToString();
         }
         public String ValidateEmail()
         {
@@ -105,14 +111,19 @@ namespace backend.Data_Access.Query
 
         public String UpdateUserAdmin()
         {
-            String query = "update USERS set mail = @mail, name = @name, lastName = @lastName, phone = @phone, checkPublisher=@checkPublisher, rut = @rut, razonSocial = @razonSocial, address = @address, mailValidated=@mailValidated, publisherValidated=@publisherValidated, active=@active WHERE idUser = @idUser ";
-            return query;
+            StringBuilder query = new StringBuilder();
+            query.Append("update USERS set mail = @mail, name = @name, lastName = @lastName, phone = @phone, ");
+            query.Append("checkPublisher=@checkPublisher, rut = @rut, razonSocial = @razonSocial, address = @address, ");
+            query.Append("mailValidated=@mailValidated, publisherValidated=@publisherValidated, active=@active WHERE idUser = @idUser");
+            return query.ToString();
         }
 
         public String GetUsers()
         {
-            String query = "select idUser,mail,name,lastName,phone,checkPublisher,rut,razonSocial,address,mailValidated,publisherValidated,active from USERS";
-            return query;
+            StringBuilder query = new StringBuilder();
+            query.Append("select idUser, mail, name, lastName, phone, checkPublisher, rut, razonSocial, address, ");
+            query.Append("mailValidated, publisherValidated,active from USERS");
+            return query.ToString();
         }
 
         public String UpdateActivationCode()
@@ -123,8 +134,10 @@ namespace backend.Data_Access.Query
 
         public String GetUserData()
         {
-            String query = "select idUser,mail,name,lastName,password,phone,rut,razonSocial,address,checkPublisher,mailValidated,publisherValidated,active from USERS where accessToken=@accessToken";
-            return query;
+            StringBuilder query = new StringBuilder();
+            query.Append("select idUser, mail, name, lastName, password, phone, rut, razonSocial, address, ");
+            query.Append("checkPublisher, mailValidated, publisherValidated, active from USERS where accessToken=@accessToken");
+            return query.ToString();
         }
 
         public String IsPublisher()
@@ -153,23 +166,26 @@ namespace backend.Data_Access.Query
 
         public String CheckPendingReservationPublisher()
         {
-            String query = "select r.idPublication from RESERVATIONS r, PUBLICATIONS p where r.state in (1,2,3) and " +
-                "r.idPublication = p.idPublication and p.idUser = @idUser";
-            return query;
+            StringBuilder query = new StringBuilder();
+            query.Append("select r.idPublication from RESERVATIONS r, PUBLICATIONS p where r.state in (1,2,3) and ");
+            query.Append("r.idPublication = p.idPublication and p.idUser = @idUser");                        
+            return query.ToString();
         }
 
         public String CheckPendingPreferentialPayment()
         {
-            String query = "select pp.idPrefPayments from PREFERENTIAL_PAYMENTS pp, PUBLICATIONS P where " +
-                "pp.state in (1,2) and pp.idPublication = p.idPublication and p.idUser = @idUser";
-            return query;
+            StringBuilder query = new StringBuilder();
+            query.Append("select pp.idPrefPayments from PREFERENTIAL_PAYMENTS pp, PUBLICATIONS P where ");
+            query.Append("pp.state in (1,2) and pp.idPublication = p.idPublication and p.idUser = @idUser");
+            return query.ToString();
         }
 
         public String CheckPendingCommissionPayment()
         {
-            String query = "select r.idReservation from RESERVATIONS r, PUBLICATIONS p where " +
-                "r.idPublication = p.idPublication and p.idUser = @idUser and r.commissionPaymentState in (1,2)";
-            return query;
+            StringBuilder query = new StringBuilder();
+            query.Append("select r.idReservation from RESERVATIONS r, PUBLICATIONS p where ");
+            query.Append("r.idPublication = p.idPublication and p.idUser = @idUser and r.commissionPaymentState in (1,2)");
+            return query.ToString();
         }
 
         public String GetIdLanguageByDescription()

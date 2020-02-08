@@ -8,24 +8,33 @@ namespace backend.Logic.Converters.EntityToVO
     {
         public static VOReview Convert(Review review)
         {
-            VOReview voReview = new VOReview
+            if (review != null)
             {
-                Mail = review.Mail,
-                Name = review.Name,
-                Rating = review.Rating,
-                Review = review.ReviewDescription,
-                IdReservation = review.IdReservation
-            };
-            return voReview;
+                VOReview voReview = new VOReview
+                {
+                    Mail = review.Mail,
+                    Name = review.Name,
+                    Rating = review.Rating,
+                    Review = review.ReviewDescription,
+                    IdReservation = review.IdReservation
+                };
+                return voReview;
+            } else
+            {
+                return null;
+            }
     }
 
     public static List<VOReview> Convert (List<Review> reviews)
     {
         List<VOReview> voReviews = new List<VOReview>();
-        foreach (var review in reviews)
-        {
-            voReviews.Add(Convert(review));
-        }
+        if (reviews != null && reviews.Count != 0)
+            {
+                foreach (var review in reviews)
+                {
+                    voReviews.Add(Convert(review));
+                }
+            }
         return voReviews;
     }
     }
