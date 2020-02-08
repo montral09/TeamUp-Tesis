@@ -45,7 +45,7 @@ const MyPublicationTable = (props) =>{
                     <td colSpan="2">Plan Free</td>
                 ) : (<>
                     <td>{obj.IsChildPublication != true ? (translate('payState_'+objPayment.paymentStatus.replace(/\s/g,''))) : (null)}</td>
-                    {obj.State.replace(/\s/g,'') == 'NOTVALIDATED' && obj.IsChildPublication != true
+                    {obj.State.replace(/\s/g,'') == 'NOTVALIDATED' || obj.IsChildPublication != true
                         ? (<td colSpan="1"></td>) : (
                             <td><a href="#" onClick={() => props.triggerModalDetailPayment(objPayment)}> <span><i className="col-md-1 fa fa-align-justify"></i></span> {translate('details_w')}</a></td> 
                         )

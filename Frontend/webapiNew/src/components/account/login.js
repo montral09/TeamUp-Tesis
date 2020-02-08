@@ -76,8 +76,12 @@ class Login extends React.Component {
             <div className="well">
                 <form className="text-center border border-light p-5" action="#!">
                     <p className="h4 mb-4">{translate('login_login')}</p>
-                    <input type="email" name="email" id="input-email" className="form-control mb-4" placeholder={translate('email_w')}maxLength="50" onChange={this.onChange}></input>
-                    <input type="password" name="password" id="input-password" className="form-control mb-4" placeholder={translate('password_w')} maxLength="100" onChange={this.onChange}></input>
+                    <input type="email" name="email" id="input-email" className="form-control mb-4" placeholder={translate('email_w')}maxLength="50" onChange={this.onChange}
+                    onKeyPress={event => {if (event.key === 'Enter') {this.login()}}}
+                    ></input>
+                    <input type="password" name="password" id="input-password" className="form-control mb-4" placeholder={translate('password_w')} maxLength="100" onChange={this.onChange}
+                        onKeyPress={event => {if (event.key === 'Enter') {this.login()}}}
+                    ></input>
                     <div className="d-flex justify-content-around mb-2">
                         <div>
                             <Link target="_blank" to="/account/forgotPassword">{translate('login_forgotPassword')}</Link>
