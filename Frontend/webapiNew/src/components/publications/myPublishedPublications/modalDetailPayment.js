@@ -3,9 +3,9 @@ import {
     Button, Modal, ModalHeader, ModalBody, ModalFooter,
     Form, FormGroup, Label, Input, Col
 } from 'reactstrap';
-import { displayErrorMessage, displaySuccessMessage } from '../../../services/common/genericFunctions';
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual'
+import { displayErrorMessage, displaySuccessMessage } from '../../../services/common/genericFunctions';
 
 class ModalDetailPayment extends React.Component {
     constructor(props) {
@@ -18,6 +18,7 @@ class ModalDetailPayment extends React.Component {
         };
     }
 
+    // This function will toggle on or off the modal and save the paymentdetails if any
     toggle =(objPaymentDetails)=> {
         if (!this.state.isLoading) {
             this.setState({
@@ -26,6 +27,7 @@ class ModalDetailPayment extends React.Component {
             });
         }
     }
+    // This function will toggle on or off the modal and also the loading states
     changeModalLoadingState = (closeModal) => {
         if (closeModal) {
             this.setState({
@@ -82,6 +84,7 @@ class ModalDetailPayment extends React.Component {
         return true;
 
     }
+    // This function will check if the picture isn't greater than the maximum size
     checkFileSize = (event) => {
         let files = event.target.files
         let size = 1500000;
@@ -227,7 +230,6 @@ class ModalDetailPayment extends React.Component {
                                     )}
                             </Col>
                         </FormGroup>
-
                     </Form>
                 </ModalBody>
                 <ModalFooter>

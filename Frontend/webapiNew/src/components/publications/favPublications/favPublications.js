@@ -32,6 +32,7 @@ class FavPublications extends React.Component {
         this.loadMyFavoritePublications();
     }
 
+    // This function will call the API
     loadSpaceTypesFP = () => {
         var objApi = {};
         objApi.objToSend = {}
@@ -44,7 +45,8 @@ class FavPublications extends React.Component {
         objApi.errorMSG = {}
         callAPI(objApi, this);
     }
-
+    
+    // This function will call the API
     loadMyFavoritePublications = () => {
         var objApi = {};
         objApi.objToSend = {

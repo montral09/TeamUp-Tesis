@@ -1,9 +1,10 @@
 import React from "react";
+import { withTranslate } from 'react-redux-multilingual'
 
 
 class TabReview extends React.Component {
  	render() {
-        const {reviews} = this.props;
+        const {reviews, translate} = this.props;
 		return (
 			<React.Fragment>
 				<form className="form-horizontal" id="form-review">
@@ -21,7 +22,7 @@ class TabReview extends React.Component {
 								})}
 							</div>
 						) : (
-							<p>Sin reviews</p>
+							<p>{translate('no_reviews')}</p>
 						)}
 				    </div>
 				</form>
@@ -30,4 +31,4 @@ class TabReview extends React.Component {
 	}
 }
 
-export default TabReview;
+export default withTranslate(TabReview);

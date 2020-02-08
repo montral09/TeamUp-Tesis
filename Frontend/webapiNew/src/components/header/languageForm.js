@@ -16,7 +16,7 @@ class LanguageForm extends React.Component {
 		if(localLang  ){
 			langToUse = localLang;
 		}else{
-			langToUse = 'es';
+			langToUse = languages[0].code;
 		}
 		this.state = {
 			lang: langToUse
@@ -25,12 +25,9 @@ class LanguageForm extends React.Component {
 		store.dispatch(IntlActions.setLocale(langToUse))
 	}
 	componentDidMount(){
-		this._isMounted = true;
-		if(this._isMounted){
-			//store.dispatch(IntlActions.setLocale(this.state.lang))
-		}
-		
+		this._isMounted = true;		
 	}
+	// This function will update the language to be used on the site
     changeLang(lang) {
 		store.dispatch(IntlActions.setLocale(lang))
 		this.props.updateLocale(lang)
@@ -39,7 +36,7 @@ class LanguageForm extends React.Component {
 	}
 	componentWillUnmount() {
 		this._isMounted = false;
-	  }
+	}
     render() {
 	    return (
 			<form method="post" id="language_form">

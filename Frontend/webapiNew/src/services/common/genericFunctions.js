@@ -190,7 +190,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             bindThis.handleClose();
         break;
         case "loadSpaceTypesBR":
-            bindThis.setState({ spaceTypes: objData.spaceTypes , spaceTypeSelected : objData.spaceTypes[0].Code })
+            bindThis.setState({ spaceTypes: objData.spaceTypes })
         break;
         case "loadSpaceTypesRP" : bindThis.setState({ spaceTypes: objData.spaceTypes }, () => {bindThis.loadRecommendedPubs()}); break;
         case "loadRecommendedPubs":

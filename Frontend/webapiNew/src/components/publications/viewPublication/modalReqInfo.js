@@ -19,6 +19,7 @@ class ModalReqInfo extends React.Component {
         this.changeModalLoadingState = this.changeModalLoadingState.bind(this);
     }
 
+    // This function will toggle on or off the modal and save the paymentdetails if any
     toggle = (optionalData) => {
         if(optionalData){
             this.setState({
@@ -34,6 +35,7 @@ class ModalReqInfo extends React.Component {
         }
     }
 
+    // This function will toggle on or off the modal and also the loading states
     changeModalLoadingState=(closeModal)=>{
         if(closeModal){
             this.setState({
@@ -56,6 +58,8 @@ class ModalReqInfo extends React.Component {
             this.props.modalSave(this.state.textboxValue);
         }
     }
+
+    // This function will handle the onchange event from the fields
     onChange = (e) => {
         this.setState({
             [e.target.id]: e.target.value

@@ -34,14 +34,18 @@ class MyMessagesList extends React.Component {
         window.scrollTo(0, 0);
         this.loadMessages();
     }
+    // This function will update the state to change the current page
     changePage = (pageClicked) => {
         this.setState({ messagesToDisplay: this.filterPaginationArray(this.state.messages, (pageClicked - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked },
             () => this.setState({ messagesToDisplay: this.filterPaginationArray(this.state.messages, (pageClicked - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked }))
     }
 
+    // This function will filtere some elements from an array
     filterPaginationArray = (arrayToFilter, startIndex) => {
         return arrayToFilter.slice(startIndex, startIndex + MAX_ELEMENTS_PER_TABLE)
     }
+
+    // This function will call the API
     loadMessages = () => {
         var objApi = {};
         objApi.objToSend = {
@@ -59,6 +63,7 @@ class MyMessagesList extends React.Component {
         callAPI(objApi, this);
     }
 
+    // This function will trigger the modal with custom elements to be displayed
     answerMsg = (questionObj) => {
         var modalConfigObj = {
             title: 'Responder', mainText: <><strong>{this.props.translate('question_w')}:</strong><em>{' "' + questionObj.Question + '"'}</em></>, mode: "ANSWER", saveFunction: "saveAnswerMSG", textboxLabel: 'Respuesta',
@@ -67,11 +72,14 @@ class MyMessagesList extends React.Component {
         this.setState({ modalConfigObj: modalConfigObj }, () => { this.modalReqInfo.current.toggle(); })
 
     }
+    // This function will trigger any callback from the modal save function
     triggerSaveModal = (saveFunction, objData) => {
         switch (saveFunction) {
             case "saveAnswerMSG": this.saveAnswerMSG(objData.textboxValue); break;
         }
     }
+
+    // This function will call the API
     saveAnswerMSG = (answer) => {
         var objApi = {};
         objApi.objToSend = {
@@ -107,7 +115,7 @@ class MyMessagesList extends React.Component {
                 <LoadingOverlay
                     active={this.state.loadingMessages}
                     spinner
-                    text='Cargando...'
+                    text={translate('loading_text_small')}
                 >
                     <Header />
                     <div className="main-content  full-width  home" style={{ minHeight: "50vh" }}>

@@ -6,7 +6,7 @@ import { withRouter } from "react-router";
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual'
 import { compose } from 'redux';
-import { callAPI } from '../../services/common/genericFunctions';
+import { callAPI, displayErrorMessage } from '../../services/common/genericFunctions';
 
 
 class Browser extends React.Component {
@@ -31,6 +31,7 @@ class Browser extends React.Component {
         this.setState({ dropDownValue: text })
     }
 
+    // This function will call the API
     loadSpaceTypesBR() {
         var objApi = {};
         objApi.objToSend = {}
@@ -45,31 +46,38 @@ class Browser extends React.Component {
         callAPI(objApi, this);
     }
 
+    // This function will redirect to next screen using different filteres on the URL
     startSearch = () => {
+        if(this.state.spaceTypeSelected == ""){
+            displayErrorMessage(this.props.translate('browser_spaceTypeErrMsg'));
+            return;
+        }
         let spaceTypeSelected = this.state.spaceTypeSelected  == "" ? "empty" :this.state.spaceTypeSelected;
         let capacity = this.state.capacity  == "" ? "empty" :this.state.capacity;
         let city = this.state.city  == "" ? "empty" :this.state.city;
         this.props.history.push('/publications/listPublications/mainPublications/'+spaceTypeSelected +'/'+capacity+'/'+city);
     }
 
+    // This function will handle the onchange event from the fields
     onChange = (e) => {
         this.setState({
             [e.target.id]: e.target.value
         });
     }
+    
     render() {
         const { translate } = this.props;
         return (
             <div>
                 <h1 style = {{ color: 'white', marginTop: '15%', marginBottom: '30px', marginLeft: '20px'}}>{translate('home_findSpaceText')}</h1>
                 <div style = {{ marginLeft: '5%', marginBottom: '30%'}}> 
-					<select id="spaceTypeSelected" onChange={this.onChange} className="browser">
-                        <option defaultValue disabled="disabled">{translate('spaceType_w')}</option>    
+					<select id="spaceTypeSelected"   style = {{width: `200px`}}  onChange={this.onChange} className="browser">
+                        <option defaultValue disabled selected>{translate('spaceType_w')}</option>    
                         {this.state.spaceTypes.map((space, key) => {
                             return <option key={key} value={space.Code}>{space.Description}</option>;
                         })}
                     </select>
-                    <label className="browser">
+                    <label className="browser" >
                         <LocationSearchInput id="city" onChange={this.onChange}/>
                     </label>
                     <label className="browser">

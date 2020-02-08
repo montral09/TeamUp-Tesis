@@ -7,7 +7,7 @@ import { withTranslate } from 'react-redux-multilingual'
 class PublicationListCard extends React.Component {
 
  	render() {
-        const {IdPublication, Description, Capacity, HourPrice, DailyPrice, WeeklyPrice, MonthlyPrice, Title, ImagesURL, City, translate, IsRecommended} = this.props;
+        const {IdPublication, Capacity, HourPrice, DailyPrice, WeeklyPrice, MonthlyPrice, Title, ImagesURL, City, translate, IsRecommended} = this.props;
 		return (
 			<React.Fragment>
                 <div className="row">

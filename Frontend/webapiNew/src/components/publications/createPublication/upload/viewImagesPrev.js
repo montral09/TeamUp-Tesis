@@ -1,5 +1,7 @@
 import React from "react";
 import $ from 'jquery';
+// Multilanguage
+import { withTranslate } from 'react-redux-multilingual';
 
 class ViewImagesPrev extends React.Component {
 	constructor(props) {
@@ -12,7 +14,7 @@ class ViewImagesPrev extends React.Component {
 		}, 100);
 	}
  	render() {
-		 const { index, url} = this.props;
+		 const { index, url, translate} = this.props;
 		return (
 			<React.Fragment>
 				<div className="product clearfix product-hover">
@@ -23,10 +25,10 @@ class ViewImagesPrev extends React.Component {
 				    </div>
 				    <div className="right">				        						
 				        <div className="description">
-							<div>Imagen {index+1}</div>
+							<div>{translate('picture_w')} {index+1}</div>
 				        </div>
 				        <div className="only-hover">
-				        	<a className="button" onClick={() => this.props.deleteImage(index)}>Eliminar</a>
+							<a className="button" onClick={() => this.props.deleteImage(index)}>{translate('delete_w')}</a>
 				        </div>
 				    </div>
 				</div>
@@ -35,4 +37,4 @@ class ViewImagesPrev extends React.Component {
 	}
 }
 
-export default ViewImagesPrev;
+export default withTranslate(ViewImagesPrev);

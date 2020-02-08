@@ -2,7 +2,6 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual'
-import { compose } from 'redux';
 
 const SignedOutLinks = (props) =>{
     

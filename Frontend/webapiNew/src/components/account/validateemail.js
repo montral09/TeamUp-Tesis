@@ -18,7 +18,8 @@ class ValidateEmail extends React.Component {
     componentDidMount() {
         this.validateEmail();
     }
-
+    
+    // This function will call the API
     validateEmail = () => {
         if(this.state.emailtoken){
             var objApi = {};

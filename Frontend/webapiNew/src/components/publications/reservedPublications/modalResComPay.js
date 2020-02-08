@@ -24,6 +24,7 @@ class ModalResComPay extends React.Component {
         this.getBase64 = this.getBase64.bind(this);
     }
 
+    // This function will toggle on or off the modal and save the paymentdetails if any
     toggle(objPaymentDetails) {
         if (!this.state.isLoading) {
             this.setState({
@@ -32,6 +33,8 @@ class ModalResComPay extends React.Component {
             });
         }
     }
+
+    // This function will toggle on or off the modal and also the loading states
     changeModalLoadingState(closeModal) {
         if (closeModal) {
             this.setState({
@@ -88,6 +91,8 @@ class ModalResComPay extends React.Component {
         return true;
 
     }
+    
+    // This function will check if the picture isn't greater than the maximum size
     checkFileSize = (event) => {
         let files = event.target.files
         let size = 1500000;

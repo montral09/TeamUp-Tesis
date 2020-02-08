@@ -24,12 +24,14 @@ class DeleteUser extends React.Component {
         window.scrollTo(0, 0);
     }
 
+    // This function will handle the onchange event from the fields
     onChange = (e) => {
         this.setState({
             [e.target.name]: e.target.value
         })
     }
 
+    // This function will call the API
     deleteUser = () => {
         var objApi = {};
         objApi.objToSend = {
@@ -55,12 +57,14 @@ class DeleteUser extends React.Component {
         this.toggleButton();
         callAPI(objApi, this);
     }
+    // Change the button status
     toggleButton = () =>   {
         this.setState({
             isLoading: !this.state.isLoading,
             buttonIsDisable: !this.state.buttonIsDisable
         })
     }
+
     render() {
         if (this.props.login_status != 'LOGGED_IN') return <Redirect to='/' />
         if (this.state.generalError) return <Redirect to='/error' />
