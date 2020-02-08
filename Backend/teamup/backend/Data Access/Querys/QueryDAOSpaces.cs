@@ -801,7 +801,7 @@ namespace backend.Data_Access.Query
         {
             StringBuilder query = new StringBuilder();
             query.Append("insert into PREFERENTIAL_PAYMENTS(idPublication, idPlan, state) values ");
-            query.Append("(@idPublication, @idPlan, (select state from PREFERENTIAL_PAYMENTS where idPublication = @idParentPublication)");
+            query.Append("(@idPublication, @idPlan, (select state from PREFERENTIAL_PAYMENTS where idPublication = @idParentPublication))");
             return query.ToString();
         }
 
@@ -823,11 +823,19 @@ namespace backend.Data_Access.Query
             return query;
         }
 
-        public String GetIdOtherPublicationConfig()
+        public String GetIdChildPublicationConfig()
         {
             StringBuilder query = new StringBuilder();
-            query.Append("select idPublication, idChildPublication from other_configuration_publications where ");
-            query.Append("idPublication = @idPublication or idChildPublication = @idPublication");
+            query.Append("select idChildPublication from other_configuration_publications where ");
+            query.Append("idPublication = @idPublication");
+            return query.ToString();
+        }
+
+        public String GetIdParentPublicationConfig()
+        {
+            StringBuilder query = new StringBuilder();
+            query.Append("select idPublication from other_configuration_publications where ");
+            query.Append("idChildPublication = @idChildPublication");
             return query.ToString();
         }
 

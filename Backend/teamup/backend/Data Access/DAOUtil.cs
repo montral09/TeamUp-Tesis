@@ -47,31 +47,39 @@ namespace backend.Data_Access
                 }
                 dr.Close();
 
-                if (accessToken.Equals(actualAccessToken))
+                if (accessToken != null)
                 {
-                    DateTime expirationDate = DateTime.UtcNow;
-                    String queryExpiration = cns.GetExpirationTimeAccessTokenUser();
-                    SqlCommand selectCommandExpiration = new SqlCommand(queryExpiration, con);
-                    SqlParameter parametroExpiration = new SqlParameter()
+                    if (accessToken.Equals(actualAccessToken))
                     {
-                        ParameterName = "@mail",
-                        Value = mail,
-                        SqlDbType = SqlDbType.VarChar
-                    };
-                    selectCommandExpiration.Parameters.Add(parametroExpiration);
-                    SqlDataReader drExpiration = selectCommandExpiration.ExecuteReader();
-                    while (drExpiration.Read())
-                    {
-                        expirationDate = Convert.ToDateTime(drExpiration["accessTokenExpiration"]);
+                        DateTime expirationDate = DateTime.UtcNow;
+                        String queryExpiration = cns.GetExpirationTimeAccessTokenUser();
+                        SqlCommand selectCommandExpiration = new SqlCommand(queryExpiration, con);
+                        SqlParameter parametroExpiration = new SqlParameter()
+                        {
+                            ParameterName = "@mail",
+                            Value = mail,
+                            SqlDbType = SqlDbType.VarChar
+                        };
+                        selectCommandExpiration.Parameters.Add(parametroExpiration);
+                        SqlDataReader drExpiration = selectCommandExpiration.ExecuteReader();
+                        while (drExpiration.Read())
+                        {
+                            expirationDate = Convert.ToDateTime(drExpiration["accessTokenExpiration"]);
+                        }
+                        drExpiration.Close();
+
+                        if (expirationDate < DateTime.UtcNow)
+                        {
+                            // Access token expired
+                            result = EnumMessages.ERR_ACCESSTOKENEXPIRED.ToString();
+
+                        }
                     }
-                    drExpiration.Close();
-
-                    if (expirationDate < DateTime.UtcNow)
+                    else
                     {
-                        // Access token expired
-                        result = EnumMessages.ERR_ACCESSTOKENEXPIRED.ToString();
-
-                    }                    
+                        // Invalid access token
+                        result = EnumMessages.ERR_INVALIDACCESSTOKEN.ToString();
+                    }
                 } else
                 {
                     // Invalid access token

@@ -33,6 +33,7 @@ namespace backend.Data_Access
         private const int MAX_TOTAL = 15;
         private const int MIN_TOTAL = 5;
         private DateTime DEFAULT_DATE_TIME = new DateTime();
+        private const int PUBLICATION_ACTIVE_STATE = 2;
 
         public DAOSpaces()
         {
@@ -167,9 +168,8 @@ namespace backend.Data_Access
                     insertChildPublication.Transaction = objTrans;
                     insertChildPublication.ExecuteNonQuery();
                     if (imagesURL != null && imagesURL.Count != 0)
-                    {
-                        List<string> urlsChild = await storageUtil.StoreImageAsync(images, user.IdUser, idPublication);
-                        InsertImages(con, objTrans, idPublication, urlsChild);
+                    {                        
+                        InsertImages(con, objTrans, idPublication, imagesURL);
                     }
                 }
                 bool isFreePreferentialPlan = IsFreePreferentialPlan(publication.IdPlan, con, objTrans);
@@ -195,6 +195,11 @@ namespace backend.Data_Access
                 List<string> urls = await storageUtil.StoreImageAsync(images, user.IdUser, idPublication);
                 InsertImages(con, objTrans, idPublication, urls);
                 objTrans.Commit();
+                if (publication.IdParentPublication != 0)
+                {
+                    // Set state as active
+                    UpdateStatePublication(idPublication, null, PUBLICATION_ACTIVE_STATE, false);
+                }
                 expirationDateString = Util.ConvertDateToString(expirationDate);
                 keyValuePairs[ParamCodes.DATE_TO] = expirationDateString;
                 keyValuePairs[ParamCodes.PRICE] = prefPlanPrice.ToString(); ;
@@ -703,8 +708,7 @@ namespace backend.Data_Access
                     creationDateString = Util.ConvertDateToString(creationDate);
                     DateTime dateTo = Convert.ToDateTime(dr["expirationDate"]);
                     String dateToString = Util.ConvertDateToString(dateTo);
-                    bool isRecommended = IsRecommended(Convert.ToInt32(dr["idPublication"]), con);
-                    List<Publication> otherPublications = GetOtherPublicationConfig(idSpace);
+                    bool isRecommended = IsRecommended(Convert.ToInt32(dr["idPublication"]), con);                    
                     publication = new Publication(Convert.ToInt32(dr["idPublication"]), 0, null, null, null, null, Convert.ToInt32(dr["spaceType"]), creationDateString, dateToString, Convert.ToString(dr["title"]), Convert.ToString(dr["description"]), Convert.ToString(dr["address"]),
                         location, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
                         Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]),
@@ -1108,6 +1112,15 @@ namespace backend.Data_Access
                         Convert.ToString(dr["availability"]), facilities, images, null, 0, reviews, ranking, Convert.ToString(dr["city"]),
                         Convert.ToInt32(dr["totalViews"]), false, 0, false, 0, null, false, 0, false);
                     related.Add(publication);
+                }
+                if (related.Count != 0)
+                {
+                    List<int> idOtherPublications = GetIdOtherPublicationConfig(idPublication);
+                    if (idOtherPublications.Count != 0)
+                    {
+                        // Remove publications associated (child publications, parent publication)
+                        related.RemoveAll(Publication => idOtherPublications.Contains(Publication.IdPublication));
+                    }
                 }
                 dr.Close();
             }
@@ -3553,29 +3566,68 @@ namespace backend.Data_Access
             {
                 con = new SqlConnection(GetConnectionString());
                 con.Open();
-                String query = cns.GetIdOtherPublicationConfig();
-                SqlCommand selectCommand = new SqlCommand(query, con);
+                String queryChild = cns.GetIdChildPublicationConfig();
+                SqlCommand selectChildCommand = new SqlCommand(queryChild, con);
                 SqlParameter param = new SqlParameter()
                 {
                     ParameterName = "@idPublication",
                     Value = idPublication,
                     SqlDbType = SqlDbType.Int
                 };
-                selectCommand.Parameters.Add(param);
-                SqlDataReader dr = selectCommand.ExecuteReader();
+                selectChildCommand.Parameters.Add(param);
+                SqlDataReader dr = selectChildCommand.ExecuteReader();
                 int idOtherPublication;
+                bool isParentPublication = false;
                 while (dr.Read())
                 {
-                    idOtherPublication = Convert.ToInt32(dr["idPublication"]);
-                    if (idOtherPublication != idPublication)
+                    // If there are child publications for idPublication, means that idPublication is father
+                    isParentPublication = true;
+                    idOtherPublication = Convert.ToInt32(dr["idChildPublication"]);
+                    idOtherPublications.Add(idOtherPublication);
+                }
+                if (!isParentPublication)
+                {
+                    // Need to find parent publication and their childs
+                    String queryParent = cns.GetIdParentPublicationConfig();
+                    SqlCommand selectParentCommand = new SqlCommand(queryParent, con);
+                    SqlParameter paramParent = new SqlParameter()
                     {
+                        ParameterName = "@idChildPublication",
+                        Value = idPublication,
+                        SqlDbType = SqlDbType.Int
+                    };
+                    selectParentCommand.Parameters.Add(paramParent);
+                    SqlDataReader drParent = selectParentCommand.ExecuteReader();
+                    int idParent = 0;
+                    while (drParent.Read())
+                    {
+                        idOtherPublication = Convert.ToInt32(drParent["idPublication"]);
+                        idParent = idOtherPublication;
                         idOtherPublications.Add(idOtherPublication);
                     }
-                    else
+                    drParent.Close();
+                    //Childs
+                    String queryParentChild = cns.GetIdChildPublicationConfig();
+                    SqlCommand selectParentChildCommand = new SqlCommand(queryParentChild, con);
+                    SqlParameter paramParentChild = new SqlParameter()
                     {
-                        idOtherPublication = Convert.ToInt32(dr["idChildPublication"]);
-                        idOtherPublications.Add(idOtherPublication);
+                        ParameterName = "@idPublication",
+                        Value = idParent,
+                        SqlDbType = SqlDbType.Int
+                    };
+                    selectParentChildCommand.Parameters.Add(paramParentChild);
+                    SqlDataReader drParentChild = selectParentChildCommand.ExecuteReader();
+                    while (drParentChild.Read())
+                    {
+                        idOtherPublication = Convert.ToInt32(drParentChild["idChildPublication"]);
+                        if (idOtherPublication != idPublication)
+                        {
+                            // Not add same idPublication
+                            idOtherPublications.Add(idOtherPublication);
+                        }
+                        
                     }
+                    drParentChild.Close();
                 }
                 dr.Close();
                 return idOtherPublications;
