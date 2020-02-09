@@ -312,6 +312,10 @@ namespace backend.Data_Access
                 insertCommand.ExecuteNonQuery();
             }
             PreferentialPlan prefPlan = GetPreferentialPlanInfo(idPublication, con, objTrans);
+            if (idParentPublication != 0)
+            {
+                prefPlan.Price = 0;
+            }
             SetPreferentialPlanPrice(idPublication, idPlan, prefPlan.Price, con, objTrans);
             return prefPlan.Price;
         }
@@ -2494,10 +2498,11 @@ namespace backend.Data_Access
                     {
                         paymentDateString = Util.ConvertDateToString(Convert.ToDateTime(dr["paymentDate"]));
                     }
+                    int idParentPublication = GetIdParentPublicationConfig(Convert.ToInt32(dr["idPublication"]), con);
                     payment = new PublicationPaymentAdmin(Convert.ToInt32(dr["idPublication"]), Convert.ToString(dr["title"]), Convert.ToString(dr["mail"]),
                          Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToString(dr["planName"]),
                          Convert.ToString(dr["description"]), Convert.ToInt32(dr["planPrice"]), Convert.ToString(dr["comment"]),
-                         Convert.ToString(dr["evidence"]), paymentDateString);
+                         Convert.ToString(dr["evidence"]), paymentDateString, idParentPublication);
                     payments.Add(payment);
                 }
                 dr.Close();
@@ -3588,24 +3593,9 @@ namespace backend.Data_Access
                 if (!isParentPublication)
                 {
                     // Need to find parent publication and their childs
-                    String queryParent = cns.GetIdParentPublicationConfig();
-                    SqlCommand selectParentCommand = new SqlCommand(queryParent, con);
-                    SqlParameter paramParent = new SqlParameter()
-                    {
-                        ParameterName = "@idChildPublication",
-                        Value = idPublication,
-                        SqlDbType = SqlDbType.Int
-                    };
-                    selectParentCommand.Parameters.Add(paramParent);
-                    SqlDataReader drParent = selectParentCommand.ExecuteReader();
-                    int idParent = 0;
-                    while (drParent.Read())
-                    {
-                        idOtherPublication = Convert.ToInt32(drParent["idPublication"]);
-                        idParent = idOtherPublication;
-                        idOtherPublications.Add(idOtherPublication);
-                    }
-                    drParent.Close();
+                    int idParent = GetIdParentPublicationConfig(idPublication, con);
+                    idOtherPublication = idParent;
+                    idOtherPublications.Add(idParent);
                     //Childs
                     String queryParentChild = cns.GetIdChildPublicationConfig();
                     SqlCommand selectParentChildCommand = new SqlCommand(queryParentChild, con);
@@ -3643,6 +3633,30 @@ namespace backend.Data_Access
                     con.Close();
                 }
             }
+        }
+
+        private int GetIdParentPublicationConfig(int idPublication, SqlConnection con)
+        {
+            int idParent = 0;
+            String queryParent = cns.GetIdParentPublicationConfig();
+            SqlCommand selectParentCommand = new SqlCommand(queryParent, con);
+            SqlParameter paramParent = new SqlParameter()
+            {
+                ParameterName = "@idChildPublication",
+                Value = idPublication,
+                SqlDbType = SqlDbType.Int
+            };
+            selectParentCommand.Parameters.Add(paramParent);
+            SqlDataReader drParent = selectParentCommand.ExecuteReader();
+            if (drParent.HasRows)
+            {
+                while (drParent.Read())
+                {
+                    idParent = Convert.ToInt32(drParent["idPublication"]);
+                }
+                drParent.Close();
+            }
+            return idParent;
         }
     }
 }

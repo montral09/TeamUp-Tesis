@@ -15,12 +15,13 @@
         public string Comment { get; set; }
         public string Evidence { get; set; }
         public string PaymentDate { get; set; }
+        public int IdParentPublication { get; set; }
      
         public PublicationPaymentAdmin() { }
 
         
         public PublicationPaymentAdmin(int idPublication, string publication, string publisherMail, string publisherName, string publisherLastName,
-            string publisherPhone, string preferentialPlanName, string preferentialPlanState, int price, string comment, string evidence, string paymentDate)
+            string publisherPhone, string preferentialPlanName, string preferentialPlanState, int price, string comment, string evidence, string paymentDate, int idParentPublication)
             
         {
             IdPublication = idPublication;
@@ -35,6 +36,7 @@
             Comment = comment;
             Evidence = evidence;
             PaymentDate = paymentDate;
+            IdParentPublication = idParentPublication;
         }
     }
 }

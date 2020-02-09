@@ -14,6 +14,8 @@ using System.Configuration;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using TeamupML.Model;
+using Microsoft.ML;
 
 namespace backend.Logic
 {
@@ -1145,6 +1147,15 @@ namespace backend.Logic
                 {
                     User user = users.Find(voCreateReview.VOReview.Mail);
                     Review review = VOReviewToReviewConverter.Convert(voCreateReview.VOReview);
+                    //ML
+                    
+                    string mlValue = ConfigurationManager.AppSettings["ML_ACTIVE"];
+                    bool useML = mlValue.Equals("1") ? true : false;
+                    if (useML)
+                    {
+                        int rating = CalculateRatingML(review.ReviewDescription);
+                        review.Rating = rating;
+                    }
                     spaces.CreateReview(review, user.IdUser);
                     message = EnumMessages.SUCC_REVIEWCREATED.ToString();
                 }
@@ -1157,6 +1168,22 @@ namespace backend.Logic
             }
         }
 
+        private int CalculateRatingML(string review)
+        {
+            // Add input data
+            var input = new ModelInput();
+            input.SentimentText = review;
+
+            // Load model and predict output of sample data
+            double percentage = CalculatePercentage(ConsumeModel.Predict(input).Score);
+            int rating = Util.CalculateRating(percentage);
+            return rating;
+        }
+
+        private float CalculatePercentage(double value)
+        {
+            return 100 * (1.0f / (1.0f + (float)Math.Exp(-value)));
+        }
         /// <summary>
         /// Creates a question to a publication and sends email to publisher
         /// </summary>

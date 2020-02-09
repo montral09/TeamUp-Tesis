@@ -21,8 +21,9 @@ namespace backend.Logic.Converters.EntityToVO
                 Price = payment.Price,
                 Comment = payment.Comment,
                 Evidence = payment.Evidence,
-                PaymentDate = payment.PaymentDate
-        };
+                PaymentDate = payment.PaymentDate,
+                IdParentPublication = payment.IdParentPublication
+    };
             return voPyament;
         }
 

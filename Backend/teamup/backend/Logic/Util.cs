@@ -112,5 +112,27 @@ namespace backend.Logic
             
             return newTotalPrice;            
         }
+
+        internal static int CalculateRating(double percentage)
+        {
+            int rating;
+            if (percentage < 20)
+            {
+                rating = 1;
+            } else if (percentage < 40)
+            {
+                rating = 2;
+            } else if (percentage < 60)
+            {
+                rating = 3;
+            } else if (percentage < 90)
+            {
+                rating = 4;
+            } else
+            {
+                rating = 5;
+            }
+            return rating;
+        }
     }
 }
