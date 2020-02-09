@@ -25,17 +25,23 @@ const PreferentialPaymentsTable = ({ preferentialPayments, approvePreferentialPa
                     <td>{obj.PublisherName}{"  "}{obj.PublisherLastName}</td>
                     <td>{obj.PublisherPhone}</td>
                     <td>{obj.PreferentialPlanName}</td>
-                    <td>{obj.Price}</td>
-                    <td title={obj.Comment}>{obj.Comment.length < 25 ? (obj.Comment) : (obj.Comment.substring(0, 25) + "...")}</td>
-                    <td>{obj.Evidence ? (<a href={obj.Evidence} target="_blank">Ver</a>) : ('-')}</td>
-                    <td>{obj.PaymentDate}</td>
-                    {mode == 'pendingConf' ? (
-                        <React.Fragment>
-                            <td><a href="javascript:void(0);" onClick={() => { approvePreferentialPayment(obj.IdPublication) }}><i className="lnr lnr-thumbs-up"></i></a></td>
-                            <td><a href="javascript:void(0);" onClick={() => { rejectPreferentialPayment(obj.IdPublication) }}><i className="lnr lnr-thumbs-down"></i></a></td>
-                        </React.Fragment>
+                    {obj.IdParentPublication > 0 ? (
+                        <td colSpan="5">Esta es una publicacion dividida. (#Id:{obj.IdParentPublication})</td>
                     ) : (
-                        <td>{translateStates(obj.PreferentialPlanState)}</td>
+                        <React.Fragment>
+                            <td>{obj.Price}</td>
+                            <td title={obj.Comment}>{obj.Comment.length < 25 ? (obj.Comment) : (obj.Comment.substring(0, 25) + "...")}</td>
+                            <td>{obj.Evidence ? (<a href={obj.Evidence} target="_blank">Ver</a>) : ('-')}</td>
+                            <td>{obj.PaymentDate}</td>
+                            {mode == 'pendingConf' ? (
+                                <React.Fragment>
+                                    <td><a href="javascript:void(0);" onClick={() => { approvePreferentialPayment(obj.IdPublication) }}><i className="lnr lnr-thumbs-up"></i></a></td>
+                                    <td><a href="javascript:void(0);" onClick={() => { rejectPreferentialPayment(obj.IdPublication) }}><i className="lnr lnr-thumbs-down"></i></a></td>
+                                </React.Fragment>
+                            ) : (
+                                <td>{translateStates(obj.PreferentialPlanState)}</td>
+                            )}
+                        </React.Fragment>
                     )}
                 </tr>
             )
