@@ -10,3 +10,4 @@ export const CONTACT_EMAIL = 'teamupude@gmail.com';
 export const MAX_ELEMENTS_PER_TABLE = 15;
 export const IOS_APP_URL = 'https://play.google.com/store/apps/details?id=com.ea.game.pvzfree_row&hl=es';
 export const ANDROID_APP_URL = 'https://play.google.com/store/apps/details?id=com.ea.game.pvzfree_row&hl=es';
+export const ML_MODE = 'ON';

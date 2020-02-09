@@ -15,7 +15,7 @@ import ModalReqInfo from '../../publications/viewPublication/modalReqInfo';
 import ModalCustResPay from './modalCustResPay'
 import { callAPI } from '../../../services/common/genericFunctions';
 
-import { MAX_ELEMENTS_PER_TABLE } from '../../../services/common/constants'
+import { MAX_ELEMENTS_PER_TABLE, ML_MODE } from '../../../services/common/constants'
 
 class MyReservedSpacesList extends React.Component {
 
@@ -119,6 +119,7 @@ class MyReservedSpacesList extends React.Component {
     triggerModal = (mode, IdReservation, auxParam) => {
         var modalConfigObj = {};
         switch (mode) {
+            
             case "CANCEL":
                 modalConfigObj = {
                     title: this.props.translate('myReservedSpacesList_modalCancel_header'), mainText: this.props.translate('myReservedSpacesList_modalCancel_main'), mode: mode, saveFunction: "saveCancelMRSL", textboxLabel: this.props.translate('comment_w'),
@@ -130,7 +131,7 @@ class MyReservedSpacesList extends React.Component {
                 modalConfigObj = {
                     title: this.props.translate('myReservedSpacesList_modalRate_header'), mainText: this.props.translate('myReservedSpacesList_modalRate_main'), mode: mode, saveFunction: "saveRateMRSL", textboxLabel: this.props.translate('comment_w'),
                     textboxDisplay: true, cancelAvailable: true, confirmAvailable: true, cancelText: this.props.translate('cancel_w'), confirmText: this.props.translate('rate_w'), login_status: this.props.login_status,
-                    optionDisplay: true, optionLabel: this.props.translate('score_w'), optionArray: [5, 4, 3, 2, 1]
+                    optionDisplay: ML_MODE != 'ON', optionLabel: this.props.translate('score_w'), optionArray: [5, 4, 3, 2, 1]
                 };
                 this.setState({ modalConfigObj: modalConfigObj, selectedIdRes: IdReservation, selectedResState: auxParam }, () => { this.modalReqInfo.current.toggle(); })
                 break;
