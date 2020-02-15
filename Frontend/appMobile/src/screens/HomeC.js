@@ -26,6 +26,8 @@ import Banner from '../components/BannerScrollView';
 import SpacesScrollView from '../components/SpacesScrollView';
 import Contact from '../components/contactUs';
 import RecommendedPublications from '../components/RecommendedPublications';
+import { Notifications } from 'expo';
+import registerForPushNotificationsAsync from '../common/registerForPushNotificationsAsync';
 
 class HomeC extends Component {
   constructor(props) {
@@ -39,10 +41,26 @@ class HomeC extends Component {
     header: null
   };
 
-  /*componentDidMount() {
-    BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+  componentDidMount() {
+     //BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+     console.log('before calling registerForPushNotificationsAsync');
+     var response = registerForPushNotificationsAsync();
+     console.log ('afterResponse' + response);
+     console.log('after calling registerForPushNotificationsAsync');
+     // Handle notifications that are received or selected while the app
+     // is open. If the app was closed and then opened by tapping the
+     // notification (rather than just tapping the app icon to open it),
+     // this function will fire on the next tick after the app starts
+     // with the notification data.
+     this._notificationSubscription = Notifications.addListener(this._handleNotification);
+     console.log('after calling _notificationSubscription');
   }
 
+  _handleNotification = notification => {
+    // do whatever you want to do with the notification
+    this.setState({ notification: notification });
+  };
+/*
   componentWillUnmount() {
       BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
   }

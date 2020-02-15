@@ -31,6 +31,8 @@ namespace backend.Data_Access.Query
         User GetUserData(string accessToken);
         bool IsPublisher(String mail);
         int GetIdLanguageByDescription(String descLanguage);
+        void InsertDeviceToken(string mail, string deviceToken);
+        String GetDeviceToken(string mail);
 
     }
 }

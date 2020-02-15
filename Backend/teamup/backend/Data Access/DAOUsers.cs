@@ -4,9 +4,6 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
-using System.Threading.Tasks;
-using backend.Data_Access.VO;
-using backend.Data_Access.VO.Data;
 using backend.Exceptions;
 using backend.Logic;
 using backend.Logic.Entities;
@@ -1071,6 +1068,79 @@ namespace backend.Data_Access.Query
                 }
             }
             return id;
+        }
+
+        /// <summary>
+        /// Inserts into user the device token seny by user when logins from mobile device
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <param name="deviceToken"></param>
+        public void InsertDeviceToken(string mail, string deviceToken)
+        {
+            SqlConnection con = null;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.InsertDeviceToken();
+                SqlCommand insertCommand = new SqlCommand(query, con);
+                List<SqlParameter> param = new List<SqlParameter>()
+                {
+                    new SqlParameter("@deviceToken", SqlDbType.VarChar) {Value = deviceToken},
+                    new SqlParameter("@mail", SqlDbType.VarChar) {Value = mail},
+                };
+                insertCommand.Parameters.AddRange(param.ToArray());
+                insertCommand.ExecuteNonQuery();
+            }
+            catch (Exception)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        public String GetDeviceToken(string mail)
+        {
+            string deviceToken = null;
+            SqlConnection con = null;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.GetDeviceToken();
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                SqlParameter param = new SqlParameter()
+                {
+                    ParameterName = "@mail",
+                    Value = mail,
+                    SqlDbType = SqlDbType.VarChar
+                };
+                selectCommand.Parameters.Add(param);
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                while (dr.Read())
+                {
+                    deviceToken = Convert.ToString(dr["deviceToken"]);
+                }
+                dr.Close();
+            }
+            catch (Exception)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+            return deviceToken;
         }
     }
 }

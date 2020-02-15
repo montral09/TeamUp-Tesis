@@ -54,7 +54,7 @@ namespace backend.Data_Access.Query
 
         public String GetEmailDataGeneric()
         {
-            String query = "select subject, body from EMAIL_FORMAT where code = @code and language = @language";
+            String query = "select subject, body from MESSAGES where code = @code and language = @language";
             return query;
         }
 

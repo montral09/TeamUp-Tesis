@@ -193,6 +193,18 @@ namespace backend.Data_Access.Query
             String query = "select idLanguage from LANGUAGES where description = @description";
             return query;
         }
+
+        public String InsertDeviceToken()
+        {
+            String query = "update USERS set deviceToken = @deviceToken where mail = @mail";
+            return query;
+        }
+
+        public String GetDeviceToken()
+        {
+            String query = "select deviceToken from USERS where mail = @mail";
+            return query;
+        }
     }
      
 }

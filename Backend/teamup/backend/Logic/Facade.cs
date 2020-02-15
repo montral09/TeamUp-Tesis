@@ -108,7 +108,7 @@ namespace backend.Logic
             }
         }
         /// <summary>
-        /// Returns the user or null if user/password doesn't match
+        /// Returns the user or null if user/password doesn't match and saves deviceToken if is not null
         /// </summary>
         /// <param name="mail"></param>
         /// <param name="password"></param>
@@ -122,7 +122,7 @@ namespace backend.Logic
                 PasswordHasher passwordHasher = new PasswordHasher();
                 if (usr != null && passwordHasher.VerifyHashedPassword(usr.Password, password))
                 {
-                    Tokens tokens = users.CreateTokens(mail);
+                    Tokens tokens = users.CreateTokens(mail);                   
                     result = new VOResponseLogin();
                     result.RefreshToken = tokens.RefreshToken;
                     result.AccessToken = tokens.AccessToken;
@@ -909,7 +909,7 @@ namespace backend.Logic
         }
 
         /// <summary>
-        /// Create a reservation and sends email to publisher and customer
+        /// Create a reservation and sends email to publisher and customer, and sends notification to devices
         /// </summary>
         /// <param name="voCreateReservation"></param>
         public VOResponseCreateReservation CreateReservation(VORequestCreateReservation voCreateReservation)
@@ -954,6 +954,14 @@ namespace backend.Logic
                     keyValuePairs[ParamCodes.PRICE] = voCreateReservation.VOReservation.TotalPrice.ToString();
                     EmailDataGeneric mailDataReservation = emailUtil.GetFormatMailReservations(EmailFormatCodes.CODE_RESERVATION_CREATED_CUSTOMER, publisher.LanguageCode, keyValuePairs);
                     emailUtil.SendEmailAsync(voCreateReservation.VOReservation.MailCustomer, mailDataReservation.Body, mailDataReservation.Subject);
+                    //Send notification to mobile device
+                    EmailDataGeneric notificationData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_NOTIF_NEW_RESERVATION, publisher.LanguageCode, keyValuePairs);
+                    String deviceToken = users.GetDeviceToken(publisher.Mail);
+                    if (deviceToken != null)
+                    {
+                        PushNotification pushNotif = new PushNotification();
+                        pushNotif.Send(deviceToken, notificationData.Subject, notificationData.Body);
+                    }
                     message = EnumMessages.SUCC_RESERVATIONCREATED.ToString();
                 }
                 response.responseCode = message;
@@ -1206,6 +1214,14 @@ namespace backend.Logic
                     keyValuePairs[ParamCodes.QUESTION] = voCreatePublicationQuestion.Question;
                     EmailDataGeneric mailData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_PUBLICATION_NEW_QUESTION, publisher.LanguageCode, keyValuePairs);
                     emailUtil.SendEmailAsync(publisher.Mail, mailData.Body, mailData.Subject);
+                    //Send notification to mobile device
+                    EmailDataGeneric notificationData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_NOTIF_NEW_QUESTION, publisher.LanguageCode, keyValuePairs);
+                    String deviceToken = users.GetDeviceToken(publisher.Mail);
+                    if (deviceToken != null)
+                    {
+                        PushNotification pushNotif = new PushNotification();
+                        pushNotif.Send(deviceToken, notificationData.Subject, notificationData.Body);
+                    }
                     message = EnumMessages.SUCC_QUESTIONCREATED.ToString();
                 }
                 response.responseCode = message;
@@ -1237,6 +1253,14 @@ namespace backend.Logic
                     keyValuePairs[ParamCodes.ANSWER] = voCreatePublicationAnswer.Answer;
                     EmailDataGeneric mailData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_PUBLICATION_NEW_ANSWER, customer.LanguageCode, keyValuePairs);
                     emailUtil.SendEmailAsync(customer.Mail, mailData.Body, mailData.Subject);
+                    //Send notification to mobile device
+                    EmailDataGeneric notificationData = emailUtil.GetFormatMailPublications(EmailFormatCodes.CODE_NOTIF_NEW_ANSWER, customer.LanguageCode, keyValuePairs);
+                    String deviceToken = users.GetDeviceToken(customer.Mail);
+                    if (deviceToken != null)
+                    {
+                        PushNotification pushNotif = new PushNotification();
+                        pushNotif.Send(deviceToken, notificationData.Subject, notificationData.Body);
+                    }
                     message = EnumMessages.SUCC_ANSWERCREATED.ToString();
                 }
                 response.responseCode = message;
@@ -1761,7 +1785,31 @@ namespace backend.Logic
             {
 
             }
+        }
+
+        /// <summary>
+        /// Insert device token
+        /// </summary>
+        /// <param name="voCreateDeviceToken"></param>
+        /// <returns></returns>
+        public VOResponseCreateDeviceToken CreateDeviceToken(VORequestCreateDeviceToken voCreateDeviceToken)
+        {
+            try
+            {
+                VOResponseCreateDeviceToken response = new VOResponseCreateDeviceToken();
+                String message;
+                users.InsertDeviceToken(voCreateDeviceToken.Mail, voCreateDeviceToken.DeviceToken);
+                message = EnumMessages.SUCC_TOKENINSERTED.ToString();                
+                response.responseCode = message;
+                return response;
+            }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+            
 
         }
+
     }
 }

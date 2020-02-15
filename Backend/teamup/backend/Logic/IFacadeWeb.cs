@@ -64,5 +64,6 @@ namespace backend.Logic
         void FinishReservations();
         void StartReservation();
         void Test();
+        VOResponseCreateDeviceToken CreateDeviceToken(VORequestCreateDeviceToken voCreateDeviceToken); 
     }
 }
