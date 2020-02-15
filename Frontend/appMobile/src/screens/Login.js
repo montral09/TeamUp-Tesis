@@ -14,6 +14,7 @@ import ErrorScreen from './ErrorScreen';
 import ReservationPaymentComDetails from './ReservationPaymentComDetails';
 import ReservationReqInfo from './ReservationReqInfo';
 import ReservationCustResPay from './ReservationCustResPay';
+import ReservationResCustPay from './ReservationResCustPay';
 import ReserveSpace from './ReserveSpace';
 import ReserveSpaceSummary from './ReserveSpaceSummary';
 import QAAnswer from './QAAnswer';
@@ -93,7 +94,10 @@ const StackNavigator = createStackNavigator({
                     })},
   ReservationCustResPay: {screen: ReservationCustResPay, navigationOptions: ({ navigation }) => ({
                               header: null,
-                    })},                  
+                    })},      
+  ReservationResCustPay: {screen: ReservationResCustPay, navigationOptions: ({ navigation }) => ({
+                              header: null,
+                    })},            
   ReservationPaymentComDetails: {screen: ReservationPaymentComDetails, navigationOptions: ({ navigation }) => ({
                               header: null,
                     })},

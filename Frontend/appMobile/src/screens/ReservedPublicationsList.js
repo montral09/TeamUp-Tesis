@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import { StyleSheet, Text, View, ScrollView, Keyboard, TouchableOpacity} from 'react-native';
 import { connect } from 'react-redux';
-
+import { callAPI } from '../common/genericFunctions';
+import { MAX_ELEMENTS_PER_TABLE } from '../common/constants';
 import { logOut, updateToken } from '../redux/actions/accountActions';
 
 import ReservedPublicationsListScrollView from '../components/ReservedPublicationsListScrollView';
@@ -16,46 +17,52 @@ class ReservedPublicationsList extends Component {
             loadingReservations : true,
             reservationId : null,
             reservations : [],
+            reservationsToDisplay: [],
             loadingStatusChange : false,
             modalConfigObj : {},
             selectedIdRes : null,
             generalError : false,
-            selectedResState : ""
+            selectedResState : "",
+            pagination: [1],
+            currentPage: 1
         }
 
         //this.modalReqInfo = React.createRef(); // Connects the reference to the modal
         //this.ModalResCustPay = React.createRef(); // Connects the reference to the modal
         //this.ModalResComPay = React.createRef(); // Connects the reference to the modal
-        this.loadMyReservations = this.loadMyReservations.bind(this);   
+        //this.loadMyReservationsRP = this.loadMyReservationsRP.bind(this);   
         this.triggerScreen = this.triggerScreen.bind(this);   
         this.saveCancel = this.saveCancel.bind(this);
         this.saveConfirm = this.saveConfirm.bind(this);
         //this.triggerSaveModal = this.triggerSaveModal.bind(this);
         this.saveComissionPayment = this.saveComissionPayment.bind(this);
-        this.confirmPayment = this.confirmPayment.bind(this);
+        //this.confirmPayment = this.confirmPayment.bind(this);
         this.handleExpiredToken = this.handleExpiredToken.bind(this);
     }
 
     componentDidMount() {
-        this.loadMyReservations();
+        this.loadMyReservationsRP();
     }
 
     handleErrors(error) {
         this.setState({ generalError: true });
     }
 
-    loadMyReservations(){
+    loadMyReservationsRP = () => {
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,
             "Mail": this.props.userData.Mail
         }
-        objApi.fetchUrl = Globals.baseURL + '/reservationPublisher';
+        objApi.fetchUrl = "api/reservationCustomer";
         objApi.method = "POST";
-        objApi.responseSuccess = "SUCC_RESERVATIONSOK";
-        objApi.successMessage = "";
-        objApi.functionAfterSuccess = "loadMyReservations";
-        this.callAPI(objApi);
+        objApi.successMSG = {
+            SUCC_RESERVATIONSOK: '',
+        };
+        objApi.functionAfterSuccess = "loadMyReservationsRP";
+        objApi.errorMSG = {}
+        objApi.logOut = this.props.logOut;
+        callAPI(objApi, this);
     }
 
     /*modalSave(){
@@ -80,7 +87,7 @@ class ReservedPublicationsList extends Component {
                 this.props.navigation.navigate('ReservationReqInfo', {screenConfig: screenConfigObj});
             break;
             case "PAYRESCUST": 
-                this.props.navigation.navigate('ReservationCustResPay', {auxParam: auxParam});
+                this.props.navigation.navigate('ReservationResCustPay', {auxParam: auxParam});
             break;
             /*
             case "PAYRESCOM": 
@@ -153,138 +160,7 @@ class ReservedPublicationsList extends Component {
         //this.ModalResComPay.current.changeModalLoadingState(false);
         this.callAPI(objApi);
     }
-
-    rejetPayment(objPaymentDetails){
-        alert("rejetPayment")
-    }
-    
-    confirmPayment(objPaymentDetails){
-        var objApi = {};
-        objApi.objToSend = {
-            "AccessToken": this.props.tokenObj.accesToken,
-            "Mail": this.props.userData.Mail,
-            "IdReservation": objPaymentDetails.IdReservation,
-            "Approved": true
-        }
-        objApi.fetchUrl = Globals.baseURL + '/reservationPaymentCustomer';
-        objApi.method = "PUT";
-        objApi.responseSuccess = "SUCC_PAYMENTUPDATED";
-        objApi.successMessage = "Se ha confirmado el envío de pago";
-        objApi.functionAfterSuccess = "confirmPayment";
-        this.callAPI(objApi);
-    }
-
-            /* START OF API FUNCTIONS */
-    callAPI(objApi){
-        console.log("API CALL => "+objApi.functionAfterSuccess)
-        console.log(objApi)
-        if(objApi.method == "GET"){
-            fetch(objApi.fetchUrl).then(response => response.json()).then(data => {
-                console.log("<= RESPONSE =>")
-                console.log(data)
-                switch(data.responseCode){
-                    case objApi.responseSuccess: 
-                        if(objApi.successMessage != ""){
-                            toast.success(objApi.successMessage, {
-                                position: "top-right",
-                                autoClose: 5000,
-                                hideProgressBar: false,
-                                closeOnClick: true,
-                                pauseOnHover: true,
-                                draggable: true,
-                            });
-                        }
-                        this.callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data);
-                    break;
-    
-                    case "ERR_INVALIDACCESSTOKEN": this.handleExpiredToken(objApi);break;
-                    case "ERR_ACCESSTOKENEXPIRED": this.handleExpiredToken(objApi);break;
-                    case "ERR_INVALIDREFRESHTOKEN": this.handleExpiredToken(objApi);break;
-                    
-                    default: 
-                        this.handleErrors("Internal error");
-                    break;
-                }
-            }
-            ).catch(error => {
-                this.handleErrors(error);
-            }
-            )
-        }else{
-            fetch(objApi.fetchUrl, {
-                method: objApi.method,
-                header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                body: JSON.stringify(objApi.objToSend)
-            }).then(response => response.json()).then(data => {
-                console.log("<= RESPONSE =>")
-                console.log(data)
-                switch(data.responseCode){
-                    case objApi.responseSuccess: 
-                        if(objApi.successMessage != ""){
-                            toast.success(objApi.successMessage, {
-                                position: "top-right",
-                                autoClose: 5000,
-                                hideProgressBar: false,
-                                closeOnClick: true,
-                                pauseOnHover: true,
-                                draggable: true,
-                            });
-                        }
-                        this.callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data);
-                    break;
-    
-                    case "ERR_INVALIDACCESSTOKEN": this.handleExpiredToken(objApi);break;
-                    case "ERR_ACCESSTOKENEXPIRED": this.handleExpiredToken(objApi);break;
-                    case "ERR_INVALIDREFRESHTOKEN": this.handleExpiredToken(objApi);break;
-                    
-                    default: 
-                        this.handleErrors("Internal error");
-                    break;
-                }
-            }
-            ).catch(error => {
-                this.handleErrors(error);
-            }
-            )
-        }
-
-    }
-
-    callFunctionAfterApiSuccess(trigger, objData){
-        switch(trigger){
-            case "saveComissionPayment":
-                this.ModalResComPay.current.changeModalLoadingState(true);
-                this.loadMyReservations();
-                break;
-            case "saveConfirm":
-            case "saveCancel":
-                this.loadMyReservations();
-                this.modalReqInfo.current.changeModalLoadingState(true);
-                break;
-            case "confirmPayment":
-                this.loadMyReservations();
-                this.ModalResCustPay.current.changeModalLoadingState(true);
-            break;
-
-            case "loadMyReservations":
-                this.setState({ reservations: objData.Reservations, loadingReservations: false })
-            break;
-
-            case "updateExpiredToken":
-                // updatetoken &
-                let newTokenObj = {
-                    accesToken: objData.AccessToken,
-                    refreshToken: objData.RefreshToken
-                };
-                this.props.updateToken(newTokenObj);
-                var scopeThis = this;
-                setTimeout(function () {
-                    scopeThis.callAPI(objData.retryObjApi);
-                }, 350);
-            break;
-        }
-    }
-
+ 
     handleExpiredToken(retryObjApi){
         if(retryObjApi.functionAfterSuccess == "updateExpiredToken"){
             // This is the second attempt -> Log off
@@ -313,6 +189,17 @@ class ReservedPublicationsList extends Component {
         }
 
     }
+
+    changePage = (pageClicked) => {
+        console.log("TODISPLAY: " + JSON.stringify(this.state.reservationsToDisplay))
+        console.log("Reservations: " + JSON.stringify(this.state.reservations))
+        /*this.setState({ reservationsToDisplay: this.filterPaginationArray(this.state.reservations, (pageClicked - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked },
+            () => this.setState({ reservationsToDisplay: this.filterPaginationArray(this.state.reservations, (pageClicked - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked }))*/
+    }
+
+    filterPaginationArray = (arrayToFilter, startIndex) => {
+        return arrayToFilter.slice(startIndex, startIndex + MAX_ELEMENTS_PER_TABLE)
+    }
             /* END OF API FUNCTIONS */
 
     render() {
@@ -325,8 +212,9 @@ class ReservedPublicationsList extends Component {
             <View style={styles.container}>
                 <Text style={styles.titleText}>Publicaciones reservadas</Text>
                 <ScrollView>
-                    {this.state.reservations.length ? (
-                        this.state.reservations.map( obj => {
+                    {this.state.reservationsToDisplay.length ? (
+                        <>
+                        {this.state.reservationsToDisplay.map( obj => {
                             var objReservationCustomerPayment = {
                                 reservationPaymentState: obj.CustomerPayment.PaymentDescription,
                                 reservationPaymentStateText: obj.CustomerPayment.PaymentDescription,
@@ -348,10 +236,22 @@ class ReservedPublicationsList extends Component {
                             <ReservedPublicationsListScrollView key={obj.IdReservation} isPublisher={true} editReservation={this.editReservation}  
                                 obj={obj} objReservationCustomerPayment={objReservationCustomerPayment} objCommisionPayment={objCommisionPayment}
                                 triggerScreen = {this.triggerScreen}/>  
-                        )   
-                    })
+                        ) 
+                        
+                    })}
+                        <View style={{flexDirection: 'row'}}>
+                            {this.state.pagination.map(page => {
+                                return (
+                                    <TouchableOpacity style={styles.button} key={page} onPress={() => this.changePage(page)}><Text style={styles.buttonText}>{page}</Text></TouchableOpacity>
+                                );
+                            })}  
+                        </View>  
+                        </>  
                     ) : (
+                        <>
                         <Text style={styles.subTitleText}>No se encontraron resultados</Text>
+                        <TouchableOpacity style={styles.button} onPress={() => this.changePage(1)}><Text style={styles.buttonText}>Test</Text></TouchableOpacity>
+                        </>
                     )}                     
                 </ScrollView>       
             </View>
@@ -379,6 +279,22 @@ const styles = StyleSheet.create({
     color: "#FFF",
     marginTop: 60,
     marginBottom: 5,
+  },
+  button: {
+    width:100,
+    height:30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor:'#0069c0',
+    borderRadius: 15,
+    marginVertical: 20,
+    elevation: 3,
+    paddingHorizontal: 5,
+  },
+  buttonText: {
+    fontSize:16,
+    fontWeight:'500',
+    color:'#ffffff'
   },
 });
 
