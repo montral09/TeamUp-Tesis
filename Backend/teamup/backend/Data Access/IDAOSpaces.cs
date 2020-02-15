@@ -48,7 +48,6 @@ namespace backend.Data_Access
         string GetPublicationTitleByReservationId(int idReservation);
         UsersReservationBasicData GetUsersReservationBasicData(int idReservation);
         void UpdateCommissionAmountAdmin(int idReservation, int price);
-        void CreatePublicationStatics(VORequestCreatePublicationStatics voCreatePublicationStatics);
         string GetReservationPlanDescriptionEmail(int idPlan, int language, bool plural);
         int GetReservationPlanByDescription(string desc);
         List<ReservationExtended> GetReservations();

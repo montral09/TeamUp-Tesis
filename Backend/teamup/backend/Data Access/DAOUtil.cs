@@ -22,6 +22,12 @@ namespace backend.Data_Access
             return con;
         }
 
+        /// <summary>
+        /// Validates that the access token matches the email address
+        /// </summary>
+        /// <param name="accessToken"></param>
+        /// <param name="mail"></param>
+        /// <returns> Error or success message </returns>
         public string ValidAccessToken(string accessToken, string mail)
         {            
             SqlConnection con = null;
@@ -100,6 +106,12 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Validates that the refresh token matches the email address
+        /// </summary>
+        /// <param name="refreshToken"></param>
+        /// <param name="mail"></param>
+        /// <returns></returns>
         public string ValidRefreshToken(string refreshToken, string mail)
         {
             SqlConnection con = null;
@@ -171,6 +183,12 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Given an emailCode and language, returns body and subject of the email
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="language"></param>
+        /// <returns> EmailDataGeneric </returns>
         public EmailDataGeneric GetEmailDataGeneric(string code, int language)
         {
             SqlConnection con = null;
@@ -208,6 +226,11 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Given a state description, returns the code
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns> State code </returns>
         public int ConvertStatePublication(string state)
         {
             SqlConnection con = null;
@@ -246,6 +269,11 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Given a reservation state, returns the code
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns> Reservation code </returns>
         public int ConvertStateReservation(string state)
         {
             SqlConnection con = null;

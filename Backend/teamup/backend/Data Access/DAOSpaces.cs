@@ -45,6 +45,10 @@ namespace backend.Data_Access
             return con;
         }
 
+        /// <summary>
+        /// Returns all spaces types
+        /// </summary>
+        /// <returns>  Spaces types </returns>
         public List<SpaceType> GetSpaceTypes()
         {
             SqlConnection con = null;
@@ -78,6 +82,10 @@ namespace backend.Data_Access
             return spaceTypes;
         }
 
+        /// <summary>
+        /// Returns all facilities
+        /// </summary>
+        /// <returns> Facilities </returns>
         public List<Facility> GetFacilities()
         {
             SqlConnection con = null;
@@ -111,6 +119,14 @@ namespace backend.Data_Access
             return facilities;
         }
 
+        /// <summary>
+        /// Creates an publication (child or parent) and calculates its expiration date
+        /// </summary>
+        /// <param name="publication"></param>
+        /// <param name="user"></param>
+        /// <param name="images"></param>
+        /// <param name="imagesURL"></param>
+        /// <returns> Date to and price that has to be paid by publisher</returns>
         public async Task<Dictionary<string, string>> CreatePublicationAsync(Publication publication, User user, List<Image> images, List<String> imagesURL)
         {
             Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
@@ -223,6 +239,13 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Returns if parent publication preferential payments has been approved
+        /// </summary>
+        /// <param name="idParentPublication"></param>
+        /// <param name="con"></param>
+        /// <param name="objTrans"></param>
+        /// <returns> true if it has been approved </returns>
         private bool ParentPrefentialPlanApproved(int idParentPublication, SqlConnection con, SqlTransaction objTrans)
         {
             bool idApproved = false;
@@ -245,6 +268,13 @@ namespace backend.Data_Access
             return idApproved;
         }
 
+        /// <summary>
+        /// Creates a facility to given publication
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <param name="idFacility"></param>
+        /// <param name="con"></param>
+        /// <param name="objTrans"></param>
         private void InsertFacility(int idPublication, int idFacility, SqlConnection con, SqlTransaction objTrans)
         {
             String query = cns.InsertFacility();
@@ -259,6 +289,13 @@ namespace backend.Data_Access
             insertCommand.ExecuteNonQuery();
         }
 
+        /// <summary>
+        /// Given an idPlan return if it is a free plan
+        /// </summary>
+        /// <param name="idPlan"></param>
+        /// <param name="con"></param>
+        /// <param name="objTrans"></param>
+        /// <returns> true if it is a free plan </returns>
         private bool IsFreePreferentialPlan(int idPlan, SqlConnection con, SqlTransaction objTrans)
         {
             bool isFree = false;
@@ -281,6 +318,17 @@ namespace backend.Data_Access
             return isFree;
         }
 
+        /// <summary>
+        /// Inserts a preferential publication payment
+        /// If it is a child publication, inherits parent payment state, otherwise
+        /// payment state is pending payment
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <param name="idParentPublication"></param>
+        /// <param name="idPlan"></param>
+        /// <param name="con"></param>
+        /// <param name="objTrans"></param>
+        /// <returns></returns>
         private int CreatePreferentialPayment(int idPublication, int idParentPublication, int idPlan, SqlConnection con, SqlTransaction objTrans)
         {
             if (idParentPublication != 0)
@@ -320,6 +368,13 @@ namespace backend.Data_Access
             return prefPlan.Price;
         }
 
+        /// <summary>
+        /// Calculates date to of a preferential plan
+        /// </summary>
+        /// <param name="idPlan"></param>
+        /// <param name="con"></param>
+        /// <param name="objTrans"></param>
+        /// <returns> Date to </returns>
         private DateTime CalculateExpirationDatePublication(int idPlan, SqlConnection con, SqlTransaction objTrans)
         {
             int days = 0;
@@ -343,6 +398,13 @@ namespace backend.Data_Access
             return today.AddDays(days);
         }
 
+        /// <summary>
+        /// Insert images urls for a publication
+        /// </summary>
+        /// <param name="con"></param>
+        /// <param name="objTrans"></param>
+        /// <param name="idPublication"></param>
+        /// <param name="urls"></param>
         private void InsertImages(SqlConnection con, SqlTransaction objTrans, int idPublication, List<string> urls)
         {
             String query = cns.InsertImage();
@@ -361,6 +423,10 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Returns all publication that has not been approved yet
+        /// </summary>
+        /// <returns> Publications pending approval </returns>
         public List<Publication> GetPublicationsPendingApproval()
         {
             SqlConnection con = null;
@@ -423,6 +489,12 @@ namespace backend.Data_Access
             return publications;
         }
 
+        /// <summary>
+        /// Given a publication, returns its facilities
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <param name="con"></param>
+        /// <returns> facilities id</returns>
         private List<int> GetFacilitiesPublication(int idPublication, SqlConnection con)
         {
             List<int> facilities = new List<int>();
@@ -444,6 +516,11 @@ namespace backend.Data_Access
             return facilities;
         }
 
+        /// <summary>
+        /// Returns all publisher publications
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <returns> Publications </returns>
         public List<Publication> GetPublisherSpaces(string mail)
         {
             SqlConnection con = null;
@@ -522,6 +599,11 @@ namespace backend.Data_Access
             return publications;
         }
 
+        /// <summary>
+        /// Given a publication returns if it is a child publication
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <returns> true if publication has a parent publication </returns>
         private bool IsChildPublication(int idPublication)
         {
             bool isChild = false;
@@ -560,6 +642,12 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Return commission info of a reservation
+        /// </summary>
+        /// <param name="idReservation"></param>
+        /// <param name="con"></param>
+        /// <returns> Commission payment info </returns>
         private Payment GetCommissionPayment(int idReservation, SqlConnection con)
         {
             Payment payment = null;
@@ -595,6 +683,13 @@ namespace backend.Data_Access
             return payment;
         }
 
+        /// <summary>
+        /// Return preferential plan info of a publication
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <param name="con"></param>
+        /// <param name="objTrans"></param>
+        /// <returns> Preferential plan </returns>
         private PreferentialPlan GetPreferentialPlanInfo(int idPublication, SqlConnection con, SqlTransaction objTrans)
         {
             PreferentialPlan preferentialPlan = null;
@@ -658,6 +753,14 @@ namespace backend.Data_Access
             return preferentialPlan;
         }
 
+        /// <summary>
+        /// Given an publication id returns publication info. 
+        /// Optional: add one visit to totalViews
+        /// </summary>
+        /// <param name="idSpace"></param>
+        /// <param name="user"></param>
+        /// <param name="addVisit"></param>
+        /// <returns> Publication </returns>
         public Publication GetSpace(int idSpace, User user, bool addVisit)
         {
             Publication publication = null;
@@ -735,6 +838,11 @@ namespace backend.Data_Access
             return publication;
         }
 
+        /// <summary>
+        /// Add one visit to totalViews
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <param name="con"></param>
         public void AddOneVisit(int idPublication, SqlConnection con)
         {
             try
@@ -756,6 +864,14 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Update state of publication. Can also insert rejectedReason if applies
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <param name="rejectedReason"></param>
+        /// <param name="newCodeState"></param>
+        /// <param name="isAdmin"></param>
+        /// <returns> Publication updated </returns>
         public Publication UpdateStatePublication(int idPublication, string rejectedReason, int newCodeState, bool isAdmin)
         {
             Publication publication = null;
@@ -819,6 +935,12 @@ namespace backend.Data_Access
             return publication;
         }
 
+        /// <summary>
+        /// Returns if a publication is active or rejected
+        /// </summary>
+        /// <param name="newCodeState"></param>
+        /// <param name="con"></param>
+        /// <returns> true if is active or rejected </returns>
         private bool IsPublicationActiveOrRejected(int newCodeState, SqlConnection con)
         {
             bool isPublicationActiveOrRejected = false;
@@ -840,6 +962,17 @@ namespace backend.Data_Access
             return isPublicationActiveOrRejected;
         }
 
+        /// <summary>
+        /// Returns publication that matches certain criteria
+        /// </summary>
+        /// <param name="spaceType"></param>
+        /// <param name="capacity"></param>
+        /// <param name="facilities"></param>
+        /// <param name="city"></param>
+        /// <param name="pageNumber"></param>
+        /// <param name="stateDescription"></param>
+        /// <param name="publicationsPerPage"></param>
+        /// <returns> Publications and amount of publications </returns>
         public Tuple<List<Publication>, int> GetPublicationsWithFilters(int spaceType, int capacity, List<int> facilities,
             string city, int pageNumber, string stateDescription, int publicationsPerPage)
         {
@@ -946,6 +1079,12 @@ namespace backend.Data_Access
 
         }
 
+        /// <summary>
+        /// Returns if a publication is recommended
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <param name="con"></param>
+        /// <returns> true if it is recommended</returns>
         private bool IsRecommended(int idPublication, SqlConnection con)
         {
             bool isRecommended = false;
@@ -967,6 +1106,12 @@ namespace backend.Data_Access
             return isRecommended;
         }
 
+        /// <summary>
+        /// Returns if a publication is a favourite publication to the user  
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <param name="idUser"></param>
+        /// <returns> true if it is favourite </returns>
         public bool IsFavourite(int idPublication, long idUser)
         {
             SqlConnection con = null;
@@ -1004,6 +1149,12 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Returns reviews of a publication
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <param name="con"></param>
+        /// <returns> Reviews </returns>
         public List<Review> GetReviews(int idPublication, SqlConnection con)
         {
             List<Review> reviews = new List<Review>();
@@ -1034,6 +1185,12 @@ namespace backend.Data_Access
             return reviews;
         }
 
+        /// <summary>
+        /// Returns how many times publications has been reserved
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <param name="con"></param>
+        /// <returns> Number of reservations</returns>
         public int GetQuantityReserved(int idPublication, SqlConnection con)
         {
             int qty = 0;
@@ -1061,8 +1218,15 @@ namespace backend.Data_Access
             }
             return qty;
         }
-
-
+        
+        /// <summary>
+        /// Returns publications that has the same capacity, space type and city 
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <param name="capacity"></param>
+        /// <param name="spaceType"></param>
+        /// <param name="city"></param>
+        /// <returns> Publications </returns>
         public List<Publication> GetRelatedSpaces(int idPublication, int capacity, int spaceType, string city)
         {
             List<Publication> related = new List<Publication>();
@@ -1135,6 +1299,12 @@ namespace backend.Data_Access
             return related;
         }
 
+        /// <summary>
+        /// Add/removes favorite spaces
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="idPublication"></param>
+        /// <param name="idUser"></param>
         public void UpdateFavorite(int code, int idPublication, long idUser)
         {
             SqlConnection con = null;
@@ -1147,7 +1317,6 @@ namespace backend.Data_Access
                 {
                     //Insert
                     query = cns.AddFavorite();
-
                 }
                 else
                 {
@@ -1175,6 +1344,14 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Updates publication data
+        /// </summary>
+        /// <param name="publication"></param>
+        /// <param name="images"></param>
+        /// <param name="imagesURL"></param>
+        /// <param name="user"></param>
+        /// <returns> Date to, availabilty, preferential plan and new price </returns>
         public async Task<Dictionary<string, string>> UpdatePublication(Publication publication, List<Image> images, List<string> imagesURL, User user)
         {
             Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
@@ -1326,6 +1503,12 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Returns date to, availabilty, preferential plan and new price to send email with new info
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <param name="con"></param>
+        /// <returns> Date to, availabilty, preferential plan and new price </returns>
         private Dictionary<string, string> GetPublicationInfoAfterUpdate(int idPublication, SqlConnection con)
         {
             Dictionary<string, string> result = new Dictionary<string, string>();
@@ -1352,6 +1535,12 @@ namespace backend.Data_Access
             return result;
         }
 
+        /// <summary>
+        /// Deletes preferential plan of an publication
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <param name="con"></param>
+        /// <param name="objTrans"></param>
         private void DeletePreferentialPlan(int idPublication, SqlConnection con, SqlTransaction objTrans)
         {
             string query = cns.DeletePreferentialPlan();
@@ -1367,6 +1556,13 @@ namespace backend.Data_Access
             deleteCommand.ExecuteNonQuery();
         }
 
+        /// <summary>
+        /// Returns price of an preferential plan
+        /// </summary>
+        /// <param name="idPlan"></param>
+        /// <param name="con"></param>
+        /// <param name="objTrans"></param>
+        /// <returns> Price </returns>
         private int GetPriceByPlanId(int idPlan, SqlConnection con, SqlTransaction objTrans)
         {
             string query = cns.GetPriceByPlanId();
@@ -1389,6 +1585,14 @@ namespace backend.Data_Access
             return price;
         }
 
+        /// <summary>
+        /// Upgrades preferential plan
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <param name="idPlan"></param>
+        /// <param name="newPrice"></param>
+        /// <param name="con"></param>
+        /// <param name="objTrans"></param>
         private void UpdatePreferentialPlanUpgraded(int idPublication, int idPlan, int newPrice, SqlConnection con, SqlTransaction objTrans)
         {
             string queryPreferential = cns.UpdatePreferentialPlanUpgraded();
@@ -1404,6 +1608,14 @@ namespace backend.Data_Access
             SetPreferentialPlanPrice(idPublication, idPlan, newPrice, con, objTrans);
         }
 
+        /// <summary>
+        /// Updates preferential plan price into publication
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <param name="idPlan"></param>
+        /// <param name="price"></param>
+        /// <param name="con"></param>
+        /// <param name="objTrans"></param>
         private void SetPreferentialPlanPrice(int idPublication, int idPlan, int price, SqlConnection con, SqlTransaction objTrans)
         {
             string queryPreferential = cns.SetPreferentialPlanPrice();
@@ -1419,6 +1631,13 @@ namespace backend.Data_Access
             updatePreferential.ExecuteNonQuery();
         }
 
+        /// <summary>
+        /// Returns how many days publication has left before finish
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <param name="con"></param>
+        /// <param name="objTrans"></param>
+        /// <returns> Days left </returns>
         private int GetDaysLeftPublication(int idPublication, SqlConnection con, SqlTransaction objTrans)
         {
             string query = cns.GetDaysLeftPublication();
@@ -1441,29 +1660,12 @@ namespace backend.Data_Access
             return daysLeft;
         }
 
-        private int GetPreferentialPlan(int idPublication, SqlConnection con, SqlTransaction objTrans)
-        {
-            string query = cns.GetPreferentialPlan();
-            SqlCommand selectCommand = new SqlCommand(query, con);
-            int idPlan = 0;
-            SqlParameter param = new SqlParameter()
-            {
-                ParameterName = "@idPublication",
-                Value = idPublication,
-                SqlDbType = SqlDbType.Int
-            };
-            selectCommand.Parameters.Add(param);
-            selectCommand.Transaction = objTrans;
-            SqlDataReader dr = selectCommand.ExecuteReader();
-            while (dr.Read())
-            {
-                idPlan = Convert.ToInt32(dr["idPlan"]);
-            }
-            dr.Close();
-
-            return idPlan;
-        }
-
+        /// <summary>
+        /// Deletes all facilities of a publication
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <param name="con"></param>
+        /// <param name="objTrans"></param>
         private void DeleteFacilities(int idPublication, SqlConnection con, SqlTransaction objTrans)
         {
             string query = cns.DeleteFacilities();
@@ -1479,6 +1681,12 @@ namespace backend.Data_Access
             deleteCommand.ExecuteNonQuery();
         }
 
+        /// <summary>
+        /// Creates a new reservation
+        /// </summary>
+        /// <param name="reservation"></param>
+        /// <param name="user"></param>
+        /// <param name="idPlan"></param>
         public void CreateReservation(Reservation reservation, User user, int idPlan)
         {
             SqlConnection con = null;
@@ -1529,6 +1737,11 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Returns reservation plan id given a reservation plan description
+        /// </summary>
+        /// <param name="desc"></param>
+        /// <returns> Reservation plan id </returns>
         public int GetReservationPlanByDescription(string desc)
         {
             SqlConnection con = null;
@@ -1567,6 +1780,11 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Returns publisher of publication
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <returns> Publisher </returns>
         public User GetPublisherByPublication(int idPublication)
         {
             SqlConnection con = null;
@@ -1606,6 +1824,12 @@ namespace backend.Data_Access
 
         }
 
+        /// <summary>
+        /// Returns reservations of a customer (6 months old)
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <param name="idCustomer"></param>
+        /// <returns> Reservations </returns>
         public List<ReservationExtended> GetReservationsCustomer(string mail, long idCustomer)
         {
             List<ReservationExtended> reservations = new List<ReservationExtended>();
@@ -1665,6 +1889,12 @@ namespace backend.Data_Access
 
         }
 
+        /// <summary>
+        /// Returns reservation payment info
+        /// </summary>
+        /// <param name="idReservation"></param>
+        /// <param name="con"></param>
+        /// <returns> Payment info </returns>
         private Payment GetReservationPaymentInfo(int idReservation, SqlConnection con)
         {
             string query = cns.GetReservationPaymentInfo();
@@ -1694,6 +1924,11 @@ namespace backend.Data_Access
             return payment;
         }
 
+        /// <summary>
+        /// Given a publisher id, returns publisher spaces reserved
+        /// </summary>
+        /// <param name="idUser"></param>
+        /// <returns> Reservations </returns>
         public List<ReservationExtended> GetReservationsPublisher(long idUser)
         {
             List<ReservationExtended> reservations = new List<ReservationExtended>();
@@ -1758,6 +1993,15 @@ namespace backend.Data_Access
 
         }
 
+        /// <summary>
+        /// Updates state of a reservation
+        /// </summary>
+        /// <param name="idReservation"></param>
+        /// <param name="canceledReason"></param>
+        /// <param name="newCodeState"></param>
+        /// <param name="newDescriptionState"></param>
+        /// <param name="dateTo"></param>
+        /// <returns> Customer and publisher info </returns>
         public UsersReservationBasicData UpdateStateReservation(int idReservation, string canceledReason, int newCodeState, string newDescriptionState, DateTime dateTo)
         {
             SqlConnection con = null;
@@ -1811,6 +2055,11 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Returns both customer and publisher info of a reservation
+        /// </summary>
+        /// <param name="idReservation"></param>
+        /// <returns> Customer and publisher info </returns>
         public UsersReservationBasicData GetUsersReservationBasicData(int idReservation)
         {
             SqlConnection con = null;
@@ -1850,6 +2099,17 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Updates reservation info
+        /// </summary>
+        /// <param name="idReservation"></param>
+        /// <param name="dateFrom"></param>
+        /// <param name="hourFrom"></param>
+        /// <param name="hourTo"></param>
+        /// <param name="totalPrice"></param>
+        /// <param name="people"></param>
+        /// <param name="reservedQuantity"></param>
+        /// <returns> Customer and publisher info </returns>
         public UsersReservationBasicData UpdateReservation(int idReservation, DateTime dateFrom, string hourFrom,
                         string hourTo, int totalPrice, int people, int reservedQuantity)
         {
@@ -1898,6 +2158,11 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Creates a review of a publication
+        /// </summary>
+        /// <param name="review"></param>
+        /// <param name="idUser"></param>
         public void CreateReview(Review review, long idUser)
         {
             SqlConnection con = null;
@@ -1930,6 +2195,12 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Creates a new publication's question
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <param name="question"></param>
+        /// <param name="idUser"></param>
         public void CreatePublicationQuestion(int idPublication, string question, long idUser)
         {
             SqlConnection con = null;
@@ -1961,6 +2232,12 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Creates a new question's answer
+        /// </summary>
+        /// <param name="idQuestion"></param>
+        /// <param name="answer"></param>
+        /// <returns> Question's user info </returns>
         public User CreatePublicationAnswer(int idQuestion, string answer)
         {
             SqlConnection con = null;
@@ -1993,6 +2270,12 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Returns user info given a question id
+        /// </summary>
+        /// <param name="idQuestion"></param>
+        /// <param name="con"></param>
+        /// <returns> User </returns>
         private User GetUserByQuestion(int idQuestion, SqlConnection con)
         {
             User user = null;
@@ -2013,6 +2296,11 @@ namespace backend.Data_Access
             return user;
         }
 
+        /// <summary>
+        /// Returns all questions of a publication
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <returns> Publication's questions</returns>
         public List<PublicationQuestion> GetPublicationQuestions(int idPublication)
         {
             List<PublicationQuestion> questions = new List<PublicationQuestion>();
@@ -2065,6 +2353,12 @@ namespace backend.Data_Access
             return questions;
         }
 
+        /// <summary>
+        /// Returns if a reservations was reviewed already
+        /// </summary>
+        /// <param name="idReservation"></param>
+        /// <param name="con"></param>
+        /// <returns> true if reservation was reviewed </returns>
         public bool ReservationWasReviewed(int idReservation, SqlConnection con)
         {
             bool wasReviewed = false;
@@ -2093,6 +2387,12 @@ namespace backend.Data_Access
             return wasReviewed;
         }
 
+        /// <summary>
+        /// Returns all questions that has not been answered yet
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <param name="con"></param>
+        /// <returns> Questions unanswered </returns>
         public int GetQuestionsWithoutAnswer(int idPublication, SqlConnection con)
         {
             int qty = 0;
@@ -2121,6 +2421,10 @@ namespace backend.Data_Access
             return qty;
         }
 
+        /// <summary>
+        /// Returns all publications plans
+        /// </summary>
+        /// <returns> Publications plans </returns>
         public List<PublicationPlan> GetPublicationPlans()
         {
             SqlConnection con = null;
@@ -2154,6 +2458,12 @@ namespace backend.Data_Access
             return plans;
         }
 
+        /// <summary>
+        /// Updates preferential plan payment
+        /// </summary>
+        /// <param name="idPublicaton"></param>
+        /// <param name="comment"></param>
+        /// <param name="evidence"></param>
         public async Task UpdatePreferentialPayment(int idPublicaton, string comment, Image evidence)
         {
             SqlConnection con = null;
@@ -2207,7 +2517,14 @@ namespace backend.Data_Access
             }
         }
 
-        private int GetIdPreferentialPayment(int idPreferentialPayment, SqlConnection con, SqlTransaction objTrans)
+        /// <summary>
+        /// Returns id of preferential payment given a publication id
+        /// </summary>
+        /// <param name="idPreferentialPayment"></param>
+        /// <param name="con"></param>
+        /// <param name="objTrans"></param>
+        /// <returns> Preferential payment id </returns>
+        private int GetIdPreferentialPayment(int idPublication, SqlConnection con, SqlTransaction objTrans)
         {
             int id = 0;
             try
@@ -2217,7 +2534,7 @@ namespace backend.Data_Access
                 SqlParameter param = new SqlParameter()
                 {
                     ParameterName = "@idPublication",
-                    Value = idPreferentialPayment,
+                    Value = idPublication,
                     SqlDbType = SqlDbType.Int
                 };
                 selectCommand.Parameters.Add(param);
@@ -2236,6 +2553,13 @@ namespace backend.Data_Access
             return id;
         }
 
+        /// <summary>
+        /// Returns id plan given a publication id payment
+        /// </summary>
+        /// <param name="idPayment"></param>
+        /// <param name="con"></param>
+        /// <param name="objTrans"></param>
+        /// <returns> Preferential plan id </returns>
         private int GetIdPreferentialPlan(int idPayment, SqlConnection con, SqlTransaction objTrans)
         {
             int id = 0;
@@ -2265,6 +2589,14 @@ namespace backend.Data_Access
             return id;
         }
 
+        /// <summary>
+        /// Updates reservation payment values
+        /// </summary>
+        /// <param name="idReservation"></param>
+        /// <param name="comment"></param>
+        /// <param name="evidence"></param>
+        /// <param name="idUser"></param>
+        /// <returns> Publisher info </returns>
         public async Task<UserBasicData> PayReservationCustomer(int idReservation, string comment, Image evidence, long idUser)
         {
             SqlConnection con = null;
@@ -2310,6 +2642,12 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Returns publisher info given a reservation id
+        /// </summary>
+        /// <param name="idReservation"></param>
+        /// <param name="con"></param>
+        /// <returns> Publisher info </returns>
         private UserBasicData GetPublisherFromReservation(int idReservation, SqlConnection con)
         {
             UserBasicData user = null;
@@ -2338,6 +2676,13 @@ namespace backend.Data_Access
             return user;
         }
 
+        /// <summary>
+        /// Updates commission payment values
+        /// </summary>
+        /// <param name="idReservation"></param>
+        /// <param name="comment"></param>
+        /// <param name="evidence"></param>
+        /// <param name="idUser"></param>
         public async Task PayReservationPublisher(int idReservation, string comment, Image evidence, long idUser)
         {
             SqlConnection con = null;
@@ -2381,6 +2726,13 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Approves/reject customer reservation payment
+        /// </summary>
+        /// <param name="idReservation"></param>
+        /// <param name="approved"></param>
+        /// <param name="rejectedReason"></param>
+        /// <returns> Customer info </returns>
         public UserBasicData UpdatePaymentCustomer(int idReservation, bool approved, string rejectedReason)
         {
             SqlConnection con = null;
@@ -2422,6 +2774,12 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Given a reservation id returns customer info
+        /// </summary>
+        /// <param name="idReservation"></param>
+        /// <param name="con"></param>
+        /// <returns> Customer info </returns>
         private UserBasicData GetCustomerFromReservation(int idReservation, SqlConnection con)
         {
             UserBasicData user = null;
@@ -2450,6 +2808,12 @@ namespace backend.Data_Access
             return user;
         }
 
+        /// <summary>
+        /// Given a publication id returns publisher info
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <param name="con"></param>
+        /// <returns> Publisher info </returns>
         private UserBasicData GetPublisherFromPublication(int idPublication, SqlConnection con)
         {
             UserBasicData user = null;
@@ -2478,6 +2842,10 @@ namespace backend.Data_Access
             return user;
         }
 
+        /// <summary>
+        /// Returns all publication plan payments of all publications
+        /// </summary>
+        /// <returns> Publication plans</returns>
         public List<PublicationPaymentAdmin> GetPublicationPlanPayments()
         {
             SqlConnection con = null;
@@ -2521,6 +2889,10 @@ namespace backend.Data_Access
             return payments;
         }
 
+        /// <summary>
+        /// Returns all commission payments of all publications
+        /// </summary>
+        /// <returns> Commissions payments </returns>
         public List<CommissionPaymentAdmin> GetCommissionPaymentsAdmin()
         {
             SqlConnection con = null;
@@ -2563,6 +2935,11 @@ namespace backend.Data_Access
             return commissions;
         }
 
+        /// <summary>
+        /// Returns favourites of customer
+        /// </summary>
+        /// <param name="idUser"></param>
+        /// <returns> Favourites publications </returns>
         public List<Publication> GetFavorites(long idUser)
         {
             SqlConnection con = null;
@@ -2610,6 +2987,10 @@ namespace backend.Data_Access
             return favorites;
         }
 
+        /// <summary>
+        /// Returns all recommended publications divided by space type
+        /// </summary>
+        /// <returns> Space type recommended publications </returns>
         public List<SpaceTypeRecommended> GetRecommendedPublications()
         {
             SqlConnection con = null;
@@ -2667,6 +3048,13 @@ namespace backend.Data_Access
             return recommendedList;
         }
 
+        /// <summary>
+        /// GIven a space type, returns recommended publications
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="con"></param>
+        /// <param name="spaceType"></param>
+        /// <returns> Recommended publications </returns>
         private List<Recommended> GetRecommendedSpaceType(string query, SqlConnection con, int spaceType)
         {
             List<Recommended> spaceTypeList = new List<Recommended>(MAX_TOTAL);
@@ -2825,6 +3213,12 @@ namespace backend.Data_Access
             return spaceTypeList;
         }
 
+        /// <summary>
+        /// Creates recommended publication
+        /// </summary>
+        /// <param name="dr"></param>
+        /// <param name="con"></param>
+        /// <returns> Recommended publication </returns>
         private Recommended BuildRecommended(SqlDataReader dr, SqlConnection con)
         {
             Recommended publication;
@@ -2836,6 +3230,12 @@ namespace backend.Data_Access
             return publication;
         }
 
+        /// <summary>
+        /// Returns all images of a publication
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <param name="con"></param>
+        /// <returns> Images </returns>
         private List<String> GetImages(int idPublication, SqlConnection con)
         {
             List<String> images = new List<String>();
@@ -2858,6 +3258,13 @@ namespace backend.Data_Access
             return images;
         }
 
+        /// <summary>
+        /// Approves/reject preferential plan payment
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <param name="approved"></param>
+        /// <param name="rejectedReason"></param>
+        /// <returns> Publisher info </returns>
         public UserBasicData UpdatePreferentialPaymentAdmin(int idPublication, bool approved, string rejectedReason)
         {
             SqlConnection con = null;
@@ -2943,6 +3350,13 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Returns all child publications of a parent publication
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <param name="con"></param>
+        /// <param name="objTrans"></param>
+        /// <returns> Child publications </returns>
         private List<int> GetChildPublications(int idPublication, SqlConnection con, SqlTransaction objTrans)
         {
             List<int> childPublications = new List<int>();
@@ -2967,6 +3381,13 @@ namespace backend.Data_Access
             return childPublications;
         }
 
+        /// <summary>
+        /// Approves/reject commission payment
+        /// </summary>
+        /// <param name="idReservation"></param>
+        /// <param name="approved"></param>
+        /// <param name="rejectedReason"></param>
+        /// <returns> Publisher info </returns>
         public UserBasicData UpdatePaymentCommissionAdmin(int idReservation, bool approved, string rejectedReason)
         {
             SqlConnection con = null;
@@ -3005,9 +3426,14 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Returns all messages sent (by publisher or by customer)
+        /// </summary>
+        /// <param name="isPublisher"></param>
+        /// <param name="idUser"></param>
+        /// <returns> Messages s</returns>
         public List<Message> GetMessages(bool isPublisher, long idUser)
         {
-
             List<Message> messages = new List<Message>();
             SqlConnection con = null;
             Util util = new Util();
@@ -3084,7 +3510,12 @@ namespace backend.Data_Access
             return messages;
         }
 
-
+        /// <summary>
+        /// Given a question id, returns its answer
+        /// </summary>
+        /// <param name="con"></param>
+        /// <param name="idQuestion"></param>
+        /// <returns> Answer </returns>
         private Answer GetAnswer(SqlConnection con, int idQuestion)
         {
             Answer answer = null;
@@ -3107,6 +3538,11 @@ namespace backend.Data_Access
             return answer;
         }
 
+        /// <summary>
+        /// Given a publication plan id, returns publication plan description
+        /// </summary>
+        /// <param name="idPlan"></param>
+        /// <returns> Publication plan description </returns>
         public string GetPublicationPlanById(int idPlan)
         {
             SqlConnection con = null;
@@ -3145,6 +3581,11 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Given a question id, return publication title
+        /// </summary>
+        /// <param name="idQuestion"></param>
+        /// <returns> Publication title </returns>
         public string GetPublicationTitleByQuestionId(int idQuestion)
         {
             SqlConnection con = null;
@@ -3183,6 +3624,11 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Given a reservation id, returns publication title
+        /// </summary>
+        /// <param name="idReservation"></param>
+        /// <returns> Publication title</returns>
         public string GetPublicationTitleByReservationId(int idReservation)
         {
             SqlConnection con = null;
@@ -3221,6 +3667,11 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Updates commission amount to be paid
+        /// </summary>
+        /// <param name="idReservation"></param>
+        /// <param name="price"></param>
         public void UpdateCommissionAmountAdmin(int idReservation, int price)
         {
             SqlConnection con = null;
@@ -3252,44 +3703,13 @@ namespace backend.Data_Access
             }
         }
 
-        public void CreatePublicationStatics(VORequestCreatePublicationStatics voCreatePublicationStatics)
-        {
-            SqlConnection con = null;
-            try
-            {
-                /*  con = new SqlConnection(GetConnectionString());
-                  con.Open();
-                  string facilities = "";
-                  if (voCreatePublicationStatics.Facilities != null)
-                  {
-                      facilities = Util.CreateFacilitiesString(voCreatePublicationStatics.Facilities);
-                  }
-                  String query = cns.CreatePublicationStatics();
-                  SqlCommand insertCommand = new SqlCommand(query, con);                
-                  List<SqlParameter> param = new List<SqlParameter>()
-                  {
-                      new SqlParameter("@spaceType", SqlDbType.Int) {Value = voCreatePublicationStatics.SpaceType},
-                      new SqlParameter("@facilities", SqlDbType.VarChar) {Value = facilities},
-                      new SqlParameter("@idPublication", SqlDbType.Int) {Value = voCreatePublicationStatics.IdPublication},
-                      new SqlParameter("@favourite", SqlDbType.Bit) {Value = voCreatePublicationStatics.Favourite},
-                      new SqlParameter("@rented", SqlDbType.Bit) {Value = voCreatePublicationStatics.Rented},
-                  };
-                  insertCommand.Parameters.AddRange(param.ToArray());
-                  insertCommand.ExecuteNonQuery();*/
-            }
-            catch (Exception e)
-            {
-                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
-            }
-            finally
-            {
-                if (con != null)
-                {
-                    con.Close();
-                }
-            }
-        }
-
+        /// <summary>
+        /// Returns reservation plan description depending on language and amount of hours/days/weeks/months/
+        /// </summary>
+        /// <param name="idPlan"></param>
+        /// <param name="language"></param>
+        /// <param name="plural"></param>
+        /// <returns> Reservation plan description </returns>
         public string GetReservationPlanDescriptionEmail(int idPlan, int language, bool plural)
         {
             String description = "";
@@ -3328,6 +3748,10 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Returns all reservations
+        /// </summary>
+        /// <returns> Reservations </returns>
         public List<ReservationExtended> GetReservations()
         {
             {
@@ -3377,6 +3801,10 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Updates publications state to finished.
+        /// </summary>
+        /// <returns> Publisher info </returns>
         public List<EmailData> FinishPublications()
         {
             List<EmailData> publications = new List<EmailData>();
@@ -3426,6 +3854,10 @@ namespace backend.Data_Access
             return publications;
         }
 
+        /// <summary>
+        /// Updates reservations state to finished
+        /// </summary>
+        /// <returns> Publisher and customer info </returns>
         public List<EmailData> FinishReservations()
         {
             List<EmailData> reservations = new List<EmailData>();
@@ -3476,6 +3908,9 @@ namespace backend.Data_Access
             return reservations;
         }
 
+        /// <summary>
+        /// Updates reservation state to In progress
+        /// </summary>
         public void StartReservation()
         {
             SqlConnection con = null;
@@ -3500,6 +3935,12 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Returns all asociated publications of a publication 
+        /// Can be parent publication, child publications, siblings publications
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <returns> Publications </returns>
         public List<Publication> GetOtherPublicationConfig(int idPublication)
         {
             List<Publication> otherPublications = new List<Publication>();
@@ -3563,6 +4004,11 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Returns publication id of asociated publications 
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <returns></returns>
         private List<int> GetIdOtherPublicationConfig(int idPublication)
         {
             SqlConnection con = null;
@@ -3635,6 +4081,12 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Returns publication parent id of child publication
+        /// </summary>
+        /// <param name="idPublication"></param>
+        /// <param name="con"></param>
+        /// <returns> Publication parent id </returns>
         private int GetIdParentPublicationConfig(int idPublication, SqlConnection con)
         {
             int idParent = 0;

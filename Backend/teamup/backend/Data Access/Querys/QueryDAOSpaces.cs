@@ -651,14 +651,6 @@ namespace backend.Data_Access.Query
             return query;
         }
 
-        public String CreatePublicationStatics()
-        {
-            StringBuilder query = new StringBuilder();
-            query.Append("insert into publications_statistics (spaceType, facilities, idPublication, favourite, rented) values ");
-            query.Append("(@spaceType, @facilities, @idPublication, @favourite, @rented)");
-            return query.ToString();
-        }
-
         public String GetReservationPlanByDescription()
         {
             String query = "select idReservationPlan from RESERVATION_PLANS where description = @description";

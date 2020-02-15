@@ -26,6 +26,11 @@ namespace backend.Data_Access.Query
             return con;
         }
 
+        /// <summary>
+        /// Returns if user exists
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <returns> true if exists </returns>
         public bool Member(String mail)
         {
             SqlConnection con = null;
@@ -64,6 +69,11 @@ namespace backend.Data_Access.Query
             return member;
         }
 
+        /// <summary>
+        /// Given an email address returns user info
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <returns> User </returns>
         public User Find(String mail)
         {
             SqlConnection con = null;
@@ -102,12 +112,15 @@ namespace backend.Data_Access.Query
             return user;
         }
 
+        /// <summary>
+        /// Insert user info into database, creates an encrytped password and returns activation code to send via email
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns> Activation code </returns>
         public string InsertUser(User user)
         {
-            string activationCode = "";
             SqlConnection con = null;
-            SqlTransaction objTrans = null;       
-            
+            SqlTransaction objTrans = null;                   
             try
             {
                 // Create secure password
@@ -137,7 +150,7 @@ namespace backend.Data_Access.Query
                 insertCommand.ExecuteNonQuery();
                 // Generate activation code
                 String queryActivation = cns.InsertActivationCode();
-                activationCode = Guid.NewGuid().ToString();
+                string activationCode = Guid.NewGuid().ToString();
                 SqlCommand updateCommand = new SqlCommand(queryActivation, con);
                 List<SqlParameter> parameters = new List<SqlParameter>()
                     {
@@ -168,6 +181,12 @@ namespace backend.Data_Access.Query
             }
         }
 
+        /// <summary>
+        /// Updates user info, updates encrypted password and returns activation code to send via email
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="newMail"></param>
+        /// <returns> Activation code</returns>
         public string UpdateUser(User user, String newMail)
         {
             SqlConnection con = null;
@@ -253,6 +272,10 @@ namespace backend.Data_Access.Query
             }
         }
 
+        /// <summary>
+        /// Deactivates user by updating state
+        /// </summary>
+        /// <param name="mail"></param>
         public void DeleteUser(String mail)
         {
             SqlConnection con = null;
@@ -284,6 +307,12 @@ namespace backend.Data_Access.Query
             }
         }
 
+        /// <summary>
+        /// Before deleting an user, it is neccesary to check for pendings process.
+        /// (reservations, payments)
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <returns> Error or success message </returns>
         public String ValidateDeletion(String mail)
         {
             SqlConnection con = null;
@@ -421,7 +450,10 @@ namespace backend.Data_Access.Query
             return result;
         }
 
-
+        /// <summary>
+        /// Returns all publishers who hasn´t been approved yet
+        /// </summary>
+        /// <returns> Users </returns>
         public List<User> GetPublishers()
         {
             SqlConnection con = null;
@@ -455,6 +487,10 @@ namespace backend.Data_Access.Query
             return publishers;
         }
 
+        /// <summary>
+        /// Approves all publishers by changing publicherValidated value
+        /// </summary>
+        /// <param name="mails"></param>
         public void ApprovePublishers(List<String> mails)
         {
             SqlConnection con = null;
@@ -490,6 +526,12 @@ namespace backend.Data_Access.Query
             }
         }
 
+        /// <summary>
+        /// Returns admin info by entering mail and password
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <param name="password"></param>
+        /// <returns> Admin</returns>
         public Admin GetAdmin(String mail, String password)
         {
             SqlConnection con = null;
@@ -528,6 +570,11 @@ namespace backend.Data_Access.Query
             return admin;
         }
 
+        /// <summary>
+        /// Returns if mail has been already validated
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <returns> true if is validated </returns>
         public bool IsMailValidated(String mail)
         {
             SqlConnection con = null;
@@ -566,6 +613,10 @@ namespace backend.Data_Access.Query
             return mailValidated;
         }
 
+        /// <summary>
+        /// Updates checkPublisher = true to given mail
+        /// </summary>
+        /// <param name="mail"></param>
         public void RequestPublisher(String mail)
         {
             SqlConnection con = null;
@@ -599,6 +650,11 @@ namespace backend.Data_Access.Query
             }
         }
 
+        /// <summary>
+        /// For a certain email creates access and refresh tokens with their expiration dates
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <returns> Tokens </returns>
         public Tokens CreateTokens(String mail)
         {
             SqlConnection con = null;
@@ -640,13 +696,12 @@ namespace backend.Data_Access.Query
                 }
             }
         }
-
-        public bool ValidAccessToken(String mail, String accessToken)
-        {
-            //TODO
-            return true;
-        }
-
+        
+        /// <summary>
+        /// Creates a random password to given mail and sends it to user
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <returns> Random password </returns>
         public string UpdatePassword(String mail)
         {
             SqlConnection con = null;
@@ -694,6 +749,12 @@ namespace backend.Data_Access.Query
                 }
             }
         }
+
+        /// <summary>
+        /// Updates mailValidated given an activation code
+        /// </summary>
+        /// <param name="activationCode"></param>
+        /// <returns> number of records updated (to check if any record has been updated)</returns>
         public int ValidateEmail(String activationCode)
         {
             SqlConnection con = null;
@@ -728,6 +789,20 @@ namespace backend.Data_Access.Query
             }
         }
 
+        /// <summary>
+        /// Updates user info (called by an admin user)
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <param name="name"></param>
+        /// <param name="lastName"></param>
+        /// <param name="phone"></param>
+        /// <param name="checkPublisher"></param>
+        /// <param name="rut"></param>
+        /// <param name="razonSocial"></param>
+        /// <param name="address"></param>
+        /// <param name="mailValidated"></param>
+        /// <param name="publisherValidated"></param>
+        /// <param name="active"></param>
         public void UpdateUserAdmin(string mail, string name,string lastName, string phone, bool checkPublisher,
                         string rut, string razonSocial, string address, bool mailValidated,bool publisherValidated, bool active)
         {
@@ -786,6 +861,10 @@ namespace backend.Data_Access.Query
             }
         }
 
+        /// <summary>
+        /// Returns all users
+        /// </summary>
+        /// <returns> Users </returns>
         public List<User> GetUsers()
         {
             SqlConnection con = null;
@@ -822,6 +901,11 @@ namespace backend.Data_Access.Query
             return users;
         }
 
+        /// <summary>
+        /// Check if email belongs to an admin user
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <returns> true if is admin </returns>
         public bool AdminMember(String mail)
         {
             SqlConnection con = null;
@@ -860,6 +944,11 @@ namespace backend.Data_Access.Query
             return member;
         }
 
+        /// <summary>
+        /// Given an access token return user info 
+        /// </summary>
+        /// <param name="accessToken"></param>
+        /// <returns> User </returns>
         public User GetUserData(string accessToken)
         {
             SqlConnection con = null;
@@ -898,6 +987,11 @@ namespace backend.Data_Access.Query
             return user;
         }
 
+        /// <summary>
+        /// Returns if email belongs to a publisher user
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <returns> true if email belongs to a publisher user</returns>
         public bool IsPublisher(String mail)
         {
             SqlConnection con = null;
@@ -936,6 +1030,11 @@ namespace backend.Data_Access.Query
             return member;
         }
 
+        /// <summary>
+        /// Given the description of a language, returns its id
+        /// </summary>
+        /// <param name="descLanguage"></param>
+        /// <returns> Language id</returns>
         public int GetIdLanguageByDescription(String descLanguage)
         {
             int id = 0;

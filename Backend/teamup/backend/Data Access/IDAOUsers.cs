@@ -23,7 +23,6 @@ namespace backend.Data_Access.Query
         Admin GetAdmin(String mail, String password);
         void RequestPublisher(String mail);
         Tokens CreateTokens(String mail);
-        bool ValidAccessToken(String mail, String accessToken);
         string UpdatePassword(String mail);
         int ValidateEmail(String activationCode);
         void UpdateUserAdmin(string mail, string name, string lastName, string phone, bool checkPublisher,

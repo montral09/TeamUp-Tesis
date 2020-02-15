@@ -263,7 +263,7 @@ namespace backend.Logic
         /// Gets publishers pending confirmation
         /// </summary>
         /// <param name="voRequestGetPublishers"></param>
-        /// <returns></returns>
+        /// <returns> Users </returns>
         public VOResponseGetPublishers GetPublishers(VORequestGetPublishers voRequestGetPublishers)
         {
             try
@@ -1162,7 +1162,7 @@ namespace backend.Logic
                 response.responseCode = message;
                 return response;
             }
-            catch (GeneralException e)
+            catch (Exception e)
             {
                 throw e;
             }
@@ -1636,27 +1636,6 @@ namespace backend.Logic
                 {
                     spaces.UpdateCommissionAmountAdmin(voUpdateAmount.IdReservation, voUpdateAmount.Price);                   
                     message = EnumMessages.SUCC_COMMISSIONUPDATED.ToString();
-                }
-                response.responseCode = message;
-                return response;
-            }
-            catch (GeneralException e)
-            {
-                throw e;
-            }
-        }
-
-
-        public VOResponseCreatePublicationStatics CreatePublicationStatics(VORequestCreatePublicationStatics voCreatePublicationStatics)
-        {
-            try
-            {
-                VOResponseCreatePublicationStatics response = new VOResponseCreatePublicationStatics();
-                String message = util.ValidAccessToken(voCreatePublicationStatics.AccessToken, voCreatePublicationStatics.Mail);
-                if (EnumMessages.OK.ToString().Equals(message))
-                {
-                    spaces.CreatePublicationStatics(voCreatePublicationStatics);
-                    message = EnumMessages.SUCC_PUBLICATIONSTATICSOK.ToString();
                 }
                 response.responseCode = message;
                 return response;
