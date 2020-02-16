@@ -3,6 +3,7 @@ import { StyleSheet,Text,View,TextInput,TouchableOpacity,ToastAndroid} from 'rea
 
 import UserTypeSelector from '../components/UserTypeSelector';
 import { connect } from 'react-redux';
+import translations from '../common/translations';
 import Globals from '../Globals';
 
 class SignUp extends Component{
@@ -158,36 +159,36 @@ class SignUp extends Component{
     }
 
    render(){
-        
+        const { systemLanguage } = this.props;
         return (
             <View style={styles.container}>
                 <View style={styles.signupTitleContainer}>
-                    <Text style={styles.titleText}>REGISTRO</Text>
+                    <Text style={styles.titleText}>{translations[systemLanguage].messages['registerYourself_w']}</Text>
                     <UserTypeSelector/>
                     {<TextInput style={styles.inputBox} 
                             underlineColorAndroid='rgba(0,0,0,0)'
-                            placeholder="Nombre"
+                            placeholder={translations[systemLanguage].messages['name_w'] + '(*)'}
                             placeholderTextColor="#ffffff"
                             onChangeText={(name) => this.setState({name})}
                             value={this.state.name}
                     />}
                     {<TextInput style={styles.inputBox} 
                             underlineColorAndroid='rgba(0,0,0,0)'
-                            placeholder="Apellido"
+                            placeholder={translations[systemLanguage].messages['lastName_w'] + '(*)'}
                             placeholderTextColor="#ffffff"
                             onChangeText={(lastName) => this.setState({lastName})}
                             value={this.state.lastName}
                     />}
                     <TextInput style={styles.inputBox} 
                             underlineColorAndroid='rgba(0,0,0,0)'
-                            placeholder="Correo"
+                            placeholder={translations[systemLanguage].messages['email_w'] + '(*)'}
                             placeholderTextColor="#ffffff"
                             value={this.state.email}
                             onChangeText={(email) => this.setState({email})}
                     />
                     {<TextInput style={styles.inputBox} 
                             underlineColorAndroid='rgba(0,0,0,0)'
-                            placeholder="Teléfono"
+                            placeholder={translations[systemLanguage].messages['phoneNumber_w'] + '(*)'}
                             placeholderTextColor="#ffffff"
                             name = "phone"
                             value={this.state.phone}
@@ -195,7 +196,7 @@ class SignUp extends Component{
                     />}
                     <TextInput style={styles.inputBox} 
                             underlineColorAndroid='rgba(0,0,0,0)'
-                            placeholder="Contraseña"
+                            placeholder={translations[systemLanguage].messages['password_w'] + '(*)'}
                             placeholderTextColor="#ffffff"
                             secureTextEntry={true}
                             name = "password"
@@ -204,7 +205,7 @@ class SignUp extends Component{
                     />
                     {<TextInput style={styles.inputBox} 
                             underlineColorAndroid='rgba(0,0,0,0)'
-                            placeholder="Confirmar contraseña"
+                            placeholder={translations[systemLanguage].messages['register_repeatPassword'] + '(*)'}
                             placeholderTextColor="#ffffff"
                             secureTextEntry={true}
                             name = "confirmPassword"
@@ -221,7 +222,7 @@ class SignUp extends Component{
                     />}
                     {<TextInput style={styles.inputBox} 
                             underlineColorAndroid='rgba(0,0,0,0)'
-                            placeholder="Razón Social"
+                            placeholder={translations[systemLanguage].messages['socialReason']}
                             placeholderTextColor="#ffffff"
                             name = "razonSocial"
                             value={this.state.razonSocial}
@@ -229,7 +230,7 @@ class SignUp extends Component{
                     />}
                     {<TextInput style={styles.inputBox} 
                             underlineColorAndroid='rgba(0,0,0,0)'
-                            placeholder="Dirección"
+                            placeholder={translations[systemLanguage].messages['address_w']}
                             placeholderTextColor="#ffffff"
                             name = "address"
                             value={this.state.address}
@@ -237,7 +238,7 @@ class SignUp extends Component{
                     />}
                     
                     <TouchableOpacity style={styles.button} onPress={() => { this.register() }}  /*onPress={() => {this.props.navigation.navigate('Home')}*/>
-                        <Text style={styles.buttonText}>Registrarse</Text>   
+                        <Text style={styles.buttonText}>{translations[systemLanguage].messages['registerYourself_w']}</Text>   
                     </TouchableOpacity>
                 </View>
             </View>
@@ -300,7 +301,8 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) =>{
     return {
-        login_status: state.loginData.login_status
+        login_status: state.loginData.login_status,
+        systemLanguage: state.loginData.systemLanguage
     }
 }
 

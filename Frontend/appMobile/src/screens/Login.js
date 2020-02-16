@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { StyleSheet, Text, View, StatusBar } from 'react-native';
 import { createStackNavigator, createAppContainer } from 'react-navigation';
+import { connect } from 'react-redux';
 
 import Logo from '../components/Logo';
 import Form from '../components/Form';
@@ -11,18 +12,33 @@ import PasswordRecovery from './PasswordRecovery';
 import SpaceView from './SpaceView';
 import SearchPublications from './SearchPublications';
 import ErrorScreen from './ErrorScreen';
-import ReservationPaymentComDetails from './ReservationPaymentComDetails';
+import ReservationResComPay from './ReservationResComPay';
 import ReservationReqInfo from './ReservationReqInfo';
 import ReservationCustResPay from './ReservationCustResPay';
 import ReservationResCustPay from './ReservationResCustPay';
+import ReservationEditResCustPay from './ReservationEditResCustPay';
 import ReserveSpace from './ReserveSpace';
 import ReserveSpaceSummary from './ReserveSpaceSummary';
 import QAAnswer from './QAAnswer';
 
+import translations from '../common/translations';
+
 class Login extends Component{
-   static navigationOptions = {
-     header: null
-   };
+   constructor() {
+    super();
+    this.state = {
+        language: 'es',
+    }
+}
+
+  static navigationOptions = {
+    header: null,   
+  };
+   
+
+   changeParentLanguage = (value) => {
+     this.setState({language:value});
+   }
    
    render(){
 
@@ -30,10 +46,11 @@ class Login extends Component{
             <View style={styles.container}>
               <StatusBar backgroundColor="#0069c0" barStyle="light-content"/>
               <Logo/>
-              <Form/>
+              <Form changeParentLanguage={this.changeParentLanguage}/>
               <View style={styles.signupTextCont}>
-                <Text style={styles.signupText}>¿No tienes una cuenta?</Text>
-                <Text style={styles.signupButton} onPress={() => {this.props.navigation.navigate('SignUp')}}> Regístrate</Text>
+                {this.state.language === 'es' ? (<Text style={styles.signupText}>{translations.es.messages['login_dontHaveAccount']}</Text>):(<Text style={styles.signupText}>{translations.en.messages['login_dontHaveAccount']}</Text>)}
+                {this.state.language === 'es' ? (<Text style={styles.signupButton} onPress={() => {this.props.navigation.navigate('SignUp')}}> {translations.es.messages['registerYourself_w']}</Text>):(<Text style={styles.signupButton} onPress={() => {this.props.navigation.navigate('SignUp')}}> {translations.en.messages['registerYourself_w']}</Text>)}
+                
               </View>
             </View>
         );
@@ -98,10 +115,13 @@ const StackNavigator = createStackNavigator({
   ReservationResCustPay: {screen: ReservationResCustPay, navigationOptions: ({ navigation }) => ({
                               header: null,
                     })},            
-  ReservationPaymentComDetails: {screen: ReservationPaymentComDetails, navigationOptions: ({ navigation }) => ({
+  ReservationResComPay: {screen: ReservationResComPay, navigationOptions: ({ navigation }) => ({
                               header: null,
                     })},
   ReservationReqInfo: {screen: ReservationReqInfo, navigationOptions: ({ navigation }) => ({
+                              header: null,
+                    })},
+  ReservationEditResCustPay: {screen: ReservationEditResCustPay, navigationOptions: ({ navigation }) => ({
                               header: null,
                     })},
   ReserveSpace: {screen: ReserveSpace, navigationOptions: ({ navigation }) => ({

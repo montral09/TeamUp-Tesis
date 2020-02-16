@@ -1,22 +1,11 @@
 import React, {Component} from 'react';
 import {View,Text,StyleSheet,TextInput,TouchableOpacity,Modal,Picker,TouchableHighlight,ToastAndroid,BackHandler} from 'react-native';
-
-import Icon from 'react-native-vector-icons/Ionicons';
+import { connect } from 'react-redux';
 import Globals from '../Globals';
+import { Ionicons } from "@expo/vector-icons";
+import translations from '../common/translations';
 
-const MyTextInput = ({ placeholder, value, name, type, onChange }) => {
-  return (
-    <TextInput style={styles.inputBox} 
-      underlineColorAndroid='rgba(0,0,0,0)'
-      placeholder = {placeholder}
-      placeholderTextColor="#ffffff"
-      value={value}
-      onChangeText={text => this.onChange({ name, type, text })}
-    />
-  );
-};
-
-export default class SearchBar extends Component {
+class SearchBar extends Component {
     constructor(props){
     super(props);
       this.state = {
@@ -92,6 +81,7 @@ export default class SearchBar extends Component {
     }
 
     renderSearch(){
+        const { systemLanguage } = this.props;
         return (
         <View>
             <Modal
@@ -100,8 +90,16 @@ export default class SearchBar extends Component {
             visible={this.state.searchPopUp}
             >
             <View style={styles.modalView}>
-                <View style={{marginBottom: 10}}>
-                    <Text style={styles.reseñaText}>Opciones de búsqueda</Text>
+                <View style={{alignItems: 'center', marginBottom: 10}}>
+                    <View style={{position: 'absolute', right: 10, top: -2}}>
+                        <TouchableOpacity
+                            onPress={() => {
+                            this.handleOnPress(false);
+                            }}>
+                            <Ionicons name="ios-close" size={40} color="white"></Ionicons>
+                        </TouchableOpacity>  
+                    </View>
+                    <Text style={styles.reseñaText}>{translations[systemLanguage].messages['home_findSpaceText']}</Text>
                     <Picker
                         style={styles.pickerBox}
                         selectedValue={this.state.spaceTypeSelect}
@@ -115,7 +113,9 @@ export default class SearchBar extends Component {
                     </Picker>
                     <TextInput 
                         style={styles.inputBox}
+                        underlineColorAndroid='rgba(0,0,0,0)'
                         placeholder = "Ej: Pocitos..."
+                        placeholderTextColor="#ffffff"
                         name="city" 
                         type="text" 
                         value={this.state.city} 
@@ -123,21 +123,17 @@ export default class SearchBar extends Component {
                     />
                     <TextInput 
                         style={styles.inputBox}
-                        placeholder = "Capacidad"
+                        underlineColorAndroid='rgba(0,0,0,0)'
+                        placeholder = {translations[systemLanguage].messages['capacity_w']}
+                        placeholderTextColor="#ffffff"
                         name="capacity" 
                         type="text" 
                         value={this.state.capacity} 
                         onChangeText={(capacity) => this.setState({capacity})}
                     />
                     <TouchableOpacity style={styles.button} onPress={() => {this.beginSearch()}}> 
-                        <Text style={styles.buttonText}>Buscar</Text>
-                    </TouchableOpacity>
-                    <TouchableHighlight
-                        onPress={() => {
-                        this.handleOnPress(false);
-                        }}>
-                        <Text>Cerrar</Text>
-                    </TouchableHighlight>
+                        <Text style={styles.buttonText}>{translations[systemLanguage].messages['home_findButtonModal']}</Text>
+                    </TouchableOpacity>  
                 </View>
             </View>
             </Modal>
@@ -146,16 +142,25 @@ export default class SearchBar extends Component {
     }
 
     render (){
+        const { systemLanguage } = this.props;
         return (
             <View>
             <TouchableOpacity style={styles.button} onPress={() => {this.handleOnPress(true)}}> 
-                <Text style={styles.buttonText}>Buscar Espacios</Text>
+                <Text style={styles.buttonText}>{translations[systemLanguage].messages['home_findButton']}</Text>
             </TouchableOpacity>           
                 {this.renderSearch()}
             </View>
         );
     }
 }
+
+const mapStateToProps = (state) => {
+    return {
+        systemLanguage: state.loginData.systemLanguage
+    }
+}
+
+export default connect(mapStateToProps)(SearchBar)
 
 const styles = StyleSheet.create({
     searchContainer:{
@@ -195,7 +200,7 @@ const styles = StyleSheet.create({
       alignSelf: 'center',
       alignItems: 'center',
       marginTop: 20,
-      //justifyContent: 'center',
+      justifyContent: 'center',
       backgroundColor: '#6ec6ff',
       borderRadius: 10,
       //height: 150,

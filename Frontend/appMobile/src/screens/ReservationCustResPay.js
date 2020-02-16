@@ -1,5 +1,8 @@
 import React, {Component} from 'react';
 import { StyleSheet, Text, View, ScrollView, Keyboard, TouchableOpacity, Linking, TextInput, Dimensions} from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import * as Permissions from "expo-permissions";
+import Constants from 'expo-constants';
 import { callAPI } from '../common/genericFunctions';
 
 class ReservationCustResPay extends Component {
@@ -200,6 +203,40 @@ class ReservationCustResPay extends Component {
         reader.readAsBinaryString(f);
     }
 
+    getPermissionAsync = async () => {
+        if (Constants.platform.ios) {
+            const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+            if (status !== 'granted') {
+                alert('Sorry, we need camera roll permissions to make this work!');
+            }
+        }
+    }
+
+    pickImage = async () => {
+        try{ 
+            const { status } = await Permissions.askAsync(Permissions.CAMERA, Permissions.CAMERA_ROLL)
+            if (status === 'granted') {
+                const result = await ImagePicker.launchImageLibraryAsync({
+                    mediaTypes: ImagePicker.MediaTypeOptions.All,
+                    allowsEditing: true,
+                    aspect: [4, 3],
+                    base64: true,
+                });
+                console.log(result)
+                var extension = "";
+                let i = (result.uri).lastIndexOf('.');
+                if (i > 0) {
+                    extension = (result.uri).substring(i+1);
+                }
+                if (!result.cancelled) {
+                    //this.props.onSelectionsChangeImages(result.base64,'jpeg')
+                }
+            }
+        }catch (err) {
+            //console.log("ERROR", (err && err.message) + "\n" + JSON.stringify(err));
+        }
+    };
+
     render() {
         return (
             <View style={styles.container}>
@@ -264,7 +301,9 @@ class ReservationCustResPay extends Component {
                                 <Text style={styles.infoText}>Documento prueba </Text>
                             </View>
                             <View style={{flex:1}}>
-                                <Text style={styles.infoText} /*onPress={() => Linking.openURL(this.state.objPaymentDetails.paymentDocumentNew)}*/>Subir Imagen</Text>
+                                <TouchableOpacity style={styles.button} onPress={this.pickImage}>
+                                    <Text style={styles.buttonText}>Subir prueba</Text>
+                                </TouchableOpacity>
                             </View>
                         </View>
                         // value={this.state.objPaymentDetails.paymentDocumentNew} onChange={this.onChange} />   
@@ -276,8 +315,9 @@ class ReservationCustResPay extends Component {
                         underlineColorAndroid='rgba(0,0,0,0)'
                         placeholder='Comentario'
                         placeholderTextColor="#ffffff"
-                        value={this.state.objPaymentDetails.reservationpaymentDate == null ? "Pendiente" : this.state.objPaymentDetails.reservationpaymentDate}
-                        editable = {this.state.objPaymentDetails.reservationPaymentStateText == "PAID" || this.state.objPaymentDetails.reservationPaymentStateText == "CANCELED" ? true : false}
+                        value={this.state.objPaymentDetails.paymentComment}
+                        onChangeText={this.onChange}
+                        editable = {this.state.objPaymentDetails.reservationPaymentStateText == "PAID" || this.state.objPaymentDetails.reservationPaymentStateText == "CANCELED" ? false : true}
                     />
                     {this.state.objPaymentDetails.reservationPaymentStateText != "PAID" && this.state.objPaymentDetails.reservationPaymentStateText != "CANCELED" ? (
                             <Text style={styles.infoText}>Atencion! El pago deberá ser confirmado por el gestor.{'\n'}Puede adjuntar una imagen/pdf y agregar un comentario.</Text>

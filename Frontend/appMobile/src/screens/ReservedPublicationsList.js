@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
 import { StyleSheet, Text, View, ScrollView, Keyboard, TouchableOpacity} from 'react-native';
 import { connect } from 'react-redux';
+import { Header } from 'react-native-elements';
 import { callAPI } from '../common/genericFunctions';
 import { MAX_ELEMENTS_PER_TABLE } from '../common/constants';
 import { logOut, updateToken } from '../redux/actions/accountActions';
-
+import translations from '../common/translations';
 import ReservedPublicationsListScrollView from '../components/ReservedPublicationsListScrollView';
 
 import Globals from '../Globals';
@@ -25,18 +26,9 @@ class ReservedPublicationsList extends Component {
             selectedResState : "",
             pagination: [1],
             currentPage: 1
-        }
-
-        //this.modalReqInfo = React.createRef(); // Connects the reference to the modal
-        //this.ModalResCustPay = React.createRef(); // Connects the reference to the modal
-        //this.ModalResComPay = React.createRef(); // Connects the reference to the modal
-        //this.loadMyReservationsRP = this.loadMyReservationsRP.bind(this);   
+        }  
         this.triggerScreen = this.triggerScreen.bind(this);   
-        this.saveCancel = this.saveCancel.bind(this);
-        this.saveConfirm = this.saveConfirm.bind(this);
-        //this.triggerSaveModal = this.triggerSaveModal.bind(this);
         this.saveComissionPayment = this.saveComissionPayment.bind(this);
-        //this.confirmPayment = this.confirmPayment.bind(this);
         this.handleExpiredToken = this.handleExpiredToken.bind(this);
     }
 
@@ -54,7 +46,7 @@ class ReservedPublicationsList extends Component {
             "AccessToken": this.props.tokenObj.accesToken,
             "Mail": this.props.userData.Mail
         }
-        objApi.fetchUrl = "api/reservationCustomer";
+        objApi.fetchUrl = "api/reservationPublisher";
         objApi.method = "POST";
         objApi.successMSG = {
             SUCC_RESERVATIONSOK: '',
@@ -65,16 +57,12 @@ class ReservedPublicationsList extends Component {
         callAPI(objApi, this);
     }
 
-    /*modalSave(){
-        this.modalReqInfo.current.changeModalLoadingState(true);
-    }*/
-
     triggerScreen(mode, IdReservation, auxParam){
         var screenConfigObj = {};
         switch(mode){
             case "CANCEL": 
                 screenConfigObj ={
-                    title: 'Cancelar reserva', mainText: 'Desea cancelar la reserva? Por favor indique el motivo ', mode : mode, saveFunction : "saveCancel", textboxLabel: 'Comentario',
+                    title: translations[this.props.systemLanguage].messages['reservedPublications_cancelModal_header'], mainText: 'Desea cancelar la reserva? Por favor indique el motivo ', mode : mode, saveFunction : "saveCancel", textboxLabel: 'Comentario',
                     textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :'No', confirmText :'Si' , login_status: this.props.login_status
                 };
                 this.props.navigation.navigate('ReservationReqInfo', {screenConfig: screenConfigObj});
@@ -89,56 +77,11 @@ class ReservedPublicationsList extends Component {
             case "PAYRESCUST": 
                 this.props.navigation.navigate('ReservationResCustPay', {auxParam: auxParam});
             break;
-            /*
             case "PAYRESCOM": 
-                this.ModalResComPay.current.toggle(auxParam);
-            break;*/
+                this.props.navigation.navigate('ReservationResComPay', {auxParam: auxParam});
+            break;
         }
     }
-
-    saveCancel(commentValue){
-        var objApi = {};
-        objApi.objToSend = {
-            "AccessToken": this.props.tokenObj.accesToken,
-            "IdReservation": this.state.selectedIdRes,
-            "Mail": this.props.userData.Mail,
-            "OldState": this.state.selectedResState,
-            "NewState": "CANCELED",
-            "CanceledReason": commentValue
-        }
-        objApi.fetchUrl = Globals.baseURL + '/reservation';
-        objApi.method = "PUT";
-        objApi.responseSuccess = "SUCC_RESERVATIONUPDATED";
-        objApi.successMessage = "Se ha cancelado la reserva";
-        objApi.functionAfterSuccess = "saveCancel";
-        //this.modalReqInfo.current.changeModalLoadingState(false);
-        this.callAPI(objApi);
-    }
-
-    saveConfirm(){
-        var objApi = {};
-        objApi.objToSend = {
-            "AccessToken": this.props.tokenObj.accesToken,
-            "IdReservation": this.state.selectedIdRes,
-            "Mail": this.props.userData.Mail,
-            "OldState": this.state.selectedResState,
-            "NewState": "RESERVED"
-        }
-        objApi.fetchUrl = Globals.baseURL + '/reservation';
-        objApi.method = "PUT";
-        objApi.responseSuccess = "SUCC_RESERVATIONUPDATED";
-        objApi.successMessage = "Se ha confirmado la reserva";
-        objApi.functionAfterSuccess = "saveConfirm";
-        //this.modalReqInfo.current.changeModalLoadingState(false);
-        this.callAPI(objApi);
-    }
-
-    /*triggerSaveModal(saveFunction, objData){
-        switch(saveFunction){
-            case "saveCancel": this.saveCancel(objData.textboxValue);break;
-            case "saveConfirm": this.saveConfirm();break;
-        }
-    }*/
 
     saveComissionPayment(objPaymentDetails){
         var objApi = {};
@@ -157,8 +100,7 @@ class ReservedPublicationsList extends Component {
         objApi.responseSuccess = "SUCC_PAYMENTUPDATED";
         objApi.successMessage = "Se ha enviado el pago de comisión";
         objApi.functionAfterSuccess = "saveComissionPayment";
-        //this.ModalResComPay.current.changeModalLoadingState(false);
-        this.callAPI(objApi);
+        callAPI(objApi);
     }
  
     handleExpiredToken(retryObjApi){
@@ -193,24 +135,23 @@ class ReservedPublicationsList extends Component {
     changePage = (pageClicked) => {
         console.log("TODISPLAY: " + JSON.stringify(this.state.reservationsToDisplay))
         console.log("Reservations: " + JSON.stringify(this.state.reservations))
-        /*this.setState({ reservationsToDisplay: this.filterPaginationArray(this.state.reservations, (pageClicked - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked },
-            () => this.setState({ reservationsToDisplay: this.filterPaginationArray(this.state.reservations, (pageClicked - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked }))*/
+        this.setState({ reservationsToDisplay: this.filterPaginationArray(this.state.reservations, (pageClicked - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked },
+            () => this.setState({ reservationsToDisplay: this.filterPaginationArray(this.state.reservations, (pageClicked - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked }))
     }
 
     filterPaginationArray = (arrayToFilter, startIndex) => {
         return arrayToFilter.slice(startIndex, startIndex + MAX_ELEMENTS_PER_TABLE)
     }
-            /* END OF API FUNCTIONS */
 
     render() {
-                    /* START SECURITY VALIDATIONS */
-        //if (this.props.login_status != 'LOGGED_IN') return <Redirect to='/' />
-        // THIS ONE ONLY FOR PUBLISHER PAGES
-        //if (this.props.userData.PublisherValidated != true) return <Redirect to='/' />
-                    /* END SECURITY VALIDATIONS */
+        const { systemLanguage } = this.props;
         return (
             <View style={styles.container}>
-                <Text style={styles.titleText}>Publicaciones reservadas</Text>
+                <Header
+                    //leftComponent={{ icon: 'menu', color: '#fff', flex: 1, onPress: () => this.props.navigation.openDrawer() }}
+                    rightComponent={{ icon: 'home', color: '#fff', flex:1, onPress: () => this.props.navigation.navigate('Home')}}
+                />
+                <Text style={styles.titleText}>{translations[systemLanguage].messages['res_publications_title']}</Text>
                 <ScrollView>
                     {this.state.reservationsToDisplay.length ? (
                         <>
@@ -224,17 +165,19 @@ class ReservedPublicationsList extends Component {
                                 reservationpaymentDate: obj.CustomerPayment.PaymentDate,
                                 IdReservation: obj.IdReservation
                              }
-                            var objCommisionPayment = {
+                            var objCommissionPayment = {
                                 paymentStatus: obj.CommissionPayment.PaymentDescription, 
-                                paymentStatusText: obj.CommissionPayment.PaymentDescription,
+                                paymentStatusText: translations[systemLanguage].messages['payState_'+obj.CommissionPayment.PaymentDescription.replace(/\s/g,'')],
                                 paymentAmmount: obj.CommissionPayment.Commission,
                                 paymentDate: obj.CommissionPayment.PaymentDate,
+                                paymentDocument: obj.CommissionPayment.PaymentEvidence,
+                                paymentComment: obj.CommissionPayment.PaymentComment,
                                 IdReservation :obj.IdReservation
                             };     
 
                         return(
                             <ReservedPublicationsListScrollView key={obj.IdReservation} isPublisher={true} editReservation={this.editReservation}  
-                                obj={obj} objReservationCustomerPayment={objReservationCustomerPayment} objCommisionPayment={objCommisionPayment}
+                                obj={obj} objReservationCustomerPayment={objReservationCustomerPayment} objCommissionPayment={objCommissionPayment}
                                 triggerScreen = {this.triggerScreen}/>  
                         ) 
                         
@@ -250,7 +193,6 @@ class ReservedPublicationsList extends Component {
                     ) : (
                         <>
                         <Text style={styles.subTitleText}>No se encontraron resultados</Text>
-                        <TouchableOpacity style={styles.button} onPress={() => this.changePage(1)}><Text style={styles.buttonText}>Test</Text></TouchableOpacity>
                         </>
                     )}                     
                 </ScrollView>       
@@ -303,6 +245,7 @@ const mapStateToProps = (state) => {
         login_status: state.loginData.login_status,
         tokenObj: state.loginData.tokenObj,
         userData: state.loginData.userData,
+        systemLanguage: state.loginData.systemLanguage
     }
 }
 

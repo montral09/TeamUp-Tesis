@@ -18,7 +18,7 @@ class ReservationSpacesListScrollView extends Component {
                     <View style={styles.borderContainer}>
                         <Text style={styles.subTitleText}>Pago reserva</Text>
                         <Text style={styles.infoText}>{this.props.objReservationCustomerPayment.reservationPaymentStateText}</Text>               
-                        <TouchableOpacity style={styles.button} /*onPress={()=>}*/> 
+                        <TouchableOpacity style={styles.button} onPress={()=> this.props.triggerScreen("PAYCUSTRES", this.props.parentData.IdReservation, this.props.objReservationCustomerPayment)}>
                             <Text style={styles.buttonText}>Detalles</Text>
                         </TouchableOpacity>
                     </View>
@@ -27,19 +27,19 @@ class ReservationSpacesListScrollView extends Component {
                         <Text style={styles.infoText}>{this.props.parentData.StateDescription}</Text>                
                         <>
                         {this.props.parentData.StateDescription === 'PENDING' || this.props.parentData.StateDescription === 'RESERVED' ? (
-                            <TouchableOpacity style={styles.button} /*onPress={()=>}*/>
+                            <TouchableOpacity style={styles.button} onPress={()=> this.props.triggerScreen("CANCEL")}>
                                 <Text style={styles.buttonText}>Cancelar</Text>
                             </TouchableOpacity>
                             ) : ( null )
                         }
                         {this.props.parentData.StateDescription === 'FINISHED' && !this.props.parentData.Reviewed ? (
-                            <TouchableOpacity style={styles.button} /*onPress={()=>}*/>
+                            <TouchableOpacity style={styles.button} /*onPress={()=> }*/>
                                 <Text style={styles.buttonText}>Calificar</Text>
                             </TouchableOpacity>
                             ) :(
                                 <>
                                 {this.props.parentData.StateDescription == 'PENDING'  ? (
-                                    <TouchableOpacity style={styles.button} /*onPress={()=>}*/>
+                                    <TouchableOpacity style={styles.button} onPress={()=> this.props.triggerScreen("EDIT", this.props.parentData.IdReservation, this.props.objReservationCustomerPayment)}>
                                         <Text style={styles.buttonText}>Editar</Text>
                                     </TouchableOpacity>                            
                                     ) : (null)}

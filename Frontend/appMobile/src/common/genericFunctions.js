@@ -32,7 +32,7 @@ export const callAPI = (objApi, bindThis) => {
             body: JSON.stringify(objApi.objToSend)
         }).then(response => response.json()).then(data => {
             console.log("data.responseCode "+data.responseCode)
-            console.log(data)
+            console.log("ESTO ES LA DATA CALLAPI" + JSON.stringify(data))
             if (data.responseCode && objApi.successMSG && data.responseCode in objApi.successMSG) {
                 if(objApi.successMSG[data.responseCode] && objApi.successMSG[data.responseCode] != ""){
                     displaySuccessMessage(objApi.successMSG[data.responseCode]);
@@ -116,12 +116,51 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             for(var i=1;i<=newTotalPages;i++){
                 newPagination.push(i);
             }
-            bindThis.setState({ reservations: objData.Reservations/*, loadingReservations: false,
-            reservationsToDisplay: bindThis.filterPaginationArray(objData.Reservations, 0), pagination: newPagination */})
+            bindThis.setState({ reservations: objData.Reservations, loadingReservations: false,
+            reservationsToDisplay: bindThis.filterPaginationArray(objData.Reservations, 0), pagination: newPagination })
         break;
         case "saveCustReservationPayment":
             bindThis.ModalCustResPay.current.changeModalLoadingState(true);
             bindThis.loadMyReservationsMRSL();
+        break;
+        case "saveConfirmRP":
+        case "saveCancelRP":
+            bindThis.loadMyReservationsRP();
+            bindThis.modalReqInfo.current.changeModalLoadingState(true);
+        break;
+        case "loadInfraestructureMP":
+            bindThis.setState({ facilities: objData.facilities });
+            bindThis.getInfraList();
+        break;
+        case "loadSpaceTypesMP":
+            if(bindThis.state.spacetypeSelected == ""){
+                var newSpaceTypeSelected = objData.spaceTypes[0].Code;
+                var spaceTypeSelectedText = objData.spaceTypes.filter(function(st){
+                    return parseInt(st.Code) === parseInt(newSpaceTypeSelected);
+                });
+                bindThis.setState({ spaceTypes: objData.spaceTypes, spacetypeSelected: newSpaceTypeSelected, spaceTypesLoaded: true, spaceTypeSelectedText: spaceTypeSelectedText[0].Description },
+                                () => {bindThis.startSearchMP();})
+            }else{
+                let sts = bindThis.state.spacetypeSelected;
+                var spaceTypeSelectedText = objData.spaceTypes.filter(function(st){
+                    return parseInt(st.Code) === parseInt(sts);
+                });
+                if(!spaceTypeSelectedText){
+                    spaceTypeSelectedText = objData.spaceTypes[0].Description;
+                    bindThis.setState({ spacetypeSelected: objData.spaceTypes[0].Code})
+                }
+                bindThis.setState({ spaceTypes: objData.spaceTypes, spaceTypesLoaded: true, spaceTypeSelectedText: spaceTypeSelectedText[0].Description || "" },
+                    () => {bindThis.startSearchMP();})
+            }
+        break;
+        case "startSearchMP":
+            var newTotalPages = Math.round(parseFloat(objData.TotalPublications/bindThis.state.publicationsPerPage));
+            var newPagination = [];
+            for(var i=1;i<=newTotalPages;i++){
+                newPagination.push(i);
+            }
+            bindThis.setState({ publicationsLoaded: true, publications:objData.Publications, 
+                totalPublications:objData.TotalPublications,totalPages:newTotalPages, pagination: newPagination });
         break;
     }
 }
