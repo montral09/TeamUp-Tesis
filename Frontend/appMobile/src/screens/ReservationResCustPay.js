@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Linking, TextInput, Dimensions} from 'react-native';
+import { connect } from 'react-redux';
 import { callAPI } from '../common/genericFunctions';
+import translations from '../common/translations';
 
 class ReservationResCustPay extends Component {
     constructor(props) {
@@ -89,32 +91,19 @@ class ReservationResCustPay extends Component {
     }
 
     render() {
+        const { systemLanguage } = this.props;
         return (
             <View style={styles.container}>
                 <View style={{alignItems: 'flex-start', marginLeft: 15}}>
-                    <Text style={styles.titleText}>Detalle pago de la reserva</Text>
+                    <Text style={styles.titleText}>{translations[systemLanguage].messages['modalResCusPay_header']}</Text>
                     <View style={{flexDirection:'row', alignItems: 'center'}}>
                         <View style={{flex:1}}>
-                            <Text style={styles.infoText}>Monto </Text>
+                            <Text style={styles.infoText}>{translations[systemLanguage].messages['myReservedSpacesList_custPay_paymentStatusTxt']} </Text>
                         </View>
                         <View style={{flex:1}}>
                             <TextInput style={styles.inputBox} 
                                 underlineColorAndroid='rgba(0,0,0,0)'
-                                placeholder='Monto'
-                                placeholderTextColor="#ffffff"
-                                value={this.state.objPaymentDetails.reservationPaymentAmmount.toString()}
-                                editable = {false}
-                            />
-                        </View>
-                    </View>
-                    <View style={{flexDirection:'row', alignItems: 'center'}}>
-                        <View style={{flex:1}}>
-                            <Text style={styles.infoText}>Estatus del pago </Text>
-                        </View>
-                        <View style={{flex:1}}>
-                            <TextInput style={styles.inputBox} 
-                                underlineColorAndroid='rgba(0,0,0,0)'
-                                placeholder='Estatus del pago'
+                                placeholder={translations[systemLanguage].messages['myReservedSpacesList_custPay_paymentStatusTxt']}
                                 placeholderTextColor="#ffffff"
                                 value={this.state.objPaymentDetails.reservationPaymentStateText}
                                 editable = {false}
@@ -123,14 +112,28 @@ class ReservationResCustPay extends Component {
                     </View>
                     <View style={{flexDirection:'row', alignItems: 'center'}}>
                         <View style={{flex:1}}>
-                            <Text style={styles.infoText}>Fecha de pago </Text>
+                            <Text style={styles.infoText}>{translations[systemLanguage].messages['amount_w']} </Text>
                         </View>
                         <View style={{flex:1}}>
                             <TextInput style={styles.inputBox} 
                                 underlineColorAndroid='rgba(0,0,0,0)'
-                                placeholder='Fecha de pago'
+                                placeholder={translations[systemLanguage].messages['amount_w']}
                                 placeholderTextColor="#ffffff"
-                                value={this.state.objPaymentDetails.reservationpaymentDate == null ? "Pendiente" : this.state.objPaymentDetails.reservationpaymentDate.toString()}
+                                value={this.state.objPaymentDetails.reservationPaymentAmmount.toString()}
+                                editable = {false}
+                            />
+                        </View>
+                    </View>
+                    <View style={{flexDirection:'row', alignItems: 'center'}}>
+                        <View style={{flex:1}}>
+                            <Text style={styles.infoText}>{translations[systemLanguage].messages['myReservedSpacesList_custPay_paymentDateTxt']} </Text>
+                        </View>
+                        <View style={{flex:1}}>
+                            <TextInput style={styles.inputBox} 
+                                underlineColorAndroid='rgba(0,0,0,0)'
+                                placeholder={translations[systemLanguage].messages['myReservedSpacesList_custPay_paymentDateTxt']}
+                                placeholderTextColor="#ffffff"
+                                value={this.state.objPaymentDetails.reservationpaymentDate == null ? translations[systemLanguage].messages['pending_w'] : this.state.objPaymentDetails.reservationpaymentDate.toString()}
                                 editable = {false}
                             />
                         </View>
@@ -145,12 +148,12 @@ class ReservationResCustPay extends Component {
 
                         {this.state.objPaymentDetails.paymentComment ? (
                             <View>
-                                <Text>Comentario del cliente</Text>
+                                <Text>{translations[systemLanguage].messages['modalResCusPay_commentByCust']}</Text>
                                 <TextInput style={styles.inputBox} 
                                     multiline = {true}
                                     numberOfLines = {4}
                                     underlineColorAndroid='rgba(0,0,0,0)'
-                                    placeholder='Comentario del cliente'
+                                    placeholder={translations[systemLanguage].messages['modalResCusPay_commentByCust']}
                                     placeholderTextColor="#ffffff"
                                     value={this.state.objPaymentDetails.paymentComment}
                                     editable = {false}
@@ -158,20 +161,24 @@ class ReservationResCustPay extends Component {
                             </View>
                         ) : (null)}
                         {this.state.objPaymentDetails.reservationPaymentState == "PAID" ? (
-                            <Text>El pago fue confirmado.</Text>
+                            <View style={{aligntItems: 'center'}}> 
+                                <Text style={styles.infoText}>{translations[systemLanguage].messages['modalResCusPay_txt3']}</Text>
+                            </View>
                         ) : (null)}
                     </>
                     ) : (
-                        <Text>El cliente aún no realizó el pago</Text>             
+                        <View style={{aligntItems: 'center'}}> 
+                            <Text style={styles.infoText}>{translations[systemLanguage].messages['modalResCusPay_txt4']}</Text>             
+                        </View>
                     )}   
                 </View>
                 <View style={{flexDirection: 'row'}}>
                     <TouchableOpacity style={styles.button} onPress={()=> {this.props.navigation.goBack()}} disabled={this.state.buttonIsDisabled}> 
-                        <Text style={styles.buttonText}>Cancelar</Text>
+                        <Text style={styles.buttonText}>{translations[systemLanguage].messages['reject_w']}</Text>
                     </TouchableOpacity>
                     {this.state.objPaymentDetails.reservationPaymentStateText != "PAID" && this.state.objPaymentDetails.reservationPaymentStateText != "CANCELED" ? (
                         <TouchableOpacity style={styles.button} onPress={()=> {this.save}} disabled={this.state.buttonIsDisabled}> 
-                            <Text style={styles.buttonText}>Guardar</Text>
+                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['confirm_w']}</Text>
                         </TouchableOpacity>
                         ) : (null)
                     }
@@ -244,4 +251,10 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ReservationResCustPay;
+const mapStateToProps = (state) => {
+    return {
+        systemLanguage: state.loginData.systemLanguage
+    }
+}
+
+export default connect(mapStateToProps)(ReservationResCustPay);

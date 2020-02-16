@@ -11,7 +11,7 @@ import RequestBePublisher from '../screens/RequestBePublisher';
 import ReservedPublicationsList from '../screens/ReservedPublicationsList';
 import DeleteUser from '../screens/DeleteUser';
 import LogOut from '../screens/LogOut';
-
+import translations from '../common/translations';
 import SearchBar from '../components/searchBar';
 import Banner from '../components/BannerScrollView';
 import Contact from '../components/contactUs';
@@ -97,6 +97,7 @@ const DrawerNavigator = createDrawerNavigator(
     Perfil: {
       screen: Profile, navigationOptions: ({ navigation }) => ({
         header: null,
+        title: translations[navigation.getParam('language', 'default value')].messages['signInLinks_head_myAccount'],
       })
     },
     /*Publicar: {
@@ -107,28 +108,28 @@ const DrawerNavigator = createDrawerNavigator(
     },*/
     Publicaciones: {
       screen: SpaceList, navigationOptions: ({ navigation }) => ({
-        title: 'Mis publicaciones',
+        title: translations[navigation.getParam('language', 'default value')].messages['signInLinks_head_myPublications'],
       })
     },
     ReservedPublicationsList: {
         screen: ReservedPublicationsList, navigationOptions: ({ navigation }) => ({
-          title: 'Mis espacios reservados',
+          title: translations[navigation.getParam('language', 'default value')].messages['signInLinks_head_myResSpaces'],
         })
     },
     ReservationSpaceList: {
         screen: ReservationSpaceList, navigationOptions: ({ navigation }) => ({
-          title: 'Mis reservas',
+          title: translations[navigation.getParam('language', 'default value')].messages['signInLinks_head_myReservations'],
         })
       },
     FavoriteSpaceList: {
       screen: FavoriteSpaceList, navigationOptions: ({ navigation }) => ({
-        title: 'Mis favoritos',
+        title: translations[navigation.getParam('language', 'default value')].messages['signInLinks_head_favorites'],
       })
     },
     DeleteUser: {
       screen: DeleteUser, navigationOptions: ({ navigation }) => ({
         header: null,
-        title: 'Darme de baja',
+        title: translations[navigation.getParam('language', 'default value')].messages['signInLinks_head_deleteUser'],
       })
     },
     LogOut: {

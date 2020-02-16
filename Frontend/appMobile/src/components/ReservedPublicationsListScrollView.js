@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import { StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import { connect } from 'react-redux';
+import translations from '../common/translations';
 
 // This component will render the table with the values passed as parameters -props-
 class ReservedPublicationsListScrollView extends Component {
@@ -9,48 +10,49 @@ class ReservedPublicationsListScrollView extends Component {
     }
 
 render() {
-
+    const { systemLanguage } = this.props;
     return(  
         <View style={styles.container}>       
             <View style={styles.spacesContainer}>
                 <View style={styles.textView}>            
                     <Text style={styles.subTitleText}>{this.props.obj.TitlePublication}</Text>            
                     <>
-                        {this.props.isPublisher ? <Text style={styles.infoText}>Mail cliente: {this.props.obj.MailCustomer}</Text> : null}
+                        {this.props.isPublisher ? <Text style={styles.infoText}>{translations[systemLanguage].messages['email_w']}: {this.props.obj.MailCustomer}</Text> : null}
                     </>
-                    <Text style={styles.infoText}>Personas: {this.props.obj.People}</Text>
-                    <Text style={styles.infoText}>Fecha: {this.props.obj.DateFromString}</Text>
+                    <Text style={styles.infoText}>{translations[systemLanguage].messages['people_w']}: {this.props.obj.People}</Text>
+                    <Text style={styles.infoText}>{translations[systemLanguage].messages['dateFrom_w']}: {this.props.obj.DateFromString}</Text>
+                    <Text style={styles.infoText}>{translations[systemLanguage].messages['dateTo_w']}: {this.props.obj.DateToString}</Text>
                     <>
-                        {this.props.obj.PlanSelected == 'Hour' ? (<Text style={styles.infoText}>Desde {this.props.obj.HourFrom} a {this.props.obj.HourTo}hs</Text> ) : (<Text style={styles.infoText}>1 {this.props.obj.PlanSelected}</Text>)}
+                        {this.props.obj.PlanSelected == 'Hour' ? (<Text style={styles.infoText}>{translations[systemLanguage].messages['from_w']} {this.props.obj.HourFrom} {translations[systemLanguage].messages['to_w']} {this.props.obj.HourTo}hs</Text> ) : (<Text style={styles.infoText}>1 {this.props.obj.PlanSelected}</Text>)}
                     </>
-                    <Text style={styles.infoText}>Monto: {this.props.obj.TotalPrice}</Text>     
+                    <Text style={styles.infoText}>{translations[systemLanguage].messages['amount_w']}: {this.props.obj.TotalPrice}</Text>     
                     <View style={styles.borderContainer}>
-                        <Text style={styles.subTitleText}>Pago reserva</Text>
-                        <Text style={styles.infoText}>{this.props.objReservationCustomerPayment.reservationPaymentStateText}</Text>               
+                        <Text style={styles.subTitleText}>{translations[systemLanguage].messages['payment_w']}</Text>
+                        <Text style={styles.infoText}>{translations[systemLanguage].messages['payState_'+this.props.objReservationCustomerPayment.reservationPaymentStateText.replace(/\s/g,'')]}</Text>               
                         <TouchableOpacity style={styles.button} onPress={()=> {this.props.triggerScreen("PAYRESCUST", this.props.obj.IdReservation, this.props.objReservationCustomerPayment)}}> 
-                            <Text style={styles.buttonText}>Detalles</Text>
+                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['details_w']}</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={styles.borderContainer}>
-                        <Text style={styles.subTitleText}>Pago comisión</Text>
-                        <Text style={styles.infoText}>{this.props.objCommisionPayment.paymentStatusText}</Text>               
-                        <TouchableOpacity style={styles.button} /*onPress={()=> }*/> 
-                            <Text style={styles.buttonText}>Detalles</Text>
+                        <Text style={styles.subTitleText}>{translations[systemLanguage].messages['comission_w']}</Text>
+                        <Text style={styles.infoText}>{this.props.objCommissionPayment.paymentStatusText}</Text>               
+                        <TouchableOpacity style={styles.button} onPress={()=> {this.props.triggerScreen("PAYRESCOM", this.props.obj.IdReservation, this.props.objCommissionPayment)}}> 
+                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['details_w']}</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={styles.borderContainer}>
-                        <Text style={styles.subTitleText}>Estado reserva</Text>
-                        <Text style={styles.infoText}>{this.props.obj.StateDescription}</Text>                
+                        <Text style={styles.subTitleText}>{translations[systemLanguage].messages['status_w']}</Text>
+                        <Text style={styles.infoText}>{translations[systemLanguage].messages['resState_'+this.props.obj.StateDescription.replace(/\s/g,'')]}</Text>                
                         <>
                         {this.props.obj.StateDescription === 'PENDING' || this.props.obj.StateDescription === 'RESERVED' ? (
                             <TouchableOpacity style={styles.button} onPress={()=> {this.props.triggerScreen("CANCEL", this.props.obj.IdReservation, this.props.obj.StateDescription)}}> 
-                                <Text style={styles.buttonText}>Cancelar</Text>
+                                <Text style={styles.buttonText}>{translations[systemLanguage].messages['cancel_w']}</Text>
                             </TouchableOpacity>
                             ) : ( 
                                 <> 
                                 {this.props.isPublisher && this.props.obj.StateDescription === 'PENDING' ? (
                                     <TouchableOpacity style={styles.button} onPress={()=> {this.props.triggerScreen("CONFIRM", this.props.obj.IdReservation, this.props.obj.StateDescription)}}>
-                                        <Text style={styles.buttonText}>Confirmar</Text>
+                                        <Text style={styles.buttonText}>{translations[systemLanguage].messages['confirm_w']}</Text>
                                     </TouchableOpacity>                            
                                     ) : (null)
                                 }
@@ -133,7 +135,13 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ReservedPublicationsListScrollView
+const mapStateToProps = (state) => {
+    return {
+        systemLanguage: state.loginData.systemLanguage
+    }
+}
+
+export default connect(mapStateToProps)(ReservedPublicationsListScrollView)
 
 /*<td></td>
                     <td>

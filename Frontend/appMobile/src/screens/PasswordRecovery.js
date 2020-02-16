@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ToastAndroid} from 'react-native';
 import { withNavigation } from 'react-navigation';
-
+import { connect } from 'react-redux';
+import translations from '../common/translations';
 //import Login from './Login'
 import Globals from '../Globals';
 
-export default class PasswordRecovery extends Component<>{
+class PasswordRecovery extends Component{
     constructor(){
         super();
         this.state = {
@@ -58,24 +59,35 @@ export default class PasswordRecovery extends Component<>{
     }
 
     render(){
+        const { systemLanguage } = this.props;
         return(
             <View style={styles.container}>
-                <Text style={styles.titleText}>Recuperar contraseña</Text>
+                <Text style={styles.titleText}>{translations[systemLanguage].messages['forgotPassword_header']}</Text>
                 <TextInput style={styles.inputBox} 
                     underlineColorAndroid='rgba(0,0,0,0)'
-                    placeholder="Correo"
+                    placeholder={translations[systemLanguage].messages['email_w']}
                     placeholderTextColor="#ffffff"
                     value={this.state.email}
                     onChangeText={(email) => this.setState({email})}
                 />
                 <TouchableOpacity style={styles.button} onPress={this.passRecovery} > 
-                    <Text style={styles.buttonText}>Enviar correo</Text>      
+                    <Text style={styles.buttonText}>{translations[systemLanguage].messages['recover_w']}</Text>      
                 </TouchableOpacity>
             </View>
         )
     }
 
 }
+
+const mapStateToProps = (state) => {
+    return {
+        login_status: state.loginData.login_status,
+        userData: state.loginData.userData,
+        systemLanguage: state.loginData.systemLanguage
+    }
+}
+
+export default connect(mapStateToProps)(PasswordRecovery)
 
 const styles = StyleSheet.create({
     container: {

@@ -1,22 +1,23 @@
 import React, {Component} from 'react';
-import { StyleSheet,Text,View,ScrollView,Image,TouchableOpacity,ActivityIndicator} from 'react-native';
+import { StyleSheet,Text,View,ScrollView,Dimensions,TouchableOpacity,ActivityIndicator} from 'react-native';
 import { Header } from 'react-native-elements';
-import { withNavigation } from 'react-navigation';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import LoadingOverlay from 'react-native-loading-spinner-overlay';
 import { connect } from 'react-redux';
 import HTMLView from 'react-native-htmlview';
 import { callAPI } from '../common/genericFunctions';
-import MenuButton from '../components/MenuButton';
+
+import SpaceImages from '../components/SpaceImagesScrollView';
 import HeartButton from '../components/HeartButton';
 import Stars from '../components/StarRating';
 import TabQuestions from '../components/TabQuestions';
 import TabReviews from '../components/TabReviews';
+import TabVideo from '../components/TabVideo';
 import RelatedPublications from '../components/RelatedPublications';
 
 import QAAnswer from './QAAnswer';
 
-class SpaceView extends React.Component {
+class SpaceView extends Component {
 
     constructor(props) {
         super(props);
@@ -43,6 +44,7 @@ class SpaceView extends React.Component {
             hourFromSelect      : '00',
             hourToSelect        : '01',
             reservationComment  : "",
+            descriptionCropped  : '',
             totalPrice          : 0,
             arrQA               : [],
             activeSection       : 1,
@@ -336,6 +338,12 @@ class SpaceView extends React.Component {
         this.setState({ratingPopUp: visible});
     }
 
+    cropDescription(){
+        var fixedDesc = '';
+        fixedDesc = this.state.pubObj.Description.replace('<p>', '');
+        this.setState({descriptionCropped:fixedDesc});
+    }
+
     render(){
         var loadStatus = !this.state.pubIsLoading && !this.state.infIsLoading ? false : true;
     return ( 
@@ -358,7 +366,7 @@ class SpaceView extends React.Component {
                             </View>
                         ):(null)
                         }
-                        <Image style={styles.image} source={{uri: this.state.activeImage.src}}/>
+                        <SpaceImages ImagesURL={this.state.pubObj.ImagesURL}/>
                         <Text style={styles.titleText}>{this.state.pubObj.Title}</Text>
                         <Text style={styles.capacityText}>{this.state.pubObj.QuantityRented} veces alquilado</Text>
                         <Text style={styles.capacityText}>Capacidad: {this.state.pubObj.Capacity} personas</Text>
@@ -393,22 +401,32 @@ class SpaceView extends React.Component {
                         </View>
                         
                         <View style={{flexDirection: 'row'}}>
-                            <TouchableOpacity style={styles.buttonTab} onPress={() => {this.switchActiveSection(1)}}>
-                                <Text style={styles.buttonText}>Descripción</Text>   
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.buttonTab} onPress={() => {this.switchActiveSection(2)}}>
-                                <Text style={styles.buttonText}>Preguntas</Text>   
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.buttonTab} onPress={() => {this.switchActiveSection(3)}}>
-                                <Text style={styles.buttonText}>Reseñas</Text>   
-                            </TouchableOpacity>                  
+                            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                                <TouchableOpacity style={styles.buttonTab} onPress={() => {this.switchActiveSection(1)}}>
+                                    <Text style={styles.buttonText}>Descripción</Text>   
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.buttonTab} onPress={() => {this.switchActiveSection(2)}}>
+                                    <Text style={styles.buttonText}>Preguntas</Text>   
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.buttonTab} onPress={() => {this.switchActiveSection(3)}}>
+                                    <Text style={styles.buttonText}>Reseñas</Text>   
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.buttonTab} onPress={() => {this.switchActiveSection(4)}}>
+                                    <Text style={styles.buttonText}>Video</Text>   
+                                </TouchableOpacity>
+                            </ScrollView>                  
                         </View>
                         
                         {this.state.activeSection === 1 ? (
                             <>
                                 <Text style={styles.subtitleText}>Descripción</Text>
-                                <HTMLView value={this.state.pubObj.Description} stylesheet={stylesHtml}/>
-                                <Text style={styles.descriptionText}>{this.state.pubObj.Description}</Text>
+                                <View style={styles.descriptionContainer}>
+                                    <ScrollView vertical>
+                                        <View style={{marginLeft: 10, marginTop: 10, marginRight: 10, marginBottom: 10}}>
+                                            <HTMLView value={this.state.pubObj.Description} stylesheet={stylesHtml}/>
+                                        </View>
+                                    </ScrollView>
+                                </View>                              
                                 <Text style={styles.subtitleText}>Dirección</Text>
                                 <Text style={styles.descriptionText}>{this.state.pubObj.Address}</Text>
                                 <Text style={styles.subtitleText}>Servicios</Text>
@@ -435,11 +453,21 @@ class SpaceView extends React.Component {
                                                             userData={this.props.userData} isMyPublication={this.state.pubObj.IsMyPublication}/>
                                             </>
                                         ) : (
-                                                <>                                                
-                                                    <Text style={styles.subtitleQuestionsText}>Reseñas</Text>
-                                                    <TabReviews reviews={this.state.pubObj.Reviews}/> 
+                                                <>
+                                                    {this.state.activeSection === 3 ? (
+                                                        <>                                                
+                                                            <Text style={styles.subtitleQuestionsText}>Reseñas</Text>
+                                                            <TabReviews reviews={this.state.pubObj.Reviews}/> 
+                                                        </>
+                                                    ) : (
+                                                            <>
+                                                                <Text style={styles.subtitleQuestionsText}>Video</Text>
+                                                                <TabVideo youtubeUrl={this.state.pubObj.VideoURL}/>
+                                                            </>
+                                                        )
+                                                    }
                                                 </>
-                                            )                                      
+                                            )                                     
                                         }
                                     </>
                                 ) 
@@ -451,7 +479,10 @@ class SpaceView extends React.Component {
                                 <TouchableOpacity style={styles.button} onPress={() => {this.props.navigation.navigate('ReserveSpace', {pubObj:this.state.pubObj})}}>
                                     <Text style={styles.buttonText}>Reservar</Text>   
                                 </TouchableOpacity>
-                                ) : (<Text style={styles.descriptionText}>Reserva disponible para clientes</Text>)
+                                ) : (<View style={styles.buttonsView}>
+                                        <Text style={styles.descriptionText}>Reserva disponible para clientes</Text>
+                                     </View>
+                                    )
                             }
                         </View>
                         <RelatedPublications relatedPublications={this.state.relatedPublications} push={this.props.navigation.push} title="Publicaciones relacionadas"/>
@@ -623,15 +654,21 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: '#2196f3',
         height: 80,
     },
-
+    descriptionContainer: {
+        backgroundColor: 'rgba(255,255,255,0.3)',
+        borderRadius: 25,
+        marginLeft: 20,
+        width: Dimensions.get('window').width - 40,
+        height: Dimensions.get('window').width * 0.8,
+    }
 });
 
 const stylesHtml = StyleSheet.create({
     a: {
         fontWeight: '300',
-        color: 'white', // make links coloured pink
     },
 });
 
@@ -659,3 +696,5 @@ const stylesHtml = StyleSheet.create({
                                 </>
                             )
                         })}*/
+
+//<Text style={styles.descriptionText}>{this.state.pubObj.Description}</Text>

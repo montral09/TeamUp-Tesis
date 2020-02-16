@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import {StyleSheet,Text,View,ScrollView,Keyboard,TouchableOpacity,ToastAndroid} from 'react-native';
-
+import { connect } from 'react-redux';
 import SpacesScrollView from './SpacesScrollView';
-
+import translations from '../common/translations';
 import Globals from '../Globals';
 
 class RecommendedPublications extends Component {
@@ -114,11 +114,12 @@ class RecommendedPublications extends Component {
             case "loadSpaceTypes" : this.setState({ spaceTypes: objData.spaceTypes }, () => {this.loadRecommendedPubs()}); break;
         }
     }
-
+    
     render() {
+        const { systemLanguage } = this.props;
         return (
             <View style={{marginTop: 20}}>
-                <Text style={styles.titleText}>Publicaciones recomendadas!</Text>
+                <Text style={styles.titleText}>{translations[systemLanguage].messages['recPubs_recommendedPubls']}</Text>
                 {this.state.recommendedPublications.map((relPubs) => {
                     if(relPubs.Publications.length == 0){
                         return null;
@@ -161,5 +162,11 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RecommendedPublications;
+const mapStateToProps = (state) => {
+    return {
+        systemLanguage: state.loginData.systemLanguage
+    }
+}
+
+export default connect(mapStateToProps)(RecommendedPublications);
 

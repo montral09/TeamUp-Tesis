@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
-import {View,Text,Image,StyleSheet,ToastAndroid,TouchableOpacity} from 'react-native';
+import {View,Text,StyleSheet,ToastAndroid,TouchableOpacity} from 'react-native';
 import { connect } from 'react-redux';
 
 import Globals from '../Globals';
+import translations from '../common/translations';
 
 class RequestBePublisher extends Component {  
     constructor(props) {
@@ -55,17 +56,17 @@ class RequestBePublisher extends Component {
     }
 
     render (){
-
+        const { systemLanguage } = this.props;
         return (
                 <View style={styles.container}>
-                    <Text style={styles.titleText}>Quiero publicar</Text>
-                    <Text style={styles.infoText}>Si quieres ser uno de nuestros colaboradores, pudiendo realizar publicaciones en el sito, haz click en el boton 'Quiero!'. Se enviará una solicitud y uno de nuestros representantes se comunicará contigo a la brevedad.</Text>
+                    <Text style={styles.titleText}>{translations[systemLanguage].messages['signInLinks_wantToPublish']}</Text>
+                    <Text style={styles.infoText}>{translations[systemLanguage].messages['signInLinks_wantToPublishBody']}</Text>
                     <View style={{flexDirection: 'row'}}>
                         <TouchableOpacity style={styles.button} onPress={() => {this.props.navigation.navigate('Home')}}>
-                            <Text style={styles.buttonText}>Me lo pierdo</Text>   
+                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['signInLinks_notwantToPublishBody']}</Text>   
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.button} onPress={() => {this.requestBePublisher}}>
-                            <Text style={styles.buttonText}>Quiero</Text>   
+                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['signInLinks_wantToPublishButton']}</Text>   
                         </TouchableOpacity>
                     </View>
                 </View>    
@@ -117,6 +118,7 @@ const mapStateToProps = (state) => {
     return {
         userData: state.loginData.userData,
         tokenObj: state.loginData.tokenObj,
+        systemLanguage: state.loginData.systemLanguage
     }
 }
 

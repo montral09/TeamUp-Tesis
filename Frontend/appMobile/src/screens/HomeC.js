@@ -2,28 +2,18 @@ import React, { Component } from 'react';
 import { StyleSheet, View, ScrollView, BackHandler } from 'react-native';
 import { Header } from 'react-native-elements';
 import { createDrawerNavigator, createAppContainer } from 'react-navigation';
-//import Theme from './theme';
 
-import SignUp from './SignUp';
 import Profile from './Profile';
-import PublishSpaceMaster from './PublishSpaceMaster';
-import SpaceView from './SpaceView';
-import SpaceViewDummy from './SpaceViewDummy';
-import SpaceList from './SpaceList';
 import FavoriteSpaceList from './FavoriteSpaceList';
 import ReservationSpaceList from './ReservationSpaceList';
 import RequestBePublisher from './RequestBePublisher';
-import ReservedPublicationsList from './ReservedPublicationsList';
 import DeleteUser from './DeleteUser';
 import LogOut from './LogOut';
 
-import Globals from '../Globals';
-import SearchPublications from './SearchPublications';
+import translations from '../common/translations';
 
-import MenuButton from '../components/MenuButton';
 import SearchBar from '../components/searchBar';
 import Banner from '../components/BannerScrollView';
-import SpacesScrollView from '../components/SpacesScrollView';
 import Contact from '../components/contactUs';
 import RecommendedPublications from '../components/RecommendedPublications';
 import { Notifications } from 'expo';
@@ -32,6 +22,7 @@ import registerForPushNotificationsAsync from '../common/registerForPushNotifica
 class HomeC extends Component {
   constructor(props) {
     super(props);
+    const { navigation } = this.props;
     this.state = {
       searchBarFocused: false,
     }
@@ -70,7 +61,6 @@ class HomeC extends Component {
   }*/
 
   render() {
-
     return (
       <View style={styles.container}>
         <Header
@@ -99,34 +89,36 @@ const styles = StyleSheet.create({
   },
 });
 
+
 const DrawerNavigator = createDrawerNavigator(
   {
     Home: { screen: HomeC },
     Perfil: {
       screen: Profile, navigationOptions: ({ navigation }) => ({
         header: null,
+        title: translations[navigation.getParam('language', 'default value')].messages['signInLinks_head_myAccount'],
       })
     },
     ReservationSpaceList: {
       screen: ReservationSpaceList, navigationOptions: ({ navigation }) => ({
-        title: 'Mis reservas',
+        title: translations[navigation.getParam('language', 'default value')].messages['signInLinks_head_myReservations'],
       })
     },
     FavoriteSpaceList: {
       screen: FavoriteSpaceList, navigationOptions: ({ navigation }) => ({
-        title: 'Mis favoritos',
+        title: translations[navigation.getParam('language', 'default value')].messages['signInLinks_head_favorites'],
       })
     },
     RequestBePublisher: {
       screen: RequestBePublisher, navigationOptions: ({ navigation }) => ({
         header: null,
-        title: 'Quiero publicar',
+        title: translations[navigation.getParam('language', 'default value')].messages['signInLinks_wantToPublish'],
       })
     },
     DeleteUser: {
       screen: DeleteUser, navigationOptions: ({ navigation }) => ({
         header: null,
-        title: 'Darme de baja',
+        title: translations[navigation.getParam('language', 'default value')].messages['signInLinks_head_deleteUser'],
       })
     },
     LogOut: {
@@ -144,7 +136,7 @@ const DrawerNavigator = createDrawerNavigator(
       }
     }
 });
-  
+
 export default DrawerNavigator;
 
 /*<Text style={styles.titleText}>

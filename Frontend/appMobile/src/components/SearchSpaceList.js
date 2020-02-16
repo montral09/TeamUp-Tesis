@@ -10,7 +10,7 @@ class SearchSpaceList extends Component {
             <>
                 {this.props.publications.map(publication => {
                     return (
-                        <SearchSpaceView key={publication.IdPublication} navigate={this.props.navigate} /*redirectToPub={this.props.redirectToPub}*/ {...publication}/>
+                        <SearchSpaceView key={publication.IdPublication} navigate={this.props.navigate} {...publication}/>
                     );
                 })}
             </>

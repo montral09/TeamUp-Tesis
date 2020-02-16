@@ -1,16 +1,28 @@
 import React, {Component} from 'react';
 import {View,Text,StyleSheet} from 'react-native';
+import { connect } from 'react-redux';
 
-export default class Contact extends Component {
+import translations from '../common/translations';
+
+class Contact extends Component {
     render (){
+        const { systemLanguage } = this.props;
         return (
                 <View style={styles.contactContainer}>
-                    <Text style={styles.titleText}>Nuestro contacto:</Text>
+                    <Text style={styles.titleText}>{translations[systemLanguage].messages['contact_w']}</Text>
                 </View>    
         );
     }
 
 }
+
+const mapStateToProps = (state) => {
+    return {
+        systemLanguage: state.loginData.systemLanguage
+    }
+}
+
+export default connect(mapStateToProps)(Contact)
 
 const styles = StyleSheet.create({
     contactContainer:{

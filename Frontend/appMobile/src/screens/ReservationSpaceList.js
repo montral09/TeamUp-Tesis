@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import { StyleSheet, Text, View, ScrollView, Keyboard, TouchableOpacity, ToastAndroid} from 'react-native';
 import { connect } from 'react-redux';
 import { Header } from 'react-native-elements';
+import { callAPI } from '../common/genericFunctions';
+import { MAX_ELEMENTS_PER_TABLE } from '../common/constants';
 
 import ReservationSpacesListScrollView from '../components/ReservationSpacesListScrollView';
 
@@ -14,25 +16,21 @@ class ReservationSpaceList extends Component {
             loadingReservations : true,
             reservationId : null,
             reservations : [],
+            reservationsToDisplay: [],
             modalConfigObj : {},
             generalError : false,
             selectedIdRes : null,
-            selectedResState : ""
+            selectedResState : "",
+            pagination: [1],
+            currentPage: 1,
         }
-        //this.modalElement = React.createRef();
-        //this.modalReqInfo = React.createRef();
-        //this.ModalCustResPay = React.createRef();
         this.bindFunctions();
     }
 
-    bindFunctions(){
-        this.loadMyReservations = this.loadMyReservations.bind(this);    
-        this.confirmEditReservation = this.confirmEditReservation.bind(this);
-        //this.triggerModal = this.triggerModal.bind(this);
-        this.saveRate = this.saveRate.bind(this);
-        this.saveCancel = this.saveCancel.bind(this);
-        //this.saveCustReservationPayment = this.saveCustReservationPayment.bind(this);
-        //this.triggerSaveModal = this.triggerSaveModal.bind(this);
+    bindFunctions(){  
+        //this.confirmEditReservation = this.confirmEditReservation.bind(this);
+        //this.saveRate = this.saveRate.bind(this);
+        //this.saveCancel = this.saveCancel.bind(this);
     }
 
     handleErrors(error) {
@@ -40,10 +38,35 @@ class ReservationSpaceList extends Component {
     }
 
     componentDidMount() {
-        this.loadMyReservations();
+        this.loadMyReservationsMRSL();
     }
 
-    loadMyReservations(){
+    changePage = (pageClicked) => {
+        this.setState({ reservationsToDisplay: this.filterPaginationArray(this.state.reservations, (pageClicked - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked },
+            () => this.setState({ reservationsToDisplay: this.filterPaginationArray(this.state.reservations, (pageClicked - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked }))
+    }
+
+    filterPaginationArray = (arrayToFilter, startIndex) => {
+        return arrayToFilter.slice(startIndex, startIndex + MAX_ELEMENTS_PER_TABLE)
+    }
+
+    loadMyReservationsMRSL = () => {
+        var objApi = {};
+        objApi.objToSend = {
+            "AccessToken": this.props.tokenObj.accesToken,
+            "Mail": this.props.userData.Mail
+        }
+        objApi.fetchUrl = "api/reservationCustomer";
+        objApi.method = "POST";
+        objApi.successMSG = {
+            SUCC_RESERVATIONSOK: '',
+        };
+        objApi.functionAfterSuccess = "loadMyReservationsMRSL";
+        objApi.errorMSG = {}
+        callAPI(objApi, this);
+    }
+
+    /*loadMyReservations(){
         try {
             fetch(Globals.baseURL + '/reservationCustomer', {
                 method: 'POST',
@@ -80,14 +103,34 @@ class ReservationSpaceList extends Component {
             );
             console.log(error);
         }
-    }
-
-    /*editReservation = (key) => {
-        const resData = this.state.reservations.filter(res => {
-            return res.IdReservation === key
-        });
-        this.modalElement.current.toggle(resData[0], this.props.tokenObj, this.props.userData);
     }*/
+
+    triggerScreen = (mode, IdReservation, auxParam) => {
+        var modalConfigObj = {};
+        switch (mode) {
+            case "CANCEL": 
+                screenConfigObj ={
+                    title: 'Cancelar reserva', mainText: 'Desea cancelar la reserva? Por favor indique el motivo ', mode : mode, saveFunction : "saveCancel", textboxLabel: 'Comentario',
+                    textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :'No', confirmText :'Si' , login_status: this.props.login_status
+                };
+                this.props.navigation.navigate('ReservationReqInfo', {screenConfig: screenConfigObj});
+            break;
+            case "RATE":
+                modalConfigObj = {
+                    title: this.props.translate('myReservedSpacesList_modalRate_header'), mainText: this.props.translate('myReservedSpacesList_modalRate_main'), mode: mode, saveFunction: "saveRateMRSL", textboxLabel: this.props.translate('comment_w'),
+                    textboxDisplay: true, cancelAvailable: true, confirmAvailable: true, cancelText: this.props.translate('cancel_w'), confirmText: this.props.translate('rate_w'), login_status: this.props.login_status,
+                    optionDisplay: true, optionLabel: this.props.translate('score_w'), optionArray: [5, 4, 3, 2, 1]
+                };
+                this.setState({ modalConfigObj: modalConfigObj, selectedIdRes: IdReservation, selectedResState: auxParam }, () => { this.modalReqInfo.current.toggle(); })
+                break;
+            case "PAYCUSTRES":
+                this.props.navigation.navigate('ReservationCustResPay', {auxParam: auxParam});
+                break;
+            case "EDIT":
+                this.props.navigation.navigate('ReservationEditResCustPay', {auxParam: auxParam});
+                break;
+        }
+    }
 
     convertDate(date) {
         var today = new Date(date);
@@ -175,32 +218,7 @@ class ReservationSpaceList extends Component {
         }
     }*/
 
-    /*triggerSaveModal(saveFunction, objData){
-        switch(saveFunction){
-            case "saveCancel": this.saveCancel(objData.textboxValue);break;
-            case "saveRate": this.saveRate(objData.optionValue, objData.textboxValue);break;
-            case "saveConfirm": this.saveConfirm();break;
-        }
-    }*/
-
-    saveCancel(commentValue){
-        var objApi = {};
-        objApi.objToSend = {
-            "AccessToken": this.props.tokenObj.accesToken,
-            "IdReservation": this.state.selectedIdRes,
-            "Mail": this.props.userData.Mail,
-            "OldState": this.state.selectedResState,
-            "NewState": "CANCELED",
-            "CanceledReason": commentValue
-        }
-        objApi.fetchUrl = Globals.baseURL + '/reservation';
-        objApi.method = "PUT";
-        objApi.responseSuccess = "SUCC_RESERVATIONUPDATED";
-        objApi.successMessage = "Se ha cancelado la reserva";
-        objApi.functionAfterSuccess = "saveCancel";
-        //this.modalReqInfo.current.changeModalLoadingState(false);
-        this.callAPI(objApi);
-    }
+    
 
     saveRate(optionValue, commentValue){
         var objApi = {};
@@ -244,7 +262,7 @@ class ReservationSpaceList extends Component {
         this.callAPI(objApi);
     }*/
     
-    callAPI(objApi){
+    /*callAPI(objApi){
         if(objApi.method == "GET"){
             fetch(objApi.fetchUrl).then(response => response.json()).then(data => {
                 if (data.responseCode == objApi.responseSuccess) {
@@ -288,7 +306,7 @@ class ReservationSpaceList extends Component {
             }
             )
         }
-    }
+    }*/
 
     /*callFunctionAfterApiSuccess(trigger, data){
         switch(trigger){
@@ -320,7 +338,7 @@ class ReservationSpaceList extends Component {
                     <View style={{flex:1}}>
                     <View style={{marginTop: 20, elevation: 3}}>
                         {
-                        this.state.reservations.map((reservation) => {   
+                        this.state.reservationsToDisplay.map((reservation) => {   
                         var newObj = {
                             IdReservation: reservation.IdReservation,
                             Title: reservation.TitlePublication,
@@ -341,10 +359,17 @@ class ReservationSpaceList extends Component {
                             reservationpaymentDate: reservation.CustomerPayment.PaymentDate,
                         }
                             return (<ReservationSpacesListScrollView key={reservation.IdReservation} parentData={newObj} navigate={this.props.navigation.navigate}
-                                    objReservationCustomerPayment={objReservationCustomerPayment}
-                                    />);
+                                    objReservationCustomerPayment={objReservationCustomerPayment} triggerScreen={this.triggerScreen} editReservation={this.editReservation}
+                                    /> );
                         })
                         }
+                    </View>
+                    <View style={{flexDirection: 'row'}}>
+                        {this.state.pagination.map(page => {
+                            return (
+                                <TouchableOpacity style={styles.button} key={page} onPress={() => this.changePage(page)}><Text style={styles.buttonText}>{page}</Text></TouchableOpacity>
+                            );
+                        })}  
                     </View>
                     </View>
                 </ScrollView>
@@ -391,5 +416,21 @@ const styles = StyleSheet.create({
     color: "#FFF",
     marginTop: 60,
     marginBottom: 5,
+  },
+  button: {
+    width:40,
+    height:30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor:'#0069c0',
+    borderRadius: 15,
+    marginVertical: 20,
+    elevation: 3,
+    paddingHorizontal: 5,
+  },
+  buttonText: {
+    fontSize:16,
+    fontWeight:'500',
+    color:'#ffffff'
   },
 });

@@ -1,5 +1,8 @@
 import React, {Component} from 'react';
 import { StyleSheet, Text, View, ScrollView, Keyboard, TextInput, TouchableOpacity} from 'react-native';
+import { callAPI } from '../common/genericFunctions';
+import { connect } from 'react-redux';
+import translations from '../common/translations';
 
 class ReservationReqInfo extends Component {
     constructor(props) {
@@ -50,11 +53,66 @@ class ReservationReqInfo extends Component {
     }
 
     save() {
-        if(this.props.modalConfigObj.saveFunction){
-            this.props.triggerSaveModal(this.props.modalConfigObj.saveFunction,{optionValue:this.state.optionValue, textboxValue:this.state.textboxValue })
+        if(this.screenConfig.saveFunction){
+            this.triggerSaveModal(this.screenConfig.saveFunction,{optionValue:this.state.optionValue, textboxValue:this.state.textboxValue })
         }else{
             this.props.modalSave(this.state.textboxValue);
         }
+    }
+
+    triggerSaveModal = (saveFunction, objData) => {
+        switch (saveFunction) {
+            case "saveCancelRP": this.saveCancelRP(objData.textboxValue); break;
+            case "saveConfirmRP": this.saveConfirmRP(objData.dateSelectValue); break;
+        }
+    }
+
+    saveCancelRP = (commentValue) => {
+        var objApi = {};
+        objApi.objToSend = {
+            "AccessToken": this.props.tokenObj.accesToken,
+            "IdReservation": this.state.selectedIdRes,
+            "Mail": this.props.userData.Mail,
+            "OldState": this.state.selectedResState,
+            "NewState": "CANCELED",
+            "CanceledReason": commentValue,
+            "DateTo": new Date()
+        }
+        objApi.fetchUrl = "api/reservation";
+        objApi.method = "PUT";
+        objApi.successMSG = {
+            SUCC_RESERVATIONUPDATED: translations[this.props.systemLanguage].messages['SUCC_RESERVATIONUPDATED'],
+        };
+        objApi.functionAfterSuccess = "saveCancelRP";
+        objApi.errorMSG = {}
+        this.modalReqInfo.current.changeModalLoadingState(false);
+        callAPI(objApi, this);
+    }
+
+    saveConfirmRP = (dateSelectValue) => {
+        if (dateSelectValue == "") {
+            displayErrorMessage(translations[this.props.systemLanguage].messages['reservedPublications_confirmModal_dateSelectMissingErr']);
+        } else {
+            var objApi = {};
+            objApi.objToSend = {
+                "AccessToken": this.props.tokenObj.accesToken,
+                "IdReservation": this.state.selectedIdRes,
+                "Mail": this.props.userData.Mail,
+                "OldState": this.state.selectedResState,
+                "NewState": "RESERVED",
+                "DateTo": dateSelectValue
+            }
+            objApi.fetchUrl = "api/reservation";
+            objApi.method = "PUT";
+            objApi.successMSG = {
+                SUCC_RESERVATIONUPDATED: translations[this.props.systemLanguage].messages['SUCC_RESERVATIONUPDATED2'],
+            };
+            objApi.functionAfterSuccess = "saveConfirmRP";
+            objApi.errorMSG = {}
+            this.modalReqInfo.current.changeModalLoadingState(false);
+            callAPI(objApi, this);
+        }
+
     }
 
     onChange = (e) => {
@@ -64,6 +122,7 @@ class ReservationReqInfo extends Component {
     }
 
     render() {
+        const { systemLanguage } = this.props;
         return (
             <>
                 {this.state.screenConfig ? (
@@ -89,7 +148,7 @@ class ReservationReqInfo extends Component {
                                                                                     </TouchableOpacity>
                                                                                    ) : (null)
                                 }                                                    
-                                {this.state.screenConfig.confirmAvailable == true ? (<TouchableOpacity style={styles.button} /*onPress={()=> {this.save}}*/> 
+                                {this.state.screenConfig.confirmAvailable == true ? (<TouchableOpacity style={styles.button} onPress={()=> {this.save}}> 
                                                                                         <Text style={styles.buttonText}>{this.state.screenConfig.confirmText}</Text>
                                                                                      </TouchableOpacity>
                                                                                     ) : (null)
@@ -154,4 +213,10 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ReservationReqInfo;
+const mapStateToProps = (state) => {
+    return {
+        systemLanguage: state.loginData.systemLanguage
+    }
+}
+
+export default connect(mapStateToProps)(ReservationReqInfo);
