@@ -66,7 +66,7 @@ class MyMessagesList extends React.Component {
     // This function will trigger the modal with custom elements to be displayed
     answerMsg = (questionObj) => {
         var modalConfigObj = {
-            title: 'Responder', mainText: <><strong>{this.props.translate('question_w')}:</strong><em>{' "' + questionObj.Question + '"'}</em></>, mode: "ANSWER", saveFunction: "saveAnswerMSG", textboxLabel: 'Respuesta',
+            title: this.props.translate('reply_w'), mainText: <><strong>{this.props.translate('question_w')}:</strong><em>{' "' + questionObj.Question + '"'}</em></>, mode: "ANSWER", saveFunction: "saveAnswerMSG", textboxLabel: this.props.translate('answer_w'),
             textboxDisplay: true, cancelAvailable: true, confirmAvailable: true, cancelText: this.props.translate('cancel_w'), confirmText: this.props.translate('reply_w'), login_status: this.props.login_status, IdQuestion: questionObj.IdQuestion
         };
         this.setState({ modalConfigObj: modalConfigObj }, () => { this.modalReqInfo.current.toggle(); })
