@@ -20,6 +20,7 @@ class ModalResCustPay extends React.Component {
         this.changeModalLoadingState = this.changeModalLoadingState.bind(this);
     }
 
+    // This function will toggle on or off the modal and save the paymentdetails if any
     toggle(objPaymentDetails) {
         if(!this.state.isLoading){
             this.setState({
@@ -28,6 +29,8 @@ class ModalResCustPay extends React.Component {
             });
         }
     }
+    
+    // This function will toggle on or off the modal and also the loading states
     changeModalLoadingState(closeModal){
         if(closeModal){
             this.setState({
@@ -42,6 +45,7 @@ class ModalResCustPay extends React.Component {
             })
         }
     }
+
     save() {
         this.changeModalLoadingState(false);
         var objPaymentDetails = this.state.objPaymentDetails;
@@ -53,6 +57,7 @@ class ModalResCustPay extends React.Component {
         this.changeModalLoadingState(false);
         this.props.rejetPayment();
     }
+    
     render() {
         const { translate } = this.props;
 

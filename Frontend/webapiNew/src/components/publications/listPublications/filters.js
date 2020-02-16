@@ -1,6 +1,9 @@
 import React from 'react';
 import $ from 'jquery';
 import { withRouter } from "react-router";
+import { compose } from 'redux';
+// Multilanguage
+import { withTranslate } from 'react-redux-multilingual';
 
 class Filters extends React.Component {
 
@@ -15,7 +18,7 @@ class Filters extends React.Component {
 			$("body").css("overflow", "visible");
 		});
 	}
-
+	// This function will handle the checkbox behavior
 	handleCheckbox(facilityCode){
 		var facilityIndex = this.props.facilitiesSelected.indexOf(facilityCode);
 		var newFacilitySelectArr = this.props.facilitiesSelected;
@@ -28,22 +31,24 @@ class Filters extends React.Component {
 		}
 		this.props.onChange({target:{id:'facilitiesSelected',value:newFacilitySelectArr}});
 	}
+	// This function will handle the onclick behavior
 	onClick(spaceCode,spaceDescription){
 		this.props.onChange({target:{id:'spacetypeSelected',value:spaceCode}})
 		this.props.onChange({target:{id:'spaceTypeSelectedText',value:spaceDescription}})		
 	}
  	render() { 	
+		const { translate } = this.props;
 		return (
 			<>
 				<div className="box box-with-categories" id="mfilter-box-32">
-					<h3 className="box-heading">Filtros</h3>
+					<h3 className="box-heading">{translate('filters_w')}</h3>
 					<div className="box-content mfilter-content">
 						<ul>
 							<li className="mfilter-filter-item mfilter-tree mfilter-categories">
 								<div className="mfilter-heading">
 									<div className="mfilter-heading-content">
 										<div className="mfilter-heading-text">
-											<span>Tipos de espacio</span>
+											<span>{translate('spaceType_w')}</span>
 										</div>
 										<i className="mfilter-head-icon"></i>
 									</div>
@@ -79,7 +84,7 @@ class Filters extends React.Component {
 								<div className="mfilter-heading">
 									<div className="mfilter-heading-content">
 										<div className="mfilter-heading-text">
-											<span>Servicios</span>
+											<span>{translate('services_w')}</span>
 										</div>
 											<i className="mfilter-head-icon"></i>
 									</div>
@@ -120,4 +125,8 @@ class Filters extends React.Component {
 	}
 }
 
-export default withRouter(Filters);
+const enhance = compose(
+    withRouter,
+    withTranslate
+)
+export default enhance(Filters);

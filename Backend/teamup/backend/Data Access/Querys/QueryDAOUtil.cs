@@ -54,7 +54,19 @@ namespace backend.Data_Access.Query
 
         public String GetEmailDataGeneric()
         {
-            String query = "select subject, body from EMAIL_FORMAT where code = @code and language = @language";
+            String query = "select subject, body from MESSAGES where code = @code and language = @language";
+            return query;
+        }
+
+        public String ConvertStatePublication()
+        {
+            String query = "select idSpaceState from SPACE_STATES where description = @state";
+            return query;
+        }
+
+        public String ConvertStateReservation()
+        {
+            String query = "select idReservationState from RESERVATION_STATES where description = @state";
             return query;
         }
     }     

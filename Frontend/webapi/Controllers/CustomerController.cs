@@ -15,25 +15,6 @@ namespace webapi.Controllers
         IFacadeWeb fach = new FacadeFactory().CreateFacadeWeb;
 
         [EnableCors(origins: "*", headers: "*", methods: "*")]
-        [HttpPost]
-        [Route("api/customer")]
-        public IHttpActionResult Get()
-        {
-            try
-            {
-                VOResponseGetCustomers voResp = new VOResponseGetCustomers();
-                List<VOCustomer> customers = fach.GetCustomers();
-                voResp.responseCode = EnumMessages.SUCC_CUSTOMERSOK.ToString();
-                voResp.voCustomers = customers;
-                return Ok(voResp);
-            }
-            catch (GeneralException e)
-            {
-                return InternalServerError(new Exception(e.Codigo));
-            }
-        }
-
-        [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpPut]
         [Route("api/customer")]
         public IHttpActionResult Put([FromBody]VORequestRequestPublisher voRequest)

@@ -69,15 +69,16 @@ namespace backend.Logic
         SUCC_RECOMMENDEDOK,
         //Messages
         SUCC_MESSAGESOK,
-        // Messages for deletion validations
+        //Messages for deletion validations
         ERR_PENDINGRESERVATIONCUSTOMER,
         ERR_PENDINGRESERVATIONPAYMENT,
         ERR_PENDINGPUBLICATION,
         ERR_PENDINGRESERVATIONPUBLISHER,
         ERR_PENDINGPREFERENTIALPAYMENT,
         ERR_PENDINGCOMMISSIONPAYMENT,
-        //Publication statics
-        SUCC_PUBLICATIONSTATICSOK
+        //Device token
+        SUCC_TOKENINSERTED
+
     }
     
 }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace backend.Data_Access.VO.Data
+﻿namespace backend.Data_Access.VO.Data
 {
     public class VOPublicationPaymentAdmin
     {
@@ -18,12 +14,13 @@ namespace backend.Data_Access.VO.Data
         public string Comment { get; set; }
         public string Evidence { get; set; }
         public string PaymentDate { get; set; }
-     
+        public int IdParentPublication { get; set; }
+
         public VOPublicationPaymentAdmin() { }
 
         
         public VOPublicationPaymentAdmin(int idPublication, string publication, string publisherMail, string publisherName, string publisherLastName,
-            string publisherPhone, string preferentialPlanName, string preferentialPlanState, int price, string comment, string evidence, string paymentDate)
+            string publisherPhone, string preferentialPlanName, string preferentialPlanState, int price, string comment, string evidence, string paymentDate, int idParentPublication)
             
         {
             IdPublication = idPublication;
@@ -38,6 +35,7 @@ namespace backend.Data_Access.VO.Data
             Comment = comment;
             Evidence = evidence;
             PaymentDate = paymentDate;
+            IdParentPublication = idParentPublication;
         }
     }
 }

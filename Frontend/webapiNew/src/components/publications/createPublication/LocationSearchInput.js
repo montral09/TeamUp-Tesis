@@ -4,6 +4,8 @@ import PlacesAutocomplete, {
   getLatLng,
 } from 'react-places-autocomplete';
 import './LocationSearchInput.css';
+// Multilanguage
+import { withTranslate } from 'react-redux-multilingual';
 
 class LocationSearchInput extends React.Component {
   constructor(props) {
@@ -17,30 +19,36 @@ class LocationSearchInput extends React.Component {
  
   handleSelect = address => {
     let city = address.split(",")[0];
-    console.log("city:"+city)
-
     this.props.onChange({target :{value:city,id:"city"}});
     this.setState({
       address : city
   })};
  
   render() {
+    // these options will bias the autocomplete predictions towards Uruguay,
+    // and limit the results to addresses only
+    const searchOptions = {
+      location: new window.google.maps.LatLng(-34, -56),
+      radius: 40000,
+      types: ['address']
+    }
     return (
       <PlacesAutocomplete
         value={this.state.address}
         onChange={this.handleChange}
         onSelect={this.handleSelect}
+        searchOptions={searchOptions}
       >
         {({ getInputProps, suggestions, getSuggestionItemProps, loading }) => (
             <div className="Demo__search-input-container">
             <input
               {...getInputProps({
-                placeholder: 'Ej: Pocitos ...',
+                placeholder: 'Pocitos...',
                 className: 'location-search-input',
               })}
             />
-            <div >
-              {loading && <div>Loading...</div>}
+            <div style ={{ position: "absolute"}} >
+              {loading && <div className = 'Demo__suggestion-item'>{this.props.translate('loading_text_small')}</div>}
               {suggestions.map(suggestion => {
                 const className = suggestion.active
                   ? 'Demo__suggestion-item--active'
@@ -68,4 +76,4 @@ class LocationSearchInput extends React.Component {
   }
 }
 
-export default LocationSearchInput
+export default withTranslate(LocationSearchInput);

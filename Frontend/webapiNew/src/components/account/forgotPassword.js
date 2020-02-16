@@ -23,12 +23,15 @@ class ForgotPassword extends React.Component {
     componentDidMount() {
         window.scrollTo(0, 0);
     }
-
+    
+    // This function will handle the onchange event from the fields
     onChange = (e) => {
         this.setState({
             [e.target.name]: e.target.value
         })
     }
+
+    // This function will call the API
     restoreUser = () => {
         if(this.state.email){
             var objApi = {};

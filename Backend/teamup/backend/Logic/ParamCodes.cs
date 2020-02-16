@@ -1,4 +1,6 @@
 ﻿
+using System.Collections.Generic;
+
 namespace backend.Logic
 {
     public static class ParamCodes

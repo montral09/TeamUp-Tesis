@@ -65,10 +65,10 @@ class Form extends Component{
         const { login_status, systemLanguage } = this.props;
         if (login_status == 'LOGGED_IN'){
             if (this.props.userData.PublisherValidated == true){
-                return this.props.navigation.navigate('HomeG', {language:this.state.language});
+                return this.props.navigation.navigate('DrawerNavigator', {language:this.state.language});
             }
             else{
-                return this.props.navigation.navigate('HomeC', {language:this.state.language});
+                return this.props.navigation.navigate('DrawerNavigatorC', {language:this.state.language});
             }
         } 
 
@@ -119,7 +119,6 @@ class Form extends Component{
                         </Picker>
                     </>
                 )} 
-
                 
                 {this.state.error && (
                     <Text style={styles.errorText}>{this.state.error}</Text>
@@ -127,7 +126,6 @@ class Form extends Component{
             </View>
         )
     }
-
 }
 
 const mapStateToProps = (state) => {

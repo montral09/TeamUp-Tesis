@@ -3,7 +3,6 @@ using backend.Data_Access.Query;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Text;
 using System.Configuration;
 using System.Data;
 using backend.Exceptions;
@@ -23,6 +22,12 @@ namespace backend.Data_Access
             return con;
         }
 
+        /// <summary>
+        /// Validates that the access token matches the email address
+        /// </summary>
+        /// <param name="accessToken"></param>
+        /// <param name="mail"></param>
+        /// <returns> Error or success message </returns>
         public string ValidAccessToken(string accessToken, string mail)
         {            
             SqlConnection con = null;
@@ -48,31 +53,39 @@ namespace backend.Data_Access
                 }
                 dr.Close();
 
-                if (accessToken.Equals(actualAccessToken))
+                if (accessToken != null)
                 {
-                    DateTime expirationDate = DateTime.UtcNow;
-                    String queryExpiration = cns.GetExpirationTimeAccessTokenUser();
-                    SqlCommand selectCommandExpiration = new SqlCommand(queryExpiration, con);
-                    SqlParameter parametroExpiration = new SqlParameter()
+                    if (accessToken.Equals(actualAccessToken))
                     {
-                        ParameterName = "@mail",
-                        Value = mail,
-                        SqlDbType = SqlDbType.VarChar
-                    };
-                    selectCommandExpiration.Parameters.Add(parametroExpiration);
-                    SqlDataReader drExpiration = selectCommandExpiration.ExecuteReader();
-                    while (drExpiration.Read())
-                    {
-                        expirationDate = Convert.ToDateTime(drExpiration["accessTokenExpiration"]);
+                        DateTime expirationDate = DateTime.UtcNow;
+                        String queryExpiration = cns.GetExpirationTimeAccessTokenUser();
+                        SqlCommand selectCommandExpiration = new SqlCommand(queryExpiration, con);
+                        SqlParameter parametroExpiration = new SqlParameter()
+                        {
+                            ParameterName = "@mail",
+                            Value = mail,
+                            SqlDbType = SqlDbType.VarChar
+                        };
+                        selectCommandExpiration.Parameters.Add(parametroExpiration);
+                        SqlDataReader drExpiration = selectCommandExpiration.ExecuteReader();
+                        while (drExpiration.Read())
+                        {
+                            expirationDate = Convert.ToDateTime(drExpiration["accessTokenExpiration"]);
+                        }
+                        drExpiration.Close();
+
+                        if (expirationDate < DateTime.UtcNow)
+                        {
+                            // Access token expired
+                            result = EnumMessages.ERR_ACCESSTOKENEXPIRED.ToString();
+
+                        }
                     }
-                    drExpiration.Close();
-
-                    if (expirationDate < DateTime.UtcNow)
+                    else
                     {
-                        // Access token expired
-                        result = EnumMessages.ERR_ACCESSTOKENEXPIRED.ToString();
-
-                    }                    
+                        // Invalid access token
+                        result = EnumMessages.ERR_INVALIDACCESSTOKEN.ToString();
+                    }
                 } else
                 {
                     // Invalid access token
@@ -93,6 +106,12 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Validates that the refresh token matches the email address
+        /// </summary>
+        /// <param name="refreshToken"></param>
+        /// <param name="mail"></param>
+        /// <returns></returns>
         public string ValidRefreshToken(string refreshToken, string mail)
         {
             SqlConnection con = null;
@@ -164,6 +183,12 @@ namespace backend.Data_Access
             }
         }
 
+        /// <summary>
+        /// Given an emailCode and language, returns body and subject of the email
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="language"></param>
+        /// <returns> EmailDataGeneric </returns>
         public EmailDataGeneric GetEmailDataGeneric(string code, int language)
         {
             SqlConnection con = null;
@@ -187,6 +212,92 @@ namespace backend.Data_Access
                 }
                 dr.Close();
                 return data;
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Given a state description, returns the code
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns> State code </returns>
+        public int ConvertStatePublication(string state)
+        {
+            SqlConnection con = null;
+            int stateCode = 0;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.ConvertStatePublication();
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                SqlParameter param = new SqlParameter()
+                {
+                    ParameterName = "@state",
+                    Value = state,
+                    SqlDbType = SqlDbType.VarChar
+                };
+                selectCommand.Parameters.Add(param);
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                while (dr.Read())
+                {
+                    stateCode = Convert.ToInt32(dr["idSpaceState"]);
+                }
+                dr.Close();
+                return stateCode;
+            }
+            catch (Exception e)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Given a reservation state, returns the code
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns> Reservation code </returns>
+        public int ConvertStateReservation(string state)
+        {
+            SqlConnection con = null;
+            int stateCode = 0;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.ConvertStateReservation();
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                SqlParameter param = new SqlParameter()
+                {
+                    ParameterName = "@state",
+                    Value = state,
+                    SqlDbType = SqlDbType.VarChar
+                };
+                selectCommand.Parameters.Add(param);
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                while (dr.Read())
+                {
+                    stateCode = Convert.ToInt32(dr["idReservationState"]);
+                }
+                dr.Close();
+                return stateCode;
             }
             catch (Exception e)
             {

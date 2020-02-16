@@ -21,7 +21,7 @@ export default function App() {
 
   return (
     //<View style={styles.container}>
-    <Provider store={store}>
+    <Provider store={store}>      
         <Login/>
         <FlashMessage position="top" />
     </Provider>

@@ -19,6 +19,7 @@ class ModalCustResPay extends React.Component {
         };
     }
 
+    // This function will toggle on or off the modal and save the paymentdetails if any
     toggle=(objPaymentDetails) =>{
         if (!this.state.isLoading) {
             this.setState({
@@ -27,6 +28,8 @@ class ModalCustResPay extends React.Component {
             });
         }
     }
+    
+    // This function will toggle on or off the modal and also the loading states
     changeModalLoadingState=(closeModal) =>{
         if (closeModal) {
             this.setState({

@@ -4,11 +4,9 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
-using System.Threading.Tasks;
-using backend.Data_Access.VO;
-using backend.Data_Access.VO.Data;
 using backend.Exceptions;
 using backend.Logic;
+using backend.Logic.Entities;
 
 namespace backend.Data_Access.Query
 {
@@ -25,6 +23,11 @@ namespace backend.Data_Access.Query
             return con;
         }
 
+        /// <summary>
+        /// Returns if user exists
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <returns> true if exists </returns>
         public bool Member(String mail)
         {
             SqlConnection con = null;
@@ -63,6 +66,11 @@ namespace backend.Data_Access.Query
             return member;
         }
 
+        /// <summary>
+        /// Given an email address returns user info
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <returns> User </returns>
         public User Find(String mail)
         {
             SqlConnection con = null;
@@ -101,12 +109,15 @@ namespace backend.Data_Access.Query
             return user;
         }
 
+        /// <summary>
+        /// Insert user info into database, creates an encrytped password and returns activation code to send via email
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns> Activation code </returns>
         public string InsertUser(User user)
         {
-            string activationCode = "";
             SqlConnection con = null;
-            SqlTransaction objTrans = null;       
-            
+            SqlTransaction objTrans = null;                   
             try
             {
                 // Create secure password
@@ -136,7 +147,7 @@ namespace backend.Data_Access.Query
                 insertCommand.ExecuteNonQuery();
                 // Generate activation code
                 String queryActivation = cns.InsertActivationCode();
-                activationCode = Guid.NewGuid().ToString();
+                string activationCode = Guid.NewGuid().ToString();
                 SqlCommand updateCommand = new SqlCommand(queryActivation, con);
                 List<SqlParameter> parameters = new List<SqlParameter>()
                     {
@@ -167,6 +178,12 @@ namespace backend.Data_Access.Query
             }
         }
 
+        /// <summary>
+        /// Updates user info, updates encrypted password and returns activation code to send via email
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="newMail"></param>
+        /// <returns> Activation code</returns>
         public string UpdateUser(User user, String newMail)
         {
             SqlConnection con = null;
@@ -252,6 +269,10 @@ namespace backend.Data_Access.Query
             }
         }
 
+        /// <summary>
+        /// Deactivates user by updating state
+        /// </summary>
+        /// <param name="mail"></param>
         public void DeleteUser(String mail)
         {
             SqlConnection con = null;
@@ -283,6 +304,12 @@ namespace backend.Data_Access.Query
             }
         }
 
+        /// <summary>
+        /// Before deleting an user, it is neccesary to check for pendings process.
+        /// (reservations, payments)
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <returns> Error or success message </returns>
         public String ValidateDeletion(String mail)
         {
             SqlConnection con = null;
@@ -420,11 +447,14 @@ namespace backend.Data_Access.Query
             return result;
         }
 
-
-        public List<VOPublisher> GetPublishers()
+        /// <summary>
+        /// Returns all publishers who hasn´t been approved yet
+        /// </summary>
+        /// <returns> Users </returns>
+        public List<User> GetPublishers()
         {
             SqlConnection con = null;
-            List<VOPublisher> publishers = new List<VOPublisher>();
+            List<User> publishers = new List<User>();
             try
             {
                 con = new SqlConnection(GetConnectionString());
@@ -432,10 +462,11 @@ namespace backend.Data_Access.Query
                 String query = cns.GetPublishers();
                 SqlCommand selectCommand = new SqlCommand(query, con);
                 SqlDataReader dr = selectCommand.ExecuteReader();
+                User publisher;
                 while (dr.Read())
                 {
-                    VOPublisher vo = new VOPublisher(Convert.ToString(dr["mail"]), "", Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToString(dr["rut"]), Convert.ToString(dr["razonSocial"]), Convert.ToString(dr["address"]), Convert.ToBoolean(dr["publisherValidated"]), Convert.ToBoolean(dr["mailValidated"]));
-                    publishers.Add(vo);
+                    publisher = new User(0,Convert.ToString(dr["mail"]), "", Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), false, Convert.ToString(dr["rut"]), Convert.ToString(dr["razonSocial"]), Convert.ToString(dr["address"]), Convert.ToBoolean(dr["mailValidated"]), Convert.ToBoolean(dr["publisherValidated"]), false, null, 0);                    
+                    publishers.Add(publisher);
                 }
                 dr.Close();
             }
@@ -453,38 +484,10 @@ namespace backend.Data_Access.Query
             return publishers;
         }
 
-        public List<VOCustomer> GetCustomers()
-        {
-            SqlConnection con = null;
-            List<VOCustomer> customers = new List<VOCustomer>();
-            try
-            {
-                con = new SqlConnection(GetConnectionString());
-                con.Open();
-                String query = cns.GetCustomers();
-                SqlCommand selectCommand = new SqlCommand(query, con);
-                SqlDataReader dr = selectCommand.ExecuteReader();
-                while (dr.Read())
-                {
-                    VOCustomer vo = new VOCustomer(Convert.ToString(dr["mail"]), "", Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToString(dr["rut"]), Convert.ToString(dr["razonSocial"]), Convert.ToString(dr["address"]), Convert.ToBoolean(dr["mailValidated"]));
-                    customers.Add(vo);
-                }
-                dr.Close();
-            }
-            catch (Exception)
-            {
-                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
-            }
-            finally
-            {
-                if (con != null)
-                {
-                    con.Close();
-                }
-            }
-            return customers;
-        }
-
+        /// <summary>
+        /// Approves all publishers by changing publicherValidated value
+        /// </summary>
+        /// <param name="mails"></param>
         public void ApprovePublishers(List<String> mails)
         {
             SqlConnection con = null;
@@ -520,6 +523,12 @@ namespace backend.Data_Access.Query
             }
         }
 
+        /// <summary>
+        /// Returns admin info by entering mail and password
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <param name="password"></param>
+        /// <returns> Admin</returns>
         public Admin GetAdmin(String mail, String password)
         {
             SqlConnection con = null;
@@ -558,6 +567,11 @@ namespace backend.Data_Access.Query
             return admin;
         }
 
+        /// <summary>
+        /// Returns if mail has been already validated
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <returns> true if is validated </returns>
         public bool IsMailValidated(String mail)
         {
             SqlConnection con = null;
@@ -596,6 +610,10 @@ namespace backend.Data_Access.Query
             return mailValidated;
         }
 
+        /// <summary>
+        /// Updates checkPublisher = true to given mail
+        /// </summary>
+        /// <param name="mail"></param>
         public void RequestPublisher(String mail)
         {
             SqlConnection con = null;
@@ -629,7 +647,12 @@ namespace backend.Data_Access.Query
             }
         }
 
-        public VOTokens CreateTokens(String mail)
+        /// <summary>
+        /// For a certain email creates access and refresh tokens with their expiration dates
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <returns> Tokens </returns>
+        public Tokens CreateTokens(String mail)
         {
             SqlConnection con = null;
             try
@@ -656,7 +679,7 @@ namespace backend.Data_Access.Query
                 };
                 updateCommand.Parameters.AddRange(prm.ToArray());
                 updateCommand.ExecuteNonQuery();
-                return new VOTokens(accessToken, refreshToken);
+                return new Tokens(accessToken, refreshToken);
             }
             catch (Exception)
             {
@@ -670,13 +693,12 @@ namespace backend.Data_Access.Query
                 }
             }
         }
-
-        public bool ValidAccessToken(String mail, String accessToken)
-        {
-            //TODO
-            return true;
-        }
-
+        
+        /// <summary>
+        /// Creates a random password to given mail and sends it to user
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <returns> Random password </returns>
         public string UpdatePassword(String mail)
         {
             SqlConnection con = null;
@@ -724,6 +746,12 @@ namespace backend.Data_Access.Query
                 }
             }
         }
+
+        /// <summary>
+        /// Updates mailValidated given an activation code
+        /// </summary>
+        /// <param name="activationCode"></param>
+        /// <returns> number of records updated (to check if any record has been updated)</returns>
         public int ValidateEmail(String activationCode)
         {
             SqlConnection con = null;
@@ -758,7 +786,22 @@ namespace backend.Data_Access.Query
             }
         }
 
-        public void UpdateUserAdmin(VORequestUpdateUserAdmin voRequest)
+        /// <summary>
+        /// Updates user info (called by an admin user)
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <param name="name"></param>
+        /// <param name="lastName"></param>
+        /// <param name="phone"></param>
+        /// <param name="checkPublisher"></param>
+        /// <param name="rut"></param>
+        /// <param name="razonSocial"></param>
+        /// <param name="address"></param>
+        /// <param name="mailValidated"></param>
+        /// <param name="publisherValidated"></param>
+        /// <param name="active"></param>
+        public void UpdateUserAdmin(string mail, string name,string lastName, string phone, bool checkPublisher,
+                        string rut, string razonSocial, string address, bool mailValidated,bool publisherValidated, bool active)
         {
             SqlConnection con = null;
             try
@@ -771,7 +814,7 @@ namespace backend.Data_Access.Query
                 SqlParameter parametroID = new SqlParameter()
                 {
                     ParameterName = "@mail",
-                    Value = voRequest.Mail,
+                    Value = mail,
                     SqlDbType = SqlDbType.VarChar
                 };
                 selectCommand.Parameters.Add(parametroID);
@@ -786,17 +829,17 @@ namespace backend.Data_Access.Query
                 List<SqlParameter> prm = new List<SqlParameter>()
                  {
                     new SqlParameter("@idUser", SqlDbType.Int) { Value = idUser},
-                    new SqlParameter("@mail", SqlDbType.VarChar) {Value = voRequest.Mail},
-                    new SqlParameter("@name", SqlDbType.VarChar) {Value = voRequest.Name},
-                    new SqlParameter("@lastName", SqlDbType.VarChar) {Value = voRequest.LastName},
-                    new SqlParameter("@phone", SqlDbType.VarChar) {Value = voRequest.Phone},
-                    new SqlParameter("@checkPublisher", SqlDbType.Bit) {Value = voRequest.CheckPublisher},
-                    new SqlParameter("@rut", SqlDbType.VarChar) {Value = voRequest.Rut},
-                    new SqlParameter("@razonSocial", SqlDbType.VarChar) {Value = voRequest.RazonSocial},
-                    new SqlParameter("@address", SqlDbType.VarChar) { Value = voRequest.Address},
-                    new SqlParameter("@mailValidated", SqlDbType.Bit) { Value = voRequest.MailValidated},
-                    new SqlParameter("@publisherValidated", SqlDbType.Bit) { Value = voRequest.PublisherValidated},
-                    new SqlParameter("@active", SqlDbType.Bit) { Value = voRequest.Active},
+                    new SqlParameter("@mail", SqlDbType.VarChar) {Value = mail},
+                    new SqlParameter("@name", SqlDbType.VarChar) {Value = name},
+                    new SqlParameter("@lastName", SqlDbType.VarChar) {Value = lastName},
+                    new SqlParameter("@phone", SqlDbType.VarChar) {Value = phone},
+                    new SqlParameter("@checkPublisher", SqlDbType.Bit) {Value = checkPublisher},
+                    new SqlParameter("@rut", SqlDbType.VarChar) {Value = rut},
+                    new SqlParameter("@razonSocial", SqlDbType.VarChar) {Value = razonSocial},
+                    new SqlParameter("@address", SqlDbType.VarChar) { Value = address},
+                    new SqlParameter("@mailValidated", SqlDbType.Bit) { Value = mailValidated},
+                    new SqlParameter("@publisherValidated", SqlDbType.Bit) { Value = publisherValidated},
+                    new SqlParameter("@active", SqlDbType.Bit) { Value = active},
 
                 };
                 updateCommand.Parameters.AddRange(prm.ToArray());
@@ -815,10 +858,14 @@ namespace backend.Data_Access.Query
             }
         }
 
-        public List<VOUserAdmin> GetUsers()
+        /// <summary>
+        /// Returns all users
+        /// </summary>
+        /// <returns> Users </returns>
+        public List<User> GetUsers()
         {
             SqlConnection con = null;
-            List<VOUserAdmin> users = new List<VOUserAdmin>();
+            List<User> users = new List<User>();
             try
             {
                 con = new SqlConnection(GetConnectionString());
@@ -826,10 +873,14 @@ namespace backend.Data_Access.Query
                 String query = cns.GetUsers();
                 SqlCommand selectCommand = new SqlCommand(query, con);
                 SqlDataReader dr = selectCommand.ExecuteReader();
+                User user;
                 while (dr.Read())
                 {
-                    VOUserAdmin vo = new VOUserAdmin(Convert.ToString(dr["mail"]), "", Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToString(dr["rut"]), Convert.ToString(dr["razonSocial"]), Convert.ToString(dr["address"]), Convert.ToBoolean(dr["checkPublisher"]), Convert.ToBoolean(dr["mailValidated"]), Convert.ToBoolean(dr["publisherValidated"]), Convert.ToBoolean(dr["active"]));
-                    users.Add(vo);
+                    user = new User(0, Convert.ToString(dr["mail"]), null, Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]),
+                        Convert.ToString(dr["phone"]), Convert.ToBoolean(dr["checkPublisher"]), Convert.ToString(dr["rut"]), 
+                        Convert.ToString(dr["razonSocial"]), Convert.ToString(dr["address"]), Convert.ToBoolean(dr["mailValidated"]), 
+                        Convert.ToBoolean(dr["publisherValidated"]), Convert.ToBoolean(dr["active"]), null, 0);                   
+                    users.Add(user);
                 }
                 dr.Close();
             }
@@ -847,6 +898,11 @@ namespace backend.Data_Access.Query
             return users;
         }
 
+        /// <summary>
+        /// Check if email belongs to an admin user
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <returns> true if is admin </returns>
         public bool AdminMember(String mail)
         {
             SqlConnection con = null;
@@ -885,7 +941,12 @@ namespace backend.Data_Access.Query
             return member;
         }
 
-        public User GetUserData(VORequestGetUserData voRequestUserData)
+        /// <summary>
+        /// Given an access token return user info 
+        /// </summary>
+        /// <param name="accessToken"></param>
+        /// <returns> User </returns>
+        public User GetUserData(string accessToken)
         {
             SqlConnection con = null;
             User user = null;
@@ -898,7 +959,7 @@ namespace backend.Data_Access.Query
                 SqlParameter parameter = new SqlParameter()
                 {
                     ParameterName = "@accessToken",
-                    Value = voRequestUserData.AccessToken,
+                    Value = accessToken,
                     SqlDbType = SqlDbType.VarChar
                 };
                 selectCommand.Parameters.Add(parameter);
@@ -923,6 +984,11 @@ namespace backend.Data_Access.Query
             return user;
         }
 
+        /// <summary>
+        /// Returns if email belongs to a publisher user
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <returns> true if email belongs to a publisher user</returns>
         public bool IsPublisher(String mail)
         {
             SqlConnection con = null;
@@ -961,6 +1027,11 @@ namespace backend.Data_Access.Query
             return member;
         }
 
+        /// <summary>
+        /// Given the description of a language, returns its id
+        /// </summary>
+        /// <param name="descLanguage"></param>
+        /// <returns> Language id</returns>
         public int GetIdLanguageByDescription(String descLanguage)
         {
             int id = 0;
@@ -997,6 +1068,79 @@ namespace backend.Data_Access.Query
                 }
             }
             return id;
+        }
+
+        /// <summary>
+        /// Inserts into user the device token seny by user when logins from mobile device
+        /// </summary>
+        /// <param name="mail"></param>
+        /// <param name="deviceToken"></param>
+        public void InsertDeviceToken(string mail, string deviceToken)
+        {
+            SqlConnection con = null;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.InsertDeviceToken();
+                SqlCommand insertCommand = new SqlCommand(query, con);
+                List<SqlParameter> param = new List<SqlParameter>()
+                {
+                    new SqlParameter("@deviceToken", SqlDbType.VarChar) {Value = deviceToken},
+                    new SqlParameter("@mail", SqlDbType.VarChar) {Value = mail},
+                };
+                insertCommand.Parameters.AddRange(param.ToArray());
+                insertCommand.ExecuteNonQuery();
+            }
+            catch (Exception)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+        }
+
+        public String GetDeviceToken(string mail)
+        {
+            string deviceToken = null;
+            SqlConnection con = null;
+            try
+            {
+                con = new SqlConnection(GetConnectionString());
+                con.Open();
+                String query = cns.GetDeviceToken();
+                SqlCommand selectCommand = new SqlCommand(query, con);
+                SqlParameter param = new SqlParameter()
+                {
+                    ParameterName = "@mail",
+                    Value = mail,
+                    SqlDbType = SqlDbType.VarChar
+                };
+                selectCommand.Parameters.Add(param);
+                SqlDataReader dr = selectCommand.ExecuteReader();
+                while (dr.Read())
+                {
+                    deviceToken = Convert.ToString(dr["deviceToken"]);
+                }
+                dr.Close();
+            }
+            catch (Exception)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
+            finally
+            {
+                if (con != null)
+                {
+                    con.Close();
+                }
+            }
+            return deviceToken;
         }
     }
 }

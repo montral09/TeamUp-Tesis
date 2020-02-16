@@ -18,6 +18,9 @@ namespace backend.Logic
         public static string CODE_PUBLICATION_MODIFIED_ADMIN { get { return "PUBLICATIONMODIFIEDADMIN"; } }
         public static string CODE_PUBLICATION_NEW_QUESTION { get { return "PUBLICATIONNEWQUESTION"; } }
         public static string CODE_PUBLICATION_NEW_ANSWER { get { return "PUBLICATIONNEWANSWER"; } }
+        public static string CODE_NOTIF_NEW_RESERVATION { get { return "NOTIFNEWRESERVATION"; } }
+        public static string CODE_NOTIF_NEW_QUESTION { get { return "NOTINEWQUESTION"; } }
+        public static string CODE_NOTIF_NEW_ANSWER { get { return "NOTINEWANSWER"; } }
         //Payments
         public static string CODE_PAYMENT_PREFERENTIAL_PLAN { get { return "PAYMENTPREFERENTIALPLAN"; } }
         public static string CODE_PAYMENT_COMMISSION { get { return "PAYMENTCOMMISSION"; } }
@@ -36,7 +39,11 @@ namespace backend.Logic
         public static string CODE_RESERVATION_MODIFIED_CUSTOMER { get { return "RESERVATIONMODIFIEDCUSTOMER"; } }
         public static string CODE_RESERVATION_MODIFIED_PUBLISHER { get { return "RESERVATIONMODIFIEDPUBLISHER"; } }
         public static string CODE_RESERVATION_PAID { get { return "RESERVATIONPAID"; } }
-        
+        public static string CODE_FINISH_PUBLICATION { get { return "FINISHPUBLICATION"; } }
+        public static string CODE_FINISH_RESERVATION_PUBLISHER { get { return "FINISHRESERVATIONPUBLISHER"; } }
+        public static string CODE_FINISH_RESERVATION_CUSTOMER { get { return "FINISHRESERVATIONCUSTOMER"; } }
+
+
 
     }
 }

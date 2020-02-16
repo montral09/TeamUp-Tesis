@@ -40,6 +40,8 @@ namespace backend.Data_Access.VO.Data
         public VOPreferentialPlan PreferentialPlan { get; set; }
         public String DateTo { get; set; }
         public bool IsRecommended { get; set; }
+        public int IdParentPublication { get; set; }
+        public bool IsChildPublication { get; set; }
 
         public VOPublication() { }
 
@@ -87,7 +89,7 @@ namespace backend.Data_Access.VO.Data
         public VOPublication(int idPublication, string mail, string namePublisher, string lastNamePublisher, string phone, int spaceType, string creationDate, string dateTo, string title, string description, string address, string city, VOLocationCordinates location,
              int capacity, string videoURL, int hourPrice, int dailyPrice, int weeklyPrice, int monthlyPrice, string availability,
              List<int> facilities, List<string> imagesURL, string state, int quantityRented, List<VOReview> reviews, int ranking, int totalViews, bool individualRent, int questionsWithoutAnswer,
-             bool isMyPublication, int idPlan, VOPreferentialPlan preferentialPlan, bool isRecommended)
+             bool isMyPublication, int idPlan, VOPreferentialPlan preferentialPlan, bool isRecommended, int idParentPublication)
         {
             IdPublication = idPublication;
             Mail = mail;
@@ -122,6 +124,7 @@ namespace backend.Data_Access.VO.Data
             IdPlan = idPlan;
             PreferentialPlan = preferentialPlan;
             IsRecommended = isRecommended;
+            IdParentPublication = idParentPublication;
         }
     }
 }

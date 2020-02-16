@@ -71,7 +71,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             if (pubObj.HourPrice > 0) { defaultPlanSelected = "HourPrice"; } else if (pubObj.DailyPrice > 0) { defaultPlanSelected = "DailyPrice" } else if (pubObj.WeeklyPrice > 0) { defaultPlanSelected = "WeeklyPrice"; } else if (pubObj.MonthlyPrice > 0) { defaultPlanSelected = "MonthlyPrice"; }
             bindThis.setState({
                 pubIsLoading: false, pubObj: pubObj, activeImage: { index: 0, src: pubObj.ImagesURL[0] },
-                relatedPublications: objData.RelatedPublications, planChosen: defaultPlanSelected, arrQA : objData.Questions
+                relatedPublications: objData.RelatedPublications, otherPublicationConfig: objData.OtherPublicationConfig, planChosen: defaultPlanSelected, arrQA : objData.Questions
             });
         break;
         case "submitFavoriteVP":
@@ -190,7 +190,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             bindThis.handleClose();
         break;
         case "loadSpaceTypesBR":
-            bindThis.setState({ spaceTypes: objData.spaceTypes , spaceTypeSelected : objData.spaceTypes[0].Code })
+            bindThis.setState({ spaceTypes: objData.spaceTypes })
         break;
         case "loadSpaceTypesRP" : bindThis.setState({ spaceTypes: objData.spaceTypes }, () => {bindThis.loadRecommendedPubs()}); break;
         case "loadRecommendedPubs":

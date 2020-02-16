@@ -1,5 +1,6 @@
 import { MAIN_URL, MAIN_URL_WEB, MAX_ELEMENTS_PER_TABLE} from './constants';
 import { showMessage, hideMessage } from "react-native-flash-message";
+import registerForPushNotificationsAsync from './registerForPushNotificationsAsync';
 
 export const handleErrors = (error, bindThis) => {
     console.log("handleErrors: "+error)
@@ -62,6 +63,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
                 accesToken : objData.AccessToken,
                 refreshToken : objData.RefreshToken,
             }});
+            //registerForPushNotificationsAsync(objData.voUserLog.Mail);
         break;
         case "modifyUser":
             bindThis.setState({ isLoading: false });

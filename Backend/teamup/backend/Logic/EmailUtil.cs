@@ -1,12 +1,11 @@
 ﻿using backend.Data_Access;
-using backend.Data_Access.VO.Data;
+using backend.Exceptions;
+using backend.Logic.Entities;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
 using System.Net;
 using System.Net.Mail;
-using System.Text;
 
 namespace backend.Logic
 {
@@ -18,27 +17,39 @@ namespace backend.Logic
 
         public void SendEmailAsync(string to, string body, string subject)
         {
-            MailMessage mm = new MailMessage(SENDER_MAIL, to);            
- 
-            mm.Body = body;
-            mm.Subject = subject;
-            mm.IsBodyHtml = true;
-            SmtpClient smtp = new SmtpClient();
-            smtp.Host = "smtp.gmail.com";
-            smtp.EnableSsl = true;
-            NetworkCredential NetworkCred = new NetworkCredential(SENDER_MAIL, SENDER_PASSWORD);
-            smtp.UseDefaultCredentials = true;
-            smtp.Credentials = NetworkCred;
-            smtp.Port = 587;
-            smtp.Send(mm);           
+            try
+            {
+                MailMessage mm = new MailMessage(SENDER_MAIL, to);
+
+                mm.Body = body;
+                mm.Subject = subject;
+                mm.IsBodyHtml = true;
+                SmtpClient smtp = new SmtpClient();
+                smtp.Host = "smtp.gmail.com";
+                smtp.EnableSsl = true;
+                NetworkCredential NetworkCred = new NetworkCredential(SENDER_MAIL, SENDER_PASSWORD);
+                smtp.UseDefaultCredentials = true;
+                smtp.Credentials = NetworkCred;
+                smtp.Port = 587;
+                smtp.Send(mm);
+            } catch (Exception)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }           
         }
 
         public EmailDataGeneric GetFormatMailUsers(String code, int language, Dictionary<string, string> keyValuePairs)
         {
-            //TODO: lo va a buscar en el cache, y el cache se encarga de conectarse a la BD si no tiene el mail cargado
-            EmailDataGeneric emailBodyGeneric = daoUtil.GetEmailDataGeneric(code, language);
-            emailBodyGeneric.Body = CompleteEmailBodyUsers(emailBodyGeneric.Body, keyValuePairs);
-            return emailBodyGeneric;
+            try
+            {
+                EmailDataGeneric emailBodyGeneric = daoUtil.GetEmailDataGeneric(code, language);
+                emailBodyGeneric.Body = CompleteEmailBodyUsers(emailBodyGeneric.Body, keyValuePairs);
+                return emailBodyGeneric;
+            }
+            catch (Exception)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
         }
 
         private string CompleteEmailBodyUsers(string emailBodyGeneric, Dictionary<string, string> keyValuePairs)
@@ -69,9 +80,16 @@ namespace backend.Logic
 
         public EmailDataGeneric GetFormatMailPublications(String code, int language, Dictionary<string, string> keyValuePairs)
         {            
-            EmailDataGeneric emailBodyGeneric = daoUtil.GetEmailDataGeneric(code, language);
-            emailBodyGeneric.Body = CompleteEmailBodyPublications(emailBodyGeneric.Body, keyValuePairs);
-            return emailBodyGeneric;
+            try
+            {
+                EmailDataGeneric emailBodyGeneric = daoUtil.GetEmailDataGeneric(code, language);
+                emailBodyGeneric.Body = CompleteEmailBodyPublications(emailBodyGeneric.Body, keyValuePairs);
+                return emailBodyGeneric;
+            }
+            catch (Exception)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
         }
 
         private string CompleteEmailBodyPublications(string emailBodyGeneric, Dictionary<string, string> keyValuePairs)
@@ -129,9 +147,16 @@ namespace backend.Logic
 
         public EmailDataGeneric GetFormatMailReservations(String code, int language, Dictionary<string, string> keyValuePairs)
         {
-            EmailDataGeneric emailBodyGeneric = daoUtil.GetEmailDataGeneric(code, language);
-            emailBodyGeneric.Body = CompleteEmailBodyReservations(emailBodyGeneric.Body, keyValuePairs);
-            return emailBodyGeneric;
+            try
+            {
+                EmailDataGeneric emailBodyGeneric = daoUtil.GetEmailDataGeneric(code, language);
+                emailBodyGeneric.Body = CompleteEmailBodyReservations(emailBodyGeneric.Body, keyValuePairs);
+                return emailBodyGeneric;
+            }
+            catch (Exception)
+            {
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+            }
         }
 
         private string CompleteEmailBodyReservations(string emailBodyGeneric, Dictionary<string, string> keyValuePairs)
@@ -175,284 +200,45 @@ namespace backend.Logic
             return emailBodyGeneric;
         }
 
-        public static string CreateBodyEmailNewPublicationToPublisher(String name)
+        public EmailDataGeneric GetFormatMailFinishPublications(String code, int language, EmailData emailData)
         {
-            string body = "Hello, " + name;
-            body += "<br /><br />Your publication request has been submitted and will be available within 24 hours.";
-            body += "<br /><br />Thanks";
-            return body;
+            EmailDataGeneric emailBodyGeneric = daoUtil.GetEmailDataGeneric(code, language);
+            emailBodyGeneric.Body = CompleteEmailBodyFinishPublications(emailBodyGeneric.Body, emailData);
+            return emailBodyGeneric;
         }
 
-        public static string CreateBodyEmailNewPublicationToAdmin(string publisherMail)
+        private string CompleteEmailBodyFinishPublications(string emailBodyGeneric, EmailData emailData)
         {
-            string body = "Hello,";
-            body += "<br /><br />A new publication request has been submitted. Please check " + publisherMail + " publications.";
-            body += "<br /><br />Thanks";
-            return body;
-        }
-
-        public List<int> ConvertFacilities(String facilitiesString)
-        {
-            List<int> facilities = new List<int>();
-            if (!String.IsNullOrEmpty(facilitiesString)) {
-                facilities = facilitiesString.Split(',').Select(int.Parse).ToList();
-            }
-            return facilities;
-        }
-
-        public static string CreateStringImages(List<VOImage> images)
-        {
-            var sb = new StringBuilder();
-            string separator = String.Empty;
-            string delimiter = ",";
-            for (int i = 0; i < images.Count; i++)
+            if (emailBodyGeneric.Contains(ParamCodes.PUBLICATION_TITLE))
             {
-                sb.Append(separator).Append((i+1) + "." + images[i].Extension);
-                separator = delimiter;
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.PUBLICATION_TITLE, emailData.PublicationTitle);
             }
-            return sb.ToString();
-        }
-
-        public int ConvertState(string oldState)
-        {
-            switch (oldState)
+            if (emailBodyGeneric.Contains(ParamCodes.USER_NAME))
             {
-                case "NOT VALIDATED":
-                    return 1;
-                case "ACTIVE":
-                    return 2;
-                case "PAUSED P":
-                    return 3;
-                case "PAUSED A":
-                    return 4;
-                case "FINISHED":
-                    return 5;
-                case "REJECTED":
-                    return 6;
-                default:
-                    return 0;
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.USER_NAME, emailData.PublisherName);
             }
+            return emailBodyGeneric;
         }
 
-        public bool UpdateValid(bool isAdmin, int oldCodeState, int newCodeState)
+        public EmailDataGeneric GetFormatMailFinishReservations(String code, int language, EmailData emailData, bool isCustomer)
         {
-  
-            return true; 
+            EmailDataGeneric emailBodyGeneric = daoUtil.GetEmailDataGeneric(code, language);
+            emailBodyGeneric.Body = CompleteEmailBodyFinishReservations(emailBodyGeneric.Body, emailData, isCustomer);
+            return emailBodyGeneric;
         }
 
-        public int GetRanking(List<VOReview> reviews)
+        private string CompleteEmailBodyFinishReservations(string emailBodyGeneric, EmailData emailData, bool isCustomer)
         {
-            int ranking = 0;
-            int totalRankings = 0;
-            if (reviews.Count != 0)
+            if (emailBodyGeneric.Contains(ParamCodes.PUBLICATION_TITLE))
             {
-                foreach (var item in reviews)
-                {
-                    totalRankings += item.Rating;
-                }
-                ranking = (int)Math.Ceiling((decimal)totalRankings / reviews.Count);
-            }           
-            return ranking;
-        }
-
-        public void SendEmailPublicationStatus(string to, string name, string title, string rejectedReason, int statusCode)
-        {
-            MailMessage mm = new MailMessage(SENDER_MAIL, to);
-            string body = "Hello " + name + ",";
-            string subject;
-            if (statusCode == 2)
-            //Active
-            {                
-                body += "<br /><br />Your publication " + title + " has been approved. This means other users will see it and rented. Congratulations!.";
-                subject = "Publication approved";
-            } else
-            //Rejected
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.PUBLICATION_TITLE, emailData.PublicationTitle);
+            }
+            if (emailBodyGeneric.Contains(ParamCodes.USER_NAME))
             {
-                body += "<br /><br />Your publication " + title + " has been rejected. Reason: " + rejectedReason + " You can contact our team for further information";
-                subject = "Publication rejected";
+                emailBodyGeneric = emailBodyGeneric.Replace(ParamCodes.USER_NAME, isCustomer ? emailData.CustomerName : emailData.PublisherName);
             }
-            mm.Body = body;
-            mm.Subject = subject;
-            mm.IsBodyHtml = true;
-            SmtpClient smtp = new SmtpClient();
-            smtp.Host = "smtp.gmail.com";
-            smtp.EnableSsl = true;
-            NetworkCredential NetworkCred = new NetworkCredential(SENDER_MAIL, SENDER_PASSWORD);
-            smtp.UseDefaultCredentials = true;
-            smtp.Credentials = NetworkCred;
-            smtp.Port = 587;
-            smtp.Send(mm);
+            return emailBodyGeneric;
         }
 
-        public static string CreateBodyEmailNewReservationToPublisher(String name)
-        {
-            string body = "Hello, " + name;
-            body += "<br /><br />One of your publication has been reserved!.";
-            body += "<br /><br />Thanks";
-            return body;
-        }
-
-        public static string CreateBodyEmailNewReservationToCustomer(string name)
-        {
-            string body = "Hola, " + name;
-            body += "<br /><br />Has reservado una espacio, felicitaciones! El dueño del espacio se comunicará contigo a la brevedad ";
-            body += "<br /><br />Thanks";
-            return body;
-        }
-
-        public int ConvertStateReservation(string oldState)
-        {
-            switch (oldState)
-            {
-                case "PENDING":
-                    return 1;
-                case "RESERVED":
-                    return 2;
-                case "IN PROGRESS":
-                    return 3;                
-                case "FINISHED":
-                    return 4;
-                case "CANCELED":
-                    return 5;
-                default:
-                    return 0;
-            }
-        }
-
-        public bool UpdateValidReservation(bool isAdmin, int oldCodeState, int newCodeState)
-        {
-            return true;
-        }
-
-        public static string CreateBodyEmailStateReservationToPublisher(String name, string newState, string canceledReason)
-        {
-            string body = "Hola, " + name;
-            body += "<br /><br />Una de tus reservas ha cambiado a " + newState + ".";
-            if (canceledReason != null)
-            {
-                body += "<br /><br />Motivo: " + canceledReason + ".";
-            }
-            body += "<br /><br />Gracias";
-            return body;
-        }
-
-        public static string CreateBodyEmailStateReservationToCustomer(String name, string newState, string canceledReason)
-        {
-            string body = "Hola, " + name;
-            body += "<br /><br />Una de tus reservas ha cambiado a " + newState + ".";
-            if (canceledReason != null)
-            {
-                body += "<br /><br />Motivo: " + canceledReason + ".";
-            }
-            body += "<br /><br />Gracias";
-            return body;
-        }
-
-        public static string CreateBodyEmailUpdateReservationToPublisher(String name)
-        {
-            string body = "Hola, " + name;
-            body += "<br /><br />Una de tus reservas ha sido modificada";           
-            body += "<br /><br />Gracias";
-            return body;
-        }
-
-        public static string CreateBodyEmailUpdateReservationToCustomer(String name)
-        {
-            string body = "Hola, " + name;
-            body += "<br /><br />Una de tus reservas ha sido modificada";            
-            body += "<br /><br />Gracias";
-            return body;
-        }
-
-        public static string CreateBodyEmailPayReservationCustomer(String name)
-        {
-            string body = "Hola, " + name;
-            body += "<br /><br />Una de tus reservas ha sido pagada";
-            body += "<br /><br />Gracias";
-            return body;
-        }
-
-        public static string ConvertDateToString(DateTime date)
-        {
-            return date.ToString("dd/MM/yyyy");
-        }
-
-        public static string CreateBodyEmailPayCommissionToAdmin(string publisherMail)
-        {
-            string body = "Hola,";
-            body += "<br /><br />Se ha efectuado el pago de una comision del cliente " + publisherMail + ".";
-            body += "<br /><br />Gracias";
-            return body;
-        }
-
-        public static string CreateBodyEmailApprovedPaymentCustomer(String name)
-        {
-            string body = "Hola, " + name;
-            body += "<br /><br />Han confirmado el pago de tu reserva.";
-            body += "<br /><br />Gracias";
-            return body;
-        }
-
-        public static string CreateBodyEmailCanceledPaymentCustomer(String name)
-        {
-            string body = "Hola, " + name;
-            body += "<br /><br />Han cancelado el pago de tu reserva.";
-            body += "<br /><br />Gracias";
-            return body;
-        }
-
-        public static string CreateBodyEmailApproveCommissionToPublisher(String name)
-        {
-            string body = "Hola, " + name;
-            body += "<br /><br />Se ha aprobado el pago de la comision de la reserva";
-            body += "<br /><br />Gracias";
-            return body;
-        }
-
-        public static List<T> ShuffleRecommended<T>(IList<T> recommended)
-        {
-            List<T> randomRecommended = new List<T>();
-            Random randomNumber = new Random();            
-            while (recommended.Count() > 0)
-            {                
-                var nextIndex = randomNumber.Next(0, recommended.Count());                
-                T value = recommended[nextIndex];                
-                randomRecommended.Add(value);
-                recommended.RemoveAt(nextIndex);
-            }
-            return randomRecommended;
-        }
-
-        public static string CreateBodyEmailPreferentialPaymentApproved(String name)
-        {
-            string body = "Hola, " + name;
-            body += "<br /><br />El pago de plan de tu publicacion ha sido aprobado.";
-            body += "<br /><br />Gracias";
-            return body;
-        }
-
-        public static string CreateBodyEmailPreferentialPaymentRejected(String name)
-        {
-            string body = "Hola, " + name;
-            body += "<br /><br />El pago de plan de tu publicacion ha sido rechazado.";
-            body += "<br /><br />Gracias";
-            return body;
-        }
-
-        public static string CreateBodyEmailCommissionPaymentApproved(String name)
-        {
-            string body = "Hola, " + name;
-            body += "<br /><br />El pago de comision de la publicacion ha sido aprobado.";
-            body += "<br /><br />Gracias";
-            return body;
-        }
-
-        public static string CreateBodyEmailCommissionPaymentRejected(String name)
-        {
-            string body = "Hola, " + name;
-            body += "<br /><br />El pago de comision de la publicacion ha sido rechazado.";
-            body += "<br /><br />Gracias";
-            return body;
-        }
     }
 }

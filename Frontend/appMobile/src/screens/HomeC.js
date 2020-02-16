@@ -16,6 +16,8 @@ import SearchBar from '../components/searchBar';
 import Banner from '../components/BannerScrollView';
 import Contact from '../components/contactUs';
 import RecommendedPublications from '../components/RecommendedPublications';
+import { Notifications } from 'expo';
+import registerForPushNotificationsAsync from '../common/registerForPushNotificationsAsync';
 
 class HomeC extends Component {
   constructor(props) {
@@ -30,10 +32,26 @@ class HomeC extends Component {
     header: null
   };
 
-  /*componentDidMount() {
-    BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+  componentDidMount() {
+     //BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+     console.log('before calling registerForPushNotificationsAsync');
+     var response = registerForPushNotificationsAsync();
+     console.log ('afterResponse' + response);
+     console.log('after calling registerForPushNotificationsAsync');
+     // Handle notifications that are received or selected while the app
+     // is open. If the app was closed and then opened by tapping the
+     // notification (rather than just tapping the app icon to open it),
+     // this function will fire on the next tick after the app starts
+     // with the notification data.
+     this._notificationSubscription = Notifications.addListener(this._handleNotification);
+     console.log('after calling _notificationSubscription');
   }
 
+  _handleNotification = notification => {
+    // do whatever you want to do with the notification
+    this.setState({ notification: notification });
+  };
+/*
   componentWillUnmount() {
       BackHandler.removeEventListener('hardwareBackPress', this.handleBackButton);
   }
@@ -71,55 +89,7 @@ const styles = StyleSheet.create({
   },
 });
 
-
-const DrawerNavigator = createDrawerNavigator(
-  {
-    Home: { screen: HomeC },
-    Perfil: {
-      screen: Profile, navigationOptions: ({ navigation }) => ({
-        header: null,
-        title: translations[navigation.getParam('language', 'default value')].messages['signInLinks_head_myAccount'],
-      })
-    },
-    ReservationSpaceList: {
-      screen: ReservationSpaceList, navigationOptions: ({ navigation }) => ({
-        title: translations[navigation.getParam('language', 'default value')].messages['signInLinks_head_myReservations'],
-      })
-    },
-    FavoriteSpaceList: {
-      screen: FavoriteSpaceList, navigationOptions: ({ navigation }) => ({
-        title: translations[navigation.getParam('language', 'default value')].messages['signInLinks_head_favorites'],
-      })
-    },
-    RequestBePublisher: {
-      screen: RequestBePublisher, navigationOptions: ({ navigation }) => ({
-        header: null,
-        title: translations[navigation.getParam('language', 'default value')].messages['signInLinks_wantToPublish'],
-      })
-    },
-    DeleteUser: {
-      screen: DeleteUser, navigationOptions: ({ navigation }) => ({
-        header: null,
-        title: translations[navigation.getParam('language', 'default value')].messages['signInLinks_head_deleteUser'],
-      })
-    },
-    LogOut: {
-      screen: LogOut, navigationOptions: ({ navigation }) => ({
-        header: null,
-        title: 'Log Out',
-      })
-    },
-  },
-  {
-    drawerBackgroundColor: '#0069c0',
-    contentOptions: {
-      labelStyle: {
-        color: 'white',
-      }
-    }
-});
-
-export default DrawerNavigator;
+export default HomeC;
 
 /*<Text style={styles.titleText}>
             Destacados

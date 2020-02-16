@@ -15,12 +15,10 @@ class ModalSummary extends React.Component {
             isLoading : false,
             buttonIsDisabled: false
         };
-        this.toggle = this.toggle.bind(this);
-        this.save = this.save.bind(this);
-        this.changeModalLoadingState = this.changeModalLoadingState.bind(this);
     }
 
-    toggle(summaryObject) {
+    // This function will toggle on or off the modal and save the paymentdetails if any
+    toggle = (summaryObject) => {
         if(!this.state.isLoading){
             this.setState({
                 modal: !this.state.modal,
@@ -28,7 +26,9 @@ class ModalSummary extends React.Component {
             });
         }
     }
-    changeModalLoadingState(closeModal){
+
+    // This function will toggle on or off the modal and also the loading states
+    changeModalLoadingState = (closeModal) =>{
         if(closeModal){
             this.setState({
                 modal: !this.state.modal,
@@ -42,11 +42,12 @@ class ModalSummary extends React.Component {
             })
         }
     }
-    save() {
+    save = () => {
         this.changeModalLoadingState(false);
         this.props.confirmReservation(this.state.reservationComment);
     }
-
+    
+    // This function will handle the onchange event from the fields
     onChange = (e) => {
         this.setState({
             'reservationComment': e.target.value

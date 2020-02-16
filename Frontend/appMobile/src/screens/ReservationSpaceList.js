@@ -376,6 +376,7 @@ class ReservationSpaceList extends Component {
             </View>
             
             ): (<View style={styles.container}>
+                
                     <Text style={styles.titleText}>Mis reservas</Text>
                     <Text style={styles.subTiteText}>No ha realizado reservas</Text>
                 </View>)

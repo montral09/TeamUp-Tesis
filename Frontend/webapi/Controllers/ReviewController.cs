@@ -6,6 +6,7 @@ using System.Web.Http.Cors;
 using System.Collections.Generic;
 using backend.Data_Access.VO.Data;
 using backend.Exceptions;
+using TeamupML.Model;
 
 namespace webapi.Controllers
 {
@@ -28,6 +29,6 @@ namespace webapi.Controllers
             
                 return InternalServerError(new Exception(e.Codigo));
             }
-        }
+        }     
     }
 }

@@ -10,6 +10,8 @@ class TabQuestions extends React.Component {
             isLoading : false
         }
     }
+    
+    // This function will handle the onchange event from the fields
     onChange = (e) => {
         this.setState({
             [e.target.id]: e.target.value

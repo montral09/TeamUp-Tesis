@@ -13,7 +13,7 @@ const MyPublicationTable = (props) =>{
     const columnsTable = columnsName.map( colName => {
         var valToRet = <th className="text-center" key={colName}>{colName}</th>;
         switch(colName){
-            case translate('action_w'): valToRet = <th className="text-center" colSpan='3' key={colName}>{colName}</th>; break;
+            case translate('action_w'): valToRet = <th className="text-center" colSpan='4' key={colName}>{colName}</th>; break;
             case translate('payment_w')+' premium': valToRet = <th className="text-center" colSpan='2' key={colName}>{colName}</th>; break;
         }
         return valToRet;
@@ -44,10 +44,10 @@ const MyPublicationTable = (props) =>{
                 {objPayment.plan == 'FREE' ? (
                     <td colSpan="2">Plan Free</td>
                 ) : (<>
-                    <td>{translate('payState_'+objPayment.paymentStatus.replace(/\s/g,''))}</td>
-                    {obj.State.replace(/\s/g,'') == 'NOTVALIDATED'
+                    <td>{obj.IsChildPublication != true ? (translate('payState_'+objPayment.paymentStatus.replace(/\s/g,''))) : (null)}</td>
+                    {obj.State.replace(/\s/g,'') == 'NOTVALIDATED' || obj.IsChildPublication == true
                         ? (<td colSpan="1"></td>) : (
-                            <td><a href="#" className = "col-md-12" onClick={() => props.triggerModalDetailPayment(objPayment)}> <span><i className="col-md-1 fa fa-align-justify"></i></span> {translate('details_w')}</a></td> 
+                            <td><a href="#" onClick={() => props.triggerModalDetailPayment(objPayment)}> <span><i className="col-md-1 fa fa-align-justify"></i></span> {translate('details_w')}</a></td> 
                         )
                     }
                     </>
@@ -55,21 +55,23 @@ const MyPublicationTable = (props) =>{
                 <td>{obj.QuestionsWithoutAnswer}</td>
                 <td>{obj.TotalViews}</td>
                 <td>
-                    <a href={url}><span><i className="col-md-3 fa fa-eye"></i></span> {translate('view_w')}</a>
+                    {obj.State != 'FINISHED' ? (<a href={url}><span><i className="col-md-3 fa fa-eye"></i></span> {translate('view_w')}</a>) : (null)}
                 </td>
                 {obj.State === 'ACTIVE' ? (
                     <>
                     <td><a href="#" onClick={() => props.changePubState(obj.State, obj.IdPublication)}><span><i className="col-md-1 fa fa-pause"></i></span> {translate('pause_w')}</a></td>
-                    <td><a href="#" className = "col-md-12" onClick={() => props.editPublication(obj.IdPublication,obj.IdPlan , obj.PreferentialPlan.IdPlan, obj.PreferentialPlan.Price, obj.PreferentialPlan.StateDescription)}> <span><i className="col-md-1 fa fa-pencil-alt"></i></span> {translate('edit_w')}</a></td> 
+                    <td><a href="#" onClick={() => props.editPublication(obj.IdPublication,obj.IdPlan , obj.PreferentialPlan.IdPlan, obj.PreferentialPlan.Price, obj.PreferentialPlan.StateDescription)}> <span><i className="col-md-1 fa fa-pencil-alt"></i></span> {translate('edit_w')}</a></td> 
+                    <td> {obj.IsChildPublication == true ? (null) : (<a href="#" onClick={() => props.splitPublication(obj.IdPublication,obj.IdPlan , obj.PreferentialPlan.IdPlan, obj.PreferentialPlan.Price, obj.PreferentialPlan.StateDescription)}> <span><i className="col-md-1 fas fa-columns"></i></span> {translate('split_w')}</a>)}</td> 
                     </>
                 ) : (
                     <>
                         {obj.State === 'PAUSED P' ? (
                             <>
-                            <td><a href="#" className = "col-md-12" onClick={() => props.changePubState(obj.State, obj.IdPublication)}><span><i className="col-md-1 fa fa-play"></i></span> {translate('resume_w')}</a></td>
+                            <td><a href="#" onClick={() => props.changePubState(obj.State, obj.IdPublication)}><span><i className="col-md-1 fa fa-play"></i></span>{translate('resume_w')}</a></td>
+                            <td></td>
                             <td></td>
                             </>  
-                        ) :(<><td></td><td></td></>) }
+                        ) :(<><td></td><td></td><td></td></>) }
                     </>)}
             </tr>
             )

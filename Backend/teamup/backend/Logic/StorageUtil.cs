@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Firebase.Auth;
 using System.Text;
+using backend.Logic.Entities;
 
 namespace backend.Logic
 {
@@ -20,7 +21,7 @@ namespace backend.Logic
 
         public StorageUtil() { }
 
-        public async Task<List<string>> StoreImageAsync(List<VOImage> images, Int64 idUser, int idPublication)
+        public async Task<List<string>> StoreImageAsync(List<Image> images, Int64 idUser, int idPublication)
         {
             List<string> urls = new List<string>();
             try
@@ -62,7 +63,7 @@ namespace backend.Logic
             return String.Join("','", imagesURL);
         }
 
-        public async Task<string> StoreEvidencePaymentPlanAsync(VOImage image, int idPrefPayment, int idPublication)
+        public async Task<string> StoreEvidencePaymentPlanAsync(Image image, int idPrefPayment, int idPublication)
         {
             try
             {
@@ -94,7 +95,7 @@ namespace backend.Logic
             }
         }
 
-        public async Task<string> StoreEvidencePaymentReservationCustomerAsync(VOImage image, long idUser, int idReservation)
+        public async Task<string> StoreEvidencePaymentReservationCustomerAsync(Image image, long idUser, int idReservation)
         {
             try
             {
@@ -126,7 +127,7 @@ namespace backend.Logic
             }
         }
 
-        public async Task<string> StoreEvidencePaymentReservationPublisherAsync(VOImage image, long idUser, int idReservation)
+        public async Task<string> StoreEvidencePaymentReservationPublisherAsync(Image image, long idUser, int idReservation)
         {
             try
             {

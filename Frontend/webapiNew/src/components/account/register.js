@@ -34,6 +34,7 @@ class Register extends React.Component {
         window.scrollTo(0, 0);
     }
 
+    // This function will handle the onchange event from the fields
     onChange = (e) => {
         this.setState({
             [e.target.id]: e.target.value
@@ -94,6 +95,8 @@ class Register extends React.Component {
         }
         return returnValue;
     }
+
+    // This function will call the API
     registerUser = () => {
         if (!this.checkRequiredInputs()) {
             this.setState({isLoading: true, buttonIsDisable:true});
@@ -200,6 +203,7 @@ class Register extends React.Component {
         );
     }
 }
+// Mapping the current state to props, to retrieve useful information from the state
 const mapStateToProps = (state) =>{
     return {
         login_status: state.loginData.login_status
