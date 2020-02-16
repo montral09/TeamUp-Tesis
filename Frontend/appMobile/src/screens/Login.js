@@ -20,7 +20,8 @@ import ReservationEditResCustPay from './ReservationEditResCustPay';
 import ReserveSpace from './ReserveSpace';
 import ReserveSpaceSummary from './ReserveSpaceSummary';
 import QAAnswer from './QAAnswer';
-
+import DrawerNavigator from '../navigation/DrawerNavigator';
+import DrawerNavigatorC from '../navigation/DrawerNavigatorC';
 import translations from '../common/translations';
 
 class Login extends Component{
@@ -88,6 +89,12 @@ const styles = StyleSheet.create({
 
 const StackNavigator = createStackNavigator({
   Login: {screen: Login},
+  DrawerNavigator: {screen: DrawerNavigator, navigationOptions: ({ navigation }) => ({
+                        header: null,
+                    })},
+  DrawerNavigatorC: {screen: DrawerNavigatorC, navigationOptions: ({ navigation }) => ({
+                        header: null,
+                    })},
   HomeC: {screen: HomeC, navigationOptions: ({ navigation }) => ({
                               header: null,
                        })},

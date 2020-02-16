@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, View, ScrollView, BackHandler } from 'react-native';
 import { Header } from 'react-native-elements';
 import { createDrawerNavigator, createAppContainer } from 'react-navigation';
-
+import { connect } from 'react-redux';
 import Profile from '../screens/Profile';
 import SpaceList from '../screens/SpaceList';
 import FavoriteSpaceList from '../screens/FavoriteSpaceList';
@@ -18,6 +18,8 @@ import Contact from '../components/contactUs';
 import RecommendedPublications from '../components/RecommendedPublications';
 import { Notifications } from 'expo';
 import registerForPushNotificationsAsync from '../common/registerForPushNotificationsAsync';
+import { DrawerActions } from 'react-navigation-drawer';
+
 
 class HomeG extends Component {
   constructor(props) {
@@ -33,6 +35,7 @@ class HomeG extends Component {
   };
 
   componentDidMount() {
+    console.log(this.props)
     //BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
     console.log('before calling registerForPushNotificationsAsync');
     var response = registerForPushNotificationsAsync();
@@ -48,7 +51,6 @@ class HomeG extends Component {
   }
 
   _handleNotification = notification => {
-    // do whatever you want to do with the notification
     this.setState({ notification: notification });
   };
 
@@ -62,16 +64,17 @@ class HomeG extends Component {
   }*/
 
   render() {
-
+    
     return (
       <View style={styles.container}>
         <Header
-          leftComponent={{ icon: 'menu', color: '#fff', flex: 1, onPress: () => this.props.navigation.openDrawer() }}
+          leftComponent={{ icon: 'menu', color: '#fff', flex: 1, onPress: () => this.props.navigation.openDrawer()}}
           centerComponent={<SearchBar parentState={this.state} onChange={this.onChange} onSelectionsChangeSpace={this.onSelectionsChangeSpace} navigate={this.props.navigation.navigate} />}
           //rightComponent={{ icon: 'home', color: '#fff', flex:1, onPress: () => this.props.navigation.navigate('Home')}}
         />
         <ScrollView vertical>
           <Banner />
+          
           <RecommendedPublications navigate={this.props.navigation.navigate} />
           <Contact />
         </ScrollView>
@@ -91,61 +94,11 @@ const styles = StyleSheet.create({
   },
 });
 
-const DrawerNavigator = createDrawerNavigator(
-  {
-    Home: { screen: HomeG },
-    Perfil: {
-      screen: Profile, navigationOptions: ({ navigation }) => ({
-        header: null,
-        title: translations[navigation.getParam('language', 'default value')].messages['signInLinks_head_myAccount'],
-      })
-    },
-    /*Publicar: {
-      screen: PublishSpaceMaster, navigationOptions: ({ navigation }) => ({
-        header: null,
-        title: 'Publicar espacio',
-      })
-    },*/
-    Publicaciones: {
-      screen: SpaceList, navigationOptions: ({ navigation }) => ({
-        title: translations[navigation.getParam('language', 'default value')].messages['signInLinks_head_myPublications'],
-      })
-    },
-    ReservedPublicationsList: {
-        screen: ReservedPublicationsList, navigationOptions: ({ navigation }) => ({
-          title: translations[navigation.getParam('language', 'default value')].messages['signInLinks_head_myResSpaces'],
-        })
-    },
-    ReservationSpaceList: {
-        screen: ReservationSpaceList, navigationOptions: ({ navigation }) => ({
-          title: translations[navigation.getParam('language', 'default value')].messages['signInLinks_head_myReservations'],
-        })
-      },
-    FavoriteSpaceList: {
-      screen: FavoriteSpaceList, navigationOptions: ({ navigation }) => ({
-        title: translations[navigation.getParam('language', 'default value')].messages['signInLinks_head_favorites'],
-      })
-    },
-    DeleteUser: {
-      screen: DeleteUser, navigationOptions: ({ navigation }) => ({
-        header: null,
-        title: translations[navigation.getParam('language', 'default value')].messages['signInLinks_head_deleteUser'],
-      })
-    },
-    LogOut: {
-      screen: LogOut, navigationOptions: ({ navigation }) => ({
-        header: null,
-        title: 'Log Out',
-      })
-    },
-  },
-  {
-    drawerBackgroundColor: '#0069c0',
-    contentOptions: {
-      labelStyle: {
-        color: 'white',
-      }
-    }
-});
-  
-export default DrawerNavigator;
+const mapStateToProps = (state) => {
+  return {
+      userData: state.loginData.userData,
+      systemLanguage: state.loginData.systemLanguage
+  }
+}
+
+export default connect(mapStateToProps)(HomeG);

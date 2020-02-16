@@ -89,55 +89,7 @@ const styles = StyleSheet.create({
   },
 });
 
-
-const DrawerNavigator = createDrawerNavigator(
-  {
-    Home: { screen: HomeC },
-    Perfil: {
-      screen: Profile, navigationOptions: ({ navigation }) => ({
-        header: null,
-        title: translations[navigation.getParam('language', 'default value')].messages['signInLinks_head_myAccount'],
-      })
-    },
-    ReservationSpaceList: {
-      screen: ReservationSpaceList, navigationOptions: ({ navigation }) => ({
-        title: translations[navigation.getParam('language', 'default value')].messages['signInLinks_head_myReservations'],
-      })
-    },
-    FavoriteSpaceList: {
-      screen: FavoriteSpaceList, navigationOptions: ({ navigation }) => ({
-        title: translations[navigation.getParam('language', 'default value')].messages['signInLinks_head_favorites'],
-      })
-    },
-    RequestBePublisher: {
-      screen: RequestBePublisher, navigationOptions: ({ navigation }) => ({
-        header: null,
-        title: translations[navigation.getParam('language', 'default value')].messages['signInLinks_wantToPublish'],
-      })
-    },
-    DeleteUser: {
-      screen: DeleteUser, navigationOptions: ({ navigation }) => ({
-        header: null,
-        title: translations[navigation.getParam('language', 'default value')].messages['signInLinks_head_deleteUser'],
-      })
-    },
-    LogOut: {
-      screen: LogOut, navigationOptions: ({ navigation }) => ({
-        header: null,
-        title: 'Log Out',
-      })
-    },
-  },
-  {
-    drawerBackgroundColor: '#0069c0',
-    contentOptions: {
-      labelStyle: {
-        color: 'white',
-      }
-    }
-});
-
-export default DrawerNavigator;
+export default HomeC;
 
 /*<Text style={styles.titleText}>
             Destacados
