@@ -1,6 +1,8 @@
-﻿namespace backend.Logic.Entities
+﻿using System;
+
+namespace backend.Logic.Entities
 {
-    public class PublicationQuestion
+    public class PublicationQuestion : IComparable<PublicationQuestion>
     {
         public int IdQuestion { get; set; }
         public string Name { get; set; }
@@ -16,6 +18,11 @@
             Question = question;
             CreationDate = creationDate;
             Answer = answer;
+        }
+
+        public int CompareTo(PublicationQuestion other)
+        {
+            return other.CreationDate.CompareTo(CreationDate);
         }
     }
 }

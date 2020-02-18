@@ -806,11 +806,11 @@ namespace backend.Data_Access
                     List<Review> reviews = GetReviews(idPublication, con);
                     int ranking = util.GetRanking(reviews);
                     int quantityRented = GetQuantityReserved(idPublication, con);
-                    if (addVisit)
+                    bool isMyPublication = user != null && user.IdUser == Convert.ToInt32(dr["idUser"]) ? true : false;
+                    if (addVisit && !isMyPublication)
                     {
                         AddOneVisit(idPublication, con);
                     }
-                    bool isMyPublication = user != null && user.IdUser == Convert.ToInt32(dr["idUser"]) ? true : false;
                     DateTime creationDate = Convert.ToDateTime(dr["creationDate"]);
                     creationDateString = Util.ConvertDateToString(creationDate);
                     DateTime dateTo = Convert.ToDateTime(dr["expirationDate"]);
@@ -2697,7 +2697,7 @@ namespace backend.Data_Access
             {
                 con = new SqlConnection(GetConnectionString());
                 con.Open();
-                if (evidence != null)
+                if (evidence.Base64String != "")
                 {
                     // Insert evidence
                     url = await storageUtil.StoreEvidencePaymentReservationPublisherAsync(evidence, idUser, idReservation);

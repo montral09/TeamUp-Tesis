@@ -1,5 +1,4 @@
-﻿using backend.Data_Access.VO.Data;
-using backend.Logic.Entities;
+﻿using backend.Logic.Entities;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -37,26 +36,6 @@ namespace backend.Logic
             }           
             return ranking;
         }      
-
-        public int ConvertStateReservation(string oldState)
-        {
-
-            switch (oldState)
-            {
-                case "PENDING":
-                    return 1;
-                case "RESERVED":
-                    return 2;
-                case "IN PROGRESS":
-                    return 3;                
-                case "FINISHED":
-                    return 4;
-                case "CANCELED":
-                    return 5;
-                default:
-                    return 0;
-            }
-        }
         
         public static string ConvertDateToString(DateTime date)
         {
