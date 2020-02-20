@@ -41,7 +41,8 @@ class ModalReqInfo extends React.Component {
             this.setState({
                 modal: !this.state.modal,
                 isLoading: !this.state.isLoading,
-                buttonIsDisabled: !this.state.buttonIsDisabled
+                buttonIsDisabled: !this.state.buttonIsDisabled,
+                textboxValue : '',
             })
         }else{
             this.setState({

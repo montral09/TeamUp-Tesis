@@ -12,6 +12,10 @@ const MyMessagesTable = (props) =>{
         var valToRet = <th className="text-center" key={colName}>{colName}</th>;
         switch(colName){
             case "action": valToRet = <th className="text-center" key={colName}><i className="fa fa-asterisk" aria-hidden="true"></i></th>; break;
+            case translate('name_w') : 
+                if(messages[0].IsMyPublication != true)
+                    valToRet = null
+            break;
         }
         return valToRet;
     });
@@ -21,7 +25,7 @@ const MyMessagesTable = (props) =>{
             <tr key={obj.IdQuestion}>
                 <td>{obj.IdPublication}</td>
                 <td>{obj.PublicationTitle}</td>
-                <td>{obj.Name}</td>
+                {obj.IsMyPublication == true ? (<td>{obj.Name}</td>) : (null)}
                 <td>{obj.Question}</td>
                 <td>{obj.CreationDate}</td>
                 {obj.Answer != null ? (

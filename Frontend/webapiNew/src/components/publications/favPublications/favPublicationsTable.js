@@ -10,7 +10,7 @@ const FavPublicationsTable = (props) =>{
     const {translate} = props;
     let publications = props.publications;
     let spaceTypes = props.spaceTypes;
-    const columnsName = ['#Ref',translate('spaceType_w'), translate('name_w'),translate('citiy_w'),translate('address_w'),translate('capacity_w'),translate('price_w'),translate('rate_w'),translate('action_w')];
+    const columnsName = ['#Ref',translate('spaceType_w'), translate('name_w'),translate('city_w'),translate('address_w'),translate('capacity_w'),translate('price_w'),translate('rate_w'),translate('action_w')];
     const columnsTable = columnsName.map( colName => {
         return <th className="text-center" key={colName}>{colName}</th>;
     });

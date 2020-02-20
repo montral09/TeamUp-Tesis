@@ -34,6 +34,7 @@ class MyPublicationsList extends React.Component {
             pagination: [1],
             currentPage: 1,
             stateDescription: null,
+            spaceTypeId : null,
             cpMode : ''
         }
         this.ModalDetailPayment = React.createRef(); // Connects the reference to the modal
@@ -84,12 +85,12 @@ class MyPublicationsList extends React.Component {
         return arrayToFilter.slice(startIndex, startIndex + MAX_ELEMENTS_PER_TABLE)
     }
 
-    editPublication = (pubId, currentIDPlan, IdPlan, planPrice) => {
-        this.setState({ pubId, currentIDPlan, IdPlan, planPrice, cpMode: 'edit' })
+    editPublication = (pubId, currentIDPlan, IdPlan, planPrice, spaceTypeId) => {
+        this.setState({ pubId, currentIDPlan, IdPlan, planPrice, cpMode: 'edit' , spaceTypeId})
     }
 
-    splitPublication = (pubId, currentIDPlan, IdPlan, planPrice) => {
-        this.setState({ pubId, currentIDPlan, IdPlan, planPrice, cpMode : 'split' })
+    splitPublication = (pubId, currentIDPlan, IdPlan, planPrice, spaceTypeId) => {
+        this.setState({ pubId, currentIDPlan, IdPlan, planPrice, cpMode : 'split' , spaceTypeId})
     }
 
     // This function will call the API
@@ -209,7 +210,7 @@ class MyPublicationsList extends React.Component {
                     </>
                 ) : (
                         <CreatePublication publicationID={this.state.pubId} currentIDPlan={this.state.currentIDPlan} IdPlan={this.state.IdPlan}
-                            planPrice={this.state.planPrice} cpMode={this.state.cpMode} />
+                            planPrice={this.state.planPrice} cpMode={this.state.cpMode} spaceTypeId = {this.state.spaceTypeId} />
                     )}
                
             </>
