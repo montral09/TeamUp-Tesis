@@ -236,10 +236,10 @@ class ViewPublication extends React.Component {
             var tmpHfs = 0;
             var tmpHts = 1;
             switch (this.state.planChosen) {
-                case "HourPrice": planChosenText = "por hora"; planChosenQuantityDescription = ""; tmpHfs = this.state.hourFromSelect; tmpHts = this.state.hourToSelect == 0 ? 24 : this.state.hourToSelect; break;
-                case "DailyPrice": planChosenText = "por día"; planChosenQuantityDescription = translate('planChosenQuantityDescriptionDays_w'); break;
-                case "WeeklyPrice": planChosenText = "por semana"; planChosenQuantityDescription = translate('planChosenQuantityDescriptionWeeks_w'); break;
-                case "MonthlyPrice": planChosenText = "por mes"; planChosenQuantityDescription = translate('planChosenQuantityDescriptionMonths_w'); break;
+                case "HourPrice": planChosenText = translate('hourlyPrice_w'); planChosenQuantityDescription = ""; tmpHfs = this.state.hourFromSelect; tmpHts = this.state.hourToSelect == 0 ? 24 : this.state.hourToSelect; break;
+                case "DailyPrice": planChosenText = translate('dailyPrice_w'); planChosenQuantityDescription = translate('planChosenQuantityDescriptionDays_w'); break;
+                case "WeeklyPrice": planChosenText = translate('weeklyPrice_w'); planChosenQuantityDescription = translate('planChosenQuantityDescriptionWeeks_w'); break;
+                case "MonthlyPrice": planChosenText = translate('monthlyPrice_w'); planChosenQuantityDescription = translate('planChosenQuantityDescriptionMonths_w'); break;
             }
             var totalPrice = (parseInt(tmpHts - tmpHfs) * parseInt(this.state.pubObj[this.state.planChosen]) * parseInt(this.state.quantityPlan));
             if (this.state.pubObj.IndividualRent == true) {
@@ -617,7 +617,7 @@ class ViewPublication extends React.Component {
                                                                                                     </div>
                                                                                                     {this.state.pubObj.IsMyPublication != true ? (
                                                                                                         <div style={{ marginLeft: '35%' }} className="description add-to-cart d-flex">
-                                                                                                            <input type="button" value="Reservar" onClick={() => this.triggerSummaryModal()} className="button" />
+                                                                                                            <input type="button" value={this.props.translate('makeReservation_w')} onClick={() => this.triggerSummaryModal()} className="button" />
                                                                                                         </div>
                                                                                                     ) : (
                                                                                                             <div style={{ marginLeft: '20%' }} className="description add-to-cart d-flex">

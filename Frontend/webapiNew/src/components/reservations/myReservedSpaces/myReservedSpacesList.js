@@ -13,7 +13,7 @@ import MyReservedSpacesTable from './myReservedSpacesTable';
 import ModifyReservationModal from './modifyReservationModal';
 import ModalReqInfo from '../../publications/viewPublication/modalReqInfo';
 import ModalCustResPay from './modalCustResPay'
-import { callAPI } from '../../../services/common/genericFunctions';
+import { callAPI, displayErrorMessage } from '../../../services/common/genericFunctions';
 
 import { MAX_ELEMENTS_PER_TABLE, ML_MODE } from '../../../services/common/constants'
 
@@ -175,6 +175,10 @@ class MyReservedSpacesList extends React.Component {
     saveRateMRSL = (optionValue, commentValue) => {
         if (!optionValue) {
             optionValue = 5;
+        }
+        if(ML_MODE == 'ON' && commentValue.trim() == ""){
+            displayErrorMessage(this.props.translate('createPub_stepNextError'));
+            return;
         }
         var objApi = {};
         objApi.objToSend = {

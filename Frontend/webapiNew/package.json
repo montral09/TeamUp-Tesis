@@ -1,7 +1,7 @@
 {
   "name": "team-up",
   "homepage": "http://teamup-001-site1.itempurl.com/web/",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "babel": "6.23.0",

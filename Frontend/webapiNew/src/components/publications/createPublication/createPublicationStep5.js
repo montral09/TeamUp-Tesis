@@ -13,7 +13,7 @@ class CreatePublicationStep5 extends React.Component {
 
       // Step 4 UI
       return(
-        <Form className="border border-light p-6">
+        <Form className="border border-light p-6" style = {{minHeight:"60vh"}}>
             <p className="h4 mb-4 text-center">{translate('summary_w')}</p>
             {translate('createPub_step5_main')}
             <br/><br/><br/>
