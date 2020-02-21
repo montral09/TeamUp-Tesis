@@ -71,10 +71,10 @@ namespace backend.Data_Access.Query
         /// </summary>
         /// <param name="mail"></param>
         /// <returns> User </returns>
-        public User Find(String mail)
+        public Publisher Find(String mail)
         {
             SqlConnection con = null;
-            User user = null;
+            Publisher user = null;
             try
             {
                 con = new SqlConnection(GetConnectionString());
@@ -91,7 +91,10 @@ namespace backend.Data_Access.Query
                 SqlDataReader dr = selectCommand.ExecuteReader();
                 while (dr.Read())
                 {
-                    user = new User(Convert.ToInt64(dr["idUser"]), Convert.ToString(dr["mail"]), Convert.ToString(dr["password"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToBoolean(dr["checkPublisher"]), Convert.ToString(dr["rut"]), Convert.ToString(dr["razonSocial"]), Convert.ToString(dr["address"]), Convert.ToBoolean(dr["mailValidated"]), Convert.ToBoolean(dr["publisherValidated"]), Convert.ToBoolean(dr["active"]), Convert.ToString(dr["description"]), Convert.ToInt32(dr["idLanguage"]));
+                    user = new Publisher(Convert.ToInt64(dr["idUser"]), Convert.ToString(dr["mail"]), Convert.ToString(dr["password"]), Convert.ToString(dr["name"]), 
+                        Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToBoolean(dr["active"]), Convert.ToString(dr["description"]),
+                        Convert.ToInt32(dr["idLanguage"]), Convert.ToBoolean(dr["checkPublisher"]), Convert.ToString(dr["rut"]), Convert.ToString(dr["razonSocial"]), 
+                        Convert.ToString(dr["address"]), Convert.ToBoolean(dr["mailValidated"]), Convert.ToBoolean(dr["publisherValidated"]));
                 }
                 dr.Close();
             }
@@ -114,7 +117,7 @@ namespace backend.Data_Access.Query
         /// </summary>
         /// <param name="user"></param>
         /// <returns> Activation code </returns>
-        public string InsertUser(User user)
+        public string InsertUser(Customer user)
         {
             SqlConnection con = null;
             SqlTransaction objTrans = null;                   
@@ -127,6 +130,7 @@ namespace backend.Data_Access.Query
                 con.Open();
                 objTrans = con.BeginTransaction();
                 int language = GetIdLanguageByDescription(user.LanguageDescription);
+                string activationCode = Guid.NewGuid().ToString();
                 String query = cns.InsertUser();
                 SqlCommand insertCommand = new SqlCommand(query, con);
                 List<SqlParameter> prm = new List<SqlParameter>()
@@ -141,22 +145,11 @@ namespace backend.Data_Access.Query
                         new SqlParameter("@razonSocial", SqlDbType.VarChar) {Value = user.RazonSocial},
                         new SqlParameter("@address", SqlDbType.VarChar) { Value = user.Address},
                         new SqlParameter("@language", SqlDbType.Int) { Value = language},
+                        new SqlParameter("@activationCode", SqlDbType.VarChar) {Value = activationCode},
                     };
                 insertCommand.Parameters.AddRange(prm.ToArray());
                 insertCommand.Transaction = objTrans;
                 insertCommand.ExecuteNonQuery();
-                // Generate activation code
-                String queryActivation = cns.InsertActivationCode();
-                string activationCode = Guid.NewGuid().ToString();
-                SqlCommand updateCommand = new SqlCommand(queryActivation, con);
-                List<SqlParameter> parameters = new List<SqlParameter>()
-                    {
-                        new SqlParameter("@activationCode", SqlDbType.VarChar) {Value = activationCode},
-                        new SqlParameter("@mail", SqlDbType.VarChar) {Value = user.Mail},
-                    };
-                updateCommand.Parameters.AddRange(parameters.ToArray());
-                updateCommand.Transaction = objTrans;
-                updateCommand.ExecuteNonQuery();
                 objTrans.Commit();
                 return activationCode;
             }
@@ -184,7 +177,7 @@ namespace backend.Data_Access.Query
         /// <param name="user"></param>
         /// <param name="newMail"></param>
         /// <returns> Activation code</returns>
-        public string UpdateUser(User user, String newMail)
+        public string UpdateUser(Customer user, String newMail)
         {
             SqlConnection con = null;
             string activationCode = "";
@@ -451,10 +444,10 @@ namespace backend.Data_Access.Query
         /// Returns all publishers who hasn´t been approved yet
         /// </summary>
         /// <returns> Users </returns>
-        public List<User> GetPublishers()
+        public List<Publisher> GetPublishers()
         {
             SqlConnection con = null;
-            List<User> publishers = new List<User>();
+            List<Publisher> publishers = new List<Publisher>();
             try
             {
                 con = new SqlConnection(GetConnectionString());
@@ -462,10 +455,12 @@ namespace backend.Data_Access.Query
                 String query = cns.GetPublishers();
                 SqlCommand selectCommand = new SqlCommand(query, con);
                 SqlDataReader dr = selectCommand.ExecuteReader();
-                User publisher;
+                Publisher publisher;
                 while (dr.Read())
-                {
-                    publisher = new User(0,Convert.ToString(dr["mail"]), "", Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), false, Convert.ToString(dr["rut"]), Convert.ToString(dr["razonSocial"]), Convert.ToString(dr["address"]), Convert.ToBoolean(dr["mailValidated"]), Convert.ToBoolean(dr["publisherValidated"]), false, null, 0);                    
+                {                                      
+                    publisher = new Publisher(0, Convert.ToString(dr["mail"]), "", Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]),
+                        Convert.ToString(dr["phone"]), true, null, 0, true, Convert.ToString(dr["rut"]), Convert.ToString(dr["razonSocial"]), 
+                        Convert.ToString(dr["address"]), Convert.ToBoolean(dr["mailValidated"]), Convert.ToBoolean(dr["publisherValidated"]));
                     publishers.Add(publisher);
                 }
                 dr.Close();
@@ -549,7 +544,9 @@ namespace backend.Data_Access.Query
                 SqlDataReader dr = selectCommand.ExecuteReader();
                 while (dr.Read())
                 {
-                    admin = new Admin(Convert.ToString(dr["mail"]), Convert.ToString(dr["password"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]));
+                    admin = new Admin(0, Convert.ToString(dr["mail"]), Convert.ToString(dr["password"]), 
+                        Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), 
+                        true, null, 0);
                 }
                 dr.Close();
             }
@@ -862,10 +859,10 @@ namespace backend.Data_Access.Query
         /// Returns all users
         /// </summary>
         /// <returns> Users </returns>
-        public List<User> GetUsers()
+        public List<Publisher> GetUsers()
         {
             SqlConnection con = null;
-            List<User> users = new List<User>();
+            List<Publisher> users = new List<Publisher>();
             try
             {
                 con = new SqlConnection(GetConnectionString());
@@ -873,13 +870,13 @@ namespace backend.Data_Access.Query
                 String query = cns.GetUsers();
                 SqlCommand selectCommand = new SqlCommand(query, con);
                 SqlDataReader dr = selectCommand.ExecuteReader();
-                User user;
+                Publisher user;
                 while (dr.Read())
                 {
-                    user = new User(0, Convert.ToString(dr["mail"]), null, Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]),
-                        Convert.ToString(dr["phone"]), Convert.ToBoolean(dr["checkPublisher"]), Convert.ToString(dr["rut"]), 
+                    user = new Publisher(0, Convert.ToString(dr["mail"]), null, Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]),
+                        Convert.ToString(dr["phone"]), Convert.ToBoolean(dr["active"]), null, 0, Convert.ToBoolean(dr["checkPublisher"]), Convert.ToString(dr["rut"]), 
                         Convert.ToString(dr["razonSocial"]), Convert.ToString(dr["address"]), Convert.ToBoolean(dr["mailValidated"]), 
-                        Convert.ToBoolean(dr["publisherValidated"]), Convert.ToBoolean(dr["active"]), null, 0);                   
+                        Convert.ToBoolean(dr["publisherValidated"]));                   
                     users.Add(user);
                 }
                 dr.Close();
@@ -946,10 +943,10 @@ namespace backend.Data_Access.Query
         /// </summary>
         /// <param name="accessToken"></param>
         /// <returns> User </returns>
-        public User GetUserData(string accessToken)
+        public Publisher GetUserData(string accessToken)
         {
             SqlConnection con = null;
-            User user = null;
+            Publisher user = null;
             try
             {
                 con = new SqlConnection(GetConnectionString());
@@ -966,7 +963,10 @@ namespace backend.Data_Access.Query
                 SqlDataReader dr = selectCommand.ExecuteReader();
                 while (dr.Read())
                 {
-                    user = new User(Convert.ToInt64(dr["idUser"]), Convert.ToString(dr["mail"]), Convert.ToString(dr["password"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToBoolean(dr["checkPublisher"]), Convert.ToString(dr["rut"]), Convert.ToString(dr["razonSocial"]), Convert.ToString(dr["address"]), Convert.ToBoolean(dr["mailValidated"]), Convert.ToBoolean(dr["publisherValidated"]), Convert.ToBoolean(dr["active"]), null, 0);
+                    user = new Publisher(Convert.ToInt64(dr["idUser"]), Convert.ToString(dr["mail"]), "",
+                        Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), 
+                        Convert.ToBoolean(dr["active"]), null, 0, Convert.ToBoolean(dr["checkPublisher"]), Convert.ToString(dr["rut"]), 
+                        Convert.ToString(dr["razonSocial"]), Convert.ToString(dr["address"]), Convert.ToBoolean(dr["mailValidated"]), Convert.ToBoolean(dr["publisherValidated"]));
                 }
                 dr.Close();
             }

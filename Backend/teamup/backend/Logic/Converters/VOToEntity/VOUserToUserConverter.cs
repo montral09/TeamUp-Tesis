@@ -14,10 +14,6 @@ namespace backend.Logic.Converters.VOToEntity
                 Name = voUser.Name,
                 LastName = voUser.LastName,
                 Phone = voUser.Phone,
-                CheckPublisher = voUser.CheckPublisher,
-                Rut = voUser.Rut,
-                RazonSocial = voUser.RazonSocial,
-                Address = voUser.Address,
                 LanguageDescription = voUser.Language,
              };
              return user;

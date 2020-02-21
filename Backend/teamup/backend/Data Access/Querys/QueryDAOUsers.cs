@@ -32,7 +32,7 @@ namespace backend.Data_Access.Query
 
         public String InsertUser()
         {
-            String query = "insert into USERS (mail, name, lastName, password, phone, checkPublisher, rut, razonSocial, address, mailValidated, publisherValidated, active, language) values(@mail, @name, @lastName, @password, @phone, @checkPublisher, @rut, @razonSocial, @address, 0, 0, 1, @language) ";
+            String query = "insert into USERS (mail, name, lastName, password, phone, checkPublisher, rut, razonSocial, address, mailValidated, publisherValidated, active, activationCode, language) values(@mail, @name, @lastName, @password, @phone, @checkPublisher, @rut, @razonSocial, @address, 0, 0, 1, @activationCode, @language) ";
             return query;
         }
         public String UpdatePassword()

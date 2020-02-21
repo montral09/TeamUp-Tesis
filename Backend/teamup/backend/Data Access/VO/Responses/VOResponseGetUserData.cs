@@ -7,10 +7,10 @@ namespace backend.Data_Access.VO
 {
     public class VOResponseGetUserData : VOResponse
     {
-        public VOUser User { get; set; }
+        public VOPublisher User { get; set; }
 
         public VOResponseGetUserData() { }
-        public VOResponseGetUserData(VOUser user)
+        public VOResponseGetUserData(VOPublisher user)
         {
             User = user;
         }

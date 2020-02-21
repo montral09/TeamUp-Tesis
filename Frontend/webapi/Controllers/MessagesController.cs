@@ -24,9 +24,9 @@ namespace webapi.Controllers
                 voResp = fach.GetMessages(voGetMessages);               
                 return Ok(voResp);
             }
-            catch (GeneralException e)
+            catch (Exception e)
             {
-                return InternalServerError(new Exception(e.Codigo));
+                return InternalServerError(new Exception(e.Message));
             }
         }       
     }

@@ -1,5 +1,4 @@
-﻿using backend.Data_Access.VO.Data;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace backend.Logic.Entities

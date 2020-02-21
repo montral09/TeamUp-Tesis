@@ -24,13 +24,11 @@ namespace backend.Logic.Entities
 
         public int CompareTo(Message other)
         {
-            DateTime otherDateTime = Convert.ToDateTime(other.CreationDate);
-            DateTime thisDateTime = Convert.ToDateTime(CreationDate);
-            if (otherDateTime.Equals(thisDateTime)) {
+            if (other.CreationDate.Equals(CreationDate)) {
                 if (other.Answer == null)
                 {
                     return 1;
-                } else if (this.Answer ==  null)
+                } else if (Answer ==  null)
                 {
                     return -1;
                 } else
@@ -40,7 +38,7 @@ namespace backend.Logic.Entities
             }
             else
             {
-                return otherDateTime.CompareTo(thisDateTime);
+                return CreationDate.CompareTo(CreationDate);
             }
         }
     }

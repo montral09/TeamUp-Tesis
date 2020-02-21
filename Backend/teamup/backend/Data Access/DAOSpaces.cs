@@ -1805,7 +1805,8 @@ namespace backend.Data_Access
                 SqlDataReader dr = selectCommand.ExecuteReader();
                 while (dr.Read())
                 {
-                    user = new User(Convert.ToInt64(dr["idUser"]), Convert.ToString(dr["mail"]), null, Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), null, Convert.ToBoolean(dr["checkPublisher"]), null, null, null, Convert.ToBoolean(dr["mailValidated"]), Convert.ToBoolean(dr["publisherValidated"]), Convert.ToBoolean(dr["active"]), null, Convert.ToInt32(dr["language"]));
+                    user = new User(Convert.ToInt64(dr["idUser"]), Convert.ToString(dr["mail"]), null, Convert.ToString(dr["name"]), 
+                        Convert.ToString(dr["lastName"]), null,Convert.ToBoolean(dr["active"]), null, Convert.ToInt32(dr["language"]));
                 }
                 dr.Close();
                 return user;
@@ -2291,7 +2292,8 @@ namespace backend.Data_Access
             SqlDataReader dr = selectCommand.ExecuteReader();
             while (dr.Read())
             {
-                user = new User(Convert.ToInt64(dr["idUser"]), Convert.ToString(dr["mail"]), null, Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), null, Convert.ToBoolean(dr["checkPublisher"]), null, null, null, Convert.ToBoolean(dr["mailValidated"]), Convert.ToBoolean(dr["publisherValidated"]), Convert.ToBoolean(dr["active"]), null, Convert.ToInt32(dr["language"]));
+                user = new User(Convert.ToInt64(dr["idUser"]), Convert.ToString(dr["mail"]), null, Convert.ToString(dr["name"]), 
+                    Convert.ToString(dr["lastName"]), null, Convert.ToBoolean(dr["active"]), "", Convert.ToInt32(dr["language"]));
             }
             return user;
         }
@@ -3501,11 +3503,15 @@ namespace backend.Data_Access
                     }
                     dr.Close();
                 }
-                messages.Sort();
+                if (messages.Count != 0)
+                {
+                   messages.Sort();
+                }                
             }
             catch (Exception e)
             {
-                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+                throw e;
+               // throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
             return messages;
         }

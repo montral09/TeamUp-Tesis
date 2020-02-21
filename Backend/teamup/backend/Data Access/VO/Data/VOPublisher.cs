@@ -1,29 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace backend.Data_Access.VO.Data
 {
-    public class VOPublisher : VOUser
-    { 
+    public class VOPublisher : VOCustomer
+    {
         public bool PublisherValidated { get; set; }
-        public bool MailValidated { get; set; }
 
         public VOPublisher() { }
 
-        public VOPublisher(String mail, String password, String name, String lastName, String phone, String rut, String razonSocial, String address, bool publisherValidated, bool mailValidated)
-            : base(mail, password, name, lastName, phone, rut, razonSocial, address)
+        public VOPublisher(Int64 idUser, string mail,
+            string password, string name, string lastName, string phone, bool active, string languageDescription, int languageCode,
+            bool checkPublisher, string rut, string razonSocial, string address, bool mailValidated, bool publisherValidated) : base(
+               idUser, mail, password, name, lastName, phone, active, languageDescription, languageCode, checkPublisher, rut, razonSocial, address, mailValidated)
         {
+            IdUser = idUser;
             Mail = mail;
             Password = password;
             Name = name;
             LastName = lastName;
             Phone = phone;
+            Active = active;
+            Language = languageDescription;
+            LanguageCode = languageCode;
+            CheckPublisher = checkPublisher;
             Rut = rut;
             RazonSocial = razonSocial;
             Address = address;
-            PublisherValidated = publisherValidated;
             MailValidated = mailValidated;
+            PublisherValidated = publisherValidated;
         }
     }
 }

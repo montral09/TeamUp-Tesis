@@ -5,10 +5,10 @@ namespace backend.Data_Access.VO
 {
     public class VOResponseGetUsers : VOResponse
     {
-        public List<VOUser> voUsers;
+        public List<VOPublisher> voUsers;
 
         public VOResponseGetUsers() { }
-        public VOResponseGetUsers(List<VOUser> voUsers)
+        public VOResponseGetUsers(List<VOPublisher> voUsers)
         {
             this.voUsers = voUsers;
         }

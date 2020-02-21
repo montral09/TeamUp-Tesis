@@ -118,7 +118,7 @@ namespace backend.Logic
             VOResponseLogin result = null;
             try
             {
-                User usr = users.Find(mail);
+                Publisher usr = users.Find(mail);
                 PasswordHasher passwordHasher = new PasswordHasher();
                 if (usr != null && passwordHasher.VerifyHashedPassword(usr.Password, password))
                 {
@@ -126,7 +126,7 @@ namespace backend.Logic
                     result = new VOResponseLogin();
                     result.RefreshToken = tokens.RefreshToken;
                     result.AccessToken = tokens.AccessToken;
-                    result.voUserLog = new VOUser(usr.Mail, null, usr.Name, usr.LastName, usr.Phone, usr.Rut, usr.RazonSocial, usr.Address, usr.CheckPublisher, usr.PublisherValidated, usr.LanguageDescription);
+                    result.voUserLog = new VOPublisher(0, usr.Mail, null, usr.Name, usr.LastName, usr.Phone, false, usr.LanguageDescription, 0, usr.CheckPublisher, usr.Rut, usr.RazonSocial, usr.Address, true, usr.PublisherValidated);
                 }
             }
             catch (GeneralException e)
@@ -154,8 +154,9 @@ namespace backend.Logic
                 }
                 else
                 {
-                    User u = new User(voUser.Mail, voUser.Password, voUser.Name, voUser.LastName, voUser.Phone, voUser.CheckPublisher, voUser.Rut, voUser.RazonSocial, voUser.Address, false, false, true, voUser.Language, 0);
-                    string activationCode = users.InsertUser(u);
+                    Customer user = new Customer(0, voUser.Mail, voUser.Password, voUser.Name, voUser.LastName, voUser.Phone,
+                        false, voUser.Language, 0, voUser.CheckPublisher, voUser.Rut, voUser.RazonSocial, voUser.Address, false);                    
+                    string activationCode = users.InsertUser(user);
                     int languageCode = users.GetIdLanguageByDescription(voUser.Language);
                     Dictionary<string, string> keyValuePairs = new Dictionary<string, string>();
                     string activationLink = ConfigurationManager.AppSettings["ACTIVATION_LINK"] + activationCode;
@@ -198,8 +199,9 @@ namespace backend.Logic
                             return response;
                         }
                     }
-                    User u = new User(voUser.Mail, voUser.Password, voUser.Name, voUser.LastName, voUser.Phone, voUser.CheckPublisher, voUser.Rut, voUser.RazonSocial, voUser.Address, false, false, true, voUser.Language, 0);
-                    string activationCode = users.UpdateUser(u, voUser.NewMail);
+                    Customer user = new Customer(0, voUser.Mail, voUser.Password, voUser.Name, voUser.LastName, voUser.Phone,
+                        false, voUser.Language, 0, voUser.CheckPublisher, voUser.Rut, voUser.RazonSocial, voUser.Address, false);
+                    string activationCode = users.UpdateUser(user, voUser.NewMail);
                     if (!String.IsNullOrEmpty(activationCode))
                     {
                         int languageCode = users.GetIdLanguageByDescription(voUser.Language);
@@ -272,8 +274,8 @@ namespace backend.Logic
                 String message = util.ValidAccessToken(voRequestGetPublishers.AccessToken, voRequestGetPublishers.Mail);
                 if (EnumMessages.OK.ToString().Equals(message))
                 {
-                    List<User> publishers = users.GetPublishers();
-                    List<VOUser> voPublishers = UserToVOUserConverter.Convert(publishers);
+                    List<Publisher> publishers = users.GetPublishers();
+                    List<VOPublisher> voPublishers = PublisherToVOPublisherConverter.Convert(publishers);
                     response.voUsers = voPublishers;
                     message = EnumMessages.SUCC_PUBLISHERSOK.ToString();
                 }
@@ -522,8 +524,8 @@ namespace backend.Logic
                 String message = util.ValidAccessToken(voRequest.AccessToken, voRequest.Mail);
                 if (EnumMessages.OK.ToString().Equals(message))
                 {
-                    List<User> usersList = users.GetUsers();
-                    List<VOUser> voUsers = UserToVOUserConverter.Convert(usersList);                    
+                    List<Publisher> usersList = users.GetUsers();
+                    List<VOPublisher> voUsers = PublisherToVOPublisherConverter.Convert(usersList);                    
                     response.voUsers = voUsers;
                 }
                 response.responseCode = message;
@@ -546,11 +548,12 @@ namespace backend.Logic
             try
             {
                 string message;
-                User usr = users.GetUserData(voRequestUserData.AccessToken);
+                Publisher usr = users.GetUserData(voRequestUserData.AccessToken);
                 if (usr != null)
                 {
                     message = EnumMessages.SUCC_USERSOK.ToString();
-                    response.User = new VOUser(usr.Mail, null, usr.Name, usr.LastName, usr.Phone, usr.Rut, usr.RazonSocial, usr.Address, usr.CheckPublisher, usr.PublisherValidated, usr.LanguageDescription);
+                    VOPublisher voPublisher = PublisherToVOPublisherConverter.Convert(usr);
+                    response.User = voPublisher;
                 }
                 else
                 {
@@ -1639,7 +1642,7 @@ namespace backend.Logic
                 response.responseCode = message;
                 return response;
             }
-            catch (GeneralException e)
+            catch (Exception e)
             {
                 throw e;
             }

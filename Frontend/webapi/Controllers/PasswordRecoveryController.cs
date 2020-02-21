@@ -20,7 +20,7 @@ namespace webapi.Controllers
             try
             {
                 VOResponsePasswordRecovery voResp = new VOResponsePasswordRecovery();
-                fach.RecoverPassword(voPasswordRecovery);    
+                voResp = fach.RecoverPassword(voPasswordRecovery);    
                 return Ok(voResp);
             }
             catch (GeneralException e)
