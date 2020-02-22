@@ -15,47 +15,28 @@ class PasswordRecovery extends Component{
         }
     }
 
-    passRecovery = (ev) => {
-        let url = Globals.baseURL + 'passwordRecovery';
-        let req = new Request(url, {
-            headers: {'Content-Type': 'application/json',
-                      'Accept' : 'application/json',
-            },
-            method: 'POST',
-            body: JSON.stringify({
-            Mail : this.state.email,
-            })
-        })
-        
-        fetch(req)
-        .then(response=>response.json())
-        .then(this.showData)
-        .catch(this.allErrors)
-
-    }
-
-    showData = (data)=>{
-        console.log(data);
-        switch(data.responseCode) {
-            case "ERR_USRMAILNOTEXIST":
-                this.setState({error:"El mail ingresado ya fue utilizado"})
-                break;   
-            case "SUCC_PASSWORDUPDATED":
-                ToastAndroid.showWithGravity(
-                "Se ha enviado un correo con su nueva contraseña",
-                ToastAndroid.LONG,
-                ToastAndroid.CENTER,
-                );
-                this.props.navigation.navigate('Login')
-                break;
+    restoreUser = () => {
+        if(this.state.email){
+            var objApi = {};
+            objApi.objToSend = {
+                Mail: this.state.email
+            }
+            objApi.fetchUrl = "api/passwordRecovery";
+            objApi.method = "POST";
+            objApi.successMSG = {
+                SUCC_PASSWORDUPDATED : this.props.translate('SUCC_PASSWORDUPDATED'),
+            };
+            objApi.functionAfterSuccess = "restoreUser";
+            objApi.functionAfterError = "restoreUser";
+            objApi.errorMSG= {
+                ERR_USRMAILNOTEXIST : this.props.translate('ERR_USRMAILNOTEXIST')
+            }
+            objApi.logOut = this.props.logOut;
+            callAPI(objApi, this);
+        }else{
+            displayErrorMessage('Por favor ingrese un correo');
         }
         
-    }
-
-    //Se encarga de todo el manejo de errores en el llamado al API
-    allErrors = (err) => {
-        this.setState({error: err.message});
-        console.log(err)
     }
 
     render(){
@@ -70,9 +51,19 @@ class PasswordRecovery extends Component{
                     value={this.state.email}
                     onChangeText={(email) => this.setState({email})}
                 />
-                <TouchableOpacity style={styles.button} onPress={this.passRecovery} > 
-                    <Text style={styles.buttonText}>{translations[systemLanguage].messages['recover_w']}</Text>      
-                </TouchableOpacity>
+                
+                <View style={{flexDirection:'row'}}>
+                    <View style={{marginRight:10}}>
+                        <TouchableOpacity style={styles.button} onPress={()=> {this.props.navigation.goBack()}}>
+                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['cancel_w']}</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={{marginLeft:10}}>
+                        <TouchableOpacity style={styles.button} onPress={this.restoreUser} > 
+                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['recover_w']}</Text>      
+                        </TouchableOpacity>
+                    </View>
+                </View>
             </View>
         )
     }

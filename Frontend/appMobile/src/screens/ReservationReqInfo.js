@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, ScrollView, Keyboard, TextInput, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, Picker, Keyboard, TextInput, TouchableOpacity} from 'react-native';
 import { callAPI } from '../common/genericFunctions';
 import { connect } from 'react-redux';
 import translations from '../common/translations';
@@ -8,33 +8,21 @@ class ReservationReqInfo extends Component {
     constructor(props) {
         super(props);
         const { navigation } = this.props;
-        const screenConfig = navigation.getParam('screenConfig', 'default value');
+        const screenConfigParam = navigation.getParam('screenConfig', 'default value');
+        const IdReservationParam = navigation.getParam('selectedIdRes', 'NO-ID');
         this.state = {
             modal: false,
+            selectedIdRes: IdReservationParam,
             optionalData: {},
+            optionValue: 5,
             textboxValue: "",
             isLoading : false,
             buttonIsDisabled: false,
-            screenConfig: screenConfig,
+            screenConfig: screenConfigParam,  
         };
-        this.toggle = this.toggle.bind(this);
         this.save = this.save.bind(this);
+        this.cancel = this.cancel.bind(this);
         this.changeModalLoadingState = this.changeModalLoadingState.bind(this);
-    }
-
-    toggle(optionalData) {
-        if(optionalData){
-            this.setState({
-                modal: !this.state.modal,
-                optionalData: optionalData
-            });
-        }else{
-            if(!this.state.isLoading){
-                this.setState({
-                    modal: !this.state.modal
-                });
-            }
-        }
     }
 
     changeModalLoadingState(closeModal){
@@ -54,15 +42,16 @@ class ReservationReqInfo extends Component {
 
     save() {
         if(this.screenConfig.saveFunction){
-            this.triggerSaveModal(this.screenConfig.saveFunction,{optionValue:this.state.optionValue, textboxValue:this.state.textboxValue })
+            this.triggerSaveScreen(this.screenConfig.saveFunction,{optionValue:this.state.optionValue, textboxValue:this.state.textboxValue })
         }else{
             this.props.modalSave(this.state.textboxValue);
         }
     }
 
-    triggerSaveModal = (saveFunction, objData) => {
+    triggerSaveScreen = (saveFunction, objData) => {
         switch (saveFunction) {
             case "saveCancelRP": this.saveCancelRP(objData.textboxValue); break;
+            case "saveRateMRSL": this.saveRateMRSL(objData.optionValue, objData.textboxValue); break;
             case "saveConfirmRP": this.saveConfirmRP(objData.dateSelectValue); break;
         }
     }
@@ -85,6 +74,31 @@ class ReservationReqInfo extends Component {
         };
         objApi.functionAfterSuccess = "saveCancelRP";
         objApi.errorMSG = {}
+        this.modalReqInfo.current.changeModalLoadingState(false);
+        callAPI(objApi, this);
+    }
+
+    // This function will call the API
+    saveRateMRSL = (optionValue, commentValue) => {
+        if (!optionValue) {
+            optionValue = 5;
+        }
+        var objApi = {};
+        objApi.objToSend = {
+            "AccessToken": this.props.tokenObj.accesToken,
+            "VOReview": {
+                "Rating": optionValue,
+                "Review": commentValue,
+                "IdReservation": this.state.selectedIdRes,
+                "Mail": this.props.userData.Mail
+            }
+        }
+        objApi.fetchUrl = "api/review";
+        objApi.method = "POST";
+        objApi.successMSG = {
+            SUCC_REVIEWCREATED: translations[this.props.systemLanguage].messages['SUCC_REVIEWCREATED'],
+        };
+        objApi.functionAfterSuccess = "saveRateMRSL";
         this.modalReqInfo.current.changeModalLoadingState(false);
         callAPI(objApi, this);
     }
@@ -115,10 +129,23 @@ class ReservationReqInfo extends Component {
 
     }
 
+    cancel(){
+        console.Log(this.state.screenConfig.cancelText)
+        if (this.state.screenConfig.cancelText === 'Entendido'){
+            this.props.navigation.navigate('Home');
+        }else{
+            this.props.navigation.goBack();
+        }
+    }
+
     onChange = (e) => {
         this.setState({
             [e.target.id]: e.target.value
           })
+    }
+
+    changeRating(value){
+        this.setState({optionValue:value});
     }
 
     render() {
@@ -129,32 +156,45 @@ class ReservationReqInfo extends Component {
                     <View style={styles.container}>
                         <Text style={styles.titleText}>{this.state.screenConfig.title}</Text>
                         <Text style={styles.infoText}>{this.state.screenConfig.mainText}</Text>
+                        {this.state.screenConfig.optionDisplay ? 
+                        (
+                            <>
+                            <Text style={styles.infoText}>{this.state.screenConfig.optionLabel}</Text>
+                            <Picker
+                                style={styles.pickerBox2}
+                                selectedValue={this.state.optionValue}
+                                onValueChange={(itemValue) => this.changeRating(itemValue)}
+                            > 
+                                {this.state.screenConfig.optionArray.map((option) => {
+                                    return (
+                                        <Picker.Item key={option} value={option} label={option} />
+                                    );
+                                })}
+                            </Picker>
+                            </>
+                        ) : (null)}
                         {this.state.screenConfig.textboxDisplay ? 
                         (
                             <TextInput style={styles.inputBox} 
                                 underlineColorAndroid='rgba(0,0,0,0)'
                                 placeholder={this.state.screenConfig.textboxLabel}
                                 placeholderTextColor="#ffffff"
-                                onChangeText={this.handleInput}
+                                onChangeText={(textboxValue) => this.setState({textboxValue})}
                                 value={this.state.textboxValue}
                             />
                         ) : (null)}
-                    
-                        
-                        {this.state.screenConfig.login_status == 'LOGGED_IN' ? (
-                            <View style={{flexDirection: 'row'}}>
-                                {this.state.screenConfig.cancelAvailable == true ? (<TouchableOpacity style={styles.button} onPress={()=> {this.props.navigation.goBack()}}> 
-                                                                                        <Text style={styles.buttonText}>{this.state.screenConfig.cancelText}</Text>
+                        <View style={{flexDirection: 'row'}}>
+                            {this.state.screenConfig.cancelAvailable == true ? (<TouchableOpacity style={styles.button} onPress={()=> {this.cancel}}> 
+                                                                                    <Text style={styles.buttonText}>{this.state.screenConfig.cancelText}</Text>
+                                                                                </TouchableOpacity>
+                                                                                ) : (null)
+                            }                                                    
+                            {this.state.screenConfig.confirmAvailable == true ? (<TouchableOpacity style={styles.button} onPress={()=> {this.save}}> 
+                                                                                    <Text style={styles.buttonText}>{this.state.screenConfig.confirmText}</Text>
                                                                                     </TouchableOpacity>
-                                                                                   ) : (null)
-                                }                                                    
-                                {this.state.screenConfig.confirmAvailable == true ? (<TouchableOpacity style={styles.button} onPress={()=> {this.save}}> 
-                                                                                        <Text style={styles.buttonText}>{this.state.screenConfig.confirmText}</Text>
-                                                                                     </TouchableOpacity>
-                                                                                    ) : (null)
-                                }
-                            </View>
-                        ) : (null)}    
+                                                                                ) : (null)
+                            }
+                        </View>  
                     </View>
                 ) : (null)}                
             </>   
@@ -215,6 +255,8 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
+        tokenObj: state.loginData.tokenObj,
+        userData: state.loginData.userData,
         systemLanguage: state.loginData.systemLanguage
     }
 }

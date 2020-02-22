@@ -291,7 +291,9 @@ class ReservationCustResPay extends Component {
                                 <Text style={styles.infoText}>Documento subido </Text>
                             </View>
                             <View style={{flex:1}}>
-                                <Text style={styles.infoText} onPress={() => Linking.openURL(this.state.objPaymentDetails.paymentDocument)}>Archivo subido</Text>
+                                <TouchableOpacity style={styles.button} onPress={() => Linking.openURL(this.state.objPaymentDetails.paymentDocument)}> 
+                                    <Text style={styles.buttonText}>LINK</Text>
+                                </TouchableOpacity>        
                             </View>
                         </View>
                     ) : (null)}

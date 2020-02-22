@@ -1,46 +1,54 @@
 import React, {Component} from 'react';
 import {View,Text,Image,StyleSheet,TouchableOpacity,ToastAndroid} from 'react-native';
+import { connect } from 'react-redux';
 import { Ionicons } from "@expo/vector-icons";
+import translations from '../common/translations';
 
 class ReservationSpacesListScrollView extends Component {
 
     render (){
+        const { systemLanguage } = this.props;
         return (
             <View style={styles.spacesContainer}>
                 <View style={styles.textView}>
                     <Text style={{color: 'white', fontSize: 20}}>{this.props.parentData.Title}</Text>
-                    <Text style={{color: 'white', fontSize: 14, paddingHorizontal: 5}}>Fecha: {this.props.parentData.Date}</Text>
+                    <Text style={{color: 'white', fontSize: 14, paddingHorizontal: 5}}>{translations[systemLanguage].messages['date_w']}: {this.props.parentData.Date}</Text>
                     <>
-                        {this.props.parentData.PlanSelected == 'Hour' ? (<Text style={styles.infoText}>Desde {this.props.parentData.HourFrom} a {this.props.parentData.HourTo}hs</Text> ) : (<Text style={styles.infoText}>1 {this.props.parentData.PlanSelected}</Text>)}
+                        {this.props.parentData.PlanSelected == 'Hour' ? (<Text style={styles.infoText}>{translations[systemLanguage].messages['from_w']} {this.props.parentData.HourFrom} {translations[systemLanguage].messages['to_w']} {this.props.parentData.HourTo}hs</Text> ) : (this.props.parentData.ReservedQuantity == 1 ? (<Text style={styles.infoText}>{this.props.parentData.ReservedQuantity+' '+ translations[systemLanguage].messages['planSelected_'+this.props.parentData.PlanSelected]}</Text>):(<Text style={styles.infoText}>{this.props.parentData.ReservedQuantity+' '+ translations[systemLanguage].messages['planSelected_'+this.props.parentData.PlanSelected+'s']}</Text>))}
                     </>
-                    <Text style={{color: 'white', fontSize: 14, paddingHorizontal: 5}}>Personas: {this.props.parentData.People}</Text>
-                    <Text style={{color: 'white', fontSize: 14, paddingHorizontal: 5}}>Monto: {this.props.parentData.TotalPrice}</Text>  
+                    <Text style={{color: 'white', fontSize: 14, paddingHorizontal: 5}}>{translations[systemLanguage].messages['people_w']}: {this.props.parentData.People}</Text>
+                    <Text style={{color: 'white', fontSize: 14, paddingHorizontal: 5}}>{translations[systemLanguage].messages['amount_w']}: {this.props.parentData.TotalPrice}</Text>  
                     <View style={styles.borderContainer}>
-                        <Text style={styles.subTitleText}>Pago reserva</Text>
-                        <Text style={styles.infoText}>{this.props.objReservationCustomerPayment.reservationPaymentStateText}</Text>               
-                        <TouchableOpacity style={styles.button} onPress={()=> this.props.triggerScreen("PAYCUSTRES", this.props.parentData.IdReservation, this.props.objReservationCustomerPayment)}>
-                            <Text style={styles.buttonText}>Detalles</Text>
-                        </TouchableOpacity>
+                        <Text style={styles.subTitleText}>{translations[systemLanguage].messages['payment_w']} {translations[systemLanguage].messages['reservation_w']}</Text>
+                        <Text style={styles.infoText}>{translations[systemLanguage].messages['payState_'+ this.props.objReservationCustomerPayment.reservationPaymentStateText.replace(/\s/g,'')]}</Text>               
+                        {this.props.parentData.StateDescription === 'PENDING' ? (
+                            <Text style={styles.infoText}>{translations[systemLanguage].messages['myReservedSpacesList_reservedSpacesTable_pendingRes']}</Text>
+                        ):(
+                            <TouchableOpacity style={styles.button} onPress={()=> this.props.triggerScreen("PAYCUSTRES", this.props.parentData.IdReservation, this.props.objReservationCustomerPayment)}>
+                                <Text style={styles.buttonText}>{translations[systemLanguage].messages['details_w']}</Text>
+                            </TouchableOpacity>
+                          )
+                        }
                     </View>
                     <View style={styles.borderContainer}>
-                        <Text style={styles.subTitleText}>Estado reserva</Text>
-                        <Text style={styles.infoText}>{this.props.parentData.StateDescription}</Text>                
+                        <Text style={styles.subTitleText}>{translations[systemLanguage].messages['status_w']}</Text>
+                        <Text style={styles.infoText}>{translations[systemLanguage].messages['resState_' + this.props.parentData.StateDescription.replace(/\s/g,'')]}</Text>                
                         <>
                         {this.props.parentData.StateDescription === 'PENDING' || this.props.parentData.StateDescription === 'RESERVED' ? (
-                            <TouchableOpacity style={styles.button} onPress={()=> this.props.triggerScreen("CANCEL")}>
-                                <Text style={styles.buttonText}>Cancelar</Text>
+                            <TouchableOpacity style={styles.button} onPress={()=> this.props.triggerScreen("CANCEL", this.props.parentData.IdReservation, this.props.parentData.StateDescription)}>
+                                <Text style={styles.buttonText}>{translations[systemLanguage].messages['cancel_w']}</Text>
                             </TouchableOpacity>
                             ) : ( null )
                         }
                         {this.props.parentData.StateDescription === 'FINISHED' && !this.props.parentData.Reviewed ? (
-                            <TouchableOpacity style={styles.button} /*onPress={()=> }*/>
-                                <Text style={styles.buttonText}>Calificar</Text>
+                            <TouchableOpacity style={styles.button} onPress={()=> this.props.triggerScreen("RATE", this.props.parentData.IdReservation, this.props.parentData.StateDescription)}>
+                                <Text style={styles.buttonText}>{translations[systemLanguage].messages['rate_w']}</Text>
                             </TouchableOpacity>
                             ) :(
                                 <>
                                 {this.props.parentData.StateDescription == 'PENDING'  ? (
                                     <TouchableOpacity style={styles.button} onPress={()=> this.props.triggerScreen("EDIT", this.props.parentData.IdReservation, this.props.objReservationCustomerPayment)}>
-                                        <Text style={styles.buttonText}>Editar</Text>
+                                        <Text style={styles.buttonText}>{translations[systemLanguage].messages['edit_w']}</Text>
                                     </TouchableOpacity>                            
                                     ) : (null)}
                                 </>
@@ -54,7 +62,13 @@ class ReservationSpacesListScrollView extends Component {
     }
 }
 
-export default ReservationSpacesListScrollView
+const mapStateToProps = (state) => {
+    return {
+        systemLanguage: state.loginData.systemLanguage
+    }
+}
+
+export default connect(mapStateToProps)(ReservationSpacesListScrollView)
 
 const styles = StyleSheet.create({
     spacesContainer:{

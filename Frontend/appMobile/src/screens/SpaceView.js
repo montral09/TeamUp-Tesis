@@ -6,6 +6,7 @@ import LoadingOverlay from 'react-native-loading-spinner-overlay';
 import { connect } from 'react-redux';
 import HTMLView from 'react-native-htmlview';
 import { callAPI } from '../common/genericFunctions';
+import translations from '../common/translations';
 
 import SpaceImages from '../components/SpaceImagesScrollView';
 import HeartButton from '../components/HeartButton';
@@ -33,19 +34,12 @@ class SpaceView extends Component {
             quantityPlan        : 1,
             tabDisplayed        : 1,
             relatedPublications : [],
+            otherPublicationConfig : [],
             facilities          : [],
             pubIsLoading        : true,
             infIsLoading        : 1,
-            planChosen          : "HourPrice",
-            quantityPeople      : 1,
             generalError        : false,
-            hoursAvailable      : ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13'
-                                    , '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
-            hourFromSelect      : '00',
-            hourToSelect        : '01',
-            reservationComment  : "",
             descriptionCropped  : '',
-            totalPrice          : 0,
             arrQA               : [],
             activeSection       : 1,
             ratingPopUp         : false,
@@ -276,6 +270,48 @@ class SpaceView extends Component {
         return objResponse;
     }
 
+    saveQuestionVP = (question, tabQuestionThis) => {
+        var objApi = {};
+        objApi.objToSend = {
+            "AccessToken": this.props.tokenObj.accesToken,
+            "Mail": this.props.userData.Mail,
+            "IdPublication": this.state.pubID,
+            "Question": question
+        }
+        objApi.fetchUrl = 'api/publicationQuestions';
+        objApi.method = "POST";
+        objApi.successMSG = {
+            SUCC_QUESTIONCREATED: translations[this.props.systemLanguage].messages['SUCC_QUESTIONCREATED'],
+        };
+        objApi.functionAfterSuccess = "saveQuestionVP";
+        objApi.functionAfterError = "saveQuestionVP";
+        objApi.errorMSG = {};
+        objApi.tabQuestionThis = tabQuestionThis;
+        if(this.state.pubIsLoading == false) this.setState({ pubIsLoading: true });
+        callAPI(objApi, this);
+    }
+
+    submitFavoriteVP = () => {
+        var objApi = {};
+        var code = this.state.pubObj.Favorite === false ? 1 : 2;
+        objApi.objToSend = {
+            "AccessToken": this.props.tokenObj.accesToken,
+            "Mail": this.props.userData.Mail,
+            "IdPublication": this.state.pubObj.IdPublication,
+            "Code": code
+        }
+
+        objApi.fetchUrl = 'api/favorite';
+        objApi.method = "POST";
+        objApi.successMSG = {
+            SUCC_FAVORITEUPDATED: code === 1 ? translations[this.props.systemLanguage].messages['viewPub_addedToFav'] : translations[this.props.systemLanguage].messages['viewPub_removedFromFav'],
+        };
+        objApi.functionAfterSuccess = "submitFavoriteVP";
+        objApi.functionAfterError = "submitFavoriteVP";
+        objApi.errorMSG = {}
+        callAPI(objApi, this);
+    }
+
     changeHour = (e) => {
         var newHourFromSelect = this.state.hourFromSelect;
         var newHourToSelect = this.state.hourToSelect;
@@ -314,22 +350,6 @@ class SpaceView extends Component {
         });
     }
 
-    convertDate(date) {
-        var today = new Date(date);
-        var dd = today.getDate();
-        var mm = today.getMonth() + 1; //January is 0!
-
-        var yyyy = today.getFullYear();
-        if (dd < 10) {
-            dd = '0' + dd;
-        }
-        if (mm < 10) {
-            mm = '0' + mm;
-        }
-        var dateConv = dd + "-" + mm + '-' + yyyy;
-        return dateConv;
-    }
-
     switchActiveSection(sectionValue){
         this.setState({activeSection:sectionValue})
     }
@@ -362,15 +382,15 @@ class SpaceView extends Component {
                                 size={18}
                                 color='white'
                             />
-                            <Text style={styles.buttonText}> Recomendado!</Text>
+                            <Text style={styles.buttonText}> {translations[this.props.systemLanguage].messages['recommended_w']}</Text>
                             </View>
                         ):(null)
                         }
                         <SpaceImages ImagesURL={this.state.pubObj.ImagesURL}/>
                         <Text style={styles.titleText}>{this.state.pubObj.Title}</Text>
-                        <Text style={styles.capacityText}>{this.state.pubObj.QuantityRented} veces alquilado</Text>
-                        <Text style={styles.capacityText}>Capacidad: {this.state.pubObj.Capacity} personas</Text>
-                        <Text style={styles.capacityText}>Disponibilidad: {this.state.pubObj.Availability}</Text>
+                        <Text style={styles.capacityText}>{this.state.pubObj.QuantityRented} {translations[this.props.systemLanguage].messages['viewPub_timesRented']}</Text>
+                        <Text style={styles.capacityText}>{translations[this.props.systemLanguage].messages['capacity_w']}: {this.state.pubObj.Capacity} {translations[this.props.systemLanguage].messages['people_w']}</Text>
+                        <Text style={styles.capacityText}>{translations[this.props.systemLanguage].messages['availability_w']}: {this.state.pubObj.Availability}</Text>
                         <View style={styles.popularityView}>
                             <TouchableOpacity
                                 underlayColor = 'white'
@@ -389,14 +409,14 @@ class SpaceView extends Component {
                                 color='white'
                                 selectedColor='white'
                                 favoriteCode={this.state.pubObj.Favorite === false ? 1 : 2}
-                                submitFavorite={this.submitFavorite}
+                                submitFavorite={this.submitFavoriteVP}
                             />):(null)
                             }
-                            <Text style={styles.priceText} /*onPress={() =>{this.handleOnPress(true)}}*/>   
-                                {this.state.pubObj.HourPrice > 0 && "Por Hora : $" + this.state.pubObj.HourPrice + "\n"}
-                                {this.state.pubObj.DailyPrice > 0 && "Por Día : $" + this.state.pubObj.DailyPrice + "\n"}
-                                {this.state.pubObj.WeeklyPrice > 0 && "Por Semana : $" + this.state.pubObj.WeeklyPrice + "\n"}
-                                {this.state.pubObj.MonthlyPrice > 0 && "Por Mes : $" + this.state.pubObj.MonthlyPrice}
+                            <Text style={styles.priceText}>   
+                                {this.state.pubObj.HourPrice > 0 ? (translations[this.props.systemLanguage].messages['hour_w']+ ': $' + this.state.pubObj.HourPrice + "\n") : (translations[this.props.systemLanguage].messages['hour_w'] + '-' + '\n')}
+                                {this.state.pubObj.DailyPrice > 0 ? (translations[this.props.systemLanguage].messages['day_w'] + ': $' + this.state.pubObj.DailyPrice + "\n") : (translations[this.props.systemLanguage].messages['day_w'] + '-' + '\n')}
+                                {this.state.pubObj.WeeklyPrice > 0 ? (translations[this.props.systemLanguage].messages['week_w'] + ': $' + this.state.pubObj.WeeklyPrice + "\n") : (translations[this.props.systemLanguage].messages['week_w'] + '-' + '\n')}
+                                {this.state.pubObj.MonthlyPrice > 0 ? (translations[this.props.systemLanguage].messages['month_w'] + ': $' + this.state.pubObj.MonthlyPrice) : (translations[this.props.systemLanguage].messages['month_w'] + '-' + '\n')}
                             </Text>
                         </View>
                         
@@ -419,7 +439,7 @@ class SpaceView extends Component {
                         
                         {this.state.activeSection === 1 ? (
                             <>
-                                <Text style={styles.subtitleText}>Descripción</Text>
+                                <Text style={styles.subtitleText}>{translations[this.props.systemLanguage].messages['description_w']}</Text>
                                 <View style={styles.descriptionContainer}>
                                     <ScrollView vertical>
                                         <View style={{marginLeft: 10, marginTop: 10, marginRight: 10, marginBottom: 10}}>
@@ -427,9 +447,9 @@ class SpaceView extends Component {
                                         </View>
                                     </ScrollView>
                                 </View>                              
-                                <Text style={styles.subtitleText}>Dirección</Text>
+                                <Text style={styles.subtitleText}>{translations[this.props.systemLanguage].messages['address_w']}</Text>
                                 <Text style={styles.descriptionText}>{this.state.pubObj.Address}</Text>
-                                <Text style={styles.subtitleText}>Servicios</Text>
+                                <Text style={styles.subtitleText}>{translations[this.props.systemLanguage].messages['services_w']}</Text>
                                 <>            
                                 {this.state.pubObj.Facilities.map((inf, index) => {
                                     const infText = this.state.facilities.filter(function (fac) {
@@ -448,20 +468,20 @@ class SpaceView extends Component {
                                     <>
                                         {this.state.activeSection === 2 ? (
                                             <>
-                                                <Text style={styles.subtitleQuestionsText}>Preguntas</Text>    
-                                                <TabQuestions arrQA={this.state.arrQA} saveQuestion={this.saveQuestionVP} triggerScreen={this.triggerScreen}
+                                                <Text style={styles.subtitleQuestionsText}>{translations[this.props.systemLanguage].messages['questions_w']}</Text>    
+                                                <TabQuestions arrQA={this.state.arrQA} saveQuestionVP={this.saveQuestionVP} triggerScreen={this.triggerScreen}
                                                             userData={this.props.userData} isMyPublication={this.state.pubObj.IsMyPublication}/>
                                             </>
                                         ) : (
                                                 <>
                                                     {this.state.activeSection === 3 ? (
                                                         <>                                                
-                                                            <Text style={styles.subtitleQuestionsText}>Reseñas</Text>
+                                                            <Text style={styles.subtitleQuestionsText}>{translations[this.props.systemLanguage].messages['reviews_w']}</Text>
                                                             <TabReviews reviews={this.state.pubObj.Reviews}/> 
                                                         </>
                                                     ) : (
                                                             <>
-                                                                <Text style={styles.subtitleQuestionsText}>Video</Text>
+                                                                <Text style={styles.subtitleQuestionsText}>{translations[this.props.systemLanguage].messages['video_w']}</Text>
                                                                 <TabVideo youtubeUrl={this.state.pubObj.VideoURL}/>
                                                             </>
                                                         )
@@ -485,7 +505,8 @@ class SpaceView extends Component {
                                     )
                             }
                         </View>
-                        <RelatedPublications relatedPublications={this.state.relatedPublications} push={this.props.navigation.push} title="Publicaciones relacionadas"/>
+                        <RelatedPublications relatedPublications={this.state.otherPublicationConfig} push={this.props.navigation.push} title={translations[this.props.systemLanguage].messages['viewPub_splitSpaces']} />
+                        <RelatedPublications relatedPublications={this.state.relatedPublications} push={this.props.navigation.push} title={translations[this.props.systemLanguage].messages['viewPub_relatedPublications']}/>
                     </ScrollView>      
                 </View>    
             ) : (<ActivityIndicator
@@ -504,7 +525,8 @@ const mapStateToProps = (state) => {
     return {
         login_status: state.loginData.login_status,
         tokenObj: state.loginData.tokenObj,
-        userData: state.loginData.userData
+        userData: state.loginData.userData,
+        systemLanguage: state.loginData.systemLanguage
     }
 }
 
@@ -636,6 +658,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor:'#0069c0',
+        borderLeftWidth: 1,
+        borderRightWidth: 1,
+        borderLeftColor: 'white',
+        borderRightColor: 'white',
         //borderRadius: 15,
         marginVertical: 10,
         elevation: 3,
@@ -662,7 +688,6 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         marginLeft: 20,
         width: Dimensions.get('window').width - 40,
-        height: Dimensions.get('window').width * 0.8,
     }
 });
 

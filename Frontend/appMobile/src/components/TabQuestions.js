@@ -73,11 +73,11 @@ class TabQuestions extends Component {
                             <TextInput style={styles.inputBox} 
                                 underlineColorAndroid='rgba(0,0,0,0)'
                                 value={this.state.textQuestion}
-                                onChange ={this.onChange}
+                                onChangeText = {(textQuestion) => this.setState({textQuestion})}
                                 multiline = {true}
                                 numberOfLines = {4}
                             />  
-                            <TouchableOpacity style={styles.button} /*onPress ={ () => this.props.saveQuestion(this.state.textQuestion)}*/>
+                            <TouchableOpacity style={styles.button} onPress={() => this.props.saveQuestionVP(this.state.textQuestion, this)}>
                                 <Text style={styles.buttonText}>Consultar</Text>   
                             </TouchableOpacity> 
                         </View>    

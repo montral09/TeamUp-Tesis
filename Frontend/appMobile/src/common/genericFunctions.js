@@ -65,6 +65,10 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             }});
             //registerForPushNotificationsAsync(objData.voUserLog.Mail);
         break;
+        case "restoreUser":
+            bindThis.setState({isLoading: false});
+            bindThis.props.history.push('/account/login');
+        break;
         case "modifyUser":
             bindThis.setState({ isLoading: false });
             if(objApi.emailChanged){
@@ -84,7 +88,10 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
                     });
                 }catch(error){}
             }
-        break;        
+        break;   
+        case "requestBePublisher":
+            bindThis.props.navigation.navigate('Home');
+        break;     
         case "deleteUser": bindThis.setState({ isLoading: false }); objApi.logOut();
         break;
         case "loadInfraestructureVP": bindThis.setState({ facilities: objData.facilities, infIsLoading: false }); 
@@ -96,12 +103,18 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             if (pubObj.HourPrice > 0) { defaultPlanSelected = "HourPrice"; } else if (pubObj.DailyPrice > 0) { defaultPlanSelected = "DailyPrice" } else if (pubObj.WeeklyPrice > 0) { defaultPlanSelected = "WeeklyPrice"; } else if (pubObj.MonthlyPrice > 0) { defaultPlanSelected = "MonthlyPrice"; }
             bindThis.setState({
                 pubIsLoading: false, pubObj: pubObj, activeImage: { index: 0, src: pubObj.ImagesURL[0] },
-                relatedPublications: objData.RelatedPublications, planChosen: defaultPlanSelected, arrQA : objData.Questions
+                relatedPublications: objData.RelatedPublications, otherPublicationConfig: objData.OtherPublicationConfig, planChosen: defaultPlanSelected, arrQA : objData.Questions
             });
         break;
         case "saveAnswerVP":
         case "saveQuestionVP":
             bindThis.loadPublicationVP(bindThis.state.pubID);
+        break;
+        case "confirmEditReservationMRSL":
+            bindThis.props.navigation.goBack()
+        break;
+        case "saveRateMRSL":
+            bindThis.props.navigation.goBack()
         break;
         case "loadMyReservationsMRSL":
             var newTotalPages = Math.round(parseFloat(objData.Reservations.length/MAX_ELEMENTS_PER_TABLE));
@@ -163,6 +176,16 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             }
             bindThis.setState({ publicationsLoaded: true, publications:objData.Publications, 
                 totalPublications:objData.TotalPublications,totalPages:newTotalPages, pagination: newPagination });
+        break;
+        case "saveQuestionVP":
+            objApi.tabQuestionThis.setState({isLoading : false});
+        break;  
+        case "submitFavoriteVP":
+            bindThis.setState({ pubObj: { ...bindThis.state.pubObj, Favorite: objApi.objToSend.Code === 1 ? true : false } })
+        break;
+        case "confirmReservationVP":
+            bindThis.setState({ isLoading: false, buttonIsDisable: false });
+            bindThis.triggerScreen({mode:'"RESSUCC"'});    
         break;
     }
 }

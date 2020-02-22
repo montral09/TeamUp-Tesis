@@ -90,6 +90,10 @@ class ReservationResCustPay extends Component {
         callAPI(objApi);
     }
 
+    openFile = () =>{
+        Linking.openURL(this.state.objPaymentDetails.paymentDocument);
+    }
+
     render() {
         const { systemLanguage } = this.props;
         return (
@@ -142,8 +146,9 @@ class ReservationResCustPay extends Component {
                     {this.state.objPaymentDetails.reservationPaymentState == "PENDING CONFIRMATION" || this.state.objPaymentDetails.reservationPaymentState == "PAID" ? (
                     <>
                         {this.state.objPaymentDetails.paymentDocument ? (
-                            //{this.state.objPaymentDetails.paymentDocument} target="_blank">LINK</a>
-                            <Text>LINK</Text>
+                            <TouchableOpacity style={styles.button} onPress={()=> {this.openFile()}}> 
+                                <Text style={styles.buttonText}>LINK</Text>
+                            </TouchableOpacity>
                         ) : (null)}
 
                         {this.state.objPaymentDetails.paymentComment ? (
