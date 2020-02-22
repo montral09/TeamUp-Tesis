@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, ScrollView, Keyboard, TouchableOpacity, ToastAn
 import { connect } from 'react-redux';
 import { Header } from 'react-native-elements';
 import { callAPI } from '../common/genericFunctions';
-import { MAX_ELEMENTS_PER_TABLE } from '../common/constants';
+import { MAX_ELEMENTS_PER_TABLE, ML_MODE } from '../common/constants';
 import translations from '../common/translations';
 
 import ReservationSpacesListScrollView from '../components/ReservationSpacesListScrollView';
@@ -92,13 +92,13 @@ class ReservationSpaceList extends Component {
                 screenConfigObj = {
                     title: translations[this.props.systemLanguage].messages['myReservedSpacesList_modalRate_header'], mainText: translations[this.props.systemLanguage].messages['myReservedSpacesList_modalRate_main'], mode: mode, saveFunction: "saveRateMRSL", textboxLabel: translations[this.props.systemLanguage].messages['comment_w'],
                     textboxDisplay: true, cancelAvailable: true, confirmAvailable: true, cancelText: translations[this.props.systemLanguage].messages['cancel_w'], confirmText: translations[this.props.systemLanguage].messages['rate_w'], login_status: this.props.login_status,
-                    optionDisplay: true, optionLabel: translations[this.props.systemLanguage].messages['score_w'], optionArray: [5, 4, 3, 2, 1]
+                    optionDisplay: ML_MODE != 'ON', optionLabel: translations[this.props.systemLanguage].messages['score_w'], optionArray: [5, 4, 3, 2, 1]
                 };
-                this.props.navigation.navigate('ReservationReqInfo', {screenConfig: screenConfigObj, selectedIdRes: IdReservation});
+                this.props.navigation.navigate('ReservationReqInfo', {screenConfig: screenConfigObj, selectedIdRes: IdReservation, selectedResState: auxParam});
                 //this.setState({ modalConfigObj: modalConfigObj, selectedIdRes: IdReservation, selectedResState: auxParam }, () => { this.modalReqInfo.current.toggle(); })
                 break;
             case "PAYCUSTRES":
-                this.props.navigation.navigate('ReservationCustResPay', {auxParam: auxParam});
+                this.props.navigation.navigate('ReservationCustResPay', {IdReservationParam: IdReservation, auxParam: auxParam});
                 break;
             case "EDIT":
                 const resData = this.state.reservations.filter(res => {
@@ -193,7 +193,7 @@ class ReservationSpaceList extends Component {
                                 HourTo: reservation.HourTo,
                                 StateDescription: reservation.StateDescription,
                                 ReservedQuantity: reservation.ReservedQuantity,
-                                //Reviewed: reservation.Reviewed
+                                Reviewed: reservation.Reviewed
                             }
                             var objReservationCustomerPayment = {
                                 reservationPaymentState: reservation.CustomerPayment.PaymentDescription,

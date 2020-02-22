@@ -586,6 +586,10 @@
       <Project>{0118B1A8-F6AE-4970-B2D7-F1BBAB02A595}</Project>
       <Name>backend</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Backend\teamup\entities\commonEntities.csproj">
+      <Project>{4f34f491-e971-4c89-9da6-4ac961589d22}</Project>
+      <Name>commonEntities</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Backend\teamup\teamupML.Model\teamupML.Model.csproj">
       <Project>{9e5a16bd-5435-480c-a859-8e12a96e76a2}</Project>
       <Name>teamupML.Model</Name>

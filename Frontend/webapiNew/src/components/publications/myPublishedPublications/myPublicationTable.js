@@ -60,8 +60,8 @@ const MyPublicationTable = (props) =>{
                 {obj.State === 'ACTIVE' ? (
                     <>
                     <td><a href="#" onClick={() => props.changePubState(obj.State, obj.IdPublication)}><span><i className="col-md-1 fa fa-pause"></i></span> {translate('pause_w')}</a></td>
-                    <td><a href="#" onClick={() => props.editPublication(obj.IdPublication,obj.IdPlan , obj.PreferentialPlan.IdPlan, obj.PreferentialPlan.Price, obj.PreferentialPlan.StateDescription)}> <span><i className="col-md-1 fa fa-pencil-alt"></i></span> {translate('edit_w')}</a></td> 
-                    <td> {obj.IsChildPublication == true ? (null) : (<a href="#" onClick={() => props.splitPublication(obj.IdPublication,obj.IdPlan , obj.PreferentialPlan.IdPlan, obj.PreferentialPlan.Price, obj.PreferentialPlan.StateDescription)}> <span><i className="col-md-1 fas fa-columns"></i></span> {translate('split_w')}</a>)}</td> 
+                    <td><a href="#" onClick={() => props.editPublication(obj.IdPublication,obj.IdPlan , obj.PreferentialPlan.IdPlan, obj.PreferentialPlan.Price, obj.SpaceType)}> <span><i className="col-md-1 fa fa-pencil-alt"></i></span> {translate('edit_w')}</a></td> 
+                    <td> {obj.IsChildPublication == true ? (null) : (<a href="#" onClick={() => props.splitPublication(obj.IdPublication,obj.IdPlan , obj.PreferentialPlan.IdPlan, obj.PreferentialPlan.Price, obj.SpaceType)}> <span><i className="col-md-1 fas fa-columns"></i></span> {translate('split_w')}</a>)}</td> 
                     </>
                 ) : (
                     <>

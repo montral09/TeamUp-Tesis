@@ -33,13 +33,13 @@ const SignedInLinks = (props) =>{
         objApi.fetchUrl = "api/customer";
         objApi.method = "PUT";
         objApi.successMSG = {
-            SUCC_USRUPDATED : this.props.translate('SUCC_USRUPDATED3'),
+            SUCC_USRUPDATED : props.translate('SUCC_USRUPDATED3'),
         };
         objApi.functionAfterSuccess = "requestBePublisher";
         objApi.functionAfterError = "requestBePublisher";
-        objApi.errorMSG= {}
+        objApi.errorMSG = {};
+        objApi.handleClose = handleClose;
         callAPI(objApi, this);
-      
     }
     const { translate } = props;
     return(

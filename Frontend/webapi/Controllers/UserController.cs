@@ -36,7 +36,7 @@ namespace webapi.Controllers
             try
             {
                 VOResponseUserUpdate voResp = new VOResponseUserUpdate();
-                fach.UpdateUser(voUser);                              
+                voResp = fach.UpdateUser(voUser);                              
                 return Ok(voResp);
             }             
             catch (GeneralException e)

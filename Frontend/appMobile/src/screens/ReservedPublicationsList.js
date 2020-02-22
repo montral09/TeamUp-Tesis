@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, ScrollView, Keyboard, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, ScrollView, ActivityIndicator, TouchableOpacity} from 'react-native';
 import { connect } from 'react-redux';
 import { Header } from 'react-native-elements';
 import { callAPI } from '../common/genericFunctions';
@@ -36,6 +36,21 @@ class ReservedPublicationsList extends Component {
         this.loadMyReservationsRP();
     }
 
+    componentDidMount() {
+        this.loadMyReservationsRP();
+        this.willFocusSubscription = this.props.navigation.addListener(
+          'willFocus',
+          () => {
+            this.setState({ loadingReservations : true });
+            this.loadMyReservationsRP();
+          }
+        );
+      }
+    
+    componentWillUnmount() {
+        this.willFocusSubscription.remove();
+    }
+
     handleErrors(error) {
         this.setState({ generalError: true });
     }
@@ -62,23 +77,24 @@ class ReservedPublicationsList extends Component {
         switch(mode){
             case "CANCEL": 
                 screenConfigObj ={
-                    title: translations[this.props.systemLanguage].messages['reservedPublications_cancelModal_header'], mainText: 'Desea cancelar la reserva? Por favor indique el motivo ', mode : mode, saveFunction : "saveCancel", textboxLabel: 'Comentario',
-                    textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :'No', confirmText :'Si' , login_status: this.props.login_status
+                    title: translations[this.props.systemLanguage].messages['reservedPublications_cancelModal_header'], mainText: translations[this.props.systemLanguage].messages['reservedPublications_cancelModal_body'], mode : mode, saveFunction : "saveCancelRP", textboxLabel: translations[this.props.systemLanguage].messages['comment_w'],
+                    textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText: translations[this.props.systemLanguage].messages['no_w'], confirmText: translations[this.props.systemLanguage].messages['yes_w'] , login_status: this.props.login_status
                 };
-                this.props.navigation.navigate('ReservationReqInfo', {screenConfig: screenConfigObj});
+                this.props.navigation.navigate('ReservationReqInfo', {screenConfig: screenConfigObj, selectedIdRes: IdReservation, selectedResStateParam: auxParam});
             break;
             case "CONFIRM": 
                 screenConfigObj ={
-                    title: 'Confirmar reserva', mainText: 'Desea confirmar esta reserva? ', mode : mode, saveFunction : "saveConfirm",
-                    cancelAvailable:true, confirmAvailable:true, cancelText :'Cancelar', confirmText :'Confirmar' , login_status: this.props.login_status,
+                    title: translations[this.props.systemLanguage].messages['reservedPublications_confirmModal_header'], mainText: translations[this.props.systemLanguage].messages['reservedPublications_confirmModal_body'], mode: mode, saveFunction: "saveConfirmRP",
+                    cancelAvailable: true, confirmAvailable: true, cancelText: translations[this.props.systemLanguage].messages['cancel_w'], confirmText: translations[this.props.systemLanguage].messages['confirm_w'], login_status: this.props.login_status,
+                    dateSelectLabel: translations[this.props.systemLanguage].messages['reservedPublications_confirmModal_dateSelectLabel'], dateSelectDisplay: true
                 };
-                this.props.navigation.navigate('ReservationReqInfo', {screenConfig: screenConfigObj});
+                this.props.navigation.navigate('ReservationReqInfo', {screenConfig: screenConfigObj, selectedIdRes: IdReservation, selectedResState: auxParam });
             break;
             case "PAYRESCUST": 
-                this.props.navigation.navigate('ReservationResCustPay', {auxParam: auxParam});
+                this.props.navigation.navigate('ReservationResCustPay', {IdReservationParam: IdReservation, auxParam: auxParam});
             break;
             case "PAYRESCOM": 
-                this.props.navigation.navigate('ReservationResComPay', {auxParam: auxParam});
+                this.props.navigation.navigate('ReservationResComPay', {IdReservationParam: IdReservation, auxParam: auxParam});
             break;
         }
     }
@@ -146,6 +162,17 @@ class ReservedPublicationsList extends Component {
     render() {
         const { systemLanguage } = this.props;
         return (
+            <>
+            {this.state.loadingReservations || this.state.loadingStatusChange ? 
+                (
+                    <ActivityIndicator
+                        animating = {this.state.loadingReservations || this.state.loadingStatusChange ? true : false}
+                        color = '#bc2b78'
+                        size = "large"
+                        style = {styles.activityIndicator}
+                    />      
+                ) : 
+            (    
             <View style={styles.container}>
                 <Header
                     //leftComponent={{ icon: 'menu', color: '#fff', flex: 1, onPress: () => this.props.navigation.openDrawer() }}
@@ -197,6 +224,8 @@ class ReservedPublicationsList extends Component {
                     )}                     
                 </ScrollView>       
             </View>
+            )}
+            </>
         );
     }
 }
@@ -237,6 +266,13 @@ const styles = StyleSheet.create({
     fontSize:16,
     fontWeight:'500',
     color:'#ffffff'
+  },
+  activityIndicator: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#2196f3',
+    height: 80,
   },
 });
 

@@ -58,8 +58,8 @@ class ReserveSpaceSummary extends Component {
     triggerScreen(objTrigger){
         var screenConfigObj = {};   
         screenConfigObj ={
-            title: 'Reserva enviada', mainText: 'Su reserva ha sido enviada correctamente, revise su casilla de correo para más informacion. ',
-            textboxDisplay: false, cancelAvailable: true, cancelText : 'Entendido', mode : objTrigger.mode, saveFunction : "reservationSuccess"
+            title: translations[this.props.systemLanguage].messages['reservation_modal_title'], mainText: translations[this.props.systemLanguage].messages['reservation_modal_mainText'] ,
+            textboxDisplay: false, cancelAvailable: true, cancelText : translations[this.props.systemLanguage].messages['reservation_modal_ok'], mode : objTrigger.mode, saveFunction : "reservationSuccess"
         };
         this.props.navigation.navigate('ReservationReqInfo', {screenConfig: screenConfigObj});          
     }

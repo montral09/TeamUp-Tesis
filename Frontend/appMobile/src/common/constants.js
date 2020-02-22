@@ -9,4 +9,4 @@ export const MAIN_WEBSITE_NAME = 'TeamUp!';
 export const CONTACT_PHONENUMBER = '099999999';
 export const CONTACT_EMAIL = 'teamupude@gmail.com';
 export const MAX_ELEMENTS_PER_TABLE = 15;
-//export const ML_MODE = 'ON';
+export const ML_MODE = 'OFF';

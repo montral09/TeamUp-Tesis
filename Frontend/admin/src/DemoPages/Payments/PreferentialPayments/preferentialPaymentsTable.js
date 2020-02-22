@@ -26,7 +26,7 @@ const PreferentialPaymentsTable = ({ preferentialPayments, approvePreferentialPa
                     <td>{obj.PublisherPhone}</td>
                     <td>{obj.PreferentialPlanName}</td>
                     {obj.IdParentPublication > 0 ? (
-                        <td colSpan="5">Esta es una publicacion dividida. (#Id:{obj.IdParentPublication})</td>
+                        <td colSpan="4">Esta es una publicacion dividida. (#Id:{obj.IdParentPublication})</td>
                     ) : (
                         <React.Fragment>
                             <td>{obj.Price}</td>

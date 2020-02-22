@@ -23,7 +23,7 @@ class CreatePublication extends React.Component {
 
     constructor(props) {
         super(props);
-        var pubIsLoading = false; var editObject = {}; var premiumOptionSelected = null;
+        var pubIsLoading = false; var editObject = {}; var premiumOptionSelected = null; var spaceTypeSelect = "1";
         if(props.publicationID){
             // When is on edit mode, load the following values
             pubIsLoading = true;
@@ -32,8 +32,10 @@ class CreatePublication extends React.Component {
             editObject.IdPlan = props.IdPlan;
             editObject.planPrice = props.planPrice;
             editObject.stateDescription = props.stateDescription;
-            premiumOptionSelected = props.IdPlan
+            spaceTypeSelect = props.spaceTypeId;
+            premiumOptionSelected = props.IdPlan;
         }
+
         this.state = {
             publicationID: props.publicationID,
             editObject : editObject,
@@ -43,7 +45,7 @@ class CreatePublication extends React.Component {
             spaceTypes: [],
             isLoading: false,
             buttonIsDisable: false,
-            spaceTypeSelect: "1",
+            spaceTypeSelect: spaceTypeSelect,
             spaceName: "",
             description: "",
             locationText: "",

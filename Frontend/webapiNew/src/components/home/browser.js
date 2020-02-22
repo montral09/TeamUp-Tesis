@@ -72,7 +72,7 @@ class Browser extends React.Component {
                 <h1 style = {{ color: 'white', marginTop: '15%', marginBottom: '30px', marginLeft: '20px'}}>{translate('home_findSpaceText')}</h1>
                 <div style = {{ marginLeft: '5%', marginBottom: '30%'}}> 
 					<select id="spaceTypeSelected"   style = {{width: `200px`}}  onChange={this.onChange} className="browser">
-                        <option defaultValue disabled selected>{translate('spaceType_w')}</option>    
+                        <option defaultValue disabled>{translate('spaceType_w')}</option>    
                         {this.state.spaceTypes.map((space, key) => {
                             return <option key={key} value={space.Code}>{space.Description}</option>;
                         })}

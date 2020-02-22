@@ -187,7 +187,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             }});
         break;
         case "requestBePublisher":
-            bindThis.handleClose();
+            objApi.handleClose();
         break;
         case "loadSpaceTypesBR":
             bindThis.setState({ spaceTypes: objData.spaceTypes })
