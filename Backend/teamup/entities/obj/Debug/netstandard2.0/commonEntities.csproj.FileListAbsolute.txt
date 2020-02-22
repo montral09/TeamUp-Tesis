@@ -1,0 +1,9 @@
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\entities\bin\Debug\netstandard2.0\commonEntities.deps.json
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\entities\bin\Debug\netstandard2.0\commonEntities.dll
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\entities\bin\Debug\netstandard2.0\commonEntities.pdb
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\entities\obj\Debug\netstandard2.0\commonEntities.csprojAssemblyReference.cache
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\entities\obj\Debug\netstandard2.0\commonEntities.csproj.CoreCompileInputs.cache
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\entities\obj\Debug\netstandard2.0\commonEntities.AssemblyInfoInputs.cache
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\entities\obj\Debug\netstandard2.0\commonEntities.AssemblyInfo.cs
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\entities\obj\Debug\netstandard2.0\commonEntities.dll
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\entities\obj\Debug\netstandard2.0\commonEntities.pdb
