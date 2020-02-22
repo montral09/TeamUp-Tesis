@@ -12,6 +12,7 @@ class ReservationSpacesListScrollView extends Component {
             <View style={styles.spacesContainer}>
                 <View style={styles.textView}>
                     <Text style={{color: 'white', fontSize: 20}}>{this.props.parentData.Title}</Text>
+                    <Text style={{color: 'white', fontSize: 14, paddingHorizontal: 5}}>#Ref: {this.props.parentData.IdReservation}</Text>    
                     <Text style={{color: 'white', fontSize: 14, paddingHorizontal: 5}}>{translations[systemLanguage].messages['date_w']}: {this.props.parentData.Date}</Text>
                     <>
                         {this.props.parentData.PlanSelected == 'Hour' ? (<Text style={styles.infoText}>{translations[systemLanguage].messages['from_w']} {this.props.parentData.HourFrom} {translations[systemLanguage].messages['to_w']} {this.props.parentData.HourTo}hs</Text> ) : (this.props.parentData.ReservedQuantity == 1 ? (<Text style={styles.infoText}>{this.props.parentData.ReservedQuantity+' '+ translations[systemLanguage].messages['planSelected_'+this.props.parentData.PlanSelected]}</Text>):(<Text style={styles.infoText}>{this.props.parentData.ReservedQuantity+' '+ translations[systemLanguage].messages['planSelected_'+this.props.parentData.PlanSelected+'s']}</Text>))}

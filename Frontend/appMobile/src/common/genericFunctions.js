@@ -135,13 +135,12 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             reservationsToDisplay: bindThis.filterPaginationArray(objData.Reservations, 0), pagination: newPagination })
         break;
         case "saveCustReservationPayment":
-            bindThis.ModalCustResPay.current.changeModalLoadingState(true);
-            bindThis.loadMyReservationsMRSL();
-        break;
+        case "saveComissionPayment":
+        case "confirmPaymentRP":
+        case "rejectPayment":
         case "saveConfirmRP":
         case "saveCancelRP":
-            bindThis.loadMyReservationsRP();
-            bindThis.modalReqInfo.current.changeModalLoadingState(true);
+            bindThis.props.navigation.goBack()
         break;
         case "loadInfraestructureMP":
             bindThis.setState({ facilities: objData.facilities });

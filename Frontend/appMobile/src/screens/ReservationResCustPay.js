@@ -8,10 +8,12 @@ class ReservationResCustPay extends Component {
     constructor(props) {
         super(props);
         const { navigation } = this.props;
+        const IdReservationParam = navigation.getParam('IdReservationParam', 'NO-ID');
         const objPaymentDetailsParam = navigation.getParam('auxParam', 'default value');
         this.state = {
             modal: false,
             objPaymentDetails: objPaymentDetailsParam,
+            IdReservation: IdReservationParam,
             paymentComment : "",
             isLoading : false,
             buttonIsDisabled: false
@@ -62,32 +64,35 @@ class ReservationResCustPay extends Component {
         objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,
             "Mail": this.props.userData.Mail,
-            "IdReservation": objPaymentDetails.IdReservation,
+            "IdReservation": this.state.IdReservation,
             "Approved": false
         }
-        objApi.fetchUrl = Globals.baseURL + '/reservationPaymentCustomer';
+        objApi.fetchUrl = "api/reservationPaymentCustomer";
         objApi.method = "PUT";
         objApi.successMSG = {
-          //  SUCC_PAYMENTUPDATED: 
+            SUCC_PAYMENTUPDATED: translations[this.props.systemLanguage].messages['SUCC_PAYMENTUPDATED2'],
         };
         objApi.functionAfterSuccess = "rejectPayment";
-        callAPI(objApi);
+        objApi.errorMSG = {}
+        callAPI(objApi, this);
     }
     
-    confirmPayment(objPaymentDetails){
+    confirmPaymentRP = () =>{
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,
             "Mail": this.props.userData.Mail,
-            "IdReservation": objPaymentDetails.IdReservation,
+            "IdReservation": this.state.IdReservation,
             "Approved": true
         }
-        objApi.fetchUrl = Globals.baseURL + '/reservationPaymentCustomer';
+        objApi.fetchUrl = "api/reservationPaymentCustomer";
         objApi.method = "PUT";
-        objApi.responseSuccess = "SUCC_PAYMENTUPDATED";
-        objApi.successMessage = "Se ha confirmado el envío de pago";
-        objApi.functionAfterSuccess = "confirmPayment";
-        callAPI(objApi);
+        objApi.successMSG = {
+            SUCC_PAYMENTUPDATED: translations[this.props.systemLanguage].messages['SUCC_PAYMENTUPDATED'],
+        };
+        objApi.functionAfterSuccess = "confirmPaymentRP";
+        objApi.errorMSG = {}
+        callAPI(objApi, this);
     }
 
     openFile = () =>{
@@ -179,14 +184,18 @@ class ReservationResCustPay extends Component {
                 </View>
                 <View style={{flexDirection: 'row'}}>
                     <TouchableOpacity style={styles.button} onPress={()=> {this.props.navigation.goBack()}} disabled={this.state.buttonIsDisabled}> 
-                        <Text style={styles.buttonText}>{translations[systemLanguage].messages['reject_w']}</Text>
+                        <Text style={styles.buttonText}>{translations[systemLanguage].messages['cancel_w']}</Text>
                     </TouchableOpacity>
-                    {this.state.objPaymentDetails.reservationPaymentStateText != "PAID" && this.state.objPaymentDetails.reservationPaymentStateText != "CANCELED" ? (
-                        <TouchableOpacity style={styles.button} onPress={()=> {this.save}} disabled={this.state.buttonIsDisabled}> 
+                    {this.state.objPaymentDetails.reservationPaymentState == 'PENDING CONFIRMATION' ? (
+                    <>
+                        <TouchableOpacity style={styles.button} onPress={()=> {this.rejectPayment()}} disabled={this.state.buttonIsDisabled}> 
+                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['reject_w']}</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.button} onPress={()=> {this.confirmPaymentRP()}} disabled={this.state.buttonIsDisabled}> 
                             <Text style={styles.buttonText}>{translations[systemLanguage].messages['confirm_w']}</Text>
                         </TouchableOpacity>
-                        ) : (null)
-                    }
+                    </>
+                    ) : (null)}
                 </View>        
             </View>
         );
@@ -258,6 +267,8 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => {
     return {
+        tokenObj: state.loginData.tokenObj,
+        userData: state.loginData.userData,
         systemLanguage: state.loginData.systemLanguage
     }
 }

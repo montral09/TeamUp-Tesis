@@ -3,52 +3,27 @@ import { StyleSheet, Text, View, ScrollView, Keyboard, TouchableOpacity, Linking
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from "expo-permissions";
 import Constants from 'expo-constants';
-import { callAPI } from '../common/genericFunctions';
+import translations from '../common/translations';
+import { connect } from 'react-redux';
+import { callAPI, displayErrorMessage, displaySuccessMessage } from '../common/genericFunctions';
 
 class ReservationCustResPay extends Component {
     constructor(props) {
         super(props);
         const { navigation } = this.props;
+        const IdReservationParam = navigation.getParam('IdReservationParam', 'NO-ID');
         const objPaymentDetailsParam = navigation.getParam('auxParam', 'default value');
         this.state = {
             modal: false,
             objPaymentDetails: objPaymentDetailsParam,
+            IdReservation: IdReservationParam,
             reservationComment: "",
             isLoading: false,
             buttonIsDisabled: false
         };
-        this.toggle = this.toggle.bind(this);
-        this.save = this.save.bind(this);
-        this.changeModalLoadingState = this.changeModalLoadingState.bind(this);
-        this.getBase64 = this.getBase64.bind(this);
     }
 
-    toggle(objPaymentDetails) {
-        if (!this.state.isLoading) {
-            this.setState({
-                modal: !this.state.modal,
-                objPaymentDetails: objPaymentDetails || {}
-            });
-        }
-    }
-
-    changeModalLoadingState(closeModal) {
-        if (closeModal) {
-            this.setState({
-                modal: !this.state.modal,
-                isLoading: !this.state.isLoading,
-                buttonIsDisabled: !this.state.buttonIsDisabled
-            })
-        } else {
-            this.setState({
-                isLoading: !this.state.isLoading,
-                buttonIsDisabled: !this.state.buttonIsDisabled
-            })
-        }
-    }
-
-    save() {
-        this.changeModalLoadingState(false);
+    save = () => {
         this.saveCustReservationPayment(this.state.objPaymentDetails);
     }
 
@@ -57,7 +32,7 @@ class ReservationCustResPay extends Component {
         objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,
             "Mail": this.props.userData.Mail,
-            "IdReservation": objPaymentDetails.IdReservation,
+            "IdReservation": this.state.IdReservation,
             "Comment": objPaymentDetails.paymentComment || "",
             "Evidence": {
                 "Base64String": objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Base64String : "",
@@ -67,79 +42,10 @@ class ReservationCustResPay extends Component {
         objApi.fetchUrl = "api/reservationPaymentCustomer";
         objApi.method = "POST";
         objApi.successMSG = {
-            SUCC_PAYMENTUPDATED: this.props.translate('SUCC_PAYMENTUPDATED'),
+            SUCC_PAYMENTUPDATED: translations[this.props.systemLanguage].messages['SUCC_PAYMENTUPDATED'],
         };
         objApi.functionAfterSuccess = "saveCustReservationPayment";
         callAPI(objApi, this);
-    }
-
-
-
-    // Upload image functions
-    maxSelectFile = (event) => {
-        let files = event.target.files // create file object
-        if ( files.length > 1) {
-            event.target.value = null // discard selected file
-            ToastAndroid.showWithGravity(
-                'Solo puede subir un archivo',
-                ToastAndroid.LONG,
-                ToastAndroid.CENTER,
-            ); 
-            return false;
-        }
-        return true;
-    }
-
-    checkMimeType = (event) => {
-        //getting file object
-        let files = event.target.files
-        //define message container
-        let err = ''
-        // list allow mime type
-        const types = ['image/png', 'image/jpeg', 'application/pdf']
-        // loop access array
-        for (var x = 0; x < files.length; x++) {
-            // compare file type find doesn't matach
-            if (types.every(type => files[x].type !== type)) {
-                // create error message and assign to container   
-                err += files[x].type + ' no es un formato soportado\n';
-            }
-        };
-
-        if (err !== '') { // if message not empty that mean has error 
-            event.target.value = null // discard selected file
-            ToastAndroid.showWithGravity(
-                err,
-                ToastAndroid.LONG,
-                ToastAndroid.CENTER,
-            ); 
-            return false;
-        }
-        return true;
-
-    }
-
-    checkFileSize = (event) => {
-        let files = event.target.files
-        let size = 1500000;
-        let err = "";
-        for (var x = 0; x < files.length; x++) {
-            if (files[x].size > size) {
-                err += files[x].type + ' es demasiado grande, por favor elija un archivo de menor tamaño\n';
-            }
-        };
-        if (err !== '') {
-            event.target.value = null
-            ToastAndroid.showWithGravity(
-                err,
-                ToastAndroid.LONG,
-                ToastAndroid.CENTER,
-            ); 
-            return false
-        }
-
-        return true;
-
     }
 
     // End Upload image functions
@@ -171,38 +77,6 @@ class ReservationCustResPay extends Component {
 
     }
 
-    getBase64(file) {
-        var f = file; // FileList object
-        var reader = new FileReader();
-        // Closure to capture the file information.
-        const scope = this;
-        reader.onload = (function (theFile) {
-            return function (e) {
-                var binaryData = e.target.result;
-                //Converting Binary Data to base 64
-                var base64String = window.btoa(binaryData);
-                //showing file converted to base64
-                const fileTypeArr = file.type.split('/');
-                var fileObj = {
-                    Extension: fileTypeArr[1],
-                    Base64String: base64String
-                };
-                var newarchivesUpload = [];
-                if (scope.state) {
-                    newarchivesUpload = scope.state.objPaymentDetails.archivesUpload || [];
-                }
-                newarchivesUpload.push(fileObj);
-                var objPaymentDetails = {
-                    ...scope.state.objPaymentDetails,
-                    'archivesUpload': newarchivesUpload
-                }
-                scope.setState({ objPaymentDetails: objPaymentDetails });
-            };
-        })(f);
-        // Read in the image file as a data URL.
-        reader.readAsBinaryString(f);
-    }
-
     getPermissionAsync = async () => {
         if (Constants.platform.ios) {
             const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
@@ -218,7 +92,7 @@ class ReservationCustResPay extends Component {
             if (status === 'granted') {
                 const result = await ImagePicker.launchImageLibraryAsync({
                     mediaTypes: ImagePicker.MediaTypeOptions.All,
-                    allowsEditing: true,
+                    allowsEditing: false,
                     aspect: [4, 3],
                     base64: true,
                 });
@@ -228,14 +102,37 @@ class ReservationCustResPay extends Component {
                 if (i > 0) {
                     extension = (result.uri).substring(i+1);
                 }
-                if (!result.cancelled) {
-                    //this.props.onSelectionsChangeImages(result.base64,'jpeg')
+                if (extension != 'jpg' && extension != 'png'){
+                    displayErrorMessage(translations[this.props.systemLanguage].messages['myReservedSpacesList_custPay_errorMsg2'])
+                    return;
                 }
+                var fileObj = {
+                    Extension: extension,
+                    Base64String: result.base64,
+                };
+                var newarchivesUpload = [];
+                newarchivesUpload.push(fileObj);
+                var objPaymentDetails = {
+                    ...this.state.objPaymentDetails,
+                    'archivesUpload': newarchivesUpload
+                }
+                this.setState({ objPaymentDetails: objPaymentDetails });
+                displaySuccessMessage(translations[this.props.systemLanguage].messages['myReservedSpacesList_custPay_succMsg1'])
             }
         }catch (err) {
             //console.log("ERROR", (err && err.message) + "\n" + JSON.stringify(err));
         }
     };
+
+    changePaymentComment(value){
+        var objPaymentDetails = {
+            ...this.state.objPaymentDetails,
+            paymentComment: value
+        }
+        this.setState({
+            objPaymentDetails: objPaymentDetails
+        });
+    }
 
     render() {
         return (
@@ -318,7 +215,7 @@ class ReservationCustResPay extends Component {
                         placeholder='Comentario'
                         placeholderTextColor="#ffffff"
                         value={this.state.objPaymentDetails.paymentComment}
-                        onChangeText={this.onChange}
+                        onChangeText={(value) => this.changePaymentComment(value)}
                         editable = {this.state.objPaymentDetails.reservationPaymentStateText == "PAID" || this.state.objPaymentDetails.reservationPaymentStateText == "CANCELED" ? false : true}
                     />
                     {this.state.objPaymentDetails.reservationPaymentStateText != "PAID" && this.state.objPaymentDetails.reservationPaymentStateText != "CANCELED" ? (
@@ -333,7 +230,7 @@ class ReservationCustResPay extends Component {
                         <Text style={styles.buttonText}>Cancelar</Text>
                     </TouchableOpacity>
                     {this.state.objPaymentDetails.reservationPaymentStateText != "PAID" && this.state.objPaymentDetails.reservationPaymentStateText != "CANCELED" ? (
-                        <TouchableOpacity style={styles.button} onPress={()=> {this.save}} disabled={this.state.buttonIsDisabled}> 
+                        <TouchableOpacity style={styles.button} onPress={()=> {this.save()}} disabled={this.state.buttonIsDisabled}> 
                             <Text style={styles.buttonText}>Guardar</Text>
                         </TouchableOpacity>
                         ) : (null)
@@ -407,4 +304,13 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ReservationCustResPay;
+const mapStateToProps = (state) => {
+    return {
+        login_status: state.loginData.login_status,
+        userData: state.loginData.userData,
+        tokenObj: state.loginData.tokenObj,
+        systemLanguage: state.loginData.systemLanguage
+    }
+}
+
+export default connect(mapStateToProps)(ReservationCustResPay);
