@@ -1,8 +1,7 @@
 import React, {Component} from 'react';
-import {View,Text,StyleSheet,ToastAndroid,TouchableOpacity} from 'react-native';
+import {View,Text,StyleSheet,TouchableOpacity} from 'react-native';
 import { connect } from 'react-redux';
-
-import Globals from '../Globals';
+import { callAPI } from '../common/genericFunctions';
 import translations from '../common/translations';
 
 class RequestBePublisher extends Component {  
@@ -15,44 +14,21 @@ class RequestBePublisher extends Component {
         }
     }
 
-    requestBePublisher(){
-      fetch(Globals.baseURL + '/customer', {
-          method: 'PUT',
-          header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-
-          body: JSON.stringify({
-              Mail: Mail,
-              AccessToken : tokenObj.accesToken
-          })
-      }).then(response => response.json()).then(data => {
-          console.log("data:" + JSON.stringify(data));
-          if (data.responseCode == "SUCC_USRUPDATED") {
-            ToastAndroid.showWithGravity(
-                'Solicitud enviada correctamente',
-                ToastAndroid.LONG,
-                ToastAndroid.CENTER,
-            );
-          } else{
-                ToastAndroid.showWithGravity(
-                    'Hubo un error',
-                    ToastAndroid.LONG,
-                    ToastAndroid.CENTER,
-                );
-          }
-      }
-      ).catch(error => {
-          toast.error('Internal error', {
-              position: "top-right",
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-          });
-          console.log(error);
-      }
-      )
-      
+    requestBePublisher = () =>{
+        var objApi = {};
+        objApi.objToSend = {
+            Mail: this.state.Mail,
+            AccessToken : this.state.tokenObj.accesToken
+        }
+        objApi.fetchUrl = "api/customer";
+        objApi.method = "PUT";
+        objApi.successMSG = {
+            SUCC_USRUPDATED : translations[this.props.systemLanguage].messages['SUCC_USRUPDATED3'],
+        };
+        objApi.functionAfterSuccess = "requestBePublisher";
+        objApi.functionAfterError = "requestBePublisher";
+        objApi.errorMSG= {}
+        callAPI(objApi, this);     
     }
 
     render (){
@@ -65,7 +41,7 @@ class RequestBePublisher extends Component {
                         <TouchableOpacity style={styles.button} onPress={() => {this.props.navigation.navigate('Home')}}>
                             <Text style={styles.buttonText}>{translations[systemLanguage].messages['signInLinks_notwantToPublishBody']}</Text>   
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.button} onPress={() => {this.requestBePublisher}}>
+                        <TouchableOpacity style={styles.button} onPress={() => {this.requestBePublisher()}}>
                             <Text style={styles.buttonText}>{translations[systemLanguage].messages['signInLinks_wantToPublishButton']}</Text>   
                         </TouchableOpacity>
                     </View>

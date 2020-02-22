@@ -13,11 +13,10 @@ export default class SearchSpaceView extends Component {
                             <Text style={styles.descriptionText}>{City}</Text>
                             <Text style={styles.descriptionText}>{Capacity}</Text>
                             <Text style={styles.priceText}>
-                            {HourPrice != 0 ? "Hora $" + HourPrice :
-                                    (DailyPrice != 0 ? "Día $" + DailyPrice :
-                                    WeeklyPrice != 0 ? "Semana $" + WeeklyPrice :
-                                        MonthlyPrice != 0 ? "Mes $" + MonthlyPrice : (null))
-                            }
+                            {HourPrice != 0 ? "Hora $" + HourPrice : '-'}{'\n'}
+                            {DailyPrice != 0 ? "Día $" + DailyPrice : '-'}{'\n'}
+                            {WeeklyPrice != 0 ? "Semana $" + WeeklyPrice : '-'}{'\n'}
+                            {MonthlyPrice != 0 ? "Mes $" + MonthlyPrice : '-'}
                             </Text>
                             <TouchableOpacity style={styles.button} onPress={()=>this.props.navigate('SpaceView', {PubId: IdPublication})}> 
                                 <Text style={styles.buttonText}>Ver</Text>
@@ -63,7 +62,7 @@ const styles = StyleSheet.create({
     },
     priceText: {
         color: '#FFF',
-        fontSize: 22,
+        fontSize: 16,
         //marginLeft: 25,
         //marginTop: 10,
     },
@@ -74,7 +73,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor:'#0069c0',
         borderRadius: 15,
-        marginVertical: 20,
+        marginVertical: 8,
         elevation: 3,
         paddingHorizontal: 5,
     },

@@ -13,12 +13,10 @@ export default class MyDatePicker extends Component {
     return (
       <DatePicker
         style={{width: 200}}
-        date={this.state.date}
+        date={this.props.parentDate}
         mode="date"
-        //placeholder={this.state.date}
         format="DD-MM-YYYY"
         minDate={new Date()}
-        //maxDate="2016-06-01"
         confirmBtnText="Confirmar"
         cancelBtnText="Cancelar"
         customStyles={{
@@ -33,7 +31,7 @@ export default class MyDatePicker extends Component {
             color: 'white',
           }
         }}
-        onDateChange={(date) => {this.setState({date:date})}}
+        onDateChange={this.props.handleChangeDate}
       />
     )
   }

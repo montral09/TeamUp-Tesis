@@ -53,9 +53,18 @@ class DeleteUser extends Component<>{
                 ) : (
                         <>
                             <Text style={styles.titleText}> {translations[systemLanguage].messages['deleteUser_body']}</Text>
-                            <TouchableOpacity style={styles.button} onPress={this.deleteUser} >
-                                <Text style={styles.buttonText}>{translations[systemLanguage].messages['accept_w']}</Text>
-                            </TouchableOpacity>
+                            <View style={{flexDirection:'row'}}>
+                                <View style={{marginRight:10}}>
+                                    <TouchableOpacity style={styles.button} onPress={()=> {this.props.navigation.goBack()}}>
+                                        <Text style={styles.buttonText}>{translations[systemLanguage].messages['cancel_w']}</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={{marginLeft:10}}>
+                                    <TouchableOpacity style={styles.button} onPress={this.deleteUser} >
+                                        <Text style={styles.buttonText}>{translations[systemLanguage].messages['accept_w']}</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
                         </>
                     )}
             </View>
