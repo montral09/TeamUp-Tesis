@@ -733,7 +733,7 @@ var module = {
             score_w : 'Score',
             confirm_w: 'Confirm',
             edit_w: 'Edit',
-            payment_w: 'Payment',
+            payment_w: 'Paid',
             sortBy_w: 'Sort by',
             show_w: 'Show',
             showing_w: 'Showing',
