@@ -24,7 +24,7 @@ const MyReservedSpacesTable = (props) =>{
         reservations.map( obj => {
             var objReservationCustomerPayment = {
                 reservationPaymentState: obj.CustomerPayment.PaymentDescription,
-                reservationPaymentStateText: obj.CustomerPayment.PaymentDescription,
+                reservationPaymentStateText: translate('payState_'+obj.CustomerPayment.PaymentDescription.replace(/\s/g,'')),
                 paymentDocument: obj.CustomerPayment.PaymentEvidence,
                 paymentComment: obj.CustomerPayment.PaymentComment,
                 reservationPaymentAmmount: obj.TotalPrice,

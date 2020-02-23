@@ -436,7 +436,7 @@ var module = {
             singInLinks_wantToPublish: 'I want to publish',
             singInLinks_wantToPublishBody: 'If you want to be one of our publisher, publishing spaces on the site, please click on "I want to publish" button. It will send an email and one of our administrators will reach out to you shortly.',
             singInLinks_wantToPublishButton: 'I want!',
-            singInLinks_notwantToPublishBody: 'I will miss',
+            singInLinks_notwantToPublishBody: 'I will miss out',
             singInLinks_head_myPublications: 'My publications',
             singInLinks_head_createPublication: 'Create publication',
             singInLinks_head_myResSpaces: 'My booked spaces',
