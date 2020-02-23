@@ -174,7 +174,7 @@ class MyPublicationsList extends React.Component {
                         <LoadingOverlay
                             active={loadStatus}
                             spinner
-                            text='Cargando...'
+                            text={translate('loading_text_small')}
                         >
                             <Header />
 

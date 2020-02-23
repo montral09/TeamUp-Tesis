@@ -61,7 +61,7 @@ class CreatePublicationStep1 extends React.Component {
                     value ={this.props.parentState.spaceName}/>
             </FormGroup>
             <FormGroup>
-                <Label for="description">{translate('desription_w')}</Label>
+                <Label for="description">{translate('description_w')}</Label>
                 <ReactQuill  name="description" id="description" value={this.props.parentState.description}
                   onChange={this.handleRichTextChange} />
             </FormGroup>

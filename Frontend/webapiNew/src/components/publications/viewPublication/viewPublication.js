@@ -632,7 +632,7 @@ class ViewPublication extends React.Component {
                                                                             </div>
 
                                                                             <div id="tabs" className="htabs">
-                                                                                <a href="#tab-description" onClick={() => this.goToTab(1)} {...(this.state.tabDisplayed == 1 ? { className: "selected" } : {})} >{translate('desription_w')}</a>
+                                                                                <a href="#tab-description" onClick={() => this.goToTab(1)} {...(this.state.tabDisplayed == 1 ? { className: "selected" } : {})} >{translate('description_w')}</a>
                                                                                 <a href="#tab-questions" onClick={() => this.goToTab(3)} {...(this.state.tabDisplayed == 3 ? { className: "selected" } : {})} >{translate('questions_w')} ({this.state.arrQA.length})</a>
                                                                                 <a href="#tab-review" onClick={() => this.goToTab(2)} {...(this.state.tabDisplayed == 2 ? { className: "selected" } : {})} >{translate('reviews_w')} ({this.state.pubObj.Reviews.length})</a>
                                                                                 <a href="#tab-youtube" onClick={() => this.goToTab(4)} {...(this.state.tabDisplayed == 4 ? { className: "selected" } : {})} >{translate('video_w')}</a>

@@ -239,7 +239,7 @@ class MyReservedSpacesList extends React.Component {
                     <LoadingOverlay
                         active={this.state.loadingReservations}
                         spinner
-                        text='Cargando...'
+                        text={translate('loading_text_small')}
                     >
                     <Header />
                     <div className="main-content  full-width  home" style = {{minHeight:"50vh"}}>
