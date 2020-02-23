@@ -13,7 +13,7 @@ const MyMessagesTable = (props) =>{
         switch(colName){
             case "action": valToRet = <th className="text-center" key={colName}><i className="fa fa-asterisk" aria-hidden="true"></i></th>; break;
             case translate('name_w') : 
-                if(messages[0].IsMyPublication != true)
+                if(messages[0] && messages[0].IsMyPublication != true)
                     valToRet = null
             break;
         }
