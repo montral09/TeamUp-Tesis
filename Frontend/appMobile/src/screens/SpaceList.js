@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, ScrollView, Keyboard, ToastAndroid} from 'react-native';
+import { StyleSheet, Text, View, ScrollView, ActivityIndicator} from 'react-native';
 import { connect } from 'react-redux';
+import { callAPI } from '../common/genericFunctions';
 import { Header } from 'react-native-elements';
-import { createAppContainer, createStackNavigator, withNavigation } from 'react-navigation';
+import { MAX_ELEMENTS_PER_TABLE } from '../common/constants';
+import translations from '../common/translations';
 
 import SpacesListScrollView from '../components/SpacesListScrollView';
-import SpaceView from '../screens/SpaceView';
-import Globals from '../Globals';
 
 class SpaceList extends Component{
   constructor(props){
@@ -19,231 +19,136 @@ class SpaceList extends Component{
         spaceTypes : [],
         generalError : false
       }
-      this.loadMyPublications = this.loadMyPublications.bind(this);
-      this.editPublication = this.editPublication.bind(this);
-      this.changePubState = this.changePubState.bind(this);
-
       this.viewSpace = this.viewSpace.bind(this);
   }
 
-componentDidMount() {
-  this.loadSpaceTypes();
-  this.loadMyPublications();
-  //this.reloadList()
-}
-
-loadSpaceTypes() {
-      try {
-          fetch(Globals.baseURL + '/spaceTypes'
-          ).then(response => response.json()).then(data => {
-              if (data.responseCode == "SUCC_SPACETYPESOK") {
-                  this.setState({ spaceTypes: data.spaceTypes, loadingSpaceTypes: false })
-              } else {
-                  ToastAndroid.showWithGravity(
-                    'Hubo un error',
-                    ToastAndroid.LONG,
-                    ToastAndroid.CENTER,
-                  );
-              }
-          }
-          ).catch(error => {
-              ToastAndroid.showWithGravity(
-                'Internal error',
-                ToastAndroid.LONG,
-                ToastAndroid.CENTER,
-              );
-              console.log(error);
-          }
-          )
-      } catch (error) {
-          ToastAndroid.showWithGravity(
-            'Internal error',
-            ToastAndroid.LONG,
-            ToastAndroid.CENTER,
-          );
-      }
+  componentDidMount() {
+    this.loadSpaceTypesMPL();
+    this.loadMyPublications();
   }
 
-  loadMyPublications(){
-    try {
-        fetch(Globals.baseURL + '/publisherSpaces', {
-            method: 'POST',
-            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify({
-                "AccessToken": this.props.tokenObj.accesToken,
-                "Mail": this.props.userData.Mail                   
-            })
-        }).then(response => response.json()).then(data => {
-            if (data.responseCode == "SUCC_PUBLICATIONSOK") {
-                this.setState({ publications: data.Publications, loadingPubs: false })
-            } else {
-                ToastAndroid.showWithGravity(
-                  'Hubo un error',
-                  ToastAndroid.LONG,
-                  ToastAndroid.CENTER,
-                );
-            }
-        }
-        ).catch(error => {
-            ToastAndroid.showWithGravity(
-              'Internal error',
-              ToastAndroid.LONG,
-              ToastAndroid.CENTER,
-            );
-            console.log(error);
-        }
-    )
-    }catch(error){
-        ToastAndroid.showWithGravity(
-          'Internal error',
-          ToastAndroid.LONG,
-          ToastAndroid.CENTER,
-        );
-        console.log(error);
+  // This function will call the API
+  loadSpaceTypesMPL = () => {
+    var objApi = {};
+    objApi.objToSend = {}
+    objApi.fetchUrl = "api/spaceTypes";
+    objApi.method = "GET";
+    objApi.successMSG = {
+        SUCC_SPACETYPESOK: '',
+    };
+    objApi.functionAfterSuccess = "loadSpaceTypesMPL";
+    objApi.errorMSG = {}
+    callAPI(objApi, this);
+  }
+
+  // This function will call the API
+  loadMyPublications = () => {
+    var objApi = {};
+    objApi.objToSend = {
+        "AccessToken": this.props.tokenObj.accesToken,
+        "Mail": this.props.userData.Mail
     }
+    objApi.fetchUrl = "api/publisherSpaces";
+    objApi.method = "POST";
+    objApi.successMSG = {
+        SUCC_PUBLICATIONSOK: '',
+    };
+    objApi.functionAfterSuccess = "loadMyPublications";
+    callAPI(objApi, this);
   }
 
-  editPublication(pubId){
-    this.setState({ pubId: pubId })
-  }
-
-  changePubState(pubState, pubId){
-    var message = "";
-    var nextState = "";
-    if(pubState == "ACTIVE"){
-        //message = "Desea pausar la publicacion?";
+  // This function will call the API
+  changePubStateMPL = (pubState, pubId) => {
+    var nextState = ""; var succMsg = "";
+    if (pubState === "ACTIVE") {
         nextState = "PAUSED P";
-    }else if(pubState == "PAUSED P"){
-        //message = "Desea reanudar la publicacion?";
+        succMsg = translations[this.props.systemLanguage].messages['SUCC_PUBLICATIONUPDATEDP'];
+    } else if (pubState === "PAUSED P") {
         nextState = "ACTIVE";
+        succMsg = translations[this.props.systemLanguage].messages['SUCC_PUBLICATIONUPDATEDR'];
     }
-    //if(window.confirm(message)){
-        //this.setState({loadingPubs: !this.state.loadingPubs});
-        let objPub = {
+        this.setState({ loadingPubs: !this.state.loadingPubs });
+
+        var objApi = {};
+        objApi.objToSend = {
             Mail: this.props.userData.Mail,
-            RejectedReason : "",
+            RejectedReason: "",
             OldState: pubState,
             NewState: nextState,
             AccessToken: this.props.tokenObj.accesToken,
             IdPublication: pubId
-        } 
-        console.log('OBJPUB: ' + JSON.stringify(objPub))
-        fetch(Globals.baseURL + '/publication', {
-            method: 'PUT',
-            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify(objPub)
-        }).then(response => response.json()).then(data => {
-            if (data.responseCode == "SUCC_PUBLICATIONUPDATED") {
-                ToastAndroid.showWithGravity(
-                  'Publicacion actualizada correctamente ',
-                  ToastAndroid.LONG,
-                  ToastAndroid.CENTER,
-                );
-                this.loadMyPublications();
-            } else{
-                this.handleErrors('Hubo un error');
-                //this.setState({loadingPubs: !this.state.loadingPubs});
-            }
         }
-        ).catch(error => {
-            this.handleErrors(error);
-            //this.setState({loadingPubs: !this.state.loadingPubs});
-        }
-        )
-    //}
-    //this.reloadList()
+        objApi.fetchUrl = "api/publication";
+        objApi.method = "PUT";
+        objApi.successMSG = {
+            SUCC_PUBLICATIONUPDATED: succMsg,
+        };
+        objApi.functionAfterSuccess = "changePubStateMPL";
+        callAPI(objApi, this);
   }
 
-  handleErrors(error) {
-    this.setState({ generalError: true });
+  changePage = (pageClicked) => {
+    this.setState({ publicationsToDisplay: this.filterPaginationArray(this.state.publications, (pageClicked - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked },
+        () => this.setState({ publicationsToDisplay: this.filterPaginationArray(this.state.publications, (pageClicked - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked }))
   }
 
-  viewSpace(PubIdSelected){
+  filterPaginationArray = (arrayToFilter, startIndex) => {
+      return arrayToFilter.slice(startIndex, startIndex + MAX_ELEMENTS_PER_TABLE)
+  }
+
+  viewSpace = (PubIdSelected) => {
     this.props.navigation.navigate('SpaceView', {PubId: PubIdSelected})
   }
 
-  /*reloadList(){
-    return (
-      this.state.publications.map((publication, key) => {
-        const spaceType2 = this.state.spaceTypes.find(space => {
-            return space.Code === publication.SpaceType
-        });   
-        var newObj = {
-          IdPub: publication.IdPublication,
-          Title: publication.Title,
-          CreationDate: publication.CreationDate,
-          State: publication.State,
-          SpaceTypeDesc: spaceType2.Description,
-        }
-        return (<SpacesListScrollView key={publication.IdPublication} parentData={newObj} changePubState={this.changePubState}/>);
-      })
-    ); 
-  }*/
-
-  /*renderDetails(){
-    return (
-    <View>
-        <Modal
-        animationType="fade"
-        transparent={true}
-        visible={this.state.DetailsPopUp}
-        onRequestClose={() => {
-            Alert.alert('Modal has been closed.');
-        }}>
-        <View style={styles.modalView}>
-            <View style={{marginBottom: 10}}>
-            <Text style={styles.reseñaText}>Reseñas</Text>
-            <TouchableHighlight
-                onPress={() => {
-                this.handleOnPress(false);
-                }}>
-                <Text>Hide Modal</Text>
-            </TouchableHighlight>
-            </View>
-        </View>
-        </Modal>
-    </View>
-    )
-  }*/
-
   render(){
-
+    const { systemLanguage } = this.props;
+    var loadStatus = !this.state.loadingPubs && !this.state.loadingSpaceTypes ? false : true;
     return (
-      <View style={styles.container}>
-        <Header
-            leftComponent={{ icon: 'menu', color: '#fff', flex:1, onPress: () => this.props.navigation.openDrawer()}}
-            rightComponent={{ icon: 'home', color: '#fff', flex:1, onPress: () => this.props.navigation.navigate('Home')}}
-        />                    
-        <Text style={styles.titleText}>
-          Espacios publicados
-        </Text>
-        <ScrollView vertical>
-            <View style={{flex:1}}>
-              <View style={{marginTop: 20, elevation: 3}}>
-                {
-                  this.state.publications.map((publication) => {
-                  const spaceType2 = this.state.spaceTypes.find(space => {
-                      return space.Code === publication.SpaceType
-                  });   
-                  var newObj = {
-                    IdPub: publication.IdPublication,
-                    Title: publication.Title,
-                    CreationDate: publication.CreationDate,
-                    State: publication.State,
-                    TotalViews: publication.TotalViews,
-                    PremiumState: publication.PreferentialPlan.StateDescription,
-                    PremiumTier: publication.PreferentialPlan.Description,
-                    SpaceTypeDesc: spaceType2.Description,  
-                  }
-                    return (<SpacesListScrollView key={publication.IdPublication} parentData={newObj} changePubState={this.changePubState}/>);
-                  })
-                }
-              </View>
-            </View>
-        </ScrollView>
-      </View>
-            
-            
+      <>
+        {loadStatus == false ? (
+          <View style={styles.container}>
+            <Header
+                leftComponent={{ icon: 'menu', color: '#fff', flex:1, onPress: () => this.props.navigation.openDrawer()}}
+                rightComponent={{ icon: 'home', color: '#fff', flex:1, onPress: () => this.props.navigation.navigate('Home')}}
+            />                    
+            <Text style={styles.titleText}>
+              {translations[systemLanguage].messages['signInLinks_head_myPublications']}
+            </Text>
+            <ScrollView vertical>
+                <View style={{flex:1}}>
+                  <View style={{marginTop: 20, elevation: 3}}>
+                    {
+                      this.state.publications.map((publication) => {
+                      const spaceType2 = this.state.spaceTypes.find(space => {
+                          return space.Code === publication.SpaceType
+                      });   
+                      var newObj = {
+                        IdPub: publication.IdPublication,
+                        Title: publication.Title,
+                        CreationDate: publication.CreationDate,
+                        State: publication.State,
+                        TotalViews: publication.TotalViews,
+                        PremiumState: publication.PreferentialPlan.StateDescription,
+                        PremiumTier: publication.PreferentialPlan.Description,
+                        SpaceTypeDesc: spaceType2.Description,  
+                      }
+                        return (<SpacesListScrollView key={publication.IdPublication} parentData={newObj} changePubState={this.changePubStateMPL}/>);
+                      })
+                    }
+                  </View>
+                </View>
+            </ScrollView>
+          </View>
+        ) : (
+              <ActivityIndicator
+                animating = {loadStatus}
+                color = '#bc2b78'
+                size = "large"
+                style = {styles.activityIndicator}
+              />
+            )
+        }    
+      </>     
       );
   }
 }
@@ -253,6 +158,7 @@ const mapStateToProps = (state) => {
         login_status: state.loginData.login_status,
         tokenObj: state.loginData.tokenObj,
         userData: state.loginData.userData,
+        systemLanguage: state.loginData.systemLanguage
     }
 }
 
@@ -271,5 +177,12 @@ const styles = StyleSheet.create({
     color: "#FFF",
     marginTop: 20,
     marginBottom: 5,
+  },
+  activityIndicator: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#2196f3',
+    height: 80,
   },
 });

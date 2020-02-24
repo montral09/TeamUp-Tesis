@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, ScrollView, Keyboard, TouchableOpacity, ToastAndroid} from 'react-native';
+import { StyleSheet, Text, View, ScrollView, ActivityIndicator } from 'react-native';
 import { connect } from 'react-redux';
 import { Header } from 'react-native-elements';
+import { callAPI } from '../common/genericFunctions';
+import translations from '../common/translations';
 
 import FavoriteSpacesListScrollView from '../components/FavoriteSpacesListScrollView';
-
-import Globals from '../Globals';
 
 class FavoriteSpaceList extends Component {
     constructor(props) {
@@ -22,143 +22,104 @@ class FavoriteSpaceList extends Component {
         this.loadMyFavoritePublications = this.loadMyFavoritePublications.bind(this);
     }
 
-    handleErrors(error) {
-        this.setState({ generalError: true });
-    }
-
     componentDidMount() {
-        this.loadSpaceTypes();
+        this.loadSpaceTypesFP();
         this.loadMyFavoritePublications();
     }
 
-    loadSpaceTypes(){
+    // This function will call the API
+    loadSpaceTypesFP = () => {
         var objApi = {};
         objApi.objToSend = {}
-        objApi.fetchUrl = Globals.baseURL + "/spaceTypes";
+        objApi.fetchUrl = "api/spaceTypes";
         objApi.method = "GET";
-        objApi.responseSuccess = "SUCC_SPACETYPESOK";
-        objApi.successMessage = "";
-        objApi.functionAfterSuccess = "loadSpaceTypes";
-        this.callAPI(objApi);
+        objApi.successMSG = {
+            SUCC_SPACETYPESOK: '',
+        };
+        objApi.functionAfterSuccess = "loadSpaceTypesFP";
+        objApi.errorMSG = {}
+        callAPI(objApi, this);
     }
 
-    loadMyFavoritePublications(){
+    // This function will call the API
+    loadMyFavoritePublications = () => {
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,
             "Mail": this.props.userData.Mail
         }
-        objApi.fetchUrl = Globals.baseURL + "/favorite";
+        objApi.fetchUrl = "api/favorite";
         objApi.method = "PUT";
-        objApi.responseSuccess = "SUCC_FAVORITESOK";
-        objApi.successMessage = "";
+        objApi.successMSG = {
+            SUCC_FAVORITESOK: '',
+        };
         objApi.functionAfterSuccess = "loadMyFavoritePublications";
-        
-        this.callAPI(objApi);
-    }
-
-    callAPI(objApi){
-        if(objApi.method == "GET"){
-            fetch(objApi.fetchUrl).then(response => response.json()).then(data => {
-                if (data.responseCode == objApi.responseSuccess) {
-                    if(objApi.successMessage != ""){
-                        ToastAndroid.showWithGravity(
-                            objApi.successMessage,
-                            ToastAndroid.LONG,
-                            ToastAndroid.CENTER,
-                        );
-                    }
-                    this.callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data);
-                } else {
-                    this.handleErrors("Internal error");
-                }
-            }
-            ).catch(error => {
-                this.handleErrors(error);
-            }
-            )
-        }else{
-            fetch(objApi.fetchUrl,{
-                    method: objApi.method,
-                    header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify(objApi.objToSend)
-                }).then(response => response.json()).then(data => {
-                if (data.responseCode == objApi.responseSuccess) {
-                    if(objApi.successMessage != ""){
-                        ToastAndroid.showWithGravity(
-                            objApi.successMessage,
-                            ToastAndroid.LONG,
-                            ToastAndroid.CENTER,
-                        );
-                    }
-                    this.callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data);
-                } else {
-                    this.handleErrors("Internal error");
-                }
-            }
-            ).catch(error => {
-                this.handleErrors(error);
-            }
-            )
-        }
-
-    }
-
-    callFunctionAfterApiSuccess(trigger, data){
-        switch(trigger){
-            case "loadMyFavoritePublications"   : this.setState({ publications: data.Publications, loadingPubs: false });   break;
-            case "loadSpaceTypes"               : this.setState({ spaceTypes: data.spaceTypes, loadingSpaceTypes: false }); break;
-        }
+        objApi.errorMSG = {}
+        objApi.logOut = this.props.logOut;
+        callAPI(objApi, this);
     }
 
     render() {
-        //if (this.props.login_status != 'LOGGED_IN') return <Redirect to='/' />
-        //if (this.state.generalError) return <Redirect to='/error' />
+        const { systemLanguage } = this.props;
         var loadStatus = !this.state.loadingPubs && !this.state.loadingSpaceTypes ? false : true;
         return (
             <>
-            {this.state.pubId == null ? (
-                <View style={styles.container}>
-                <Header
-                    leftComponent={{ icon: 'menu', color: '#fff', flex:1, onPress: () => this.props.navigation.openDrawer()}}
-                    rightComponent={{ icon: 'home', color: '#fff', flex:1, onPress: () => this.props.navigation.navigate('Home')}}
-                />                    
-                <Text style={styles.titleText}>Mis publicaciones favoritas</Text>
-                <ScrollView vertical>
-                    <View style={{flex:1}}>
-                    <View style={{marginTop: 20, elevation: 3}}>
-                        {
-                        this.state.publications.map((publication) => {
-                        const spaceType2 = this.state.spaceTypes.find(space => {
-                            return space.Code === publication.SpaceType
-                        });   
-                        var newObj = {
-                            IdPub: publication.IdPublication,
-                            Title: publication.Title,
-                            Capacity: publication.Capacity,
-                            City: publication.City,
-                            Address: publication.Address,
-                            HourPrice: publication.HourPrice,
-                            DailyPrice: publication.DailyPrice,
-                            WeeklyPrice: publication.WeeklyPrice,
-                            MonthlyPrice: publication.MonthlyPrice,
-                            Ranking: publication.Ranking,
-                            SpaceTypeDesc: spaceType2.Description,  
-                        }
-                            return (<FavoriteSpacesListScrollView key={publication.IdPublication} parentData={newObj} navigate={this.props.navigation.navigate}/>);
-                        })
+            {loadStatus == false ? (
+                <>
+                    <View style={styles.container}>
+                        <Header
+                            leftComponent={{ icon: 'menu', color: '#fff', flex:1, onPress: () => this.props.navigation.openDrawer()}}
+                            rightComponent={{ icon: 'home', color: '#fff', flex:1, onPress: () => this.props.navigation.navigate('Home')}}
+                        />     
+                        {this.state.publications.length > 0 ? (     
+                        <>          
+                        <Text style={styles.titleText}>{translations[systemLanguage].messages['favPublications_head']}</Text>
+                        <ScrollView vertical>
+                            <View style={{flex:1}}>
+                            <View style={{marginTop: 20, elevation: 3}}>
+                                {
+                                this.state.publications.map((publication) => {
+                                const spaceType2 = this.state.spaceTypes.find(space => {
+                                    return space.Code === publication.SpaceType
+                                });   
+                                var newObj = {
+                                    IdPub: publication.IdPublication,
+                                    Title: publication.Title,
+                                    Capacity: publication.Capacity,
+                                    City: publication.City,
+                                    Address: publication.Address,
+                                    HourPrice: publication.HourPrice,
+                                    DailyPrice: publication.DailyPrice,
+                                    WeeklyPrice: publication.WeeklyPrice,
+                                    MonthlyPrice: publication.MonthlyPrice,
+                                    Ranking: publication.Ranking,
+                                    SpaceTypeDesc: spaceType2.Description,  
+                                }
+                                    return (<FavoriteSpacesListScrollView key={publication.IdPublication} parentData={newObj} navigate={this.props.navigation.navigate}/>);
+                                })
+                                }
+                            </View>
+                            </View>
+                        </ScrollView>
+                        </>
+                        ) : (
+                                <>
+                                    <Text style={styles.titleText}>{translations[systemLanguage].messages['favPublications_head']}</Text>
+                                    <Text style={styles.subTiteText}>{translations[systemLanguage].messages['elementsNotFound_w']}</Text>
+                                </>
+                            )
                         }
                     </View>
-                    </View>
-                </ScrollView>
-            </View>
-            
-            ): (<View style={styles.container}>
-                    <Text style={styles.titleText}>Mis publicaciones favoritas</Text>
-                    <Text style={styles.subTiteText}>No ha agregado publicaciones a favoritos</Text>
-                </View>)
-            }
-            </> 
+                </> 
+            ) : (
+                <ActivityIndicator
+                    animating = {loadStatus}
+                    color = '#bc2b78'
+                    size = "large"
+                    style = {styles.activityIndicator}
+                />
+            )}
+            </>
         );
     } 
       
@@ -169,6 +130,7 @@ const mapStateToProps = (state) => {
         login_status: state.loginData.login_status,
         tokenObj: state.loginData.tokenObj,
         userData: state.loginData.userData,
+        systemLanguage: state.loginData.systemLanguage,
     }
 }
 
@@ -179,7 +141,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#2196f3',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
   },
   titleText:{
     fontSize: 32, 
@@ -194,5 +156,12 @@ const styles = StyleSheet.create({
     color: "#FFF",
     marginTop: 60,
     marginBottom: 5,
+  },
+  activityIndicator: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#2196f3',
+    height: 80,
   },
 });

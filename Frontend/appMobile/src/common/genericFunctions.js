@@ -1,9 +1,8 @@
-import { MAIN_URL, MAIN_URL_WEB, MAX_ELEMENTS_PER_TABLE} from './constants';
-import { showMessage, hideMessage } from "react-native-flash-message";
+import { MAIN_URL, MAX_ELEMENTS_PER_TABLE} from './constants';
+import { showMessage} from "react-native-flash-message";
 import registerForPushNotificationsAsync from './registerForPushNotificationsAsync';
 
 export const handleErrors = (error, bindThis) => {
-    console.log("handleErrors: "+error)
     displayErrorMessage("Hubo un error, intente nuevamente");
 }
 export const callAPI = (objApi, bindThis) => {
@@ -92,7 +91,28 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         case "requestBePublisher":
             bindThis.props.navigation.navigate('Home');
         break;     
-        case "deleteUser": bindThis.setState({ isLoading: false }); objApi.logOut();
+        case "deleteUser": 
+            bindThis.setState({ isLoading: false }); 
+            objApi.logOut();
+        break;
+        case "loadSpaceTypesMPL"    : 
+            bindThis.setState({ spaceTypes: objData.spaceTypes, loadingSpaceTypes: false }); 
+        break;
+        case "changePubStateMPL"    : 
+            bindThis.loadMyPublications(); 
+        break;
+        case "loadMyPublications"   :
+            var newTotalPages = Math.round(parseFloat(objData.Publications.length/MAX_ELEMENTS_PER_TABLE));
+            if(newTotalPages % 2 != 0){
+                newTotalPages=newTotalPages+1;
+            }
+            var newPagination = [];
+            for(var i=1;i<=newTotalPages;i++){
+                newPagination.push(i);
+            }
+            bindThis.setState({ publications: objData.Publications, loadingPubs: false, 
+                publicationsToDisplay: bindThis.filterPaginationArray(objData.Publications, 0), pagination: newPagination });   
+        
         break;
         case "loadInfraestructureVP": bindThis.setState({ facilities: objData.facilities, infIsLoading: false }); 
         break;
@@ -109,12 +129,6 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         case "saveAnswerVP":
         case "saveQuestionVP":
             bindThis.loadPublicationVP(bindThis.state.pubID);
-        break;
-        case "confirmEditReservationMRSL":
-            bindThis.props.navigation.goBack()
-        break;
-        case "saveRateMRSL":
-            bindThis.props.navigation.goBack()
         break;
         case "loadMyReservationsMRSL":
             var newTotalPages = Math.round(parseFloat(objData.Reservations.length/MAX_ELEMENTS_PER_TABLE));
@@ -134,6 +148,8 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             bindThis.setState({ reservations: objData.Reservations, loadingReservations: false,
             reservationsToDisplay: bindThis.filterPaginationArray(objData.Reservations, 0), pagination: newPagination })
         break;
+        case "confirmEditReservationMRSL":
+        case "saveRateMRSL":
         case "saveCustReservationPayment":
         case "saveComissionPayment":
         case "confirmPaymentRP":
@@ -145,6 +161,12 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         case "loadInfraestructureMP":
             bindThis.setState({ facilities: objData.facilities });
             bindThis.getInfraList();
+        break;
+        case "loadSpaceTypesFP": 
+            bindThis.setState({ spaceTypes: objData.spaceTypes, loadingSpaceTypes: false }); 
+        break;
+        case "loadMyFavoritePublications": 
+            bindThis.setState({ publications: objData.Publications, loadingPubs: false });   
         break;
         case "loadSpaceTypesMP":
             if(bindThis.state.spacetypeSelected == ""){
@@ -197,7 +219,7 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
         case "ERR_REFRESHTOKENEXPIRED":
         case "ERR_INVALIDREFRESHTOKEN":
             //handleExpiredToken(objApi, bindThis)
-            break;
+        break;
     }
     console.log("callFunctionAfterApiError objData.responseCode = "+objData.responseCode)
     console.log("callFunctionAfterApiError objApi.errorMSG = "+JSON.stringify(objApi.errorMSG))
@@ -210,8 +232,8 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
 
     switch(trigger){
         case "registerUser":
-            //bindThis.setState({isLoading: false, buttonIsDisable: false});
-            //objApi.dispatch({ type: objApi.typeSuccess, messageObj: { responseCode: objData.responseCode, errorMessage: objApi.errorMSG.ERR_MAILALREADYEXIST}});
+            bindThis.setState({isLoading: false, buttonIsDisable: false});
+            objApi.dispatch({ type: objApi.typeSuccess, messageObj: { responseCode: objData.responseCode, errorMessage: objApi.errorMSG.ERR_MAILALREADYEXIST}});
         break;
         case "logIn":
             bindThis.setState({ isLoading: false });

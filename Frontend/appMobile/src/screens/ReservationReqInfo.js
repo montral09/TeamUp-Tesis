@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { StyleSheet, Text, View, Picker, Keyboard, TextInput, TouchableOpacity} from 'react-native';
 import { callAPI } from '../common/genericFunctions';
 import { connect } from 'react-redux';
+import { ML_MODE } from '../common/constants';
 import translations from '../common/translations';
 import DatePicker from '../components/datePicker';
 
@@ -23,6 +24,7 @@ class ReservationReqInfo extends Component {
             isLoading : false,
             buttonIsDisabled: false,
             screenConfig: screenConfigParam,  
+            optionArray: [5, 4, 3, 2, 1]
         };
         this.save = this.save.bind(this);
         this.cancel = this.cancel.bind(this);
@@ -162,23 +164,26 @@ class ReservationReqInfo extends Component {
                         {this.state.screenConfig.optionDisplay ? 
                         (
                             <>
-                            <Text style={styles.infoText}>{this.state.screenConfig.optionLabel}</Text>
-                            <Picker
-                                style={styles.pickerBox2}
-                                selectedValue={this.state.optionValue}
-                                onValueChange={(itemValue) => this.changeRating(itemValue)}
-                            > 
-                                {this.state.screenConfig.optionArray.map((option) => {
-                                    return (
-                                        <Picker.Item key={option} value={option} label={option} />
-                                    );
-                                })}
-                            </Picker>
+                            <View style={{flexDirection:'row', alignItems: 'center'}}>
+                                <Text style={styles.infoTextPicker}>{this.state.screenConfig.optionLabel}</Text>
+                                <Picker
+                                    style={styles.pickerBox2}
+                                    selectedValue={this.state.optionValue}
+                                    onValueChange={(itemValue) => this.changeRating(itemValue)}
+                                > 
+                                    {this.state.optionArray.map((option) => {
+                                        return (
+                                            <Picker.Item key={option} value={option} label={option.toString()} />
+                                        );
+                                    })}
+                                </Picker>
+                            </View>
                             </>
                         ) : (null)}
                         {this.state.screenConfig.textboxDisplay ? 
                         (
                             <TextInput style={styles.inputBox} 
+                                numberOfLines= {4}
                                 underlineColorAndroid='rgba(0,0,0,0)'
                                 placeholder={this.state.screenConfig.textboxLabel}
                                 placeholderTextColor="#ffffff"
@@ -242,6 +247,11 @@ const styles = StyleSheet.create({
     color: "#FFF",
     marginBottom: 20,
   },
+  infoTextPicker:{
+    color: "#FFF",
+    marginRight: 10,
+    fontSize: 20,
+  },
   infoText2:{
     color: "#FFF",
     marginLeft: 20,
@@ -271,6 +281,12 @@ const styles = StyleSheet.create({
     fontWeight:'500',
     color:'#ffffff'
   },
+  pickerBox2: {
+    width:50,
+    backgroundColor:'rgba(255,255,255,0.3)',
+    color:'#ffffff',
+    marginVertical: 10,
+  },  
 });
 
 const mapStateToProps = (state) => {

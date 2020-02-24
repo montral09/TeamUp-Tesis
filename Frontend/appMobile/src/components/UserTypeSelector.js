@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
 import { StyleSheet, Text, View, Image, TouchableWithoutFeedback } from 'react-native';
+import { connect } from 'react-redux';
+import translations from '../common/translations';
 
-export default class UserTypeSelector extends Component<{}>{
+class UserTypeSelector extends Component{
     state = {
         active: null,
     }
@@ -12,6 +14,7 @@ export default class UserTypeSelector extends Component<{}>{
     }
 
     render(){
+        const { systemLanguage } = this.props;
         const { active } = this.state;
         return(
             <View style={styles.container}>
@@ -31,11 +34,11 @@ export default class UserTypeSelector extends Component<{}>{
                         }
                         <View style={styles.iconContainer}>
                             <Image style={{width:32, height: 32}}
-                                source={require('../images/Usuario.png')}
+                                source={require('../images/user.png')}
                             /> 
                         </View>  
                         <Text style={styles.selectText}>
-                            Busco alquilar espacios 
+                            {translations[systemLanguage].messages['register_clientButton']}
                         </Text>
                     </View>
                 </TouchableWithoutFeedback>
@@ -55,11 +58,11 @@ export default class UserTypeSelector extends Component<{}>{
                         }
                         <View style={styles.iconContainer}>
                             <Image style={{width:38, height: 38}}
-                                source={require('../images/Gestor.png')}
+                                source={require('../images/publisher.png')}
                             />
                         </View>
                         <Text style={styles.selectText}>
-                            Busco publicar espacios
+                            {translations[systemLanguage].messages['register_publisherButton']}
                         </Text> 
                     </View>
                 </TouchableWithoutFeedback>
@@ -69,14 +72,20 @@ export default class UserTypeSelector extends Component<{}>{
 
 } 
 
+const mapStateToProps = (state) => {
+    return {
+        systemLanguage: state.loginData.systemLanguage
+    }
+}
+
+export default connect(mapStateToProps)(UserTypeSelector);
+
 const styles = StyleSheet.create({
     container: {
         flex: 0,
         flexDirection: 'row',
         paddingVertical: 15,
-        //alignItems: 'center',
         justifyContent: 'flex-end',
-        //backgroundColor: 'white',
     },
     selectContainer: {
         flexDirection: 'column',

@@ -1,10 +1,9 @@
 import React, {Component} from 'react';
-import { StyleSheet,Text,View,TextInput,TouchableOpacity,ToastAndroid} from 'react-native';
-
+import { StyleSheet,Text,View,TextInput,TouchableOpacity} from 'react-native';
+import { callAPI, displayErrorMessage } from '../common/genericFunctions';
 import UserTypeSelector from '../components/UserTypeSelector';
 import { connect } from 'react-redux';
 import translations from '../common/translations';
-import Globals from '../Globals';
 
 class SignUp extends Component{
     constructor(){
@@ -23,139 +22,101 @@ class SignUp extends Component{
             isLoading : false,
             buttonIsDisable: false
         };
-        this.handleInputChange = this.handleInputChange.bind(this);
         this.register = this.register.bind(this);
     }
-   
-    handleInputChange(evt){
-        this.setState({ [evt.target.name]: evt.target.value });
-    }
 
+    handleCheckPublisher = (checkValue) =>{
+        if (checkValue === 'publisher'){
+            this.setState({checkPublisher:true})
+        }else{
+            this.setState({checkPublisher:false})
+        }
+    }
+   
     // Validate if all the required inputs are inputted, returns true or false
-    checkRequiredInputs() {
+    checkRequiredInputs = () => {
         let returnValue = false;
         let message = "";
-        if (!this.state.password || !this.state.email || !this.state.name
+        if (!this.state.password || !this.state.email || !this.state.firstName
             || !this.state.lastName || !this.state.phone) {
-                message='Por favor ingrese los campos obligatorios (*)';
+                message= translations[this.props.systemLanguage].messages['register_checkErrorMsg1'];
                 returnValue = true;
-        } else if (!this.state.name.match(/^[A-Za-z]+$/)) {        
+        } else if (!this.state.firstName.match(/^[A-Za-z]+$/)) {        
             returnValue = true;
-            message = "Su nombre debe contener solo letras";
-        } else if (this.state.name.length < 2) {        
+            message = translations[this.props.systemLanguage].messages['register_checkErrorMsg2'];
+        } else if (this.state.firstName.length < 2) {        
             returnValue = true;
-            message = "Nombre demasiado corto";            
+            message = translations[this.props.systemLanguage].messages['register_checkErrorMsg3'];
         } else if (!this.state.lastName.match(/^[A-Za-z]+$/)) {
             returnValue = true;
-            message = "Su apellido debe contener solo letras";
+            message = translations[this.props.systemLanguage].messages['register_checkErrorMsg4'];
         } else if (this.state.lastName.length < 2) {        
             returnValue = true;
-            message = "Apellido demasiado corto"; 
-        } else /*if (this.state.password != this.state.passwordConfirm) {
+            message = translations[this.props.systemLanguage].messages['register_checkErrorMsg5'];
+        } else if (this.state.password != this.state.passwordConfirm) {
             returnValue = true;
-            message = "Ambos campos de contraseña deben ser iguales";
-        } else*/ if (this.state.password.length < 6) {
-            message='La contraseña debe tener al menos 6 caracteres';
+            message = translations[this.props.systemLanguage].messages['register_checkErrorMsg6'];
+        } else if (this.state.password.length < 6) {
+            message = translations[this.props.systemLanguage].messages['register_checkErrorMsg7'];
             returnValue = true;
         } else if (!this.state.email.match(/\S+@\S+.+/)) {
-            message='Formato de email incorrecto';
+            message = translations[this.props.systemLanguage].messages['register_checkErrorMsg8'];
             returnValue = true;
         } else if (!this.state.phone.match(/^[0-9]+$/) && !this.state.phone.match(/^[+]+[0-9]+$/)) {
-            message='Telefono debe contener solo números o "+" si corresponde a un número internacional';
+            message = translations[this.props.systemLanguage].messages['register_checkErrorMsg9'];
             returnValue = true;
         } else if (this.state.phone.length < 6) {
-            message='Telefono demasiado corto';
+            message = translations[this.props.systemLanguage].messages['register_checkErrorMsg10'];
             returnValue = true;
         } else if (this.state.rut && !this.state.rut.match(/^[0-9]+$/)) {
-            message='Rut debe contener solo números';
+            message = translations[this.props.systemLanguage].messages['register_checkErrorMsg11'];
             returnValue = true;
         } else if (this.state.rut && this.state.rut < 12) {
-            message='Rut debe tener 12 números';
+            message = translations[this.props.systemLanguage].messages['register_checkErrorMsg12'];
             returnValue = true;
         } else if (this.state.razonSocial && this.state.razonSocial < 3) {
-            console.log ('entre a razon social');
-            message='Razon social demasiada corta';
+            message = translations[this.props.systemLanguage].messages['register_checkErrorMsg13'];
             returnValue = true;
         } else if (this.state.address && this.state.address < 10) {
-            console.log ('entre a address');
-            message='Direccion demasiado corta';
+            message = translations[this.props.systemLanguage].messages['register_checkErrorMsg14'];
             returnValue = true;
         }
         
         if(message){
-            ToastAndroid.showWithGravity(
-                message,
-                ToastAndroid.LONG,
-                ToastAndroid.CENTER,
-            );
+            displayErrorMessage(message);
         }
-        
         return returnValue;
     }
 
-    register() {
-        /*if(this.state.gestorCheckbox =='on'){
-            this.state.gestorCheckbox = true;
-        }else{
-            this.state.gestorCheckbox = false;
-        }*/
+    // This function will call the API
+    registerUser = () => {
         if (!this.checkRequiredInputs()) {
             this.setState({isLoading: true, buttonIsDisable:true});
-            fetch(Globals.baseURL + '/user', {
-                method: 'POST',
-                header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-
-                body: JSON.stringify({
-                    Password: this.state.password,
-                    Mail: this.state.email,
-                    Name: this.state.name,
-                    LastName: this.state.lastName,
-                    Phone: this.state.phone,
-                    CheckPublisher: this.state.checkPublisher,
-                    Rut: this.state.rut,
-                    RazonSocial: this.state.razonSocial,
-                    Address: this.state.address,
-                })
-            }).then(response => response.json()).then(data => {
-                this.setState({isLoading: false, buttonIsDisable:false});
-                console.log("data:" + JSON.stringify(data));
-                if (data.responseCode == "SUCC_USRCREATED") {
-                    ToastAndroid.showWithGravity(
-                        'Usuario creado correctamente, por favor revise su correo para activar la cuenta ',
-                        ToastAndroid.LONG,
-                        ToastAndroid.CENTER,
-                    );
-                    this.props.navigation.navigate('Login')
-                } else {
-                    if(data.Message){
-                        ToastAndroid.showWithGravity(
-                            'Hubo un error: ' + data.Message,
-                            ToastAndroid.LONG,
-                            ToastAndroid.CENTER,
-                        );
-                    }else{
-                        ToastAndroid.showWithGravity(
-                            'Ese correo ya esta en uso, por favor elija otro.',
-                            ToastAndroid.LONG,
-                            ToastAndroid.CENTER,
-                        );
-                    }
-
-
-                }
+            var objApi = {};
+            objApi.objToSend = {
+                Password: this.state.password,
+                Mail: this.state.email,
+                Name: this.state.firstName,
+                LastName: this.state.lastName,
+                Phone: this.state.phone,
+                CheckPublisher: this.state.CheckPublisher,
+                Rut: this.state.rut,
+                RazonSocial: this.state.razonSocial,
+                Address: this.state.address,
+                Language : this.state.Language
             }
-            ).catch(error => {
-                this.setState({isLoading: false, buttonIsDisable:false});
-                ToastAndroid.showWithGravity(
-                    'Internal error',
-                    ToastAndroid.LONG,
-                    ToastAndroid.CENTER,
-                );
-                console.log(error);
+            objApi.fetchUrl = "api/user";
+            objApi.method = "POST";
+            objApi.successMSG = {
+                SUCC_USRCREATED : translations[this.props.systemLanguage].messages['SUCC_USRCREATED'],
+            };
+            objApi.functionAfterSuccess = "registerUser";
+            objApi.functionAfterError = "registerUser";
+            objApi.errorMSG= {
+                ERR_MAILALREADYEXIST : translations[this.props.systemLanguage].messages['ERR_MAILALREADYEXIST']
             }
-            )
+            callAPI(objApi, this);
         }
-
     }
 
    render(){
@@ -164,7 +125,7 @@ class SignUp extends Component{
             <View style={styles.container}>
                 <View style={styles.signupTitleContainer}>
                     <Text style={styles.titleText}>{translations[systemLanguage].messages['registerYourself_w']}</Text>
-                    <UserTypeSelector/>
+                    <UserTypeSelector handleCheckPublisher={this.handleCheckPublisher}/>
                     {<TextInput style={styles.inputBox} 
                             underlineColorAndroid='rgba(0,0,0,0)'
                             placeholder={translations[systemLanguage].messages['name_w'] + '(*)'}
