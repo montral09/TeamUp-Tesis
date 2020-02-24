@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
 import { logOut } from '../../../reducers/auth/actions';
-import Login from '../../../DemoPages/Login';
+import Login from '../../../Pages/Login';
 import {
     DropdownToggle, DropdownMenu,
     Nav, NavItem, UncontrolledButtonDropdown
@@ -43,7 +43,7 @@ class UserBox extends React.Component {
                                             <DropdownMenu right className="rm-pointers dropdown-menu-lg">
                                                 <Nav vertical>
                                                     <NavItem>
-                                                        <a onClick={() => (this.props.logOut())}><i className='pe-7s-back-2'> </i> Cerrar sesión</a>
+                                                        <a href="javascript:void(0);" onClick={() => (this.props.logOut())}><i className='pe-7s-back-2'> </i> Cerrar sesión</a>
                                                     </NavItem>
                                                 </Nav>
                                             </DropdownMenu>
