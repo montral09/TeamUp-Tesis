@@ -95,6 +95,9 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             bindThis.setState({ isLoading: false }); 
             objApi.logOut();
         break;
+        case "loadSpaceTypesBR":
+            bindThis.setState({ spaceTypes: objData.spaceTypes })
+        break;
         case "loadSpaceTypesMPL"    : 
             bindThis.setState({ spaceTypes: objData.spaceTypes, loadingSpaceTypes: false }); 
         break;
@@ -259,5 +262,12 @@ export const displaySuccessMessage = (message) =>{
     showMessage({
         message: message,
         type: "success",
+      });
+}
+
+export const displayInfoMessage = (message) =>{
+    showMessage({
+        message: message,
+        type: "info",
       });
 }

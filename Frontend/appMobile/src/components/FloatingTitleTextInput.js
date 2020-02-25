@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Animated, StyleSheet, TextInput } from 'react-native';
+import { View, Animated, StyleSheet, TextInput, KeyboardAvoidingView } from 'react-native';
 import { string, func, bool } from 'prop-types';
 
 export default class FloatingTitleTextInputField extends Component {
@@ -59,7 +59,7 @@ export default class FloatingTitleTextInputField extends Component {
 
   render() {
     return (
-      <View style = {this.props.editBool ? Styles.container : Styles.containerDisabled}>
+      <KeyboardAvoidingView style = {this.props.editBool ? Styles.container : Styles.containerDisabled}>
         <Animated.Text
           style = {this.props.editBool ? [Styles.titleStyles, this._returnAnimatedTitleStyles()] : Styles.titleStylesDisabled}
         >
@@ -76,7 +76,7 @@ export default class FloatingTitleTextInputField extends Component {
             onChangeText = {this._onChangeText}
             editable = {this.props.editBool}
         />
-      </View>
+      </KeyboardAvoidingView>
     )
   }
 }

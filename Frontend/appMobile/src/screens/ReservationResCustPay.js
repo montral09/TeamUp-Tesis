@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Linking, TextInput, Dimensions} from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { connect } from 'react-redux';
 import { callAPI } from '../common/genericFunctions';
 import translations from '../common/translations';
@@ -102,6 +103,13 @@ class ReservationResCustPay extends Component {
     render() {
         const { systemLanguage } = this.props;
         return (
+            <KeyboardAwareScrollView 
+                vertical
+                extraScrollHeight={135} 
+                enableOnAndroid={true} 
+                keyboardShouldPersistTaps='handled'
+                style={{flex: 1}}
+            >
             <View style={styles.container}>
                 <View style={{alignItems: 'flex-start', marginLeft: 15}}>
                     <Text style={styles.titleText}>{translations[systemLanguage].messages['modalResCusPay_header']}</Text>
@@ -198,6 +206,7 @@ class ReservationResCustPay extends Component {
                     ) : (null)}
                 </View>        
             </View>
+            </KeyboardAwareScrollView>
         );
     }
 }

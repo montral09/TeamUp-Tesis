@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, ScrollView, Keyboard, TouchableOpacity, Linking, TextInput, Dimensions} from 'react-native';
+import { StyleSheet, Text, View,TouchableOpacity, Linking, TextInput, Dimensions, KeyboardAvoidingView} from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from "expo-permissions";
 import Constants from 'expo-constants';
@@ -46,35 +47,6 @@ class ReservationCustResPay extends Component {
         };
         objApi.functionAfterSuccess = "saveCustReservationPayment";
         callAPI(objApi, this);
-    }
-
-    // End Upload image functions
-    onChange = (evt) => {
-        if(evt.target.id != "paymentComment"){
-            if (this.maxSelectFile(evt) && this.checkMimeType(evt) && this.checkFileSize(evt)) {
-                console.log(evt.target.files);
-                this.setState({ spaceImages: [], tempFiles: evt.target.files }, () => {
-                    for (var i = 0; i < this.state.tempFiles.length; i++) {
-                        var file = this.state.tempFiles[i]; // FileList object
-                        this.getBase64(file);
-                    }
-                });
-                ToastAndroid.showWithGravity(
-                    'Archivo cargado correctamente. ',
-                    ToastAndroid.LONG,
-                    ToastAndroid.CENTER,
-                ); 
-            }
-        }else{
-            var objPaymentDetails = {
-                ...this.state.objPaymentDetails,
-                [evt.target.id]: evt.target.value
-            }
-            this.setState({
-                objPaymentDetails: objPaymentDetails
-            });
-        }
-
     }
 
     getPermissionAsync = async () => {
@@ -137,8 +109,10 @@ class ReservationCustResPay extends Component {
     render() {
         const { systemLanguage } = this.props;
         return (
-            <View style={styles.container}>
+            
+            <KeyboardAvoidingView style={styles.container}>
                 <View style={{alignItems: 'flex-start', marginLeft: 15}}>
+                
                     <Text style={styles.titleText}>{translations[systemLanguage].messages['myReservedSpacesList_custPay_header']}</Text>
                     <View style={{flexDirection:'row', alignItems: 'center'}}>
                         <View style={{flex:1}}>
@@ -224,7 +198,9 @@ class ReservationCustResPay extends Component {
                             <Text style={styles.infoText}>{translations[systemLanguage].messages['myReservedSpacesList_custPay_alertMsg3']}</Text>
                         )
                     }
-                </View>   
+                
+                </View> 
+                
                 <View style={{flexDirection: 'row'}}>
                     <TouchableOpacity style={styles.button} onPress={()=> {this.props.navigation.goBack()}} disabled={this.state.buttonIsDisabled}> 
                         <Text style={styles.buttonText}>{translations[systemLanguage].messages['cancel_w']}</Text>
@@ -235,8 +211,10 @@ class ReservationCustResPay extends Component {
                         </TouchableOpacity>
                         ) : (null)
                     }
-                </View>        
-            </View>
+                </View>     
+                   
+            </KeyboardAvoidingView>
+              
         );
     }
 }

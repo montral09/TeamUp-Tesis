@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, StatusBar } from 'react-native';
+import { StyleSheet, Text, View, StatusBar, KeyboardAvoidingView } from 'react-native';
 import { createStackNavigator, createAppContainer } from 'react-navigation';
 import { connect } from 'react-redux';
 
@@ -22,7 +22,10 @@ import ReserveSpaceSummary from './ReserveSpaceSummary';
 import QAAnswer from './QAAnswer';
 import DrawerNavigator from '../navigation/DrawerNavigator';
 import DrawerNavigatorC from '../navigation/DrawerNavigatorC';
+import TermsAndConditions from '../common/termsAndConditions';
+
 import translations from '../common/translations';
+
 
 class Login extends Component{
    constructor() {
@@ -44,7 +47,7 @@ class Login extends Component{
    render(){
 
         return (
-            <View style={styles.container}>
+            <KeyboardAvoidingView style={styles.container}>
               <StatusBar backgroundColor="#0069c0" barStyle="light-content"/>
               <Logo/>
               <Form changeParentLanguage={this.changeParentLanguage}/>
@@ -53,7 +56,7 @@ class Login extends Component{
                 {this.state.language === 'es' ? (<Text style={styles.signupButton} onPress={() => {this.props.navigation.navigate('SignUp')}}> {translations.es.messages['registerYourself_w']}</Text>):(<Text style={styles.signupButton} onPress={() => {this.props.navigation.navigate('SignUp')}}> {translations.en.messages['registerYourself_w']}</Text>)}
                 
               </View>
-            </View>
+            </KeyboardAvoidingView>
         );
     }
 
@@ -140,6 +143,9 @@ const StackNavigator = createStackNavigator({
   QAAnswer: {screen: QAAnswer, navigationOptions: ({ navigation }) => ({
                 header: null,
             })},
+  TermsAndConditions: {screen: TermsAndConditions, navigationOptions: ({ navigation }) => ({
+                          header: null,
+                      })},
   ErrorScreen: {screen: ErrorScreen, navigationOptions: ({ navigation }) => ({
                               header: null,
                     })},

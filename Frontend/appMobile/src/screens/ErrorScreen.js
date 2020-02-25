@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View,Text,Image,StyleSheet,ToastAndroid,TouchableOpacity} from 'react-native';
+import {View,Text,StyleSheet,TouchableOpacity} from 'react-native';
 import { connect } from 'react-redux';
 
 import Globals from '../Globals';

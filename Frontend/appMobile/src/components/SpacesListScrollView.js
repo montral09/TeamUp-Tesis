@@ -1,17 +1,15 @@
 import React, {Component} from 'react';
-import {View,Text,StyleSheet,TouchableOpacity,ToastAndroid} from 'react-native';
+import {View,Text,StyleSheet,TouchableOpacity} from 'react-native';
 import { Ionicons } from "@expo/vector-icons";
 import { connect } from 'react-redux';
+import { displayInfoMessage } from '../common/genericFunctions';
+
 import translations from '../common/translations';
 
 class SpacesListScrollView extends Component {
 
     notAvailableMobile(){ 
-        ToastAndroid.showWithGravity(
-            translations[this.props.systemLanguage].messages['unavailable_function'],
-            ToastAndroid.LONG,
-            ToastAndroid.CENTER,
-        );
+        displayInfoMessage(translations[this.props.systemLanguage].messages['unavailable_function']);
     } 
 
     render (){

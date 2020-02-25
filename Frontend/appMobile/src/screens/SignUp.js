@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import { StyleSheet,Text,View,TextInput,TouchableOpacity} from 'react-native';
+import { StyleSheet,Text,View,TextInput,TouchableOpacity,KeyboardAvoidingView} from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { callAPI, displayErrorMessage } from '../common/genericFunctions';
 import UserTypeSelector from '../components/UserTypeSelector';
 import { connect } from 'react-redux';
@@ -22,7 +23,6 @@ class SignUp extends Component{
             isLoading : false,
             buttonIsDisable: false
         };
-        this.register = this.register.bind(this);
     }
 
     handleCheckPublisher = (checkValue) =>{
@@ -122,87 +122,108 @@ class SignUp extends Component{
    render(){
         const { systemLanguage } = this.props;
         return (
-            <View style={styles.container}>
-                <View style={styles.signupTitleContainer}>
-                    <Text style={styles.titleText}>{translations[systemLanguage].messages['registerYourself_w']}</Text>
-                    <UserTypeSelector handleCheckPublisher={this.handleCheckPublisher}/>
-                    {<TextInput style={styles.inputBox} 
-                            underlineColorAndroid='rgba(0,0,0,0)'
-                            placeholder={translations[systemLanguage].messages['name_w'] + '(*)'}
-                            placeholderTextColor="#ffffff"
-                            onChangeText={(name) => this.setState({name})}
-                            value={this.state.name}
-                    />}
-                    {<TextInput style={styles.inputBox} 
-                            underlineColorAndroid='rgba(0,0,0,0)'
-                            placeholder={translations[systemLanguage].messages['lastName_w'] + '(*)'}
-                            placeholderTextColor="#ffffff"
-                            onChangeText={(lastName) => this.setState({lastName})}
-                            value={this.state.lastName}
-                    />}
-                    <TextInput style={styles.inputBox} 
-                            underlineColorAndroid='rgba(0,0,0,0)'
-                            placeholder={translations[systemLanguage].messages['email_w'] + '(*)'}
-                            placeholderTextColor="#ffffff"
-                            value={this.state.email}
-                            onChangeText={(email) => this.setState({email})}
-                    />
-                    {<TextInput style={styles.inputBox} 
-                            underlineColorAndroid='rgba(0,0,0,0)'
-                            placeholder={translations[systemLanguage].messages['phoneNumber_w'] + '(*)'}
-                            placeholderTextColor="#ffffff"
-                            name = "phone"
-                            value={this.state.phone}
-                            onChangeText={(phone) => this.setState({phone})}
-                    />}
-                    <TextInput style={styles.inputBox} 
-                            underlineColorAndroid='rgba(0,0,0,0)'
-                            placeholder={translations[systemLanguage].messages['password_w'] + '(*)'}
-                            placeholderTextColor="#ffffff"
-                            secureTextEntry={true}
-                            name = "password"
-                            value={this.state.password}
-                            onChangeText={(password) => this.setState({password})}
-                    />
-                    {<TextInput style={styles.inputBox} 
-                            underlineColorAndroid='rgba(0,0,0,0)'
-                            placeholder={translations[systemLanguage].messages['register_repeatPassword'] + '(*)'}
-                            placeholderTextColor="#ffffff"
-                            secureTextEntry={true}
-                            name = "confirmPassword"
-                            value={this.state.confirmPassword}
-                            onChangeText={(confirmPassword) => this.setState({confirmPassword})}
-                    />}
-                    {<TextInput style={styles.inputBox} 
-                            underlineColorAndroid='rgba(0,0,0,0)'
-                            placeholder="RUT"
-                            placeholderTextColor="#ffffff"
-                            name = "rut"
-                            value={this.state.rut}
-                            onChangeText={(rut) => this.setState({rut})}
-                    />}
-                    {<TextInput style={styles.inputBox} 
-                            underlineColorAndroid='rgba(0,0,0,0)'
-                            placeholder={translations[systemLanguage].messages['socialReason']}
-                            placeholderTextColor="#ffffff"
-                            name = "razonSocial"
-                            value={this.state.razonSocial}
-                            onChangeText={(razonSocial) => this.setState({razonSocial})}
-                    />}
-                    {<TextInput style={styles.inputBox} 
-                            underlineColorAndroid='rgba(0,0,0,0)'
-                            placeholder={translations[systemLanguage].messages['address_w']}
-                            placeholderTextColor="#ffffff"
-                            name = "address"
-                            value={this.state.address}
-                            onChangeText={(address) => this.setState({address})}
-                    />}
-                    
-                    <TouchableOpacity style={styles.button} onPress={() => { this.register() }}  /*onPress={() => {this.props.navigation.navigate('Home')}*/>
-                        <Text style={styles.buttonText}>{translations[systemLanguage].messages['registerYourself_w']}</Text>   
-                    </TouchableOpacity>
-                </View>
-            </View>
+
+            <KeyboardAwareScrollView 
+                vertical
+                extraScrollHeight={135} 
+                enableOnAndroid={true} 
+                keyboardShouldPersistTaps='handled'
+                style={{flex: 1}}
+            >
+                <KeyboardAvoidingView style={styles.container}>  
+                    <KeyboardAvoidingView style={styles.signupTitleContainer}>
+                        <Text style={styles.titleText}>{translations[systemLanguage].messages['registerYourself2_w']}</Text>
+                        <UserTypeSelector handleCheckPublisher={this.handleCheckPublisher}/>
+                        {<TextInput style={styles.inputBox} 
+                                underlineColorAndroid='rgba(0,0,0,0)'
+                                placeholder={translations[systemLanguage].messages['name_w'] + '(*)'}
+                                placeholderTextColor="#ffffff"
+                                onChangeText={(name) => this.setState({name})}
+                                value={this.state.name}
+                        />}
+                        {<TextInput style={styles.inputBox} 
+                                underlineColorAndroid='rgba(0,0,0,0)'
+                                placeholder={translations[systemLanguage].messages['lastName_w'] + '(*)'}
+                                placeholderTextColor="#ffffff"
+                                onChangeText={(lastName) => this.setState({lastName})}
+                                value={this.state.lastName}
+                        />}
+                        <TextInput style={styles.inputBox} 
+                                underlineColorAndroid='rgba(0,0,0,0)'
+                                placeholder={translations[systemLanguage].messages['email_w'] + '(*)'}
+                                placeholderTextColor="#ffffff"
+                                value={this.state.email}
+                                onChangeText={(email) => this.setState({email})}
+                        />
+                        {<TextInput style={styles.inputBox} 
+                                underlineColorAndroid='rgba(0,0,0,0)'
+                                placeholder={translations[systemLanguage].messages['phoneNumber_w'] + '(*)'}
+                                placeholderTextColor="#ffffff"
+                                name = "phone"
+                                value={this.state.phone}
+                                onChangeText={(phone) => this.setState({phone})}
+                        />}
+                        <TextInput style={styles.inputBox} 
+                                underlineColorAndroid='rgba(0,0,0,0)'
+                                placeholder={translations[systemLanguage].messages['password_w'] + '(*)'}
+                                placeholderTextColor="#ffffff"
+                                secureTextEntry={true}
+                                name = "password"
+                                value={this.state.password}
+                                onChangeText={(password) => this.setState({password})}
+                        />
+                        {<TextInput style={styles.inputBox} 
+                                underlineColorAndroid='rgba(0,0,0,0)'
+                                placeholder={translations[systemLanguage].messages['register_repeatPassword'] + '(*)'}
+                                placeholderTextColor="#ffffff"
+                                secureTextEntry={true}
+                                name = "confirmPassword"
+                                value={this.state.confirmPassword}
+                                onChangeText={(confirmPassword) => this.setState({confirmPassword})}
+                        />}
+                        {<TextInput style={styles.inputBox} 
+                                underlineColorAndroid='rgba(0,0,0,0)'
+                                placeholder="RUT"
+                                placeholderTextColor="#ffffff"
+                                name = "rut"
+                                value={this.state.rut}
+                                onChangeText={(rut) => this.setState({rut})}
+                        />}
+                        {<TextInput style={styles.inputBox} 
+                                underlineColorAndroid='rgba(0,0,0,0)'
+                                placeholder={translations[systemLanguage].messages['socialReason']}
+                                placeholderTextColor="#ffffff"
+                                name = "razonSocial"
+                                value={this.state.razonSocial}
+                                onChangeText={(razonSocial) => this.setState({razonSocial})}
+                        />}
+                        {<TextInput style={styles.inputBox} 
+                                underlineColorAndroid='rgba(0,0,0,0)'
+                                placeholder={translations[systemLanguage].messages['address_w']}
+                                placeholderTextColor="#ffffff"
+                                name = "address"
+                                value={this.state.address}
+                                onChangeText={(address) => this.setState({address})}
+                        />}
+                        <KeyboardAvoidingView style={{flexDirection:'row'}}>
+                        <TouchableOpacity style={styles.button} onPress={() => {this.props.navigation.goBack()}}>
+                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['cancel_w']}</Text>   
+                        </TouchableOpacity>    
+                        <TouchableOpacity style={styles.button} onPress={() => { this.register() }}>
+                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['registerYourself2_w']}</Text>   
+                        </TouchableOpacity>
+                        </KeyboardAvoidingView>
+                        <KeyboardAvoidingView style={{flexDirection:'row'}}>
+                            <Text style={styles.infoText}>{translations[systemLanguage].messages['register_termsMsg1']} </Text> 
+                            <Text style={styles.infoText2}>{translations[systemLanguage].messages['registerYourself2_w']} </Text> 
+                            <Text style={styles.infoText}>{translations[systemLanguage].messages['register_termsMsg2']} </Text> 
+                        </KeyboardAvoidingView>
+                        <TouchableOpacity onPress={() => { this.props.navigation.navigate('TermsAndConditions') }}>
+                            <Text style={styles.infoText3}>{translations[systemLanguage].messages['register_termsMsg3']}</Text>
+                        </TouchableOpacity>
+                    </KeyboardAvoidingView>    
+                </KeyboardAvoidingView>
+            </KeyboardAwareScrollView>
         );
     }
 
@@ -216,11 +237,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     signupTitleContainer: {
+        flex: 1,
         alignItems: 'center',
-        paddingVertical: 20,
+        paddingVertical: 5,
         justifyContent: 'center',
     },
     titleText: {
+        marginTop: 20,
         fontSize: 24, 
         fontWeight: 'bold',
         color: "#FFF",
@@ -250,13 +273,28 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor:'#0069c0',
         borderRadius: 15,
-        marginVertical: 10,
+        marginVertical: 6,
         elevation: 3,
+        marginHorizontal: 10,
     },
     buttonText: {
         fontSize:16,
         fontWeight:'500',
         color:'#ffffff',
+    },
+    infoText:{
+        color: "#FFF",
+    },
+    infoText2:{
+        color: "#FFF",
+        fontWeight: 'bold',
+    },
+    infoText3:{
+        color: '#ffffff',
+        fontWeight: '600',
+        textShadowColor: 'rgba(0, 0, 0, 0.75)',
+        textShadowOffset: {width: -1, height: 1},
+        textShadowRadius: 10
     },
 });
 
@@ -268,61 +306,3 @@ const mapStateToProps = (state) =>{
 }
 
 export default connect(mapStateToProps)(SignUp);
-
-/*register = (ev) => {
-        let url = baseURL + 'user';
-        let req = new Request(url, {
-            headers: {'Content-Type': 'application/json',
-                      'Accept' : 'application/json',
-            },
-            method: 'POST',
-            body: JSON.stringify({
-            Mail : this.state.email,
-            Password : this.state.password,
-            Name : this.state.name,
-            LastName : this.state.lastName,
-            Phone : this.state.phone,
-            CheckPublisher : false,
-            Rut : this.state.rut,
-            RazonSocial : this.state.razonSocial,
-            Address : this.state.address,
-            })
-        })
-        
-        fetch(req)
-        .then(response=>response.json())
-        .then(this.showData)
-        .catch(this.allErrors)
-
-    }
-
-    showData = (data)=>{
-        console.log(data);
-        switch(data.responseCode) {
-            case "ERR_MAILALREADYEXIST":
-                this.setState({error:"El mail ingresado ya fue utilizado"})
-                break;   
-            case "SUCC_USRCREATED":
-                ToastAndroid.showWithGravity(
-                "Usuario creado con exito",
-                ToastAndroid.LONG,
-                ToastAndroid.CENTER,
-                );
-                this.props.navigation.navigate('Login')
-                break;
-        }
-        
-    }
-    
-    //Se encarga de todo el manejo de errores en el llamado al API
-    allErrors = (err) => {
-        this.setState({error: err.message});
-        console.log(err)
-    }
-
-   static navigationOptions = {
-     header: null
-   };    
-    
-
-*/

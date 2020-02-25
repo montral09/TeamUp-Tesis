@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, ScrollView, Keyboard, TouchableOpacity, ToastAndroid, ActivityIndicator} from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Keyboard, TouchableOpacity, ActivityIndicator} from 'react-native';
 import { connect } from 'react-redux';
 import { Header } from 'react-native-elements';
 import { callAPI } from '../common/genericFunctions';
@@ -8,7 +8,6 @@ import translations from '../common/translations';
 
 import ReservationSpacesListScrollView from '../components/ReservationSpacesListScrollView';
 
-import Globals from '../Globals';
 
 class ReservationSpaceList extends Component {
     constructor(props) {
@@ -45,10 +44,8 @@ class ReservationSpaceList extends Component {
     }
 
     changePage = (pageClicked) => {
-        console.log("Antes del change Page: " + JSON.stringify(this.state.reservationsToDisplay), this.state.currentPage)
         this.setState({ reservationsToDisplay: this.filterPaginationArray(this.state.reservations, (pageClicked - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked },
             () => this.setState({ reservationsToDisplay: this.filterPaginationArray(this.state.reservations, (pageClicked - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked }))
-            console.log("Despues del change Page: " + JSON.stringify(this.state.reservationsToDisplay), this.state.reservationsToDisplay, this.state.currentPage)         
     }
 
     filterPaginationArray = (arrayToFilter, startIndex) => {
@@ -99,51 +96,6 @@ class ReservationSpaceList extends Component {
                 this.props.navigation.navigate('ReservationEditResCustPay', {auxParam: resData[0]});
                 break;
         }
-    }
-
-    confirmEditReservation(modalInfo) {
-        let {IdReservation, HourFrom, HourTo, TotalPrice, People} = modalInfo.resDataChanged;
-        let objRes = {
-            AccessToken: this.props.tokenObj.accesToken,
-            Mail: this.props.userData.Mail,
-            IdReservation: IdReservation,
-            DateFrom: this.convertDate(modalInfo.dateFrom),
-            HourFrom: HourFrom,
-            HourTo: HourTo,
-            TotalPrice: TotalPrice,
-            People : People
-        }
-        this.modalElement.current.changeModalLoadingState(false);
-        fetch(Globals.baseURL + '/reservationCustomer', {
-            method: 'PUT',
-            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify(objRes)
-        }).then(response => response.json()).then(data => {
-            console.log("data:" + JSON.stringify(data));
-            if (data.responseCode == "SUCC_RESERVATIONUPDATED") {
-                ToastAndroid.showWithGravity(
-                    'Reserva modificada correctamente',
-                    ToastAndroid.LONG,
-                    ToastAndroid.CENTER,
-                );                             
-                this.loadMyReservations();
-            } else if (data.Message) {
-                    ToastAndroid.showWithGravity(
-                        'Hubo un error',
-                        ToastAndroid.LONG,
-                        ToastAndroid.CENTER,
-                    );
-                }
-        }
-        ).catch(error => {
-            ToastAndroid.showWithGravity(
-                'Internal error',
-                ToastAndroid.LONG,
-                ToastAndroid.CENTER,
-            );
-            console.log(error);
-        }
-        )
     }
 
     render() {
