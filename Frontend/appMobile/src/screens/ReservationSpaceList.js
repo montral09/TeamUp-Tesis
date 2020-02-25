@@ -11,7 +11,6 @@ import ReservationSpacesListScrollView from '../components/ReservationSpacesList
 
 class ReservationSpaceList extends Component {
     constructor(props) {
-        console.log('Constuctor')
         super(props);
         this.state = {
             loadingReservations : true,

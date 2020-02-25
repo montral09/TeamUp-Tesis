@@ -12,31 +12,20 @@ const userDataState = {
 }
 
 const reducer = (state = userDataState, action) => {
-  console.log(state)
   return state;
 }
 
-// <StatusBar backgroundColor="#0069c0" barStyle="light-content"/>
 export default function App() {
 
   return (
-    //<View style={styles.container}>
     <Provider store={store}>      
         <Login/>
         <FlashMessage position="top" />
     </Provider>
-    //</View>
   );
 
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#2196f3',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+
 
 

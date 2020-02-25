@@ -116,12 +116,10 @@ class SearchPublications extends Component {
             return parseInt(st.Code) === parseInt(sts);
         });
         this.setState({spaceTypeSelectedText:spaceTypeSelectedTextNew[0].Description})
-        console.log('spaceTypeSelectedText: ' + JSON.stringify(this.state.spaceTypeSelectedText))
         callAPI(objApi, this);
     }
 
     handleOnPress(){
-        console.log('Facilities: ' + JSON.stringify(this.state.facilities))
         if (this.state.filterVisible) {
             this.setState({filterVisible:false});
         }else{
@@ -137,7 +135,6 @@ class SearchPublications extends Component {
             return newFacilities.push(y.value)
         })
         this.setState({facilitiesSelected:newFacilities})
-        console.log('FacilitiesSelected: ' + JSON.stringify(this.state.facilitiesSelected))
     }
 
     onSelectionsChangeSpace = (itemValue,itemIndex) => {

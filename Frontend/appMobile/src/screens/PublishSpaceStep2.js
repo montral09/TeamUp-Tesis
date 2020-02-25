@@ -56,7 +56,6 @@ class PublishSpaceStep2 extends Component{
   }
   
   validateLocation(){
-    //console.log('LocText: ' + this.state.locationText)
         if(this.state.locationText ==''){
           ToastAndroid.showWithGravity(
           'Por favor ingrese la ubicación',
@@ -72,7 +71,7 @@ class PublishSpaceStep2 extends Component{
                   Geocoder.from(this.state.locationText)
                   .then(response => {
                     const { lat, lng } = response.results[0].geometry.location;
-                    console.log(response)
+                    
                     scope.setState({
                       locationTextLoading: false,
                       locationTextValidated: true,
@@ -90,7 +89,7 @@ class PublishSpaceStep2 extends Component{
                   }
                   );
                 }catch(e){
-                  console.log("ERROR" + e)
+                  
                     scope.setState({
                       locationTextLoading: false,
                       locationTextValidated: false,
@@ -121,15 +120,14 @@ class PublishSpaceStep2 extends Component{
                 fetchDetails={true}
                 //renderDescription={row => row.description} // custom description render
                 onPress={(data, details = null) => { // 'details' is provided when fetchDetails = true
-                  console.log(data, details);
+                  
                   this.setState(
                             {
                               address: details.name, // selected address
                               coordinates: `${details.geometry.location.lat},${details.geometry.location.lng}` // selected coordinates
                             }
                           );
-                  console.log('ADDRESS: ' + this.state.address);
-                  console.log('Coordinates: ' + this.state.coordinates)
+                  
                 }}
                 
 

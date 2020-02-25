@@ -137,7 +137,6 @@ class ReservationReqInfo extends Component {
     }
 
     cancel(){
-        console.log(this.state.screenConfig.cancelText)
         if (this.state.screenConfig.cancelText === translations[this.props.systemLanguage].messages['reservation_modal_ok']){
             this.props.navigation.navigate('Home');
         }else{

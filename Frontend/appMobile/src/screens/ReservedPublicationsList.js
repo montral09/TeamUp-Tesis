@@ -149,8 +149,6 @@ class ReservedPublicationsList extends Component {
     }
 
     changePage = (pageClicked) => {
-        console.log("TODISPLAY: " + JSON.stringify(this.state.reservationsToDisplay))
-        console.log("Reservations: " + JSON.stringify(this.state.reservations))
         this.setState({ reservationsToDisplay: this.filterPaginationArray(this.state.reservations, (pageClicked - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked },
             () => this.setState({ reservationsToDisplay: this.filterPaginationArray(this.state.reservations, (pageClicked - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked }))
     }
