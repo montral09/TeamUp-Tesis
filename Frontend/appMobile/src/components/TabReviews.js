@@ -1,11 +1,14 @@
 import React, {Component} from "react";
-import { StyleSheet,Text,View,ScrollView,Keyboard,Image,TextInput,TouchableOpacity,Modal,TouchableHighlight,ToastAndroid} from 'react-native';
+import { StyleSheet,Text,View,Keyboard} from 'react-native';
+import { connect } from 'react-redux';
+import translations from '../common/translations';
 
 import Stars from '../components/StarRating';
 
 class TabReviews extends Component{
    
     render() {
+        const { systemLanguage } = this.props;
         const {reviews} = this.props;
         return (
             <View style={{marginLeft: 25, marginTop: 20}}>
@@ -26,7 +29,7 @@ class TabReviews extends Component{
                         })}
                     </>
                 ) : (
-                <Text style={styles.infoText}>Sin reseñas</Text>
+                <Text style={styles.infoText}>{translations[systemLanguage].messages['no_reviews']}</Text>
                 )}
             </View>
         )
@@ -110,4 +113,10 @@ const styles = StyleSheet.create({
     },
 });
 
-export default TabReviews;
+const mapStateToProps = (state) => {
+    return {
+        systemLanguage: state.loginData.systemLanguage
+    }
+}
+
+export default connect(mapStateToProps)(TabReviews);

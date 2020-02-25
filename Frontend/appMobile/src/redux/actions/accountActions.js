@@ -16,11 +16,11 @@ export const logIn = (userData) => {
         };
         objApi.functionAfterSuccess = "logIn";
         objApi.functionAfterError = "logIn";
-        objApi.successMessage = "Bienvenid@ ";
+        objApi.successMessage = translations[userData.language].messages['SUCC_USRLOGSUCCESS'];
         objApi.errorMSG= {
-            ERR_MAILNOTVALIDATED : translations['es'].messages['ERR_MAILNOTVALIDATED'],
-            ERR_USRMAILNOTEXIST : translations['es'].messages['ERR_USRMAILNOTEXIST'],
-            ERR_USRWRONGPASS : translations['es'].messages['ERR_USRWRONGPASS']
+            ERR_MAILNOTVALIDATED : translations[userData.language].messages['ERR_MAILNOTVALIDATED'],
+            ERR_USRMAILNOTEXIST : translations[userData.language].messages['ERR_USRMAILNOTEXIST'],
+            ERR_USRWRONGPASS : translations[userData.language].messages['ERR_USRWRONGPASS']
         }
         objApi.dispatch = dispatch;
         objApi.typeSuccess = 'LOG_IN';

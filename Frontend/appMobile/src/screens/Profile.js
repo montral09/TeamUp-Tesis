@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {View,Text,ScrollView,StyleSheet,TextInput,TouchableOpacity} from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Header } from 'react-native-elements';
 import translations from '../common/translations';
 import {callAPI, displayErrorMessage} from '../common/genericFunctions';
@@ -11,7 +12,6 @@ import { logOut } from '../redux/actions/accountActions';
 
 import FloatingTitle from '../components/FloatingTitleTextInput';
 
-baseURL = 'http://teamup-001-site1.itempurl.com/api/';
 
 class Profile extends Component {
     constructor(props) {
@@ -141,7 +141,13 @@ class Profile extends Component {
         const { systemLanguage } = this.props;
 
         return (
-            <ScrollView>
+            <KeyboardAwareScrollView
+                vertical
+                extraScrollHeight={135} 
+                enableOnAndroid={true} 
+                keyboardShouldPersistTaps='handled'
+                style={{flex: 1}}
+            >
                 <View style={styles.container}>
                     {this.state.isLoading ? (
                         <LoadingOverlay
@@ -232,7 +238,7 @@ class Profile extends Component {
                     </>
                 )}   
                 </View>   
-            </ScrollView>     
+            </KeyboardAwareScrollView>     
         );
     }
 }

@@ -1,23 +1,22 @@
 import React, {Component} from 'react';
-import {View,Text,Image,StyleSheet,TouchableOpacity,ToastAndroid} from 'react-native';
+import {View,Text,StyleSheet,TouchableOpacity} from 'react-native';
 import { Ionicons } from "@expo/vector-icons";
-import { createAppContainer, createStackNavigator, withNavigation } from 'react-navigation';
+import { connect } from 'react-redux';
+import { displayInfoMessage } from '../common/genericFunctions';
 
+import translations from '../common/translations';
 
 class SpacesListScrollView extends Component {
 
     notAvailableMobile(){ 
-        ToastAndroid.showWithGravity(
-                    'Ingrese a la versión web para observar los detalles del plan preferencial y confirmar el pago',
-                    ToastAndroid.LONG,
-                    ToastAndroid.CENTER,
-                    );
+        displayInfoMessage(translations[this.props.systemLanguage].messages['unavailable_function']);
     } 
 
     render (){
+        const { systemLanguage } = this.props;
         return (
                 <View style={styles.spacesContainer}>
-                    <View style={{flexDirection: 'row', position: 'absolute', right: 45, top: 10}}>
+                    <View style={{flexDirection: 'row', position: 'absolute', right: 25, top: 10}}>
                         <Ionicons name="md-eye" size={24} color="white"></Ionicons>
                         <Text style={{color: 'white', fontSize: 14, paddingTop: 3, paddingLeft: 5}}>{this.props.parentData.TotalViews}</Text>
                     </View>
@@ -26,14 +25,14 @@ class SpacesListScrollView extends Component {
                         <Text style={{color: 'white', fontSize: 16}}>{this.props.parentData.SpaceTypeDesc}</Text>
                         <View style={{flexDirection: 'row'}}>
                             <Text style={{color: 'white', fontSize: 14, paddingHorizontal: 5}}>{this.props.parentData.CreationDate}</Text>
-                            <Text style={{color: 'white', fontSize: 14}}>Estado: {this.props.parentData.State}</Text>
+                            <Text style={{color: 'white', fontSize: 14}}>{translations[systemLanguage].messages['status_w']}: {translations[systemLanguage].messages['pubState_'+this.props.parentData.State.replace(/\s/g,'')]}</Text>
                         </View>
                         {this.props.parentData.PremiumState !== null ? (
                             <View style={[styles.premiumContainer, this.props.parentData.PremiumTier === 'GOLD' ? styles.premiumGold : this.props.parentData.PremiumTier === 'SILVER' ? styles.premiumSilver : this.props.parentData.PremiumTier === 'BRONZE' ? styles.premiumBronze : null]}>
-                                <Text style={{color: 'white', fontSize: 16, paddingHorizontal: 20, paddingTop: 10}}>Pago premium</Text>
-                                <Text style={{color: 'white', fontSize: 14}}>Estado: {this.props.parentData.PremiumState}</Text>
+                                <Text style={{color: 'white', fontSize: 16, paddingHorizontal: 20, paddingTop: 10}}>{translations[systemLanguage].messages['paymentP_w']}</Text>
+                                <Text style={{color: 'white', fontSize: 14}}>{translations[systemLanguage].messages['status_w']}: {translations[systemLanguage].messages['payState_'+this.props.parentData.PremiumState.replace(/\s/g,'')]}</Text>
                                 <TouchableOpacity style={styles.button}> 
-                                    <Text style={styles.buttonText} onPress={() => this.notAvailableMobile()}>Detalles</Text>
+                                    <Text style={styles.buttonText} onPress={() => this.notAvailableMobile()}>{translations[systemLanguage].messages['details_w']}</Text>
                                 </TouchableOpacity>
                             </View>
                             ) : (null) 
@@ -42,17 +41,17 @@ class SpacesListScrollView extends Component {
                             {this.props.parentData.State === 'ACTIVE' ? (
                                     <>
                                         <TouchableOpacity style={styles.button} onPress={() => this.props.changePubState(this.props.parentData.State, this.props.parentData.IdPub)}> 
-                                            <Text style={styles.buttonText}>Pausar</Text>
+                                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['pause_w']}</Text>
                                         </TouchableOpacity>
                                     </>
                                 ) : (
                                     <TouchableOpacity style={styles.button} onPress={() => this.props.changePubState(this.props.parentData.State, this.props.parentData.IdPub)}> 
-                                        <Text style={styles.buttonText}>Reanudar</Text>
+                                        <Text style={styles.buttonText}>{translations[systemLanguage].messages['resume_w']}</Text>
                                     </TouchableOpacity>
                                 )
                             } 
                             <TouchableOpacity style={styles.button} onPress={()=>this.props.navigation.navigate('SpaceView', {PubId: this.props.parentData.IdPub})}> 
-                                <Text style={styles.buttonText}>Ver</Text>
+                                <Text style={styles.buttonText}>{translations[systemLanguage].messages['view_w']}</Text>
                             </TouchableOpacity>   
                         </View>
                     </View>       
@@ -60,10 +59,15 @@ class SpacesListScrollView extends Component {
         );
     }
 
-        //return null;
 }
 
-export default (withNavigation(SpacesListScrollView))
+const mapStateToProps = (state) => {
+    return {
+        systemLanguage: state.loginData.systemLanguage
+    }
+}
+
+export default connect(mapStateToProps)(SpacesListScrollView)
 
 const styles = StyleSheet.create({
     image:{
@@ -72,7 +76,6 @@ const styles = StyleSheet.create({
         borderRadius: 20,
     },
     spacesContainer:{
-        //height: 160, 
         width: 360,
         borderWidth: 0.5,
         borderColor: '#0069c0',
@@ -83,12 +86,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         alignItems: 'center'
     },
-    imageView:{
-        //flex: 2, 
-    },
     textView:{
-        //flex: 1,
-        //paddingLeft: 10,
         paddingTop: 10,
         color: 'white',
         alignItems: 'center',
@@ -132,7 +130,7 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         marginVertical: 20,
         elevation: 3,
-        paddingHorizontal: 5,
+        paddingHorizontal: 10,
     },
     buttonText: {
         fontSize:16,

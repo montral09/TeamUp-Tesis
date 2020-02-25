@@ -164,18 +164,18 @@ class ReservedPublicationsList extends Component {
         return (
             <>
             {this.state.loadingReservations || this.state.loadingStatusChange ? 
-                (
-                    <ActivityIndicator
-                        animating = {this.state.loadingReservations || this.state.loadingStatusChange ? true : false}
-                        color = '#bc2b78'
-                        size = "large"
-                        style = {styles.activityIndicator}
-                    />      
-                ) : 
+            (
+                <ActivityIndicator
+                    animating = {this.state.loadingReservations || this.state.loadingStatusChange ? true : false}
+                    color = '#bc2b78'
+                    size = "large"
+                    style = {styles.activityIndicator}
+                />      
+            ) : 
             (    
             <View style={styles.container}>
                 <Header
-                    //leftComponent={{ icon: 'menu', color: '#fff', flex: 1, onPress: () => this.props.navigation.openDrawer() }}
+                    leftComponent={{ icon: 'menu', color: '#fff', flex: 1, onPress: () => this.props.navigation.openDrawer() }}
                     rightComponent={{ icon: 'home', color: '#fff', flex:1, onPress: () => this.props.navigation.navigate('Home')}}
                 />
                 <Text style={styles.titleText}>{translations[systemLanguage].messages['res_publications_title']}</Text>
@@ -219,7 +219,7 @@ class ReservedPublicationsList extends Component {
                         </>  
                     ) : (
                         <>
-                        <Text style={styles.subTitleText}>No se encontraron resultados</Text>
+                        <Text style={styles.subTitleText}>{translations[systemLanguage].messages['elementsNotFound_w']}</Text>
                         </>
                     )}                     
                 </ScrollView>       
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#2196f3',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
   },
   titleText:{
     fontSize: 32, 

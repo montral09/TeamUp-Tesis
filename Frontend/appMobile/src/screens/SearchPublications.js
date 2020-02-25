@@ -3,7 +3,6 @@ import { StyleSheet, Text, View, ScrollView, TouchableOpacity, ActivityIndicator
 import { Header } from 'react-native-elements';
 import { Ionicons } from "@expo/vector-icons";
 import { callAPI } from '../common/genericFunctions';
-import Globals from '../Globals';
 import SelectMultiple from 'react-native-select-multiple';
 
 import SearchSpaceList from '../components/SearchSpaceList';
@@ -22,7 +21,7 @@ class SearchPublications extends Component {
 	constructor(props) {
         super(props);
         const { navigation } = this.props;
-        const spaceTypeSelectParam = JSON.stringify(navigation.getParam('spaceTypeSelect', 'default value'));//props.match.params.publicationID;
+        const spaceTypeSelectParam = navigation.getParam('spaceTypeSelect', 'default value');
         const cityParam = navigation.getParam('city', 'default value');
         const capacityParam = navigation.getParam('capacity', 'default value');
         this.state = { 

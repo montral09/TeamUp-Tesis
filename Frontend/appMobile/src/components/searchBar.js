@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
-import {View,Text,StyleSheet,TextInput,TouchableOpacity,Modal,Picker,TouchableHighlight,ToastAndroid,BackHandler} from 'react-native';
+import {View,Text,StyleSheet,TextInput,TouchableOpacity,Modal,Picker,BackHandler} from 'react-native';
 import { connect } from 'react-redux';
-import Globals from '../Globals';
+import { callAPI } from '../common/genericFunctions';
 import { Ionicons } from "@expo/vector-icons";
 import translations from '../common/translations';
 
@@ -19,7 +19,7 @@ class SearchBar extends Component {
 
     componentDidMount() {
         BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
-        this.getSpaceTypes();
+        this.loadSpaceTypesBR();
     }
     
     componentWillUnmount() {
@@ -30,45 +30,23 @@ class SearchBar extends Component {
         return true;
     }
 
-    getSpaceTypes() {
-        try {
-            fetch(Globals.baseURL + '/spaceTypes')
-            .then(response => response.json()).then(data => {
-            //console.log("data spaces:" + JSON.stringify(data));
-            if (data.responseCode == "SUCC_SPACETYPESOK") {
-                this.setState({ spaceTypes: data.spaceTypes })
-            } else {
-                ToastAndroid.showWithGravity(
-                'Hubo un error',
-                ToastAndroid.LONG,
-                ToastAndroid.CENTER,
-                );
-            }
-            }
-            ).catch(error => {
-                ToastAndroid.showWithGravity(
-                'Internal error',
-                ToastAndroid.LONG,
-                ToastAndroid.CENTER,
-                );
-            }
-            )
-        } catch (error) {
-            ToastAndroid.showWithGravity(
-            'Internal error',
-            ToastAndroid.LONG,
-            ToastAndroid.CENTER,
-            );
-            //console.log(error);
-        }
+    // This function will call the API
+    loadSpaceTypesBR = () => {
+        var objApi = {};
+        objApi.objToSend = {}
+        objApi.fetchUrl = "api/spaceTypes";
+        objApi.method = "GET";
+        objApi.successMSG = {
+            SUCC_SPACETYPESOK : '',
+        };
+        objApi.functionAfterSuccess = "loadSpaceTypesBR";
+        objApi.functionAfterError = "loadSpaceTypesBR";
+        objApi.errorMSG = {}
+        callAPI(objApi, this);
     }
 
     onSelectionsChangeSpace = (itemValue,itemIndex) => {
         this.setState({spaceTypeSelect:itemValue})
-    }
-
-    handleInputChange(evt){
-        this.setState({ [evt.target.name]: evt.target.value });
     }
     
     handleOnPress(visible){

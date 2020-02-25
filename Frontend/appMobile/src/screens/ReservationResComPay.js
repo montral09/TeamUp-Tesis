@@ -202,7 +202,7 @@ class ReservationResComPay extends Component {
                             </View>
                             <View style={{flex:1}}>
                                 <TouchableOpacity style={styles.button} onPress={this.pickImage}>
-                                    <Text style={styles.buttonText}>Subir prueba</Text>
+                                    <Text style={styles.buttonText}>{translations[systemLanguage].messages['uploadImage_w']}</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>        

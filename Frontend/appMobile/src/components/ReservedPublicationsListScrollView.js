@@ -41,24 +41,24 @@ render() {
                     </View>
                     <View style={styles.borderContainer}>
                         <Text style={styles.subTitleText}>{translations[systemLanguage].messages['status_w']}</Text>
-                        <Text style={styles.infoText}>{translations[systemLanguage].messages['resState_'+this.props.obj.StateDescription.replace(/\s/g,'')]}</Text>                
-                        <>
-                        {this.props.obj.StateDescription === 'PENDING' || this.props.obj.StateDescription === 'RESERVED' ? (
-                            <> 
-                            <TouchableOpacity style={styles.button} onPress={()=> {this.props.triggerScreen("CANCEL", this.props.obj.IdReservation, this.props.obj.StateDescription)}}> 
-                                <Text style={styles.buttonText}>{translations[systemLanguage].messages['cancel_w']}</Text>
-                            </TouchableOpacity>
-                            {this.props.obj.StateDescription === 'PENDING' ? (
-                                <TouchableOpacity style={styles.button} onPress={()=> {this.props.triggerScreen("CONFIRM", this.props.obj.IdReservation, this.props.obj.StateDescription)}}>
-                                    <Text style={styles.buttonText}>{translations[systemLanguage].messages['confirm_w']}</Text>
-                                </TouchableOpacity>                            
-                                ) : (null)
-                            }
-                            </>
-                        ) : (null)                           
-                        }
-                        </>        
+                        <Text style={styles.infoText}>{translations[systemLanguage].messages['resState_'+this.props.obj.StateDescription.replace(/\s/g,'')]}</Text>                      
                     </View>
+                    <View style={{flexDirection:'row'}}>
+                      {this.props.obj.StateDescription === 'PENDING' || this.props.obj.StateDescription === 'RESERVED' ? (
+                          <> 
+                          <TouchableOpacity style={styles.button} onPress={()=> {this.props.triggerScreen("CANCEL", this.props.obj.IdReservation, this.props.obj.StateDescription)}}> 
+                              <Text style={styles.buttonText}>{translations[systemLanguage].messages['cancel_w']}</Text>
+                          </TouchableOpacity>
+                          {this.props.obj.StateDescription === 'PENDING' ? (
+                              <TouchableOpacity style={styles.button} onPress={()=> {this.props.triggerScreen("CONFIRM", this.props.obj.IdReservation, this.props.obj.StateDescription)}}>
+                                  <Text style={styles.buttonText}>{translations[systemLanguage].messages['confirm_w']}</Text>
+                              </TouchableOpacity>                            
+                              ) : (null)
+                          }
+                          </>
+                      ) : (null)                           
+                      }
+                    </View>  
                 </View>
             </View>
         </View>
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     marginVertical: 20,
     elevation: 3,
-    paddingHorizontal: 5,
+    marginHorizontal: 3,
   },
   buttonText: {
     fontSize:16,

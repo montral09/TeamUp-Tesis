@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, ScrollView, Keyboard, TouchableOpacity, ToastAndroid, ActivityIndicator} from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Keyboard, TouchableOpacity, ActivityIndicator} from 'react-native';
 import { connect } from 'react-redux';
 import { Header } from 'react-native-elements';
 import { callAPI } from '../common/genericFunctions';
@@ -8,14 +8,11 @@ import translations from '../common/translations';
 
 import ReservationSpacesListScrollView from '../components/ReservationSpacesListScrollView';
 
-import Globals from '../Globals';
 
 class ReservationSpaceList extends Component {
     constructor(props) {
         console.log('Constuctor')
         super(props);
-        const { navigation } = this.props;
-        const testParam = navigation.getParam('testParam', 'default value');
         this.state = {
             loadingReservations : true,
             loadingStatusChange: false,
@@ -28,12 +25,7 @@ class ReservationSpaceList extends Component {
             selectedResState : "",
             pagination: [1],
             currentPage: 1,
-            test: testParam || false,
         }
-    }
-
-    handleErrors(error) {
-        this.setState({ generalError: true });
     }
 
     componentDidMount() {
@@ -52,10 +44,8 @@ class ReservationSpaceList extends Component {
     }
 
     changePage = (pageClicked) => {
-        console.log("Antes del change Page: " + JSON.stringify(this.state.reservationsToDisplay), this.state.currentPage)
         this.setState({ reservationsToDisplay: this.filterPaginationArray(this.state.reservations, (pageClicked - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked },
             () => this.setState({ reservationsToDisplay: this.filterPaginationArray(this.state.reservations, (pageClicked - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked }))
-            console.log("Despues del change Page: " + JSON.stringify(this.state.reservationsToDisplay), this.state.reservationsToDisplay, this.state.currentPage)         
     }
 
     filterPaginationArray = (arrayToFilter, startIndex) => {
@@ -83,8 +73,8 @@ class ReservationSpaceList extends Component {
         switch (mode) {
             case "CANCEL": 
                 screenConfigObj ={
-                    title: 'Cancelar reserva', mainText: 'Desea cancelar la reserva? Por favor indique el motivo ', mode : mode, saveFunction : "saveCancel", textboxLabel: 'Comentario',
-                    textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText :'No', confirmText :'Si' , login_status: this.props.login_status
+                    title: translations[this.props.systemLanguage].messages['myReservedSpacesList_modalCancel_header'], mainText: translations[this.props.systemLanguage].messages['myReservedSpacesList_modalCancel_main'], mode : mode, saveFunction : "saveCancel", textboxLabel: translations[this.props.systemLanguage].messages['comment_w'],
+                    textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText : translations[this.props.systemLanguage].messages['no_w'], confirmText : translations[this.props.systemLanguage].messages['yes_w'] , login_status: this.props.login_status
                 };
                 this.props.navigation.navigate('ReservationReqInfo', {screenConfig: screenConfigObj});
             break;
@@ -92,10 +82,9 @@ class ReservationSpaceList extends Component {
                 screenConfigObj = {
                     title: translations[this.props.systemLanguage].messages['myReservedSpacesList_modalRate_header'], mainText: translations[this.props.systemLanguage].messages['myReservedSpacesList_modalRate_main'], mode: mode, saveFunction: "saveRateMRSL", textboxLabel: translations[this.props.systemLanguage].messages['comment_w'],
                     textboxDisplay: true, cancelAvailable: true, confirmAvailable: true, cancelText: translations[this.props.systemLanguage].messages['cancel_w'], confirmText: translations[this.props.systemLanguage].messages['rate_w'], login_status: this.props.login_status,
-                    optionDisplay: ML_MODE != 'ON', optionLabel: translations[this.props.systemLanguage].messages['score_w'], optionArray: [5, 4, 3, 2, 1]
+                    optionDisplay: ML_MODE != 'ON', optionLabel: translations[this.props.systemLanguage].messages['score_w']
                 };
                 this.props.navigation.navigate('ReservationReqInfo', {screenConfig: screenConfigObj, selectedIdRes: IdReservation, selectedResState: auxParam});
-                //this.setState({ modalConfigObj: modalConfigObj, selectedIdRes: IdReservation, selectedResState: auxParam }, () => { this.modalReqInfo.current.toggle(); })
                 break;
             case "PAYCUSTRES":
                 this.props.navigation.navigate('ReservationCustResPay', {IdReservationParam: IdReservation, auxParam: auxParam});
@@ -107,52 +96,6 @@ class ReservationSpaceList extends Component {
                 this.props.navigation.navigate('ReservationEditResCustPay', {auxParam: resData[0]});
                 break;
         }
-    }
-
-    confirmEditReservation(modalInfo) {
-        let {IdReservation, HourFrom, HourTo, TotalPrice, People} = modalInfo.resDataChanged;
-        let objRes = {
-            AccessToken: this.props.tokenObj.accesToken,
-            Mail: this.props.userData.Mail,
-            IdReservation: IdReservation,
-            DateFrom: this.convertDate(modalInfo.dateFrom),
-            HourFrom: HourFrom,
-            HourTo: HourTo,
-            TotalPrice: TotalPrice,
-            People : People
-        }
-        this.modalElement.current.changeModalLoadingState(false);
-        fetch(Globals.baseURL + '/reservationCustomer', {
-            method: 'PUT',
-            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify(objRes)
-        }).then(response => response.json()).then(data => {
-            console.log("data:" + JSON.stringify(data));
-            if (data.responseCode == "SUCC_RESERVATIONUPDATED") {
-                ToastAndroid.showWithGravity(
-                    'Reserva modificada correctamente',
-                    ToastAndroid.LONG,
-                    ToastAndroid.CENTER,
-                );
-                //this.modalElement.current.changeModalLoadingState(true);                               
-                this.loadMyReservations();
-            } else if (data.Message) {
-                    ToastAndroid.showWithGravity(
-                        'Hubo un error',
-                        ToastAndroid.LONG,
-                        ToastAndroid.CENTER,
-                    );
-                }
-        }
-        ).catch(error => {
-            ToastAndroid.showWithGravity(
-                'Internal error',
-                ToastAndroid.LONG,
-                ToastAndroid.CENTER,
-            );
-            console.log(error);
-        }
-        )
     }
 
     render() {
@@ -169,19 +112,19 @@ class ReservationSpaceList extends Component {
                 />      
             ) : 
             (
-                <>
-                {this.state.pubId == null ? (
-                    <View style={styles.container}>
+                <View style={styles.container}>
                     <Header
                         leftComponent={{ icon: 'menu', color: '#fff', flex:1, onPress: () => this.props.navigation.openDrawer()}}
                         rightComponent={{ icon: 'home', color: '#fff', flex:1, onPress: () => this.props.navigation.navigate('Home')}}
-                    />                    
+                    />
+                    <>
+                    {this.state.reservationsToDisplay.length > 0 ? (
+                    <>                   
                     <Text style={styles.titleText}>{translations[systemLanguage].messages['signInLinks_head_myReservations']}</Text>
                     <ScrollView vertical>
                         <View style={{flex:1}}>
                         <View style={{marginTop: 20, elevation: 3}}>
-                            {
-                            this.state.reservationsToDisplay.map((reservation) => {   
+                            {this.state.reservationsToDisplay.map((reservation) => {   
                             var newObj = {
                                 IdReservation: reservation.IdReservation,
                                 Title: reservation.TitlePublication,
@@ -218,15 +161,16 @@ class ReservationSpaceList extends Component {
                         </View>
                         </View>
                     </ScrollView>
-                </View>
-                
-                ): (<View style={styles.container}>
-                    
-                        <Text style={styles.titleText}>{translations[systemLanguage].messages['signInLinks_head_myReservations']}</Text>
-                        <Text style={styles.subTiteText}>{translations[systemLanguage].messages['noReservations']}</Text>
-                    </View>)
-                }  
-                </>    
+                    </>
+                    ) : (
+                            <>
+                                <Text style={styles.titleText}>{translations[systemLanguage].messages['signInLinks_head_myReservations']}</Text>
+                                <Text style={styles.subTiteText}>{translations[systemLanguage].messages['elementsNotFound_w']}</Text>  
+                            </>
+                        )
+                    }
+                    </>
+                </View>    
             )}
             
             </> 
@@ -251,7 +195,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#2196f3',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
   },
   titleText:{
     fontSize: 32, 

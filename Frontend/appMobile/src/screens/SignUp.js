@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
-import { StyleSheet,Text,View,TextInput,TouchableOpacity,ToastAndroid} from 'react-native';
-
+import { StyleSheet,Text,View,TextInput,TouchableOpacity,KeyboardAvoidingView} from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { callAPI, displayErrorMessage } from '../common/genericFunctions';
 import UserTypeSelector from '../components/UserTypeSelector';
 import { connect } from 'react-redux';
 import translations from '../common/translations';
-import Globals from '../Globals';
 
 class SignUp extends Component{
     constructor(){
@@ -23,225 +23,207 @@ class SignUp extends Component{
             isLoading : false,
             buttonIsDisable: false
         };
-        this.handleInputChange = this.handleInputChange.bind(this);
-        this.register = this.register.bind(this);
-    }
-   
-    handleInputChange(evt){
-        this.setState({ [evt.target.name]: evt.target.value });
     }
 
+    handleCheckPublisher = (checkValue) =>{
+        if (checkValue === 'publisher'){
+            this.setState({checkPublisher:true})
+        }else{
+            this.setState({checkPublisher:false})
+        }
+    }
+   
     // Validate if all the required inputs are inputted, returns true or false
-    checkRequiredInputs() {
+    checkRequiredInputs = () => {
         let returnValue = false;
         let message = "";
-        if (!this.state.password || !this.state.email || !this.state.name
+        if (!this.state.password || !this.state.email || !this.state.firstName
             || !this.state.lastName || !this.state.phone) {
-                message='Por favor ingrese los campos obligatorios (*)';
+                message= translations[this.props.systemLanguage].messages['register_checkErrorMsg1'];
                 returnValue = true;
-        } else if (!this.state.name.match(/^[A-Za-z]+$/)) {        
+        } else if (!this.state.firstName.match(/^[A-Za-z]+$/)) {        
             returnValue = true;
-            message = "Su nombre debe contener solo letras";
-        } else if (this.state.name.length < 2) {        
+            message = translations[this.props.systemLanguage].messages['register_checkErrorMsg2'];
+        } else if (this.state.firstName.length < 2) {        
             returnValue = true;
-            message = "Nombre demasiado corto";            
+            message = translations[this.props.systemLanguage].messages['register_checkErrorMsg3'];
         } else if (!this.state.lastName.match(/^[A-Za-z]+$/)) {
             returnValue = true;
-            message = "Su apellido debe contener solo letras";
+            message = translations[this.props.systemLanguage].messages['register_checkErrorMsg4'];
         } else if (this.state.lastName.length < 2) {        
             returnValue = true;
-            message = "Apellido demasiado corto"; 
-        } else /*if (this.state.password != this.state.passwordConfirm) {
+            message = translations[this.props.systemLanguage].messages['register_checkErrorMsg5'];
+        } else if (this.state.password != this.state.passwordConfirm) {
             returnValue = true;
-            message = "Ambos campos de contraseña deben ser iguales";
-        } else*/ if (this.state.password.length < 6) {
-            message='La contraseña debe tener al menos 6 caracteres';
+            message = translations[this.props.systemLanguage].messages['register_checkErrorMsg6'];
+        } else if (this.state.password.length < 6) {
+            message = translations[this.props.systemLanguage].messages['register_checkErrorMsg7'];
             returnValue = true;
         } else if (!this.state.email.match(/\S+@\S+.+/)) {
-            message='Formato de email incorrecto';
+            message = translations[this.props.systemLanguage].messages['register_checkErrorMsg8'];
             returnValue = true;
         } else if (!this.state.phone.match(/^[0-9]+$/) && !this.state.phone.match(/^[+]+[0-9]+$/)) {
-            message='Telefono debe contener solo números o "+" si corresponde a un número internacional';
+            message = translations[this.props.systemLanguage].messages['register_checkErrorMsg9'];
             returnValue = true;
         } else if (this.state.phone.length < 6) {
-            message='Telefono demasiado corto';
+            message = translations[this.props.systemLanguage].messages['register_checkErrorMsg10'];
             returnValue = true;
         } else if (this.state.rut && !this.state.rut.match(/^[0-9]+$/)) {
-            message='Rut debe contener solo números';
+            message = translations[this.props.systemLanguage].messages['register_checkErrorMsg11'];
             returnValue = true;
         } else if (this.state.rut && this.state.rut < 12) {
-            message='Rut debe tener 12 números';
+            message = translations[this.props.systemLanguage].messages['register_checkErrorMsg12'];
             returnValue = true;
         } else if (this.state.razonSocial && this.state.razonSocial < 3) {
-            console.log ('entre a razon social');
-            message='Razon social demasiada corta';
+            message = translations[this.props.systemLanguage].messages['register_checkErrorMsg13'];
             returnValue = true;
         } else if (this.state.address && this.state.address < 10) {
-            console.log ('entre a address');
-            message='Direccion demasiado corta';
+            message = translations[this.props.systemLanguage].messages['register_checkErrorMsg14'];
             returnValue = true;
         }
         
         if(message){
-            ToastAndroid.showWithGravity(
-                message,
-                ToastAndroid.LONG,
-                ToastAndroid.CENTER,
-            );
+            displayErrorMessage(message);
         }
-        
         return returnValue;
     }
 
-    register() {
-        /*if(this.state.gestorCheckbox =='on'){
-            this.state.gestorCheckbox = true;
-        }else{
-            this.state.gestorCheckbox = false;
-        }*/
+    // This function will call the API
+    registerUser = () => {
         if (!this.checkRequiredInputs()) {
             this.setState({isLoading: true, buttonIsDisable:true});
-            fetch(Globals.baseURL + '/user', {
-                method: 'POST',
-                header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-
-                body: JSON.stringify({
-                    Password: this.state.password,
-                    Mail: this.state.email,
-                    Name: this.state.name,
-                    LastName: this.state.lastName,
-                    Phone: this.state.phone,
-                    CheckPublisher: this.state.checkPublisher,
-                    Rut: this.state.rut,
-                    RazonSocial: this.state.razonSocial,
-                    Address: this.state.address,
-                })
-            }).then(response => response.json()).then(data => {
-                this.setState({isLoading: false, buttonIsDisable:false});
-                console.log("data:" + JSON.stringify(data));
-                if (data.responseCode == "SUCC_USRCREATED") {
-                    ToastAndroid.showWithGravity(
-                        'Usuario creado correctamente, por favor revise su correo para activar la cuenta ',
-                        ToastAndroid.LONG,
-                        ToastAndroid.CENTER,
-                    );
-                    this.props.navigation.navigate('Login')
-                } else {
-                    if(data.Message){
-                        ToastAndroid.showWithGravity(
-                            'Hubo un error: ' + data.Message,
-                            ToastAndroid.LONG,
-                            ToastAndroid.CENTER,
-                        );
-                    }else{
-                        ToastAndroid.showWithGravity(
-                            'Ese correo ya esta en uso, por favor elija otro.',
-                            ToastAndroid.LONG,
-                            ToastAndroid.CENTER,
-                        );
-                    }
-
-
-                }
+            var objApi = {};
+            objApi.objToSend = {
+                Password: this.state.password,
+                Mail: this.state.email,
+                Name: this.state.firstName,
+                LastName: this.state.lastName,
+                Phone: this.state.phone,
+                CheckPublisher: this.state.CheckPublisher,
+                Rut: this.state.rut,
+                RazonSocial: this.state.razonSocial,
+                Address: this.state.address,
+                Language : this.state.Language
             }
-            ).catch(error => {
-                this.setState({isLoading: false, buttonIsDisable:false});
-                ToastAndroid.showWithGravity(
-                    'Internal error',
-                    ToastAndroid.LONG,
-                    ToastAndroid.CENTER,
-                );
-                console.log(error);
+            objApi.fetchUrl = "api/user";
+            objApi.method = "POST";
+            objApi.successMSG = {
+                SUCC_USRCREATED : translations[this.props.systemLanguage].messages['SUCC_USRCREATED'],
+            };
+            objApi.functionAfterSuccess = "registerUser";
+            objApi.functionAfterError = "registerUser";
+            objApi.errorMSG= {
+                ERR_MAILALREADYEXIST : translations[this.props.systemLanguage].messages['ERR_MAILALREADYEXIST']
             }
-            )
+            callAPI(objApi, this);
         }
-
     }
 
    render(){
         const { systemLanguage } = this.props;
         return (
-            <View style={styles.container}>
-                <View style={styles.signupTitleContainer}>
-                    <Text style={styles.titleText}>{translations[systemLanguage].messages['registerYourself_w']}</Text>
-                    <UserTypeSelector/>
-                    {<TextInput style={styles.inputBox} 
-                            underlineColorAndroid='rgba(0,0,0,0)'
-                            placeholder={translations[systemLanguage].messages['name_w'] + '(*)'}
-                            placeholderTextColor="#ffffff"
-                            onChangeText={(name) => this.setState({name})}
-                            value={this.state.name}
-                    />}
-                    {<TextInput style={styles.inputBox} 
-                            underlineColorAndroid='rgba(0,0,0,0)'
-                            placeholder={translations[systemLanguage].messages['lastName_w'] + '(*)'}
-                            placeholderTextColor="#ffffff"
-                            onChangeText={(lastName) => this.setState({lastName})}
-                            value={this.state.lastName}
-                    />}
-                    <TextInput style={styles.inputBox} 
-                            underlineColorAndroid='rgba(0,0,0,0)'
-                            placeholder={translations[systemLanguage].messages['email_w'] + '(*)'}
-                            placeholderTextColor="#ffffff"
-                            value={this.state.email}
-                            onChangeText={(email) => this.setState({email})}
-                    />
-                    {<TextInput style={styles.inputBox} 
-                            underlineColorAndroid='rgba(0,0,0,0)'
-                            placeholder={translations[systemLanguage].messages['phoneNumber_w'] + '(*)'}
-                            placeholderTextColor="#ffffff"
-                            name = "phone"
-                            value={this.state.phone}
-                            onChangeText={(phone) => this.setState({phone})}
-                    />}
-                    <TextInput style={styles.inputBox} 
-                            underlineColorAndroid='rgba(0,0,0,0)'
-                            placeholder={translations[systemLanguage].messages['password_w'] + '(*)'}
-                            placeholderTextColor="#ffffff"
-                            secureTextEntry={true}
-                            name = "password"
-                            value={this.state.password}
-                            onChangeText={(password) => this.setState({password})}
-                    />
-                    {<TextInput style={styles.inputBox} 
-                            underlineColorAndroid='rgba(0,0,0,0)'
-                            placeholder={translations[systemLanguage].messages['register_repeatPassword'] + '(*)'}
-                            placeholderTextColor="#ffffff"
-                            secureTextEntry={true}
-                            name = "confirmPassword"
-                            value={this.state.confirmPassword}
-                            onChangeText={(confirmPassword) => this.setState({confirmPassword})}
-                    />}
-                    {<TextInput style={styles.inputBox} 
-                            underlineColorAndroid='rgba(0,0,0,0)'
-                            placeholder="RUT"
-                            placeholderTextColor="#ffffff"
-                            name = "rut"
-                            value={this.state.rut}
-                            onChangeText={(rut) => this.setState({rut})}
-                    />}
-                    {<TextInput style={styles.inputBox} 
-                            underlineColorAndroid='rgba(0,0,0,0)'
-                            placeholder={translations[systemLanguage].messages['socialReason']}
-                            placeholderTextColor="#ffffff"
-                            name = "razonSocial"
-                            value={this.state.razonSocial}
-                            onChangeText={(razonSocial) => this.setState({razonSocial})}
-                    />}
-                    {<TextInput style={styles.inputBox} 
-                            underlineColorAndroid='rgba(0,0,0,0)'
-                            placeholder={translations[systemLanguage].messages['address_w']}
-                            placeholderTextColor="#ffffff"
-                            name = "address"
-                            value={this.state.address}
-                            onChangeText={(address) => this.setState({address})}
-                    />}
-                    
-                    <TouchableOpacity style={styles.button} onPress={() => { this.register() }}  /*onPress={() => {this.props.navigation.navigate('Home')}*/>
-                        <Text style={styles.buttonText}>{translations[systemLanguage].messages['registerYourself_w']}</Text>   
-                    </TouchableOpacity>
-                </View>
-            </View>
+
+            <KeyboardAwareScrollView 
+                vertical
+                extraScrollHeight={135} 
+                enableOnAndroid={true} 
+                keyboardShouldPersistTaps='handled'
+                style={{flex: 1}}
+            >
+                <KeyboardAvoidingView style={styles.container}>  
+                    <KeyboardAvoidingView style={styles.signupTitleContainer}>
+                        <Text style={styles.titleText}>{translations[systemLanguage].messages['registerYourself2_w']}</Text>
+                        <UserTypeSelector handleCheckPublisher={this.handleCheckPublisher}/>
+                        {<TextInput style={styles.inputBox} 
+                                underlineColorAndroid='rgba(0,0,0,0)'
+                                placeholder={translations[systemLanguage].messages['name_w'] + '(*)'}
+                                placeholderTextColor="#ffffff"
+                                onChangeText={(name) => this.setState({name})}
+                                value={this.state.name}
+                        />}
+                        {<TextInput style={styles.inputBox} 
+                                underlineColorAndroid='rgba(0,0,0,0)'
+                                placeholder={translations[systemLanguage].messages['lastName_w'] + '(*)'}
+                                placeholderTextColor="#ffffff"
+                                onChangeText={(lastName) => this.setState({lastName})}
+                                value={this.state.lastName}
+                        />}
+                        <TextInput style={styles.inputBox} 
+                                underlineColorAndroid='rgba(0,0,0,0)'
+                                placeholder={translations[systemLanguage].messages['email_w'] + '(*)'}
+                                placeholderTextColor="#ffffff"
+                                value={this.state.email}
+                                onChangeText={(email) => this.setState({email})}
+                        />
+                        {<TextInput style={styles.inputBox} 
+                                underlineColorAndroid='rgba(0,0,0,0)'
+                                placeholder={translations[systemLanguage].messages['phoneNumber_w'] + '(*)'}
+                                placeholderTextColor="#ffffff"
+                                name = "phone"
+                                value={this.state.phone}
+                                onChangeText={(phone) => this.setState({phone})}
+                        />}
+                        <TextInput style={styles.inputBox} 
+                                underlineColorAndroid='rgba(0,0,0,0)'
+                                placeholder={translations[systemLanguage].messages['password_w'] + '(*)'}
+                                placeholderTextColor="#ffffff"
+                                secureTextEntry={true}
+                                name = "password"
+                                value={this.state.password}
+                                onChangeText={(password) => this.setState({password})}
+                        />
+                        {<TextInput style={styles.inputBox} 
+                                underlineColorAndroid='rgba(0,0,0,0)'
+                                placeholder={translations[systemLanguage].messages['register_repeatPassword'] + '(*)'}
+                                placeholderTextColor="#ffffff"
+                                secureTextEntry={true}
+                                name = "confirmPassword"
+                                value={this.state.confirmPassword}
+                                onChangeText={(confirmPassword) => this.setState({confirmPassword})}
+                        />}
+                        {<TextInput style={styles.inputBox} 
+                                underlineColorAndroid='rgba(0,0,0,0)'
+                                placeholder="RUT"
+                                placeholderTextColor="#ffffff"
+                                name = "rut"
+                                value={this.state.rut}
+                                onChangeText={(rut) => this.setState({rut})}
+                        />}
+                        {<TextInput style={styles.inputBox} 
+                                underlineColorAndroid='rgba(0,0,0,0)'
+                                placeholder={translations[systemLanguage].messages['socialReason']}
+                                placeholderTextColor="#ffffff"
+                                name = "razonSocial"
+                                value={this.state.razonSocial}
+                                onChangeText={(razonSocial) => this.setState({razonSocial})}
+                        />}
+                        {<TextInput style={styles.inputBox} 
+                                underlineColorAndroid='rgba(0,0,0,0)'
+                                placeholder={translations[systemLanguage].messages['address_w']}
+                                placeholderTextColor="#ffffff"
+                                name = "address"
+                                value={this.state.address}
+                                onChangeText={(address) => this.setState({address})}
+                        />}
+                        <KeyboardAvoidingView style={{flexDirection:'row'}}>
+                        <TouchableOpacity style={styles.button} onPress={() => {this.props.navigation.goBack()}}>
+                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['cancel_w']}</Text>   
+                        </TouchableOpacity>    
+                        <TouchableOpacity style={styles.button} onPress={() => { this.register() }}>
+                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['registerYourself2_w']}</Text>   
+                        </TouchableOpacity>
+                        </KeyboardAvoidingView>
+                        <KeyboardAvoidingView style={{flexDirection:'row'}}>
+                            <Text style={styles.infoText}>{translations[systemLanguage].messages['register_termsMsg1']} </Text> 
+                            <Text style={styles.infoText2}>{translations[systemLanguage].messages['registerYourself2_w']} </Text> 
+                            <Text style={styles.infoText}>{translations[systemLanguage].messages['register_termsMsg2']} </Text> 
+                        </KeyboardAvoidingView>
+                        <TouchableOpacity onPress={() => { this.props.navigation.navigate('TermsAndConditions') }}>
+                            <Text style={styles.infoText3}>{translations[systemLanguage].messages['register_termsMsg3']}</Text>
+                        </TouchableOpacity>
+                    </KeyboardAvoidingView>    
+                </KeyboardAvoidingView>
+            </KeyboardAwareScrollView>
         );
     }
 
@@ -255,11 +237,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     signupTitleContainer: {
+        flex: 1,
         alignItems: 'center',
-        paddingVertical: 20,
+        paddingVertical: 5,
         justifyContent: 'center',
     },
     titleText: {
+        marginTop: 20,
         fontSize: 24, 
         fontWeight: 'bold',
         color: "#FFF",
@@ -289,13 +273,28 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor:'#0069c0',
         borderRadius: 15,
-        marginVertical: 10,
+        marginVertical: 6,
         elevation: 3,
+        marginHorizontal: 10,
     },
     buttonText: {
         fontSize:16,
         fontWeight:'500',
         color:'#ffffff',
+    },
+    infoText:{
+        color: "#FFF",
+    },
+    infoText2:{
+        color: "#FFF",
+        fontWeight: 'bold',
+    },
+    infoText3:{
+        color: '#ffffff',
+        fontWeight: '600',
+        textShadowColor: 'rgba(0, 0, 0, 0.75)',
+        textShadowOffset: {width: -1, height: 1},
+        textShadowRadius: 10
     },
 });
 
@@ -307,61 +306,3 @@ const mapStateToProps = (state) =>{
 }
 
 export default connect(mapStateToProps)(SignUp);
-
-/*register = (ev) => {
-        let url = baseURL + 'user';
-        let req = new Request(url, {
-            headers: {'Content-Type': 'application/json',
-                      'Accept' : 'application/json',
-            },
-            method: 'POST',
-            body: JSON.stringify({
-            Mail : this.state.email,
-            Password : this.state.password,
-            Name : this.state.name,
-            LastName : this.state.lastName,
-            Phone : this.state.phone,
-            CheckPublisher : false,
-            Rut : this.state.rut,
-            RazonSocial : this.state.razonSocial,
-            Address : this.state.address,
-            })
-        })
-        
-        fetch(req)
-        .then(response=>response.json())
-        .then(this.showData)
-        .catch(this.allErrors)
-
-    }
-
-    showData = (data)=>{
-        console.log(data);
-        switch(data.responseCode) {
-            case "ERR_MAILALREADYEXIST":
-                this.setState({error:"El mail ingresado ya fue utilizado"})
-                break;   
-            case "SUCC_USRCREATED":
-                ToastAndroid.showWithGravity(
-                "Usuario creado con exito",
-                ToastAndroid.LONG,
-                ToastAndroid.CENTER,
-                );
-                this.props.navigation.navigate('Login')
-                break;
-        }
-        
-    }
-    
-    //Se encarga de todo el manejo de errores en el llamado al API
-    allErrors = (err) => {
-        this.setState({error: err.message});
-        console.log(err)
-    }
-
-   static navigationOptions = {
-     header: null
-   };    
-    
-
-*/

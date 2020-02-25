@@ -4,7 +4,6 @@ import { withNavigation } from 'react-navigation';
 import { connect } from 'react-redux';
 import { logIn, changeLanguage } from '../redux/actions/accountActions';
 import { displayErrorMessage } from '../common/genericFunctions';
-//import Globals from '../Globals'; 
 import languages from '../common/languages'
 import translations from '../common/translations';
 
@@ -74,10 +73,6 @@ class Form extends Component{
 
         return (
             <View style={styles.container}>
-                
-                {!this.state.loaded && (
-                    <Text>Cargando</Text>
-                )}
                 {this.state.isLoading ? (
                     <ActivityIndicator
                     animating = {this.state.isLoading}
@@ -112,17 +107,13 @@ class Form extends Component{
                         onValueChange={this.onSelectionsChangeLanguage}
                         >
                             {
-                                languages.map((lang, key) => {
+                                languages.map((lang) => {
                                 return (<Picker.Item key={lang.code} value={lang.code} label={lang.title} />);
                                 })
                             }  
                         </Picker>
                     </>
                 )} 
-                
-                {this.state.error && (
-                    <Text style={styles.errorText}>{this.state.error}</Text>
-                )}
             </View>
         )
     }

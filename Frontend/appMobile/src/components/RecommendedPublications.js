@@ -15,7 +15,6 @@ class RecommendedPublications extends Component {
             generalError            : false,
         }
         this.loadRecommendedPubs = this.loadRecommendedPubs.bind(this);
-        //this.redirectToPub = this.redirectToPub.bind(this);
         this.handleErrors           = this.handleErrors.bind(this);
     }
     

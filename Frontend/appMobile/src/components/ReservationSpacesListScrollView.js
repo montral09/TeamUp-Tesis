@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View,Text,Image,StyleSheet,TouchableOpacity,ToastAndroid} from 'react-native';
+import {View,Text,Image,StyleSheet,TouchableOpacity} from 'react-native';
 import { connect } from 'react-redux';
 import { Ionicons } from "@expo/vector-icons";
 import translations from '../common/translations';
@@ -33,8 +33,9 @@ class ReservationSpacesListScrollView extends Component {
                     </View>
                     <View style={styles.borderContainer}>
                         <Text style={styles.subTitleText}>{translations[systemLanguage].messages['status_w']}</Text>
-                        <Text style={styles.infoText}>{translations[systemLanguage].messages['resState_' + this.props.parentData.StateDescription.replace(/\s/g,'')]}</Text>                
-                        <>
+                        <Text style={styles.infoText}>{translations[systemLanguage].messages['resState_' + this.props.parentData.StateDescription.replace(/\s/g,'')]}</Text>                        
+                    </View>
+                    <View style={{flexDirection:'row'}}>
                         {this.props.parentData.StateDescription === 'PENDING' || this.props.parentData.StateDescription === 'RESERVED' ? (
                             <TouchableOpacity style={styles.button} onPress={()=> this.props.triggerScreen("CANCEL", this.props.parentData.IdReservation, this.props.parentData.StateDescription)}>
                                 <Text style={styles.buttonText}>{translations[systemLanguage].messages['cancel_w']}</Text>
@@ -55,7 +56,6 @@ class ReservationSpacesListScrollView extends Component {
                                 </>
                             )
                         }
-                        </>        
                     </View>
                 </View>       
             </View>    
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         marginVertical: 20,
         elevation: 3,
-        paddingHorizontal: 5,
+        marginHorizontal: 3,
     },
     buttonText: {
         fontSize:16,

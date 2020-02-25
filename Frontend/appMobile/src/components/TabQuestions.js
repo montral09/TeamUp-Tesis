@@ -1,5 +1,7 @@
 import React, {Component} from "react";
-import { StyleSheet,Text,View,ScrollView,Keyboard,Image,TextInput,TouchableOpacity,Modal,TouchableHighlight,ToastAndroid} from 'react-native';
+import { StyleSheet,Text,View,Keyboard,TextInput,TouchableOpacity} from 'react-native';
+import { connect } from 'react-redux';
+import translations from '../common/translations';
 
 class TabQuestions extends Component {
     constructor(props) {
@@ -16,6 +18,7 @@ class TabQuestions extends Component {
     }
 
     render() {
+        const { systemLanguage } = this.props;
         const {arrQA, isMyPublication} = this.props;
         return (
             <View style={styles.container}>
@@ -33,7 +36,7 @@ class TabQuestions extends Component {
                                     {!QA.Answer && isMyPublication ? (
                                         <>
                                         <TouchableOpacity style={{elevation: 1}} onPress={() => this.props.triggerScreen({mode:"ANSWER", questionObj: QA })}>
-                                            <Text style={styles.answerButtonText}>Responder</Text>   
+                                            <Text style={styles.answerButtonText}>{translations[systemLanguage].messages['reply_w']}</Text>   
                                         </TouchableOpacity>
                                         </>
                                         ) : (null)
@@ -44,7 +47,7 @@ class TabQuestions extends Component {
                                 {QA.Answer ? (
                                     <View style={{marginLeft: 25}}>
                                         <View style={{flexDirection: 'row'}}>
-                                            <Text style={styles.subTitleText}>Respuesta {QA.Answer.CreationDate}</Text>
+                                            <Text style={styles.subTitleText}>{translations[systemLanguage].messages['anwser_w']} {QA.Answer.CreationDate}</Text>
                                         </View>
                                         <Text style={styles.answerText}>{QA.Answer.Answer}</Text>
                                     </View>
@@ -55,13 +58,13 @@ class TabQuestions extends Component {
                     })}
                     </>
                 ) : (
-                        <Text style={styles.noQuestionsText}>Sin preguntas</Text>
+                        <Text style={styles.noQuestionsText}>{translations[systemLanguage].messages['tabQuestions_questions']}</Text>
                     )}
 
                     {isMyPublication ? (null) : (
                         <View style={{marginLeft: 25}}>
-                            <Text style={styles.subTitleText}>Haga su consulta</Text>
-                            <Text style={styles.infoText}>Nombre</Text>
+                            <Text style={styles.subTitleText}>{translations[systemLanguage].messages['tabQuestions_makeYourRequest']}</Text>
+                            <Text style={styles.infoText}>{translations[systemLanguage].messages['name_w']}</Text>
                             <TextInput style={styles.inputBox} 
                                 underlineColorAndroid='rgba(0,0,0,0)'
                                 placeholder='Nombre'
@@ -69,7 +72,7 @@ class TabQuestions extends Component {
                                 value={this.props.userData.Name || ""}
                                 editable = {false}
                             />
-                            <Text style={styles.infoText}>Consulta</Text>  
+                            <Text style={styles.infoText}>{translations[systemLanguage].messages['question_w']}</Text>  
                             <TextInput style={styles.inputBox} 
                                 underlineColorAndroid='rgba(0,0,0,0)'
                                 value={this.state.textQuestion}
@@ -78,7 +81,7 @@ class TabQuestions extends Component {
                                 numberOfLines = {4}
                             />  
                             <TouchableOpacity style={styles.button} onPress={() => this.props.saveQuestionVP(this.state.textQuestion, this)}>
-                                <Text style={styles.buttonText}>Consultar</Text>   
+                                <Text style={styles.buttonText}>{translations[systemLanguage].messages['confirm_w']}</Text>   
                             </TouchableOpacity> 
                         </View>    
                         )
@@ -176,4 +179,10 @@ const styles = StyleSheet.create({
     },
 });
 
-export default TabQuestions;
+const mapStateToProps = (state) => {
+    return {
+        systemLanguage: state.loginData.systemLanguage
+    }
+}
+
+export default connect(mapStateToProps)(TabQuestions)
