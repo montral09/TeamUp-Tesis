@@ -117,6 +117,9 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
 
         case "loadMessages":
             var newTotalPages = Math.round(parseFloat(objData.Messages.length/MAX_ELEMENTS_PER_TABLE));
+            if(newTotalPages % 2 != 0){
+                newTotalPages=newTotalPages+1;
+            }
             var newPagination = [];
             for(var i=1;i<=newTotalPages;i++){
                 newPagination.push(i);
@@ -155,6 +158,9 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         break;
         case "loadMyReservationsMRSL":
             var newTotalPages = Math.round(parseFloat(objData.Reservations.length/MAX_ELEMENTS_PER_TABLE));
+            if(newTotalPages % 2 != 0){
+                newTotalPages=newTotalPages+1;
+            }
             var newPagination = [];
             for(var i=1;i<=newTotalPages;i++){
                 newPagination.push(i);
@@ -208,6 +214,9 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         case "loadSpaceTypesFP"             : bindThis.setState({ spaceTypes: objData.spaceTypes, loadingSpaceTypes: false }); break;
         case "startSearchMP":
             var newTotalPages = Math.round(parseFloat(objData.TotalPublications/bindThis.state.publicationsPerPage));
+            if(newTotalPages % 2 != 0){
+                newTotalPages=newTotalPages+1;
+            }
             var newPagination = [];
             for(var i=1;i<=newTotalPages;i++){
                 newPagination.push(i);
@@ -240,6 +249,9 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         case "changePubStateMPL"    : bindThis.loadMyPublications(); break;
         case "loadMyPublications"   :
             var newTotalPages = Math.round(parseFloat(objData.Publications.length/MAX_ELEMENTS_PER_TABLE));
+            if(newTotalPages % 2 != 0){
+                newTotalPages=newTotalPages+1;
+            }
             var newPagination = [];
             for(var i=1;i<=newTotalPages;i++){
                 newPagination.push(i);
@@ -266,6 +278,9 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
 
         case "loadMyReservationsRP":
             var newTotalPages = Math.round(parseFloat(objData.Reservations.length/MAX_ELEMENTS_PER_TABLE));
+            if(newTotalPages % 2 != 0){
+                newTotalPages=newTotalPages+1;
+            }
             var newPagination = [];
             for(var i=1;i<=newTotalPages;i++){
                 newPagination.push(i);

@@ -37,7 +37,7 @@ var module = {
             planSelected_Days : 'Dias',
             planSelected_Month : 'Mes',
             planSelected_Months : 'Meses',
-            desription_w : "Descripción",
+            description_w : "Descripción",
             questions_w : "Preguntas",
             reviews_w : "Reviews",
             video_w : "Video",
@@ -242,7 +242,6 @@ var module = {
             myPublications_header: 'Mis Publicaciones',
             myPublications_pausePubMsg: 'Desea pausar la publicacion?',
             myPublications_resumePubMsg: 'Desea reanudar la publicacion?',
-
             modalReservation_header: 'Resumen de reserva',
             modalReservation_resType: 'Tipo de reserva',
             modalReservation_qtyOf: 'Cantidad de ',
@@ -255,14 +254,12 @@ var module = {
             modalReservation_comment: 'Comentario (opcional)',
             modalReservation_msg1: 'Atencion! Este valor esta pendiente de confirmar.',
             modalReservation_msg2: 'Va a recibir un correo con los detalles finales y la confirmacion dentro de las proximas 48hrs.',
-            
             reservedPublications_cancelModal_header: 'Cancelar reserva',
             reservedPublications_cancelModal_body: '¿Desea cancelar la reserva? Por favor indique el motivo ',
             reservedPublications_confirmModal_header: 'Confirmar reserva',
             reservedPublications_confirmModal_body: '¿Desea confirmar esta reserva? ',
             reservedPublications_confirmModal_dateSelectLabel: 'Seleccione fecha de finalización de la reserva ',
             reservedPublications_confirmModal_dateSelectMissingErr: 'Debe seleccionar una fecha antes de confirmar ',
-
             modalResComPay_header: 'Detalle pago de la comisión',
             modalResComPay_txt1: 'Atencion! El pago deberá ser confirmado por el administrador. ',
             modalResComPay_txt2: 'Puede adjuntar una imagen/pdf y agregar un comentario.',
@@ -272,7 +269,6 @@ var module = {
             modalDetailPayment_txt1: 'Atencion! El pago deberá ser confirmado, se le enviará un correo cuando el mismo haya sido confirmado. ',
             modalDetailPayment_txt2: 'Puede adjuntar una imagen/pdf y agregar un comentario.',
             modalDetailPaymenty_txt3: 'El pago fue confirmado.',
-
             modalResCusPay_header: 'Estado de pago de reserva por parte del cliente',
             modalResCusPay_documentUploadedByCust: 'Documento adjunto por el cliente',
             modalResCusPay_commentByCust: 'Comentario del cliente',
@@ -280,10 +276,7 @@ var module = {
             modalResCusPay_txt2: 'Puede adjuntar una imagen/pdf y agregar un comentario.',
             modalResCusPay_txt3: 'El pago fue confirmado.',
             modalResCusPay_txt4: 'El cliente aún no realizó el pago.',
-
-            
             modalResCusPay_errMsg1: 'Solo puede subir un archivo',
-
             premOptions_FREE_text : 'Gratis',
             premOptions_FREE_visibilityMainScreen : 'visibilidad en pantalla principal',
             premOptions_FREE_visibilityMainScreenStricked : 'true',
@@ -291,7 +284,6 @@ var module = {
             premOptions_FREE_visibilitySearchStricked : 'false',
             premOptions_FREE_visibilityRecomm : 'visibilidad en recomendaciones',
             premOptions_FREE_visibilityRecommStricked : 'true',
-
             premOptions_BRONZE_text : 'Bronze',
             premOptions_BRONZE_visibilityMainScreen : 'visibilidad en pantalla principal',
             premOptions_BRONZE_visibilityMainScreenStricked : 'true',
@@ -299,7 +291,6 @@ var module = {
             premOptions_BRONZE_visibilitySearchStricked : 'false',
             premOptions_BRONZE_visibilityRecomm : 'visibilidad en recomendaciones',
             premOptions_BRONZE_visibilityRecommStricked : 'true',
-
             premOptions_SILVER_text : 'Plata',
             premOptions_SILVER_visibilityMainScreen : 'visibilidad alta en pantalla principal',
             premOptions_SILVER_visibilityMainScreenStricked : 'false',
@@ -307,7 +298,6 @@ var module = {
             premOptions_SILVER_visibilitySearchStricked : 'false',
             premOptions_SILVER_visibilityRecomm : 'visibilidad alta en recomendaciones',
             premOptions_SILVER_visibilityRecommStricked : 'false',
-
             premOptions_GOLD_text : 'Oro',
             premOptions_GOLD_visibilityMainScreen : 'visibilidad maxima en pantalla principal',
             premOptions_GOLD_visibilityMainScreenStricked : 'false',
@@ -315,36 +305,30 @@ var module = {
             premOptions_GOLD_visibilitySearchStricked : 'false',
             premOptions_GOLD_visibilityRecomm : 'visibilidad maxima en recomendaciones',
             premOptions_GOLD_visibilityRecommStricked : 'false',
-
             payState_PENDINGPAYMENT: 'Pendiente de pago',
             payState_PAID : 'Pago',
             payState_PENDINGCONFIRMATION : 'Pago por confirmar',
             payState_CANCELED : 'Pago cancelado',
             payState_REJECTED : 'Pago rechazado',
-
             pubState_NOTVALIDATED: 'Pendiente de validar',
             pubState_ACTIVE: 'Activo',
             pubState_PAUSEDP: 'Pausado',
             pubState_PAUSEDA : 'Pausado por Administrador',
             pubState_FINISHED : 'Finalizada',
             pubState_REJECTED : 'Rechazada',
-
             resState_PENDING : 'Pendiente',
             resState_RESERVED : 'Reservada',
             resState_INPROGRESS : 'En progreso',
             resState_FINISHED : 'Finalizada',
             resState_CANCELED : 'Cancelada',
-
             validateEmail_header : 'Validar email',
             validateEmail_validated : 'Validado',
             validateEmail_validating : 'Validando...',
             validateEmail_notValid : 'Código Inválido, comuniquese con el administrador',
-            
             tabQuestions_questions : 'Sin preguntas',
             tabQuestions_makeYourRequest : 'Haga su consulta',
             tabQuestions_loginMsg1 : 'Debe de estar logueado para poder realizar consultas, por favor',
             tabQuestions_loginMsg2 : 'o sino tiene cuenta regístrese',
-
             socialReason: 'Razón Social',
             optional_w : 'Opcional',
             stay_w : 'Estadía',
@@ -415,7 +399,7 @@ var module = {
             planSelected_Days : 'Days',
             planSelected_Month : 'Month',
             planSelected_Months : 'Months',
-            desription_w : "Description",
+            description_w : "Description",
             questions_w : "Questions",
             reviews_w : "Reviews",
             video_w : "Video",
@@ -450,9 +434,9 @@ var module = {
             no_reviews : 'No reviews found',
             recPubs_recommendedPubls: 'recommended posts',
             singInLinks_wantToPublish: 'I want to publish',
-            singInLinks_wantToPublishBody: 'Si quieres ser uno de nuestros colaboradores, pudiendo realizar publicaciones en el sito, haz click en el boton "Quiero!". Se enviara una solicitud y uno de nuestros representantes se comunicara contigo a la brevedad.',
-            singInLinks_wantToPublishButton: 'Quiero!',
-            singInLinks_notwantToPublishBody: 'Me lo pierdo',
+            singInLinks_wantToPublishBody: 'If you want to be one of our publisher, publishing spaces on the site, please click on "I want to publish" button. It will send an email and one of our administrators will reach out to you shortly.',
+            singInLinks_wantToPublishButton: 'I want!',
+            singInLinks_notwantToPublishBody: 'I will miss out',
             singInLinks_head_myPublications: 'My publications',
             singInLinks_head_createPublication: 'Create publication',
             singInLinks_head_myResSpaces: 'My booked spaces',
@@ -500,7 +484,7 @@ var module = {
             elementsNotFound_w: "Results haven't been found",
             publication_w: 'Publication',
             name_w: 'Name',
-            lastName_w: 'Las name',
+            lastName_w: 'Last name',
             pause_w: 'Pause',
             resume_w: 'Resume',
             split_w : 'Split',
@@ -540,7 +524,7 @@ var module = {
             login_dontHaveAccount: "You don't have an account?",
             login_forgotPassword: 'You forgot your password?',
             SUCC_PASSWORDUPDATED: 'A new password has been sent to your email',
-            SUCC_USRLOGSUCCESS : 'Welcome',
+            SUCC_USRLOGSUCCESS : 'Welcome ',
             ERR_MAILNOTVALIDATED: 'Mail pending validation',
             ERR_USRWRONGPASS: 'Incorrect data',
             browser_spaceTypeErrMsg : 'Please select one space type',
@@ -579,8 +563,8 @@ var module = {
             myReservedSpacesList_header : 'My reservations',
             myReservedSpacesList_modalCancel_header : 'Cancel reservation',
             myReservedSpacesList_modalCancel_main : 'Do you want to cancel your reservation? Please tell us the reason',
-            myReservedSpacesList_modalRate_header : 'Calificate reservation',
-            myReservedSpacesList_modalRate_main : 'Plase give us your review on the reservation and the place',
+            myReservedSpacesList_modalRate_header : 'Rate reservation',
+            myReservedSpacesList_modalRate_main : 'Please give us your review on the reservation and the place',
             myReservedSpacesList_custPay_header : 'Reservation payment detail',
             myReservedSpacesList_custPay_paymentStatusTxt: 'Payment status',
             myReservedSpacesList_custPay_paymentDateTxt: 'Payment date',
@@ -617,11 +601,9 @@ var module = {
             register_checkErrorMsg14: 'Adress too short',
             favPublications_head: 'My favorite posts',
             mainPublications_head : 'Posts list',
-            
             myPublications_header: 'My posts',
             myPublications_pausePubMsg: 'Do you want to pause the post?',
             myPublications_resumePubMsg: 'Do you want to resume the post?',
-
             modalReservation_header: 'Reservation summary',
             modalReservation_resType: 'Type',
             modalReservation_qtyOf: 'Quantity of ',
@@ -634,14 +616,12 @@ var module = {
             modalReservation_comment: 'Comment (optional)',
             modalReservation_msg1: 'Attention! This value is pending to be confirmed.',
             modalReservation_msg2: 'You will receive an email with the final details and the confirmation in the next 48hrs.',
-
             reservedPublications_cancelModal_header: 'Cancel reservation',
             reservedPublications_cancelModal_body: 'Do you want to cancel the reservation? Please tell us the reason',
             reservedPublications_confirmModal_header: 'Confirm reservation',
             reservedPublications_confirmModal_body: 'Do you want to confirm this reservation? ',
             reservedPublications_confirmModal_dateSelectLabel: 'Select finish date of the reservation ',
             reservedPublications_confirmModal_dateSelectMissingErr: 'You must select a date before confirmation ',
-
             modalResComPay_header: 'Comission payment detail',
             modalResComPay_txt1: 'Attention! The payment must be confirmed by the administrator. ',
             modalResComPay_txt2: 'You can attach a picture/pdf and add a comment.',
@@ -651,7 +631,6 @@ var module = {
             modalDetailPayment_txt1: 'Attention! The payment must be confirmed, an email will be sent to you when it has been confirmed. ',
             modalDetailPayment_txt2: 'You can attach a picture/pdf and add a comment.',
             modalDetailPaymenty_txt3: 'The payment has been confirmed.',
-
             modalResCusPay_header: 'Reservation payment status by the client',
             modalResCusPay_documentUploadedByCust: 'File attached by the client',
             modalResCusPay_commentByCust: "Client's comment",
@@ -659,10 +638,7 @@ var module = {
             modalResCusPay_txt2: 'You can attach a picture/pdf and add a comment.',
             modalResCusPay_txt3: 'The payment has been confirmed.',
             modalResCusPay_txt4: 'The client has not made the payment yet.',
-
-            
             modalResCusPay_errMsg1: 'You can only upload one file',
-
             premOptions_FREE_text : 'Free',
             premOptions_FREE_visibilityMainScreen : 'Main screen visibility',
             premOptions_FREE_visibilityMainScreenStricked : 'verdadero',
@@ -670,7 +646,6 @@ var module = {
             premOptions_FREE_visibilitySearchStricked : 'false',
             premOptions_FREE_visibilityRecomm : 'visibility on recommendations',
             premOptions_FREE_visibilityRecommStricked : 'true',
-
             premOptions_BRONZE_text : 'Bronze',
             premOptions_BRONZE_visibilityMainScreen : 'Main screen visibility',
             premOptions_BRONZE_visibilityMainScreenStricked : 'true',
@@ -678,7 +653,6 @@ var module = {
             premOptions_BRONZE_visibilitySearchStricked : 'false',
             premOptions_BRONZE_visibilityRecomm : 'visibility on recommendations',
             premOptions_BRONZE_visibilityRecommStricked : 'true',
-
             premOptions_SILVER_text : 'Silver',
             premOptions_SILVER_visibilityMainScreen : 'High main screen visibility',
             premOptions_SILVER_visibilityMainScreenStricked : 'false',
@@ -686,7 +660,6 @@ var module = {
             premOptions_SILVER_visibilitySearchStricked : 'false',
             premOptions_SILVER_visibilityRecomm : 'high visibility on recommendations',
             premOptions_SILVER_visibilityRecommStricked : 'false',
-
             premOptions_GOLD_text : 'Gold',
             premOptions_GOLD_visibilityMainScreen : 'maximum visibilidad on main screen',
             premOptions_GOLD_visibilityMainScreenStricked : 'false',
@@ -694,36 +667,30 @@ var module = {
             premOptions_GOLD_visibilitySearchStricked : 'false',
             premOptions_GOLD_visibilityRecomm : 'maximum visibilidad on recommendations',
             premOptions_GOLD_visibilityRecommStricked : 'false',
-
             payState_PENDINGPAYMENT: 'Pending payment',
-            payState_PAID : 'Payment',
+            payState_PAID : 'Paid',
             payState_PENDINGCONFIRMATION : 'Pending payment',
             payState_CANCELED : 'Cenceled payment',
             payState_REJECTED : 'Rejected payment',
-
             pubState_NOTVALIDATED: 'Pending validation',
             pubState_ACTIVE: 'Active',
             pubState_PAUSEDP: 'Paused',
             pubState_PAUSEDA : 'Paused by the administrator',
             pubState_FINISHED : 'Finished',
             pubState_REJECTED : 'Rejected',
-
             resState_PENDING : 'Pending',
             resState_RESERVED : 'Reserved',
             resState_INPROGRESS : 'In progress',
             resState_FINISHED : 'Finished',
             resState_CANCELED : 'Canceled',
-
             validateEmail_header : 'Validate email',
             validateEmail_validated : 'Validating',
             validateEmail_validating : 'Validating..',
             validateEmail_notValid : 'Invalid Code, contact the administator',
-            
             tabQuestions_questions : 'No questions',
             tabQuestions_makeYourRequest : 'Make your question',
             tabQuestions_loginMsg1 : 'You must be logged in in order to make questions',
             tabQuestions_loginMsg2 : "or register if you don't have an account",
-
             socialReason: 'Company Name',
             optional_w : 'Optional',
             stay_w : 'Stay',

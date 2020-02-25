@@ -5,7 +5,7 @@ import { unregister } from './registerServiceWorker';
 
 import { HashRouter } from 'react-router-dom';
 import './assets/base.css';
-import Home from './DemoPages/Home';
+import Home from './Pages/Home';
 import configureStore from './config/configureStore';
 import store from './config/configureStore';
 import { Provider } from 'react-redux';
