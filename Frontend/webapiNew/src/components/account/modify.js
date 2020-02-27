@@ -30,7 +30,8 @@ class Modify extends React.Component {
             razonSocial: RazonSocial,
             Language: Language,
             address: Address,
-            tokenObj: tokenObj
+            tokenObj: tokenObj,
+            isLoading : false
         }
     }
 
@@ -130,6 +131,7 @@ class Modify extends React.Component {
             // Custom
             objApi.emailChanged = this.state.email != this.state.originalEmail;
             objApi.logOut = this.props.logOut;
+            this.setState({ isLoading: true });
             callAPI(objApi, this);
         }
 
@@ -185,7 +187,10 @@ class Modify extends React.Component {
                                                             })}
                                                         </select>
                                                         <div className="text-center">
-                                                            <input readOnly defaultValue={translate('save_w')} className="btn btn-primary" onClick={() => { this.modifyUser() }} />
+                                                            <button type="button" id="button-review" disabled={this.state.isLoading} className="btn btn-primary" onClick={() => this.modifyUser()}>{translate('save_w')}
+                                                                &nbsp;&nbsp;{this.state.isLoading &&
+                                                                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                            }</button>
                                                             <div className="mb-5" ></div>
                                                         </div>
                                                     </form>

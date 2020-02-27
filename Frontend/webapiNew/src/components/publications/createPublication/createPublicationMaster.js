@@ -75,7 +75,12 @@ class CreatePublication extends React.Component {
     loadPublicationCP = (pubID) => {
         var objApi = {};
         objApi.objToSend = {}
-        objApi.fetchUrl = 'api/publication?idPublication='+pubID+'&mail=';
+
+        var url = 'api/publication?idPublication=' + pubID + '&mail';
+        if (this.props.userData.Mail != null) {
+            url = url + '=' + this.props.userData.Mail;
+        }
+        objApi.fetchUrl = url;
         objApi.method = "GET";
         objApi.successMSG = {
             SUCC_PUBLICATIONSOK : '',

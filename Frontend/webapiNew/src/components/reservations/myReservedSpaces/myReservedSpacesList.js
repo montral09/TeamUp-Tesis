@@ -118,6 +118,9 @@ class MyReservedSpacesList extends React.Component {
 
     triggerModal = (mode, IdReservation, auxParam) => {
         var modalConfigObj = {};
+        console.log("triggerModal")
+        alert("mode:"+mode)
+
         switch (mode) {
             
             case "CANCEL":
@@ -138,6 +141,7 @@ class MyReservedSpacesList extends React.Component {
             case "PAYRESCUST":
                 this.ModalCustResPay.current.toggle(auxParam);
                 break;
+
         }
     }
 

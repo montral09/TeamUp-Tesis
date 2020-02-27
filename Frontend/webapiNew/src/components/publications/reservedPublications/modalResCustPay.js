@@ -70,21 +70,21 @@ class ModalResCustPay extends React.Component {
                         <Label for="reservationPaymentStateText" sm={4}>{translate('myReservedSpacesList_custPay_paymentStatusTxt')}</Label>
                         <Col sm={8}>
                             <Input type="text" name="reservationPaymentStateText" id="reservationPaymentStateText"
-                                    value={this.state.objPaymentDetails.reservationPaymentStateText} readOnly/>
+                                    value={this.state.objPaymentDetails.reservationPaymentStateText || ""} readOnly/>
                         </Col>
                     </FormGroup>
                     <FormGroup row>
                         <Label for="reservationPaymentAmmount" sm={4}>{translate('amount_w')}</Label>
                         <Col sm={8}>
                             <Input type="text" name="reservationPaymentAmmount" id="reservationPaymentAmmount"
-                                    value={this.state.objPaymentDetails.reservationPaymentAmmount} readOnly/>
+                                    value={this.state.objPaymentDetails.reservationPaymentAmmount || ""} readOnly/>
                         </Col>
                     </FormGroup>
                     <FormGroup row>
                         <Label for="reservationpaymentDate" sm={4}>{translate('myReservedSpacesList_custPay_paymentDateTxt')}</Label>
                         <Col sm={8}>
                             <Input type="text" name="reservationpaymentDate" id="reservationpaymentDate"
-                                    value={this.state.objPaymentDetails.reservationpaymentDate} readOnly/>
+                                    value={this.state.objPaymentDetails.reservationpaymentDate == null ? translate('pending_w') : this.state.objPaymentDetails.reservationpaymentDate} readOnly/>
                         </Col>
                     </FormGroup>
                    
@@ -94,7 +94,7 @@ class ModalResCustPay extends React.Component {
                             <FormGroup row>
                                 <Label for="paymentDocument" sm={4}>{translate('modalResCusPay_documentUploadedByCust')}</Label>
                                 <Col sm={8}>
-                                    <a href={this.state.objPaymentDetails.paymentDocument} target="_blank">LINK</a>
+                                    <a href={this.state.objPaymentDetails.paymentDocument || ""} target="_blank">LINK</a>
                                 </Col>
                             </FormGroup>
                         ) : (null)}
@@ -104,7 +104,7 @@ class ModalResCustPay extends React.Component {
                                 <Label for="paymentComment" sm={6}>{translate('modalResCusPay_commentByCust')}</Label>
                                 <Col sm={12}>
                                     <Input type="textarea" name="paymentComment" id="paymentComment"
-                                        value={this.state.objPaymentDetails.paymentComment} readOnly/>
+                                        value={this.state.objPaymentDetails.paymentComment || ""} readOnly/>
                                 </Col>
                             </FormGroup>
                         ) : (null)}

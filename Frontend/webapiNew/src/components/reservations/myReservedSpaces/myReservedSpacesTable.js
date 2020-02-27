@@ -47,14 +47,14 @@ const MyReservedSpacesTable = (props) =>{
             <tr key={obj.IdReservation}>
                 <td>{obj.IdReservation}</td>
                 <td>{obj.TitlePublication}</td> 
-                {isPublisher ? <td>{obj.CustomerName}</td> : null}
+                {isPublisher ? <td>{obj.CustomerName} {obj.Comment != '' ? (<a href="#" onClick={() => props.triggerModal("COMMENT", obj.IdReservation, obj.Comment)}><span><i className="far fa-comment"></i></span></a> ) : (null)}</td> : null}
                 {isPublisher ? <td>{obj.MailCustomer}</td> : null}
                 <td>{obj.People}</td>
                 <td>{obj.DateFromString}</td>
                 <td>{obj.DateToString}</td>
                 <td>{obj.PlanSelected == 'Hour' ? (translate('from_w')+" "+obj.HourFrom+" "+translate('to_w')+" "+obj.HourTo+" hs") : (obj.ReservedQuantity == 1 ? (obj.ReservedQuantity+' '+ translate('planSelected_'+obj.PlanSelected)) : (obj.ReservedQuantity+' '+ translate('planSelected_'+obj.PlanSelected+'s')))}</td>
                 <td>{obj.TotalPrice}</td>
-                <td>{translate('payState_'+objReservationCustomerPayment.reservationPaymentStateText.replace(/\s/g,''))}</td>
+                <td>{objReservationCustomerPayment.reservationPaymentStateText}</td>
                 <td>
                     {obj.StateDescription === 'PENDING' ? (<p>{translate('myReservedSpacesList_reservedSpacesTable_pendingRes')}</p>) : (
                         <a href="#" className = "col-md-12" onClick={() => props.triggerModal("PAYRESCUST", obj.IdReservation, objReservationCustomerPayment)}> <span><i className="col-md-1 fa fa-align-justify"></i></span> {translate('details_w')}</a>

@@ -174,6 +174,29 @@ class ModifyUserModal extends React.Component {
                                 </FormGroup>
                             </Col>
                         </FormGroup>
+                        <FormGroup row>
+                            <Label for="PublisherValidated" sm={2}>Gestor validado</Label>
+                            <Col sm={{size: 10}}>
+                                <FormGroup check>
+                                    <Label check>
+                                        <Input type="checkbox" name="PublisherValidated" id="PublisherValidated" checked={this.state.userDataChanged.PublisherValidated} onChange={this.onChange}/>{' '}
+                                        Habilitar
+                                    </Label>
+                                </FormGroup>
+                            </Col>
+                        </FormGroup>
+                        
+                        <FormGroup row>
+                            <Label for="Active" sm={2}>Activo</Label>
+                            <Col sm={{size: 10}}>
+                                <FormGroup check>
+                                    <Label check>
+                                        <Input type="checkbox" name="Active" id="Active" checked={this.state.userDataChanged.Active} onChange={this.onChange}/>{' '}
+                                        Habilitar
+                                    </Label>
+                                </FormGroup>
+                            </Col>
+                        </FormGroup>
                     </Form>
                     </ModalBody>
                     <ModalFooter>
