@@ -53,14 +53,14 @@ class PublishSpaceStep3 extends Component{
           aspect: [4, 3],
           base64: true,
         });
-        //console.log(result)
+        
         if (!result.cancelled) {
           this.setState({ image: result.uri });
           this.props.onSelectionsChangeImages(result.base64,'jpeg')
         }
       }
     }catch (err) {
-      //console.log("ERROR", (err && err.message) + "\n" + JSON.stringify(err));
+      
     }
   };
   

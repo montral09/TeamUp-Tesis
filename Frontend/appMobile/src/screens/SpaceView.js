@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import { StyleSheet,Text,View,ScrollView,Dimensions,TouchableOpacity,ActivityIndicator} from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Header } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { connect } from 'react-redux';
@@ -20,7 +21,7 @@ class SpaceView extends Component {
     constructor(props) {
         super(props);
         const { navigation } = this.props;
-        const pubID = JSON.stringify(navigation.getParam('PubId', 'NO-ID'));
+        const pubID = navigation.getParam('PubId', 'NO-ID');
 
         this.state = {
             pubID               : pubID,
@@ -158,7 +159,13 @@ class SpaceView extends Component {
                         //leftComponent={{ icon: 'menu', color: '#fff', flex:1, onPress: () => this.props.navigation.openDrawer()}}
                         rightComponent={{ icon: 'home', color: '#fff', flex:1, onPress: () => this.props.navigation.navigate('Home')}}
                     />
-                    <ScrollView>
+                    <KeyboardAwareScrollView 
+                        vertical
+                        extraScrollHeight={135} 
+                        enableOnAndroid={true} 
+                        keyboardShouldPersistTaps='handled'
+                        style={{flex: 1}}
+                    >
                         {this.state.pubObj.IsRecommended == true ? (
                             <View style={styles.recommendedView}>
                             <Icon
@@ -284,7 +291,7 @@ class SpaceView extends Component {
                         </View>
                         <RelatedPublications relatedPublications={this.state.otherPublicationConfig} push={this.props.navigation.push} title={translations[this.props.systemLanguage].messages['viewPub_splitSpaces']} />
                         <RelatedPublications relatedPublications={this.state.relatedPublications} push={this.props.navigation.push} title={translations[this.props.systemLanguage].messages['viewPub_relatedPublications']}/>
-                    </ScrollView>      
+                    </KeyboardAwareScrollView>      
                 </View>    
             ) : (<ActivityIndicator
                     animating = {this.state.pubIsLoading}

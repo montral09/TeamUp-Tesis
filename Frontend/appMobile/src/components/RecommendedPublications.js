@@ -97,8 +97,6 @@ class RecommendedPublications extends Component {
     callFunctionAfterApiSuccess(trigger, objData){
         switch(trigger){
             case "loadRecommendedPubs":
-                console.log("loadRecommendedPubs")
-                console.log(objData)
 
                 var finalRecommended = objData.Recommended;
                 const spaceTypes = this.state.spaceTypes;

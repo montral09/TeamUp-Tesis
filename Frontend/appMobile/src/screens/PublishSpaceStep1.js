@@ -185,8 +185,7 @@ export default PublishSpaceStep1;
   autofocus={false}
   fetchDetails={true}
   onPress={(data, details = null) => {
-    console.log(data);
-    console.log(details);
+    
   }}
   query={{
     key: 'AIzaSyCEj158pfwnqjHz5dN21eNjocfma5ck5Ms',

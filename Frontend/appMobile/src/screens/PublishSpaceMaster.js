@@ -69,8 +69,6 @@ class PublishSpaceMaster extends Component {
             fetch(Globals.baseURL + '/publication?idPublication='+pubID+'&mail=')
             .then(response => response.json())
             .then(data => {
-                console.log("loadPublication data:");
-                console.log(data);
                 if (data.responseCode == "SUCC_PUBLICATIONSOK") {
                     var pubObj = data.Publication;
                     this.setState({ pubIsLoading: false, spaceName:pubObj.Title, description:pubObj.Description,locationText:pubObj.Address,
@@ -108,7 +106,6 @@ class PublishSpaceMaster extends Component {
                     ToastAndroid.LONG,
                     ToastAndroid.CENTER,
                 );
-                //console.log(error);
             }
             )
         }catch(error){
@@ -150,7 +147,7 @@ class PublishSpaceMaster extends Component {
                 break;              
             }
         }catch(error){
-            //console.log("error: "+error);
+            
         }
         return isValid;
     }
@@ -213,7 +210,7 @@ class PublishSpaceMaster extends Component {
 
     get endButton() {
         let currentStep = this.state.currentStep;
-        //console.log('AccessToken: ' + this.props.tokenObj.accesToken)
+        
         // If the current step is the last step, then render the "end" button
         if (currentStep === this.state.maxSteps) {
             return (
@@ -287,7 +284,7 @@ class PublishSpaceMaster extends Component {
         try {
             fetch(Globals.baseURL + '/spaceTypes')
             .then(response => response.json()).then(data => {
-            //console.log("data spaces:" + JSON.stringify(data));
+            
             if (data.responseCode == "SUCC_SPACETYPESOK") {
                 this.setState({ spaceTypes: data.spaceTypes })
             } else {
@@ -304,7 +301,7 @@ class PublishSpaceMaster extends Component {
                 ToastAndroid.LONG,
                 ToastAndroid.CENTER,
                 );
-                //console.log(error);
+                
             }
             )
         } catch (error) {
@@ -313,7 +310,7 @@ class PublishSpaceMaster extends Component {
             ToastAndroid.LONG,
             ToastAndroid.CENTER,
             );
-            //console.log(error);
+           
         }
     }
 
@@ -321,7 +318,7 @@ class PublishSpaceMaster extends Component {
         try {
             fetch(Globals.baseURL + '/facilities')
             .then(response => response.json()).then(data => {
-                //console.log("data facilities:" + JSON.stringify(data));
+                
                 if (data.responseCode == "SUCC_FACILITIESOK") {
                     this.setState({ facilities: data.facilities });
                     this.getInfraList()
@@ -339,7 +336,7 @@ class PublishSpaceMaster extends Component {
                 ToastAndroid.LONG,
                 ToastAndroid.CENTER,
             );
-            //console.log(error);
+            
             }
             )
         } catch (error) {
@@ -468,7 +465,7 @@ class PublishSpaceMaster extends Component {
             }
         }
 
-        console.log('Objeto a enviar: ' + JSON.stringify(objToSend));
+        
 
         this.setState({ isLoading: true, buttonIsDisable: true });
         fetch(fetchUrl, {
@@ -477,7 +474,7 @@ class PublishSpaceMaster extends Component {
             body: JSON.stringify(objToSend)
         }).then(response => response.json()).then(data => {
             this.setState({ isLoading: false, buttonIsDisable: false });
-            //console.log("data:" + JSON.stringify(data));
+            
             if (data.responseCode == "SUCC_PUBLICATIONCREATED" || data.responseCode == "SUCC_PUBLICATIONUPDATED" ) {
                 ToastAndroid.showWithGravity(
                     'Su publicación ha sido enviada correctamente, revise su casilla de correo para más informacion.',
@@ -508,7 +505,7 @@ class PublishSpaceMaster extends Component {
                 ToastAndroid.LONG,
                 ToastAndroid.CENTER,
             );
-            //console.log(error);
+            
         }
         )
     }

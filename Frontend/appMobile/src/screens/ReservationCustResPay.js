@@ -68,7 +68,6 @@ class ReservationCustResPay extends Component {
                     aspect: [4, 3],
                     base64: true,
                 });
-                console.log(result)
                 var extension = "";
                 let i = (result.uri).lastIndexOf('.');
                 if (i > 0) {
@@ -92,7 +91,7 @@ class ReservationCustResPay extends Component {
                 displaySuccessMessage(translations[this.props.systemLanguage].messages['myReservedSpacesList_custPay_succMsg1'])
             }
         }catch (err) {
-            //console.log("ERROR", (err && err.message) + "\n" + JSON.stringify(err));
+            
         }
     };
 
@@ -111,8 +110,14 @@ class ReservationCustResPay extends Component {
         return (
             
             <KeyboardAvoidingView style={styles.container}>
-                <View style={{alignItems: 'flex-start', marginLeft: 15}}>
-                
+            <KeyboardAwareScrollView 
+                vertical
+                extraScrollHeight={80} 
+                enableOnAndroid={true} 
+                keyboardShouldPersistTaps='handled'
+                style={{flex: 1}}
+            >
+                <View style={{alignItems: 'flex-start', justifyContent: 'center', marginLeft: 15}}>
                     <Text style={styles.titleText}>{translations[systemLanguage].messages['myReservedSpacesList_custPay_header']}</Text>
                     <View style={{flexDirection:'row', alignItems: 'center'}}>
                         <View style={{flex:1}}>
@@ -201,7 +206,7 @@ class ReservationCustResPay extends Component {
                 
                 </View> 
                 
-                <View style={{flexDirection: 'row'}}>
+                <View style={{flexDirection: 'row', justifyContent: 'center'}}>
                     <TouchableOpacity style={styles.button} onPress={()=> {this.props.navigation.goBack()}} disabled={this.state.buttonIsDisabled}> 
                         <Text style={styles.buttonText}>{translations[systemLanguage].messages['cancel_w']}</Text>
                     </TouchableOpacity>
@@ -211,10 +216,10 @@ class ReservationCustResPay extends Component {
                         </TouchableOpacity>
                         ) : (null)
                     }
-                </View>     
-                   
-            </KeyboardAvoidingView>
-              
+                </View>
+                               
+            </KeyboardAwareScrollView>  
+            </KeyboardAvoidingView>    
         );
     }
 }
@@ -222,6 +227,7 @@ class ReservationCustResPay extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: 110,
     backgroundColor: '#2196f3',
     alignItems: 'center',
     justifyContent: 'center',

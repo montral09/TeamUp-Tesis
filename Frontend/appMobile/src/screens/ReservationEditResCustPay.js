@@ -12,8 +12,6 @@ class ReservationEditResCustPay extends Component {
         const resDataParam = navigation.getParam('auxParam', 'default value');
         var dateConverted = this.splitDate(resDataParam.DateFromString)
         var dateFormated = new Date(dateConverted[2],parseInt(dateConverted[1])-1, dateConverted[0])
-        console.log('Params: ')
-        console.log(resDataParam)
         this.state = {
             modal: false,
             resData: resDataParam,
@@ -64,7 +62,6 @@ class ReservationEditResCustPay extends Component {
                 TotalPrice : totalPrice
             }
         });
-        console.log(totalPrice)
     }
 
     confirmEditReservationMRSL = () => {
@@ -105,7 +102,6 @@ class ReservationEditResCustPay extends Component {
             mm = '0' + mm;
         }
         var dateConv = yyyy + "-" + mm + '-' + dd;
-        console.log('Convert: ' + dateConv)
         return dateConv;
     }
 
@@ -216,7 +212,6 @@ class ReservationEditResCustPay extends Component {
         var splittedDate = dateFrom.split('-')
         var dateFromNew = new Date(splittedDate[2],splittedDate[1] - 1,splittedDate[0]);
         this.setState({dateFrom:dateFromNew});
-        console.log('DatePicker: ' + dateFromNew)
     }
 
     render() {

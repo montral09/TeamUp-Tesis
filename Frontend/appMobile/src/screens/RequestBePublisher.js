@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {View,Text,StyleSheet,TouchableOpacity} from 'react-native';
+import { Header } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { callAPI } from '../common/genericFunctions';
 import translations from '../common/translations';
@@ -35,15 +36,21 @@ class RequestBePublisher extends Component {
         const { systemLanguage } = this.props;
         return (
                 <View style={styles.container}>
-                    <Text style={styles.titleText}>{translations[systemLanguage].messages['signInLinks_wantToPublish']}</Text>
-                    <Text style={styles.infoText}>{translations[systemLanguage].messages['signInLinks_wantToPublishBody']}</Text>
-                    <View style={{flexDirection: 'row'}}>
-                        <TouchableOpacity style={styles.button} onPress={() => {this.props.navigation.navigate('Home')}}>
-                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['signInLinks_notwantToPublishBody']}</Text>   
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.button} onPress={() => {this.requestBePublisher()}}>
-                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['signInLinks_wantToPublishButton']}</Text>   
-                        </TouchableOpacity>
+                    <Header
+                        leftComponent={{ icon: 'menu', color: '#fff', flex: 1, onPress: () => this.props.navigation.openDrawer()}}
+                        rightComponent={{ icon: 'home', color: '#fff', flex:1, onPress: () => this.props.navigation.navigate('Home')}}
+                    />
+                    <View style={{alignItems: 'center', justifyContent: 'center',}}>
+                        <Text style={styles.titleText}>{translations[systemLanguage].messages['signInLinks_wantToPublish']}</Text>
+                        <Text style={styles.infoText}>{translations[systemLanguage].messages['signInLinks_wantToPublishBody']}</Text>
+                        <View style={{flexDirection: 'row'}}>
+                            <TouchableOpacity style={styles.button} onPress={() => {this.props.navigation.navigate('Home')}}>
+                                <Text style={styles.buttonText}>{translations[systemLanguage].messages['signInLinks_notwantToPublishBody']}</Text>   
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.button} onPress={() => {this.requestBePublisher()}}>
+                                <Text style={styles.buttonText}>{translations[systemLanguage].messages['signInLinks_wantToPublishButton']}</Text>   
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>    
         );
@@ -55,15 +62,14 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#2196f3',
-        alignItems: 'center',
-        justifyContent: 'center',
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start',
     },
     titleText:{
         fontSize: 32, 
         fontWeight: 'bold',
         color: "#FFF",
         marginTop: 20,
-        marginLeft: 20,
         marginBottom: 5,
     },
     infoText:{

@@ -6,12 +6,8 @@ export const handleErrors = (error, bindThis) => {
     displayErrorMessage("Hubo un error, intente nuevamente");
 }
 export const callAPI = (objApi, bindThis) => {
-    console.log("objApi ")
-    console.log(objApi)   
     if(objApi.method == "GET"){
         fetch(MAIN_URL+objApi.fetchUrl).then(response => response.json()).then(data => {
-            console.log("data.responseCode "+data.responseCode)
-            console.log(data)   
             if (data.responseCode && objApi.successMSG && data.responseCode in objApi.successMSG) {
                 if(objApi.successMSG[data.responseCode] && objApi.successMSG[data.responseCode] != ""){
                     displaySuccessMessage(objApi.successMSG[data.responseCode]);
@@ -31,8 +27,6 @@ export const callAPI = (objApi, bindThis) => {
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify(objApi.objToSend)
         }).then(response => response.json()).then(data => {
-            console.log("data.responseCode "+data.responseCode)
-            console.log("ESTO ES LA DATA CALLAPI" + JSON.stringify(data))
             if (data.responseCode && objApi.successMSG && data.responseCode in objApi.successMSG) {
                 if(objApi.successMSG[data.responseCode] && objApi.successMSG[data.responseCode] != ""){
                     displaySuccessMessage(objApi.successMSG[data.responseCode]);
@@ -221,12 +215,9 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
         case "ERR_ACCESSTOKENEXPIRED":
         case "ERR_REFRESHTOKENEXPIRED":
         case "ERR_INVALIDREFRESHTOKEN":
-            //handleExpiredToken(objApi, bindThis)
+
         break;
     }
-    console.log("callFunctionAfterApiError objData.responseCode = "+objData.responseCode)
-    console.log("callFunctionAfterApiError objApi.errorMSG = "+JSON.stringify(objApi.errorMSG))
-
     if(objData.responseCode && objApi.errorMSG && objData.responseCode in objApi.errorMSG && objApi.errorMSG[objData.responseCode] && objApi.errorMSG[objData.responseCode] != ""){
         displayErrorMessage(objApi.errorMSG[objData.responseCode]);
     }else{

@@ -6,10 +6,8 @@ import { AsyncStorage } from 'react-native';
         if (serializedState === null) {
             return undefined;
         }
-        console.log('Cookies Loaded!!', serializedState);
         return {loginData: JSON.parse(serializedState)};
         } catch (error) {
-        console.log('No cookies available', error);
         return undefined;
         }
     };
@@ -18,8 +16,6 @@ import { AsyncStorage } from 'react-native';
         try {
         const serializedState = JSON.stringify(state);
         AsyncStorage.setItem('state', serializedState);
-        console.log('Cookies Saved!!', state);
         } catch (error) {
-        console.log("Error saving cookies", error);
         }
     };

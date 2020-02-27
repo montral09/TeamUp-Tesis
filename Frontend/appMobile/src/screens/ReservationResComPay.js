@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, ScrollView, TextInput, Dimensions, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, TextInput, Dimensions, TouchableOpacity} from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { connect } from 'react-redux';
 import translations from '../common/translations';
 import * as ImagePicker from 'expo-image-picker';
@@ -59,7 +60,6 @@ class ReservationResComPay extends Component {
     onChange = (evt) => {
         if(evt.target.id != 'paymentComment'){
             if (this.maxSelectFile(evt) && this.checkMimeType(evt) && this.checkFileSize(evt)) {
-                console.log(evt.target.files);
                 this.setState({ spaceImages: [], tempFiles: evt.target.files }, () => {
                     for (var i = 0; i < this.state.tempFiles.length; i++) {
                         var file = this.state.tempFiles[i]; // FileList object
@@ -99,7 +99,6 @@ class ReservationResComPay extends Component {
                     aspect: [4, 3],
                     base64: true,
                 });
-                console.log(result)
                 var extension = "";
                 let i = (result.uri).lastIndexOf('.');
                 if (i > 0) {
@@ -123,7 +122,7 @@ class ReservationResComPay extends Component {
                 displaySuccessMessage(translations[this.props.systemLanguage].messages['myReservedSpacesList_custPay_succMsg1'])
             }
         }catch (err) {
-            //console.log("ERROR", (err && err.message) + "\n" + JSON.stringify(err));
+    
         }
     };
 
@@ -141,6 +140,13 @@ class ReservationResComPay extends Component {
         const { systemLanguage } = this.props;
         return (
             <View style={styles.container}>
+                <KeyboardAwareScrollView 
+                    vertical
+                    extraScrollHeight={135} 
+                    enableOnAndroid={true} 
+                    keyboardShouldPersistTaps='handled'
+                    style={{flex: 1}}
+                >
                 <View style={{alignItems: 'flex-start', marginLeft: 15}}>
                     <Text style={styles.titleText}>{translations[systemLanguage].messages['modalResComPay_header']}</Text>
                     <View style={{flexDirection:'row', alignItems: 'center'}}>
@@ -224,7 +230,7 @@ class ReservationResComPay extends Component {
                         this.state.objPaymentDetails.paymentStatus != "CANCELED" ? (<Text>{translations[systemLanguage].messages['modalResComPay_txt3']}</Text>) : (null)
                     )}    
                 </View>
-                <View style={{flexDirection: 'row'}}>
+                <View style={{flexDirection: 'row', justifyContent: 'center'}}>
                     <TouchableOpacity style={styles.button} onPress={()=> {this.props.navigation.goBack()}} disabled={this.state.buttonIsDisabled}> 
                         <Text style={styles.buttonText}>{translations[systemLanguage].messages['close_w']}</Text>
                     </TouchableOpacity>
@@ -234,7 +240,8 @@ class ReservationResComPay extends Component {
                         </TouchableOpacity>
                         ) : (null)
                     }
-                </View> 
+                </View>
+                </KeyboardAwareScrollView> 
             </View>                
         );
     }
@@ -244,6 +251,7 @@ class ReservationResComPay extends Component {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
+      paddingTop: 110,
       backgroundColor: '#2196f3',
       alignItems: 'center',
       justifyContent: 'center',

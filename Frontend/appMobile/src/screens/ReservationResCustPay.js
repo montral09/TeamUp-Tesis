@@ -103,6 +103,7 @@ class ReservationResCustPay extends Component {
     render() {
         const { systemLanguage } = this.props;
         return (
+            <View style={styles.container}>
             <KeyboardAwareScrollView 
                 vertical
                 extraScrollHeight={135} 
@@ -110,7 +111,7 @@ class ReservationResCustPay extends Component {
                 keyboardShouldPersistTaps='handled'
                 style={{flex: 1}}
             >
-            <View style={styles.container}>
+            
                 <View style={{alignItems: 'flex-start', marginLeft: 15}}>
                     <Text style={styles.titleText}>{translations[systemLanguage].messages['modalResCusPay_header']}</Text>
                     <View style={{flexDirection:'row', alignItems: 'center'}}>
@@ -190,7 +191,7 @@ class ReservationResCustPay extends Component {
                         </View>
                     )}   
                 </View>
-                <View style={{flexDirection: 'row'}}>
+                <View style={{flexDirection: 'row', justifyContent: 'center'}}>
                     <TouchableOpacity style={styles.button} onPress={()=> {this.props.navigation.goBack()}} disabled={this.state.buttonIsDisabled}> 
                         <Text style={styles.buttonText}>{translations[systemLanguage].messages['cancel_w']}</Text>
                     </TouchableOpacity>
@@ -205,8 +206,9 @@ class ReservationResCustPay extends Component {
                     </>
                     ) : (null)}
                 </View>        
-            </View>
+            
             </KeyboardAwareScrollView>
+            </View>
         );
     }
 }
@@ -214,6 +216,7 @@ class ReservationResCustPay extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: 110,
     backgroundColor: '#2196f3',
     alignItems: 'center',
     justifyContent: 'center',
