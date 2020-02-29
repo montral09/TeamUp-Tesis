@@ -18,8 +18,6 @@ import {
 class PendienteAprobacion extends Component {
     constructor(props) {
         super(props);
-        console.log("AllPublishers - props:")
-        console.log(props);
         const admTokenObj = props.admTokenObj;
         const adminMail = props.adminData.Mail
         this.state = {

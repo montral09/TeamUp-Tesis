@@ -18,8 +18,6 @@ import {
 class AllReservations extends Component {
     constructor(props) {
         super(props);
-        console.log("AllReservations - props:")
-        console.log(props);
         const admTokenObj = props.admTokenObj;
         const adminMail = props.adminData.Mail
         this.state = {

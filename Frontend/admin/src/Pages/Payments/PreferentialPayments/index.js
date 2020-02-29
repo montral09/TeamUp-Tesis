@@ -22,8 +22,6 @@ import Pagination from '../../Common/pagination';
 class PreferentialPayments extends Component {
     constructor(props) {
         super(props);
-        console.log("PreferentialPayments - props:")
-        console.log(props);
         const admTokenObj = props.admTokenObj;
         const adminMail = props.adminData.Mail
         this.state = {

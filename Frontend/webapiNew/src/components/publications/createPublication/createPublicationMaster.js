@@ -122,7 +122,7 @@ class CreatePublication extends React.Component {
                 break;              
             }
         }catch(error){
-            console.log("error: "+error);
+            return false;
         }
         return isValid;
     }

@@ -23,8 +23,6 @@ class ApproveRejectCommissionPayment extends React.Component {
 
     toggleAppRej(admTokenObj, adminData, paymentData) {
         if(paymentData){
-            console.log ("toggleAppRej ");
-            console.log(paymentData);
             this.setState({
                 modal: !this.state.modal,
                 admTokenObj: admTokenObj,

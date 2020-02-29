@@ -23,7 +23,6 @@ class ApproveRejectPublicationModal extends React.Component {
 
     toggleAppRej(admTokenObj, adminData, pubData) {
         if(pubData){
-            console.log ("toggleAppRej " + pubData)
             this.setState({
                 modal: !this.state.modal,
                 admTokenObj: admTokenObj,
