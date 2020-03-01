@@ -60,6 +60,9 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             objApi.retryObjApi.objToSend.AccessToken = objData.AccessToken;
             callAPI(objApi.retryObjApi, bindThis);
             break;
+        case "updateReservatonsStates" : 
+            bindThis.loadReservations();
+            break;
         case "logIn":
             bindThis.toggleButton();
             let admTokenObj = {

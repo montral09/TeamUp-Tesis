@@ -41,9 +41,16 @@ class PreferentialPayments extends Component {
     }
 
     updateElementsToDisplay = (toDisplayArray) => {
-        this.setState({publToDisplay : toDisplayArray})
+        this.setState({preferentialPaymentsPendConfToDisplay : toDisplayArray})
     }
 
+    updateElementsToDisplay2 = (toDisplayArray) => {
+        this.setState({preferentialPaymentsPendPayToDisplay : toDisplayArray})
+    }
+
+    updateElementsToDisplay3 = (toDisplayArray) => {
+        this.setState({paymentsAllToDisplay : toDisplayArray})
+    }
     // This function will try to approve the payment
     approvePreferentialPayment = (key) =>{
         var paymentData = {
@@ -160,11 +167,11 @@ class PreferentialPayments extends Component {
                                         </TabPane>
                                         <TabPane tabId="2">
                                             <PreferentialPaymentsTable mode='pendingPay' isLoading = {this.state.preferentialPaymentsPendPay == null} preferentialPayments={this.state.preferentialPaymentsPendPayToDisplay} rejectPreferentialPayment={this.rejectPreferentialPayment} approvePreferentialPayment={this.approvePreferentialPayment}/>
-                                            {this.state.preferentialPaymentsPendPay != null ? (<Pagination originalArray = {this.state.preferentialPaymentsPendPay} updateElementsToDisplay = {this.updateElementsToDisplay} />) : (null)} 
+                                            {this.state.preferentialPaymentsPendPay != null ? (<Pagination originalArray = {this.state.preferentialPaymentsPendPay} updateElementsToDisplay = {this.updateElementsToDisplay2} />) : (null)} 
                                         </TabPane>
                                         <TabPane tabId="3">
                                             <PreferentialPaymentsTable mode='all' isLoading = {this.state.paymentsAll == null} preferentialPayments={this.state.paymentsAllToDisplay} rejectPreferentialPayment={this.rejectPreferentialPayment} approvePreferentialPayment={this.approvePreferentialPayment}/>
-                                            {this.state.paymentsAll != null ? (<Pagination originalArray = {this.state.paymentsAll} updateElementsToDisplay = {this.updateElementsToDisplay} />) : (null)} 
+                                            {this.state.paymentsAll != null ? (<Pagination originalArray = {this.state.paymentsAll} updateElementsToDisplay = {this.updateElementsToDisplay3} />) : (null)} 
 
                                         </TabPane>
                                     </TabContent>

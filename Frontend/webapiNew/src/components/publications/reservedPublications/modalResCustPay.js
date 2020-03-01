@@ -17,6 +17,7 @@ class ModalResCustPay extends React.Component {
         };
         this.toggle = this.toggle.bind(this);
         this.save = this.save.bind(this);
+        this.deny = this.deny.bind(this);
         this.changeModalLoadingState = this.changeModalLoadingState.bind(this);
     }
 
@@ -55,7 +56,7 @@ class ModalResCustPay extends React.Component {
 
     deny(){
         this.changeModalLoadingState(false);
-        this.props.rejetPayment();
+        this.props.rejetPayment(this.state.objPaymentDetails);
     }
     
     render() {

@@ -5,7 +5,7 @@ import {
     Col
 } from 'reactstrap';
 
-import { callAPI } from '../../../config/genericFunctions'
+import { callAPI, displayErrorMessage } from '../../../config/genericFunctions'
 
 
 class ModifyUserModal extends React.Component {
@@ -51,6 +51,10 @@ class ModifyUserModal extends React.Component {
     save = () => {
         let {Mail, Name, LastName, Phone, Rut, RazonSocial, Address, CheckPublisher, PublisherValidated, MailValidated, Active  } = this.state.userDataChanged;
         var objApi = {};
+        if(Mail.trim() == "" || Name.trim() == "" || LastName.trim() == ""){
+            displayErrorMessage("Debe completar los campos requeridos");
+            return;
+        }
         objApi.objToSend = {
             Mail: Mail,
             OriginalMail : this.state.userData.Mail,
@@ -102,21 +106,21 @@ class ModifyUserModal extends React.Component {
                     <ModalBody>
                     <Form>
                         <FormGroup row>
-                            <Label for="Mail" sm={2}>Mail</Label>
+                            <Label for="Mail" sm={2}>Mail (*)</Label>
                             <Col sm={10}>
                                 <Input type="email" name="Mail" id="Mail"
                                         value={this.state.userDataChanged.Mail} onChange={this.onChange}/>
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label for="Name" sm={2}>Nombre</Label>
+                            <Label for="Name" sm={2}>Nombre (*)</Label>
                             <Col sm={10}>
                                 <Input type="text" name="Name" id="Name"
                                         value={this.state.userDataChanged.Name} onChange={this.onChange}/>
                             </Col>
                         </FormGroup>
                         <FormGroup row>
-                            <Label for="LastName" sm={2}>Apellido</Label>
+                            <Label for="LastName" sm={2}>Apellido (*)</Label>
                             <Col sm={10}>
                                 <Input type="text" name="LastName" id="LastName"
                                         value={this.state.userDataChanged.LastName} onChange={this.onChange}/>

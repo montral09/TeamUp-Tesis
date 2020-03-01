@@ -8,6 +8,9 @@ class Pagination extends React.Component {
     constructor(props) {
         super(props);
         var newTotalPages = Math.round(parseFloat(props.originalArray.length/MAX_ELEMENTS_PER_TABLE));
+        if(newTotalPages % 2 != 0){
+            newTotalPages=newTotalPages+1;
+        }
         var newPagination = [];
         for(var i=1;i<=newTotalPages;i++){
             newPagination.push(i);
@@ -21,6 +24,9 @@ class Pagination extends React.Component {
 
     calcPagination = () =>{
         var newTotalPages = Math.round(parseFloat(this.state.originalArray.length/MAX_ELEMENTS_PER_TABLE));
+        if(newTotalPages % 2 != 0){
+            newTotalPages=newTotalPages+1;
+        }
         var newPagination = [];
         for(var i=1;i<=newTotalPages;i++){
             newPagination.push(i);
