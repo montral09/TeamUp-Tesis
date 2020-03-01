@@ -92,6 +92,20 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         case "loadSpaceTypesBR":
             bindThis.setState({ spaceTypes: objData.spaceTypes })
         break;
+        case "loadSpaceTypesRP" : 
+            bindThis.setState({ spaceTypes: objData.spaceTypes }, () => {bindThis.loadRecommendedPubs()}); 
+        break;
+        case "loadRecommendedPubs":
+            var finalRecommended = objData.Recommended;
+            const spaceTypes = bindThis.state.spaceTypes;
+            finalRecommended.forEach(element => {
+                const spaceType = spaceTypes.filter(space => {
+                    return space.Code === element.SpaceType
+                });
+                element.SpaceTypeDesc = spaceType[0].Description;    
+            });
+            bindThis.setState({ recommendedPublications: finalRecommended});
+        break;
         case "loadSpaceTypesMPL"    : 
             bindThis.setState({ spaceTypes: objData.spaceTypes, loadingSpaceTypes: false }); 
         break;

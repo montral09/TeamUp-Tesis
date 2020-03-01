@@ -1,10 +1,8 @@
 import React, {Component} from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity} from 'react-native';
-import { withNavigation } from 'react-navigation';
 import { connect } from 'react-redux';
 import translations from '../common/translations';
-//import Login from './Login'
-import Globals from '../Globals';
+
 
 class PasswordRecovery extends Component{
     constructor(){

@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {View,Text,Image,StyleSheet,TouchableOpacity} from 'react-native';
 import { connect } from 'react-redux';
+import { Ionicons } from "@expo/vector-icons";
 import translations from '../common/translations';
 
 class SpacesScrollView extends Component {
@@ -15,8 +16,20 @@ class SpacesScrollView extends Component {
                     </View>
                     <View style={styles.textView}>
                         <Text style={{color: 'white'}}>{Title}</Text>
-                        <Text style={{color: 'white'}}>{City}</Text>
-                        <Text style={{color: 'white'}}>{Capacity}</Text>
+                        <View style={{flexDirection:'row'}}>
+                            <Ionicons name="ios-home"
+                                color="#fff"
+                                size={20}
+                            />
+                            <Text style={{color: 'white', marginLeft: 5}}>{City}</Text>
+                        </View>
+                        <View style={{flexDirection:'row'}}>
+                            <Ionicons name="ios-people"
+                                color="#fff"
+                                size={20}
+                            />
+                            <Text style={{color: 'white', marginLeft: 5}}>{Capacity}</Text>
+                        </View>
                     </View>
                     <View style={{alignItems: 'center'}}>
                         {type === 'recommended' ? (
