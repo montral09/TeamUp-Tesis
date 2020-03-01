@@ -66,7 +66,8 @@ class AnalyticsDashboard1 extends Component {
             publ: null,
             preferentialPaymentsPendConf: null,
             allPubl: null,
-            paymentsPendingConfirmation: null
+            paymentsPendingConfirmation: null,
+            gestPendApr: null
         };
     }
     // This function will trigger when the component is mounted, to fill the data from the state
@@ -76,8 +77,24 @@ class AnalyticsDashboard1 extends Component {
         this.loadAllPublications();
         this.loadPreferentialPayments();
         this.loadPendingComissions();
+        this.loadPendingPublishers();
     }
-
+    // Call the api to get the publsihers
+    loadPendingPublishers = () => {
+        this.setState({ gestPendApr: null })
+        var objApi = {};
+        objApi.objToSend = {
+            Mail: this.state.adminData.Mail,
+            AccessToken : this.state.admTokenObj.accesToken,
+        }
+        objApi.fetchUrl = "api/publisher";
+        objApi.method = "POST";
+        objApi.successMSG = {
+            SUCC_PUBLISHERSOK : '',
+        };
+        objApi.functionAfterSuccess = "loadPendingPublishers";
+        callAPI(objApi, this);
+    }
     loadUsers = () => {
         this.setState({ arrDataUsers: null })
         var objApi = {};
@@ -242,7 +259,7 @@ class AnalyticsDashboard1 extends Component {
                                                 {this.state.publ == null ? ("--") : (this.state.publ.length)}
                                             </div>
                                             <div className="widget-subheading">
-                                                Gestores pendientes aprobación
+                                                Publicaciones pendientes aprobación
                                             </div>
                                             <div className="widget-progress-wrapper mt-3">
                                                 {this.state.publ == null ? (<Progress className="progress-bar-sm progress-bar-animated-alt" color="primary"
@@ -294,7 +311,24 @@ class AnalyticsDashboard1 extends Component {
                                             </div>
                                         </div>
                                     </Col>
-                                    <Col md="6"></Col>
+                                    <Col md="6">
+                                        <div className="card mb-3 widget-chart card-hover-shadow-2x">
+                                            <div className="icon-wrapper border-light rounded">
+                                                <div className="icon-wrapper-bg bg-light" />
+                                                <i className="lnr lnr-user icon-gradient bg-love-kiss"> </i>
+                                            </div>
+                                            <div className="widget-numbers">
+                                                {this.state.gestPendApr == null ? ("--") : (this.state.gestPendApr.length)}
+                                            </div>
+                                            <div className="widget-subheading">
+                                                Gestores pendientes aprobación
+                                            </div>
+                                            <div className="widget-progress-wrapper mt-3">
+                                                {this.state.gestPendApr == null ? (<Progress className="progress-bar-sm progress-bar-animated-alt" color="primary"
+                                                    value="100" />) : (null)}
+                                            </div>
+                                        </div>
+                                    </Col>
                                     <Col md="6"></Col>
                                 </Row>
                             </Col>

@@ -25,7 +25,7 @@ const AllUsersTable = ({arrData, editUser, isLoading}) =>{
                 <td>{usr.MailValidated ? 'Si' : 'No'}</td>
                 <td>{usr.PublisherValidated ? 'Si' : 'No'}</td>
                 <td>{usr.Active ? 'Si' : 'No'}</td>
-                <td><a href='javascript:void(0);' onClick={() => { editUser(usr.Mail) }}><i className="lnr lnr-pencil"></i></a></td>
+                <td> {usr.Active ? (<a href='javascript:void(0);' onClick={() => { editUser(usr.Mail) }}><i className="lnr lnr-pencil"></i></a>) : (null)}</td>
             </tr>
             )
         })
