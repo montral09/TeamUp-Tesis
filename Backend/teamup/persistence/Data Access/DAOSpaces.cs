@@ -375,7 +375,7 @@ namespace backend.Data_Access
         private DateTime CalculateExpirationDatePublication(int idPlan, SqlConnection con, SqlTransaction objTrans)
         {
             int days = 0;
-            DateTime today = DateTime.Now;
+            DateTime today = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.Now, TimeZoneInfo.Local.Id, "Montevideo Standard Time");
             String query = cns.GetDaysPlan();
             SqlCommand selectCommand = new SqlCommand(query, con);
             SqlParameter param = new SqlParameter()
