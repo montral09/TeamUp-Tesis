@@ -1,8 +1,6 @@
 import React, {Component} from 'react';
-import {View,Text,Image,StyleSheet,ToastAndroid,TouchableOpacity} from 'react-native';
+import {View,Text,StyleSheet,TouchableOpacity} from 'react-native';
 import { connect } from 'react-redux';
-
-import Globals from '../Globals';
 
 class ErrorScreen extends Component {
 
@@ -13,7 +11,7 @@ class ErrorScreen extends Component {
                     <Text style={styles.titleText}>Algo no salió bien</Text>
                     <Text style={styles.infoText}>Lo sentimos pero hubo un problema con la acción que intentó hacer, intente más tarde</Text>
                     <TouchableOpacity style={styles.button} onPress={() => {this.props.navigation.navigate('Home')}}>
-                        <Text style={styles.buttonText}>Pantalla principal</Text>   
+                        <Text style={styles.buttonText}>Home</Text>   
                     </TouchableOpacity>
                 </View>    
         );

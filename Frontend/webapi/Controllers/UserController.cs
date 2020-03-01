@@ -18,16 +18,8 @@ namespace webapi.Controllers
         {
             try
             {
-                bool userMailExists = fach.UserExists(voUser.Mail);
                 VOResponseUserCreate voResp = new VOResponseUserCreate();
-                if (userMailExists == true)
-                {
-                    voResp.responseCode = EnumMessages.ERR_MAILALREADYEXIST.ToString();
-                }
-                else {
-                    fach.CreateUser(voUser);
-                    voResp.responseCode = EnumMessages.SUCC_USRCREATED.ToString();
-                }
+                voResp = fach.CreateUser(voUser); 
                 return Ok(voResp);
             }
             catch (Exception e)
@@ -44,19 +36,8 @@ namespace webapi.Controllers
             try
             {
                 VOResponseUserUpdate voResp = new VOResponseUserUpdate();
-                if (!voUser.Mail.Equals(voUser.NewMail))
-                {
-                    // Check if new mail already exists
-                    Boolean mailAlreadyExists = fach.UserExists(voUser.NewMail);
-                    if (mailAlreadyExists)
-                    {
-                        voResp.responseCode = EnumMessages.ERR_MAILALREADYEXIST.ToString();
-                        return Ok(voResp);
-                    }
-                }
                 voResp = fach.UpdateUser(voUser);                              
                 return Ok(voResp);
-
             }             
             catch (GeneralException e)
             {

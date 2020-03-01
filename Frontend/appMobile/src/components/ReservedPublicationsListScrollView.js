@@ -1,65 +1,64 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, ScrollView, Keyboard, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity} from 'react-native';
 import { connect } from 'react-redux';
+import translations from '../common/translations';
 
 // This component will render the table with the values passed as parameters -props-
 class ReservedPublicationsListScrollView extends Component {
     constructor(props) {
         super(props);
-
     }
 
 render() {
-
+    const { systemLanguage } = this.props;
     return(  
         <View style={styles.container}>       
             <View style={styles.spacesContainer}>
                 <View style={styles.textView}>            
-                    <Text style={styles.subTitleText}>{this.props.obj.TitlePublication}</Text>            
+                    <Text style={styles.subTitleText}>{this.props.obj.TitlePublication}</Text>  
+                    <Text style={styles.infoText}>#Ref: {this.props.obj.IdReservation}</Text>          
+                    <Text style={styles.infoText}>{translations[systemLanguage].messages['email_w']}: {this.props.obj.MailCustomer}</Text>
+                    <Text style={styles.infoText}>{translations[systemLanguage].messages['people_w']}: {this.props.obj.People}</Text>
+                    <Text style={styles.infoText}>{translations[systemLanguage].messages['dateFrom_w']}: {this.props.obj.DateFromString}</Text>
+                    <Text style={styles.infoText}>{translations[systemLanguage].messages['dateTo_w']}: {this.props.obj.DateToString}</Text>
                     <>
-                        {this.props.isPublisher ? <Text style={styles.infoText}>Mail cliente: {this.props.obj.MailCustomer}</Text> : null}
+                        {this.props.obj.PlanSelected == 'Hour' ? (<Text style={styles.infoText}>{translations[systemLanguage].messages['from_w']} {this.props.obj.HourFrom} {translations[systemLanguage].messages['to_w']} {this.props.obj.HourTo}hs</Text> ) : (this.props.obj.ReservedQuantity == 1 ? (<Text style={styles.infoText}>{this.props.obj.ReservedQuantity+' '+ translations[systemLanguage].messages['planSelected_'+this.props.obj.PlanSelected]}</Text>):(<Text style={styles.infoText}>{this.props.obj.ReservedQuantity+' '+ translations[systemLanguage].messages['planSelected_'+this.props.obj.PlanSelected+'s']}</Text>))}
                     </>
-                    <Text style={styles.infoText}>Personas: {this.props.obj.People}</Text>
-                    <Text style={styles.infoText}>Fecha: {this.props.obj.DateFromString}</Text>
-                    <>
-                        {this.props.obj.PlanSelected == 'Hour' ? (<Text style={styles.infoText}>Desde {this.props.obj.HourFrom} a {this.props.obj.HourTo}hs</Text> ) : (<Text style={styles.infoText}>1 {this.props.obj.PlanSelected}</Text>)}
-                    </>
-                    <Text style={styles.infoText}>Monto: {this.props.obj.TotalPrice}</Text>     
+                    <Text style={styles.infoText}>{translations[systemLanguage].messages['amount_w']}: {this.props.obj.TotalPrice}</Text>     
                     <View style={styles.borderContainer}>
-                        <Text style={styles.subTitleText}>Pago reserva</Text>
-                        <Text style={styles.infoText}>{this.props.objReservationCustomerPayment.reservationPaymentStateText}</Text>               
+                        <Text style={styles.subTitleText}>{translations[systemLanguage].messages['payment_w']}</Text>
+                        <Text style={styles.infoText}>{translations[systemLanguage].messages['payState_'+this.props.objReservationCustomerPayment.reservationPaymentStateText.replace(/\s/g,'')]}</Text>               
                         <TouchableOpacity style={styles.button} onPress={()=> {this.props.triggerScreen("PAYRESCUST", this.props.obj.IdReservation, this.props.objReservationCustomerPayment)}}> 
-                            <Text style={styles.buttonText}>Detalles</Text>
+                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['details_w']}</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={styles.borderContainer}>
-                        <Text style={styles.subTitleText}>Pago comisión</Text>
-                        <Text style={styles.infoText}>{this.props.objCommisionPayment.paymentStatusText}</Text>               
-                        <TouchableOpacity style={styles.button} /*onPress={()=> }*/> 
-                            <Text style={styles.buttonText}>Detalles</Text>
+                        <Text style={styles.subTitleText}>{translations[systemLanguage].messages['comission_w']}</Text>
+                        <Text style={styles.infoText}>{this.props.objCommissionPayment.paymentStatusText}</Text>               
+                        <TouchableOpacity style={styles.button} onPress={()=> {this.props.triggerScreen("PAYRESCOM", this.props.obj.IdReservation, this.props.objCommissionPayment)}}> 
+                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['details_w']}</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={styles.borderContainer}>
-                        <Text style={styles.subTitleText}>Estado reserva</Text>
-                        <Text style={styles.infoText}>{this.props.obj.StateDescription}</Text>                
-                        <>
-                        {this.props.obj.StateDescription === 'PENDING' || this.props.obj.StateDescription === 'RESERVED' ? (
-                            <TouchableOpacity style={styles.button} onPress={()=> {this.props.triggerScreen("CANCEL", this.props.obj.IdReservation, this.props.obj.StateDescription)}}> 
-                                <Text style={styles.buttonText}>Cancelar</Text>
-                            </TouchableOpacity>
-                            ) : ( 
-                                <> 
-                                {this.props.isPublisher && this.props.obj.StateDescription === 'PENDING' ? (
-                                    <TouchableOpacity style={styles.button} onPress={()=> {this.props.triggerScreen("CONFIRM", this.props.obj.IdReservation, this.props.obj.StateDescription)}}>
-                                        <Text style={styles.buttonText}>Confirmar</Text>
-                                    </TouchableOpacity>                            
-                                    ) : (null)
-                                }
-                                </>
-                                )                           
-                        }
-                        </>        
+                        <Text style={styles.subTitleText}>{translations[systemLanguage].messages['status_w']}</Text>
+                        <Text style={styles.infoText}>{translations[systemLanguage].messages['resState_'+this.props.obj.StateDescription.replace(/\s/g,'')]}</Text>                      
                     </View>
+                    <View style={{flexDirection:'row'}}>
+                      {this.props.obj.StateDescription === 'PENDING' || this.props.obj.StateDescription === 'RESERVED' ? (
+                          <> 
+                          <TouchableOpacity style={styles.button} onPress={()=> {this.props.triggerScreen("CANCEL", this.props.obj.IdReservation, this.props.obj.StateDescription)}}> 
+                              <Text style={styles.buttonText}>{translations[systemLanguage].messages['cancel_w']}</Text>
+                          </TouchableOpacity>
+                          {this.props.obj.StateDescription === 'PENDING' ? (
+                              <TouchableOpacity style={styles.button} onPress={()=> {this.props.triggerScreen("CONFIRM", this.props.obj.IdReservation, this.props.obj.StateDescription)}}>
+                                  <Text style={styles.buttonText}>{translations[systemLanguage].messages['confirm_w']}</Text>
+                              </TouchableOpacity>                            
+                              ) : (null)
+                          }
+                          </>
+                      ) : (null)                           
+                      }
+                    </View>  
                 </View>
             </View>
         </View>
@@ -125,7 +124,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     marginVertical: 20,
     elevation: 3,
-    paddingHorizontal: 5,
+    marginHorizontal: 3,
   },
   buttonText: {
     fontSize:16,
@@ -134,40 +133,10 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ReservedPublicationsListScrollView
+const mapStateToProps = (state) => {
+    return {
+        systemLanguage: state.loginData.systemLanguage
+    }
+}
 
-/*<td></td>
-                    <td>
-                        {obj.StateDescription === 'PENDING' ? (<p>Reserva pendiente de confirmar</p>) : (
-                            <a href="#" className = "col-md-12" onClick={() => props.triggerModal("PAYRESCUST", obj.IdReservation, objReservationCustomerPayment)}> <span><i className="col-md-1 fa fa-align-justify"></i></span> Detalles</a>
-                        )}
-                    </td> 
-                    {isPublisher ? <td>{objCommisionPayment.paymentStatusText}</td> : null}
-                    {isPublisher ? <td><a href="#" className = "col-md-12" onClick={() => props.triggerModal("PAYRESCOM", obj.IdReservation, objCommisionPayment)}> <span><i className="col-md-1 fa fa-align-justify"></i></span> Detalles</a></td> : null}
-                    
-                    <td>
-                        <div>
-                            {obj.StateDescription === 'PENDING' || obj.StateDescription === 'RESERVED' ? (
-                                <div>
-                                    <a href="#" onClick={() => {props.triggerModal("CANCEL", obj.IdReservation, obj.StateDescription)}}><span><i className="col-md-1 fa fa-times"></i></span>Cancelar</a> 
-                                    {isPublisher && obj.StateDescription === 'PENDING' ? (
-                                        <a href="#" onClick={() => {props.triggerModal("CONFIRM", obj.IdReservation, obj.StateDescription)}}><span><i className="col-md-1 fa fa-check"></i></span> Confirmar</a>                            
-                                        ) : (null)}
-                                </div>
-                                ) :(null)
-                            }
-                            {obj.StateDescription === 'FINISHED' && !isPublisher && !obj.Reviewed ? (
-                                <div>
-                                    <a href="#" onClick={() => {props.triggerModal("RATE", obj.IdReservation, obj.StateDescription)}}><span><i className="col-md-1 fa fa-star"></i></span> Calificar</a> 
-                                </div>
-                                ) :(
-                                    <div>
-                                    {!isPublisher && obj.StateDescription == 'PENDING'  ? (
-                                            <a href="#" onClick={() => {props.editReservation(obj.IdReservation)}}><span><i className="col-md-1 fa fa-pencil-alt"></i></span> Editar</a>                            
-                                        ) : (null)}
-                                    </div>
-                                )
-                            }
-                        </div>
-                    </td>
-                </tr>*/
+export default connect(mapStateToProps)(ReservedPublicationsListScrollView)

@@ -3,7 +3,6 @@ using backend.Data_Access.VO;
 using System;
 using System.Web.Http;
 using System.Web.Http.Cors;
-using backend.Data_Access.VO.Data;
 using backend.Exceptions;
 
 namespace webapi.Controllers
@@ -19,25 +18,8 @@ namespace webapi.Controllers
         {
             try
             {
-                bool adminMailExists = fach.AdminExists(voAdmin.Mail);
                 VOResponseAdminLogin voResp = new VOResponseAdminLogin();
-                if (adminMailExists == true)
-                {
-                    voResp = fach.GetAdmin(voAdmin.Mail, voAdmin.Password);
-                    if (voResp != null)
-                    {
-                        voResp.responseCode = EnumMessages.SUCC_USRLOGSUCCESS.ToString();                       
-                    }
-                    else
-                    {
-                        voResp = new VOResponseAdminLogin();
-                        voResp.responseCode = EnumMessages.ERR_USRWRONGPASS.ToString();
-                    }
-                }
-                else
-                {
-                    voResp.responseCode = EnumMessages.ERR_USRMAILNOTEXIST.ToString();
-                }
+                voResp = fach.GetAdmin(voAdmin.Mail, voAdmin.Password); 
                 return Ok(voResp);
             }
             catch (GeneralException e)

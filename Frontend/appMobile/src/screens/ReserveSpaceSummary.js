@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, ScrollView, Picker, TextInput, TouchableOpacity, Dimensions} from 'react-native';
+import { StyleSheet, Text, View, ScrollView, ActivityIndicator, TextInput, TouchableOpacity, Dimensions} from 'react-native';
 import { connect } from 'react-redux';
+import { callAPI } from '../common/genericFunctions';
 
 import translations from '../common/translations';
 
@@ -12,15 +13,64 @@ class ReserveSpaceSummary extends Component {
         this.state = {
             reservationComment  : "",
             summaryObject       : summaryObjectParams,
+            isLoading           : false,
         }
+    }
+
+    confirmReservationVP = (comment) => {
+        var objApi = {}; var PlanSelected = "";
+        switch (this.state.summaryObject.planChosen) {
+            case "HourPrice": PlanSelected = "Hour"; break;
+            case "DailyPrice": PlanSelected = "Day"; break;
+            case "WeeklyPrice": PlanSelected = "Week"; break;
+            case "MonthlyPrice": PlanSelected = "Month"; break;
+        }
+        var splittedDate = this.state.summaryObject.date.split('-')
+        var dateFrom = new Date(splittedDate[2],splittedDate[1] - 1,splittedDate[0]);
+        objApi.objToSend = {
+            "AccessToken": this.props.tokenObj.accesToken,
+            "VOReservation": {
+                "IdPublication": this.state.summaryObject.pubID,
+                "MailCustomer": this.props.userData.Mail,
+                "PlanSelected": PlanSelected,
+                "ReservedQuantity": this.state.summaryObject.reservedQuantity,
+                "DateFrom": dateFrom,
+                "HourFrom": this.state.summaryObject.hourFromSelect,
+                "HourTo": this.state.summaryObject.hourToSelect,
+                "People": this.state.summaryObject.quantityPeople,
+                "Comment": comment,
+                "TotalPrice": this.state.summaryObject.totalPrice
+            }
+        }
+
+        objApi.fetchUrl = 'api/reservation';
+        objApi.method = "POST";
+        objApi.successMSG = {
+            SUCC_RESERVATIONCREATED: "",
+        };
+        objApi.functionAfterSuccess = "confirmReservationVP";
+        objApi.functionAfterError = "confirmReservationVP";
+        objApi.errorMSG = {}
+        if(this.state.isLoading == false) this.setState({ isLoading: true });
+        callAPI(objApi, this);
+    }
+
+    triggerScreen(objTrigger){
+        var screenConfigObj = {};   
+        screenConfigObj ={
+            title: translations[this.props.systemLanguage].messages['reservation_modal_title'], mainText: translations[this.props.systemLanguage].messages['reservation_modal_mainText'] ,
+            textboxDisplay: false, cancelAvailable: true, cancelText : translations[this.props.systemLanguage].messages['reservation_modal_ok'], mode : objTrigger.mode, saveFunction : "reservationSuccess"
+        };
+        this.props.navigation.navigate('ReservationReqInfo', {screenConfig: screenConfigObj});          
     }
 
     render() {
         const { systemLanguage } = this.props;
-
         return (
+            <>
+            {this.state.isLoading == false ? (
             <View style={styles.container}>
-                <Text style={styles.titleText}>Resumen</Text>
+                <Text style={styles.titleText}>{translations[systemLanguage].messages['summary_w']}</Text>
                 <ScrollView>
                     <View style={{alignItems: 'flex-start', marginLeft: 15}}>
                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -34,7 +84,7 @@ class ReserveSpaceSummary extends Component {
                             />
                         </View>
                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                            <Text style={styles.subTitleText}>Valor {this.state.summaryObject.planChosenText} </Text>
+                            <Text style={styles.subTitleText}>{translations[systemLanguage].messages['ammount_w']} {this.state.summaryObject.planChosenText} </Text>
                             <TextInput style={styles.inputBox} 
                                 underlineColorAndroid='rgba(0,0,0,0)'
                                 placeholder='Valor'
@@ -54,7 +104,7 @@ class ReserveSpaceSummary extends Component {
                             />
                         </View>
                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                            <Text style={styles.subTitleText}>Cantidad de personas </Text>
+                            <Text style={styles.subTitleText}>{translations[systemLanguage].messages['people_w']} </Text>
                             <TextInput style={styles.inputBox2} 
                                 underlineColorAndroid='rgba(0,0,0,0)'
                                 placeholder='Tipo de reserva'
@@ -67,7 +117,7 @@ class ReserveSpaceSummary extends Component {
                         <>
                             <View>
                                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                    <Text style={styles.subTitleText}>Hora de reserva </Text>
+                                    <Text style={styles.subTitleText}>{translations[systemLanguage].messages['hour_w']} </Text>
                                     <TextInput style={styles.inputBox} 
                                         underlineColorAndroid='rgba(0,0,0,0)'
                                         placeholder='Tipo de reserva'
@@ -77,7 +127,7 @@ class ReserveSpaceSummary extends Component {
                                     />
                                 </View>
                                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                <Text style={styles.subTitleText}>Total horas </Text>
+                                <Text style={styles.subTitleText}>{translations[systemLanguage].messages['totalHours_w']} </Text>
                                     <TextInput style={styles.inputBox2} 
                                         underlineColorAndroid='rgba(0,0,0,0)'
                                         placeholder='Tipo de reserva'
@@ -91,7 +141,7 @@ class ReserveSpaceSummary extends Component {
                         ) : (null)}
                         
                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                            <Text style={styles.subTitleText}>Precio final </Text>
+                            <Text style={styles.subTitleText}>{translations[systemLanguage].messages['totalAmount_w']} </Text>
                             <TextInput style={styles.inputBox} 
                                 underlineColorAndroid='rgba(0,0,0,0)'
                                 placeholder='Tipo de reserva'
@@ -100,27 +150,35 @@ class ReserveSpaceSummary extends Component {
                                 editable = {false}
                             />    
                         </View>                                        
-                        <Text style={styles.subTitleText}>Comentario (opcional) </Text>
+                        <Text style={styles.subTitleText}>{translations[systemLanguage].messages['comment_w']} ({translations[systemLanguage].messages['optional_w']}) </Text>
                         <TextInput style={styles.inputBox3}
                             multiline = {true}
                             numberOfLines = {4}
                             underlineColorAndroid='rgba(0,0,0,0)'
-                            onChangeText={this.onChange} 
-                            value={this.state.reservationComment || ""}
+                            onChangeText= {(reservationComment) => this.setState({reservationComment})}
+                            value={this.state.reservationComment}
                         />
                         <Text style={styles.infoText}>Atencion! Este valor esta pendiente de confirmar.{'\n'}
                                 Va a recibir un correo con los detalles finales y la confirmacion dentro de las proximas 48hrs.</Text>
+                        <View style={{flexDirection: 'row'}}> 
+                            <TouchableOpacity style={styles.button} onPress={() => {this.props.navigation.goBack()}}> 
+                                <Text style={styles.buttonText}>{translations[systemLanguage].messages['cancel_w']}</Text>
+                            </TouchableOpacity>                     
+                            <TouchableOpacity style={styles.button} onPress={() => this.confirmReservationVP(this.state.reservationComment)}> 
+                                <Text style={styles.buttonText}>{translations[systemLanguage].messages['accept_w']}</Text>
+                            </TouchableOpacity>
+                        </View>        
                     </View>
                 </ScrollView>
-                <View style={{flexDirection: 'row'}}> 
-                    <TouchableOpacity style={styles.button} onPress={() => {this.props.navigation.goBack()}}> 
-                        <Text style={styles.buttonText}>Cancelar</Text>
-                    </TouchableOpacity>                     
-                    <TouchableOpacity style={styles.button} /*onPress={() => this.props.increaseQuantityPeople()}*/> 
-                        <Text style={styles.buttonText}>Finalizar</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>                    
+                
+            </View>) : (<ActivityIndicator
+                        animating = {this.state.isLoading}
+                        color = '#bc2b78'
+                        size = "large"
+                        style = {styles.activityIndicator}
+                        />
+                       )}  
+        </>     
         )}
     }
 
@@ -135,7 +193,7 @@ const styles = StyleSheet.create({
       fontSize: 32, 
       fontWeight: 'bold',
       color: "#FFF",
-      marginTop: 20,
+      marginTop: 40,
       marginBottom: 5,
     },
     subTitleText:{
@@ -212,11 +270,20 @@ const styles = StyleSheet.create({
         color:'#ffffff',
         marginVertical: 10,
     },
+    activityIndicator: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#2196f3',
+        height: 80,
+    },
     
 });
 
     const mapStateToProps = (state) => {
         return {
+            tokenObj: state.loginData.tokenObj,
+            userData: state.loginData.userData,
             systemLanguage: state.loginData.systemLanguage
         }
     }

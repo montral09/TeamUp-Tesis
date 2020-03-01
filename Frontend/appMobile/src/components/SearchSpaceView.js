@@ -1,26 +1,63 @@
 import React, {Component} from 'react';
 import {View,Text,Image,StyleSheet,Dimensions,TouchableOpacity} from 'react-native';
+import { connect } from 'react-redux';
+import { Ionicons } from "@expo/vector-icons";
+import translations from '../common/translations';
 
-export default class SearchSpaceView extends Component {
+class SearchSpaceView extends Component {
     render (){
-        const {IdPublication, Description, Capacity, HourPrice, DailyPrice, WeeklyPrice, MonthlyPrice, Title, ImagesURL, City, Ranking} = this.props;
+        const { systemLanguage } = this.props;
+        const {IdPublication, Capacity, HourPrice, DailyPrice, WeeklyPrice, MonthlyPrice, Title, ImagesURL, City} = this.props;
         return (
             <View style={styles.spacesContainer}>
                 <View style={{flexDirection: 'row'}}>
                     <Image style={styles.image} source={{uri:ImagesURL[0]}}/>
                         <View style={{marginTop: 10}}>
                             <Text style={styles.titleText}>{Title}</Text>
-                            <Text style={styles.descriptionText}>{City}</Text>
-                            <Text style={styles.descriptionText}>{Capacity}</Text>
-                            <Text style={styles.priceText}>
-                            {HourPrice != 0 ? "Hora $" + HourPrice :
-                                    (DailyPrice != 0 ? "Día $" + DailyPrice :
-                                    WeeklyPrice != 0 ? "Semana $" + WeeklyPrice :
-                                        MonthlyPrice != 0 ? "Mes $" + MonthlyPrice : (null))
-                            }
-                            </Text>
+                            <View style={{flexDirection:'row'}}>
+                                <Ionicons name="ios-home"
+                                    color="#fff"
+                                    size={20}
+                                />
+                                <Text style={styles.descriptionText}>{City}</Text>
+                            </View>
+                            <View style={{flexDirection:'row'}}>
+                                <Ionicons name="ios-people"
+                                    color="#fff"
+                                    size={20}
+                                />
+                                <Text style={styles.descriptionText}>{Capacity}</Text>
+                            </View>
+                            <View style={{flexDirection:'row'}}>
+                                <Ionicons name="ios-clock"
+                                    color="#fff"
+                                    size={20}
+                                />
+                                <Text style={styles.priceText}>{HourPrice != 0 ? translations[systemLanguage].messages['hour_w'] + " $" + HourPrice : '-'}</Text>
+                            </View>
+                            <View style={{flexDirection:'row'}}>
+                                <Ionicons name="ios-today"
+                                    color="#fff"
+                                    size={20}
+                                />
+                                <Text style={styles.priceText}>{DailyPrice != 0 ? translations[systemLanguage].messages['planSelected_Day'] + " $" + DailyPrice : '-'}</Text>
+                            </View>
+                            <View style={{flexDirection:'row'}}>
+                                <Ionicons name="ios-calendar"
+                                    color="#fff"
+                                    size={20}
+                                />
+                                <Text style={styles.priceText}>{WeeklyPrice != 0 ? translations[systemLanguage].messages['planSelected_Week'] + " $" + WeeklyPrice : '-'}</Text>
+                            </View>
+                            <View style={{flexDirection:'row'}}>
+                                <Ionicons name="ios-calendar"
+                                    color="#fff"
+                                    size={20}
+                                />
+                                <Text style={styles.priceText}>{MonthlyPrice != 0 ? translations[systemLanguage].messages['planSelected_Month'] + " $" + MonthlyPrice : '-'}</Text>
+                            </View>
                             <TouchableOpacity style={styles.button} onPress={()=>this.props.navigate('SpaceView', {PubId: IdPublication})}> 
-                                <Text style={styles.buttonText}>Ver</Text>
+                                <Text style={styles.buttonText}>{translations[systemLanguage].messages['view_w']}</Text>
                             </TouchableOpacity>
                         </View>
 
@@ -31,23 +68,28 @@ export default class SearchSpaceView extends Component {
 
 }
 
+const mapStateToProps = (state) => {
+    return {
+        systemLanguage: state.loginData.systemLanguage
+    }
+}
+
+export default connect(mapStateToProps)(SearchSpaceView);
+
 const styles = StyleSheet.create({
     image:{
         width: 200,
-        height: 200,  
+        height: 220,  
         borderRadius: 20,
         marginRight: 10,
     },
     spacesContainer:{
-        height: 200, 
+        height: 220, 
         width: Dimensions.get('window').width - 20,
-        //elevation: 3,
         borderWidth: 0.5,
         borderColor: '#0069c0',
         borderRadius: 20,
         backgroundColor: 'rgba(255,255,255,0.3)',
-        //marginLeft: 20,
-        //marginRight: 20,
         marginTop: 40,
     },
     titleText: {
@@ -58,14 +100,11 @@ const styles = StyleSheet.create({
     descriptionText: {
         color: '#FFF',
         fontSize: 16,
-        //marginLeft: 25,
-        //marginTop: 10,
     },
     priceText: {
         color: '#FFF',
-        fontSize: 22,
-        //marginLeft: 25,
-        //marginTop: 10,
+        fontSize: 16,
+        marginLeft: 5,
     },
     button: {
         width:100,
@@ -74,7 +113,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor:'#0069c0',
         borderRadius: 15,
-        marginVertical: 20,
+        marginVertical: 6,
         elevation: 3,
         paddingHorizontal: 5,
     },

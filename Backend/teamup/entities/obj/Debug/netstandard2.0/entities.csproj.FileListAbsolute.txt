@@ -1,0 +1,8 @@
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\entities\bin\Debug\netstandard2.0\entities.deps.json
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\entities\bin\Debug\netstandard2.0\entities.dll
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\entities\bin\Debug\netstandard2.0\entities.pdb
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\entities\obj\Debug\netstandard2.0\entities.csproj.CoreCompileInputs.cache
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\entities\obj\Debug\netstandard2.0\entities.AssemblyInfoInputs.cache
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\entities\obj\Debug\netstandard2.0\entities.AssemblyInfo.cs
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\entities\obj\Debug\netstandard2.0\entities.dll
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\entities\obj\Debug\netstandard2.0\entities.pdb

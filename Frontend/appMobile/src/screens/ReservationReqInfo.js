@@ -1,37 +1,34 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, ScrollView, Keyboard, TextInput, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, Picker, Keyboard, TextInput, TouchableOpacity} from 'react-native';
+import { callAPI } from '../common/genericFunctions';
+import { connect } from 'react-redux';
+import { ML_MODE } from '../common/constants';
+import translations from '../common/translations';
+import DatePicker from '../components/datePicker';
 
 class ReservationReqInfo extends Component {
     constructor(props) {
         super(props);
         const { navigation } = this.props;
-        const screenConfig = navigation.getParam('screenConfig', 'default value');
+        const screenConfigParam = navigation.getParam('screenConfig', 'default value');
+        const IdReservationParam = navigation.getParam('selectedIdRes', 'NO-ID');
+        const selectedResStateParam = navigation.getParam('selectedResState', 'default value');
         this.state = {
             modal: false,
+            selectedIdRes: IdReservationParam,
             optionalData: {},
+            optionValue: 5,
             textboxValue: "",
+            dateSelectValue : "",
+            selectedResState: selectedResStateParam || "",
             isLoading : false,
             buttonIsDisabled: false,
-            screenConfig: screenConfig,
+            screenConfig: screenConfigParam,  
+            optionArray: [5, 4, 3, 2, 1]
         };
-        this.toggle = this.toggle.bind(this);
         this.save = this.save.bind(this);
+        this.cancel = this.cancel.bind(this);
         this.changeModalLoadingState = this.changeModalLoadingState.bind(this);
-    }
-
-    toggle(optionalData) {
-        if(optionalData){
-            this.setState({
-                modal: !this.state.modal,
-                optionalData: optionalData
-            });
-        }else{
-            if(!this.state.isLoading){
-                this.setState({
-                    modal: !this.state.modal
-                });
-            }
-        }
     }
 
     changeModalLoadingState(closeModal){
@@ -50,52 +47,173 @@ class ReservationReqInfo extends Component {
     }
 
     save() {
-        if(this.props.modalConfigObj.saveFunction){
-            this.props.triggerSaveModal(this.props.modalConfigObj.saveFunction,{optionValue:this.state.optionValue, textboxValue:this.state.textboxValue })
-        }else{
-            this.props.modalSave(this.state.textboxValue);
+        if(this.state.screenConfig.saveFunction){
+            this.triggerSaveScreen(this.state.screenConfig.saveFunction,{optionValue:this.state.optionValue, textboxValue:this.state.textboxValue, dateSelectValue: this.state.dateSelectValue })
         }
     }
 
-    onChange = (e) => {
-        this.setState({
-            [e.target.id]: e.target.value
-          })
+    triggerSaveScreen = (saveFunction, objData) => {
+        switch (saveFunction) {
+            case "saveCancelRP": this.saveCancelRP(objData.textboxValue); break;
+            case "saveRateMRSL": this.saveRateMRSL(objData.optionValue, objData.textboxValue); break;
+            case "saveConfirmRP": this.saveConfirmRP(objData.dateSelectValue); break;
+        }
+    }
+
+    saveCancelRP = (commentValue) => {
+        var objApi = {};
+        objApi.objToSend = {
+            "AccessToken": this.props.tokenObj.accesToken,
+            "IdReservation": this.state.selectedIdRes,
+            "Mail": this.props.userData.Mail,
+            "OldState": this.state.selectedResState,
+            "NewState": "CANCELED",
+            "CanceledReason": commentValue,
+            "DateTo": new Date()
+        }
+        objApi.fetchUrl = "api/reservation";
+        objApi.method = "PUT";
+        objApi.successMSG = {
+            SUCC_RESERVATIONUPDATED: translations[this.props.systemLanguage].messages['SUCC_RESERVATIONUPDATED'],
+        };
+        objApi.functionAfterSuccess = "saveCancelRP";
+        objApi.errorMSG = {}
+        callAPI(objApi, this);
+    }
+
+    // This function will call the API
+    saveRateMRSL = (optionValue, commentValue) => {
+        if (!optionValue) {
+            optionValue = 5;
+        }
+        if(ML_MODE == 'ON' && commentValue.trim() == ""){
+            displayErrorMessage(translations[this.props.systemLanguage].messages['createPub_stepNextError']);
+            return;
+        }
+        var objApi = {};
+        objApi.objToSend = {
+            "AccessToken": this.props.tokenObj.accesToken,
+            "VOReview": {
+                "Rating": optionValue,
+                "Review": commentValue,
+                "IdReservation": this.state.selectedIdRes,
+                "Mail": this.props.userData.Mail
+            }
+        }
+        objApi.fetchUrl = "api/review";
+        objApi.method = "POST";
+        objApi.successMSG = {
+            SUCC_REVIEWCREATED: translations[this.props.systemLanguage].messages['SUCC_REVIEWCREATED'],
+        };
+        objApi.functionAfterSuccess = "saveRateMRSL";
+        callAPI(objApi, this);
+    }
+
+    saveConfirmRP = (dateSelectValue) => {
+        if (dateSelectValue == "") {
+            displayErrorMessage(translations[this.props.systemLanguage].messages['reservedPublications_confirmModal_dateSelectMissingErr']);
+        } else {
+            var objApi = {};
+            var splittedDate = dateSelectValue.split('-')
+            var dateTo = new Date(splittedDate[2],splittedDate[1] - 1,splittedDate[0]);
+            objApi.objToSend = {
+                "AccessToken": this.props.tokenObj.accesToken,
+                "IdReservation": this.state.selectedIdRes,
+                "Mail": this.props.userData.Mail,
+                "OldState": this.state.selectedResState,
+                "NewState": "RESERVED",
+                "DateTo": dateTo
+            }
+            objApi.fetchUrl = "api/reservation";
+            objApi.method = "PUT";
+            objApi.successMSG = {
+                SUCC_RESERVATIONUPDATED: translations[this.props.systemLanguage].messages['SUCC_RESERVATIONUPDATED2'],
+            };
+            objApi.functionAfterSuccess = "saveConfirmRP";
+            objApi.errorMSG = {}
+            callAPI(objApi, this);
+        }
+
+    }
+
+    cancel(){
+        if (this.state.screenConfig.cancelText === translations[this.props.systemLanguage].messages['reservation_modal_ok']){
+            this.props.navigation.navigate('Home');
+        }else{
+            this.props.navigation.goBack();
+        }
+    }
+
+    handleChangeDate = (date) =>{
+        this.setState({dateSelectValue:date});
+    }
+
+    changeRating(value){
+        this.setState({optionValue:value});
     }
 
     render() {
+        const { systemLanguage } = this.props;
         return (
             <>
                 {this.state.screenConfig ? (
                     <View style={styles.container}>
                         <Text style={styles.titleText}>{this.state.screenConfig.title}</Text>
-                        <Text style={styles.infoText}>{this.state.screenConfig.mainText}</Text>
+                        <Text style={styles.infoText2}>{this.state.screenConfig.mainText}</Text>
+                        {this.state.screenConfig.optionDisplay ? 
+                        (
+                            <>
+                            <View style={{flexDirection:'row', alignItems: 'center'}}>
+                                <Text style={styles.infoTextPicker}>{this.state.screenConfig.optionLabel}</Text>
+                                <Picker
+                                    style={styles.pickerBox2}
+                                    selectedValue={this.state.optionValue}
+                                    onValueChange={(itemValue) => this.changeRating(itemValue)}
+                                > 
+                                    {this.state.optionArray.map((option) => {
+                                        return (
+                                            <Picker.Item key={option} value={option} label={option.toString()} />
+                                        );
+                                    })}
+                                </Picker>
+                            </View>
+                            </>
+                        ) : (null)}
                         {this.state.screenConfig.textboxDisplay ? 
                         (
                             <TextInput style={styles.inputBox} 
+                                numberOfLines= {4}
                                 underlineColorAndroid='rgba(0,0,0,0)'
                                 placeholder={this.state.screenConfig.textboxLabel}
                                 placeholderTextColor="#ffffff"
-                                onChangeText={this.handleInput}
+                                onChangeText={(textboxValue) => this.setState({textboxValue})}
                                 value={this.state.textboxValue}
                             />
                         ) : (null)}
-                    
-                        
-                        {this.state.screenConfig.login_status == 'LOGGED_IN' ? (
-                            <View style={{flexDirection: 'row'}}>
-                                {this.state.screenConfig.cancelAvailable == true ? (<TouchableOpacity style={styles.button} onPress={()=> {this.props.navigation.goBack()}}> 
-                                                                                        <Text style={styles.buttonText}>{this.state.screenConfig.cancelText}</Text>
+                        {this.state.screenConfig.dateSelectDisplay ? 
+                        (
+                            <>  
+                                <Text style={styles.infoText}>{this.state.screenConfig.dateSelectLabel}</Text>
+                                <DatePicker 
+                                    parentDate={this.state.dateSelectValue} 
+                                    handleChangeDate={this.handleChangeDate}
+                                    placeholder={translations[systemLanguage].messages['date_w']}
+                                    onChangeDate={(date) => this.setState({date})}
+                                />  
+                            </>
+                        ) : (null)}
+                        <View style={{flexDirection: 'row'}}>
+                            {this.state.screenConfig.cancelAvailable == true ? (<TouchableOpacity style={styles.button} onPress={()=> {this.cancel()}}> 
+                                                                                    <Text style={styles.buttonText}>{this.state.screenConfig.cancelText}</Text>
+                                                                                </TouchableOpacity>
+                                                                                ) : (null)
+                            }                                                    
+                            {this.state.screenConfig.confirmAvailable == true ? (<TouchableOpacity style={styles.button} onPress={()=> {this.save()}}> 
+                                                                                    <Text style={styles.buttonText}>{this.state.screenConfig.confirmText}</Text>
                                                                                     </TouchableOpacity>
-                                                                                   ) : (null)
-                                }                                                    
-                                {this.state.screenConfig.confirmAvailable == true ? (<TouchableOpacity style={styles.button} /*onPress={()=> {this.save}}*/> 
-                                                                                        <Text style={styles.buttonText}>{this.state.screenConfig.confirmText}</Text>
-                                                                                     </TouchableOpacity>
-                                                                                    ) : (null)
-                                }
-                            </View>
-                        ) : (null)}    
+                                                                                ) : (null)
+                            }
+                        </View>  
                     </View>
                 ) : (null)}                
             </>   
@@ -126,6 +244,16 @@ const styles = StyleSheet.create({
   },
   infoText:{
     color: "#FFF",
+    marginBottom: 20,
+  },
+  infoTextPicker:{
+    color: "#FFF",
+    marginRight: 10,
+    fontSize: 20,
+  },
+  infoText2:{
+    color: "#FFF",
+    marginLeft: 20,
   },
   inputBox: {
     width:300,
@@ -152,6 +280,20 @@ const styles = StyleSheet.create({
     fontWeight:'500',
     color:'#ffffff'
   },
+  pickerBox2: {
+    width:50,
+    backgroundColor:'rgba(255,255,255,0.3)',
+    color:'#ffffff',
+    marginVertical: 10,
+  },  
 });
 
-export default ReservationReqInfo;
+const mapStateToProps = (state) => {
+    return {
+        tokenObj: state.loginData.tokenObj,
+        userData: state.loginData.userData,
+        systemLanguage: state.loginData.systemLanguage
+    }
+}
+
+export default connect(mapStateToProps)(ReservationReqInfo);

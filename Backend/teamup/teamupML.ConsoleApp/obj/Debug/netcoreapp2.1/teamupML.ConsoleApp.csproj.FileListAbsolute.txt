@@ -1,0 +1,15 @@
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\teamupML.ConsoleApp\bin\Debug\netcoreapp2.1\MLModel.zip
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\teamupML.ConsoleApp\bin\Debug\netcoreapp2.1\teamupML.ConsoleApp.deps.json
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\teamupML.ConsoleApp\bin\Debug\netcoreapp2.1\teamupML.ConsoleApp.runtimeconfig.json
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\teamupML.ConsoleApp\bin\Debug\netcoreapp2.1\teamupML.ConsoleApp.runtimeconfig.dev.json
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\teamupML.ConsoleApp\bin\Debug\netcoreapp2.1\teamupML.ConsoleApp.dll
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\teamupML.ConsoleApp\bin\Debug\netcoreapp2.1\teamupML.ConsoleApp.pdb
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\teamupML.ConsoleApp\bin\Debug\netcoreapp2.1\teamupML.Model.dll
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\teamupML.ConsoleApp\bin\Debug\netcoreapp2.1\teamupML.Model.pdb
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\teamupML.ConsoleApp\obj\Debug\netcoreapp2.1\teamupML.ConsoleApp.csprojAssemblyReference.cache
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\teamupML.ConsoleApp\obj\Debug\netcoreapp2.1\teamupML.ConsoleApp.csproj.CoreCompileInputs.cache
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\teamupML.ConsoleApp\obj\Debug\netcoreapp2.1\teamupML.ConsoleApp.AssemblyInfoInputs.cache
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\teamupML.ConsoleApp\obj\Debug\netcoreapp2.1\teamupML.ConsoleApp.AssemblyInfo.cs
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\teamupML.ConsoleApp\obj\Debug\netcoreapp2.1\teamupML.ConsoleApp.csproj.CopyComplete
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\teamupML.ConsoleApp\obj\Debug\netcoreapp2.1\teamupML.ConsoleApp.dll
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\teamupML.ConsoleApp\obj\Debug\netcoreapp2.1\teamupML.ConsoleApp.pdb

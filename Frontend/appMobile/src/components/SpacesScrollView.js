@@ -1,11 +1,14 @@
 import React, {Component} from 'react';
 import {View,Text,Image,StyleSheet,TouchableOpacity} from 'react-native';
+import { connect } from 'react-redux';
+import { Ionicons } from "@expo/vector-icons";
+import translations from '../common/translations';
 
-export default class SpacesScrollView extends Component {
+class SpacesScrollView extends Component {
 
     render (){
+        const { systemLanguage } = this.props;
         const { Capacity, Title, IdPublication, ImagesURL, City, type} = this.props;
-        //const { relatedPublications } = this.props;
         return (
                 <View style={styles.spacesContainer}>
                     <View style={styles.imageView}>
@@ -13,17 +16,29 @@ export default class SpacesScrollView extends Component {
                     </View>
                     <View style={styles.textView}>
                         <Text style={{color: 'white'}}>{Title}</Text>
-                        <Text style={{color: 'white'}}>{City}</Text>
-                        <Text style={{color: 'white'}}>{Capacity}</Text>
+                        <View style={{flexDirection:'row'}}>
+                            <Ionicons name="ios-home"
+                                color="#fff"
+                                size={20}
+                            />
+                            <Text style={{color: 'white', marginLeft: 5}}>{City}</Text>
+                        </View>
+                        <View style={{flexDirection:'row'}}>
+                            <Ionicons name="ios-people"
+                                color="#fff"
+                                size={20}
+                            />
+                            <Text style={{color: 'white', marginLeft: 5}}>{Capacity}</Text>
+                        </View>
                     </View>
                     <View style={{alignItems: 'center'}}>
                         {type === 'recommended' ? (
                                 <TouchableOpacity style={styles.button} onPress={()=>this.props.navigate('SpaceView', {PubId: IdPublication})}> 
-                                    <Text style={styles.buttonText}>Ver</Text>
+                                    <Text style={styles.buttonText}>{translations[systemLanguage].messages['view_w']}</Text>
                                 </TouchableOpacity>
                             ) : (
                                 <TouchableOpacity style={styles.button} onPress={()=>this.props.push('SpaceView', {PubId: IdPublication})}> 
-                                    <Text style={styles.buttonText}>Ver</Text>
+                                    <Text style={styles.buttonText}>{translations[systemLanguage].messages['view_w']}</Text>
                                 </TouchableOpacity>
                             )
                         }  
@@ -33,6 +48,14 @@ export default class SpacesScrollView extends Component {
     }
 }
 
+const mapStateToProps = (state) => {
+    return {
+        systemLanguage: state.loginData.systemLanguage
+    }
+}
+
+export default connect(mapStateToProps)(SpacesScrollView)
+
 const styles = StyleSheet.create({
     image:{
         width: 160,
@@ -40,7 +63,6 @@ const styles = StyleSheet.create({
         borderRadius: 20,
     },
     spacesContainer:{
-        //height: 220, 
         width: 160,
         elevation: 3,
         borderWidth: 0.5,

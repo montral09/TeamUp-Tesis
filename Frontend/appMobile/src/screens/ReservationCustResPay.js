@@ -1,258 +1,225 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, ScrollView, Keyboard, TouchableOpacity, Linking, TextInput} from 'react-native';
+import { StyleSheet, Text, View,TouchableOpacity, Linking, TextInput, Dimensions, KeyboardAvoidingView} from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import * as ImagePicker from 'expo-image-picker';
+import * as Permissions from "expo-permissions";
+import Constants from 'expo-constants';
+import translations from '../common/translations';
+import { connect } from 'react-redux';
+import { callAPI, displayErrorMessage, displaySuccessMessage } from '../common/genericFunctions';
 
 class ReservationCustResPay extends Component {
     constructor(props) {
         super(props);
         const { navigation } = this.props;
+        const IdReservationParam = navigation.getParam('IdReservationParam', 'NO-ID');
+        const objPaymentDetailsParam = navigation.getParam('auxParam', 'default value');
         this.state = {
             modal: false,
-            objPaymentDetails: {},
+            objPaymentDetails: objPaymentDetailsParam,
+            IdReservation: IdReservationParam,
             reservationComment: "",
             isLoading: false,
             buttonIsDisabled: false
         };
-        this.toggle = this.toggle.bind(this);
-        this.save = this.save.bind(this);
-        this.changeModalLoadingState = this.changeModalLoadingState.bind(this);
-        this.getBase64 = this.getBase64.bind(this);
     }
 
-    toggle(objPaymentDetails) {
-        if (!this.state.isLoading) {
-            this.setState({
-                modal: !this.state.modal,
-                objPaymentDetails: objPaymentDetails || {}
-            });
-        }
+    save = () => {
+        this.saveCustReservationPayment(this.state.objPaymentDetails);
     }
 
-    changeModalLoadingState(closeModal) {
-        if (closeModal) {
-            this.setState({
-                modal: !this.state.modal,
-                isLoading: !this.state.isLoading,
-                buttonIsDisabled: !this.state.buttonIsDisabled
-            })
-        } else {
-            this.setState({
-                isLoading: !this.state.isLoading,
-                buttonIsDisabled: !this.state.buttonIsDisabled
-            })
-        }
-    }
-
-    save() {
-        this.changeModalLoadingState(false);
-        this.props.saveCustReservationPayment(this.state.objPaymentDetails);
-    }
-
-    // Upload image functions
-    maxSelectFile = (event) => {
-        let files = event.target.files // create file object
-        if ( files.length > 1) {
-            event.target.value = null // discard selected file
-            ToastAndroid.showWithGravity(
-                'Solo puede subir un archivo',
-                ToastAndroid.LONG,
-                ToastAndroid.CENTER,
-            ); 
-            return false;
-        }
-        return true;
-    }
-
-    checkMimeType = (event) => {
-        //getting file object
-        let files = event.target.files
-        //define message container
-        let err = ''
-        // list allow mime type
-        const types = ['image/png', 'image/jpeg', 'application/pdf']
-        // loop access array
-        for (var x = 0; x < files.length; x++) {
-            // compare file type find doesn't matach
-            if (types.every(type => files[x].type !== type)) {
-                // create error message and assign to container   
-                err += files[x].type + ' no es un formato soportado\n';
+    saveCustReservationPayment = (objPaymentDetails) => {
+        var objApi = {};
+        objApi.objToSend = {
+            "AccessToken": this.props.tokenObj.accesToken,
+            "Mail": this.props.userData.Mail,
+            "IdReservation": this.state.IdReservation,
+            "Comment": objPaymentDetails.paymentComment || "",
+            "Evidence": {
+                "Base64String": objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Base64String : "",
+                "Extension": objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Extension : ""
             }
-        };
-
-        if (err !== '') { // if message not empty that mean has error 
-            event.target.value = null // discard selected file
-            ToastAndroid.showWithGravity(
-                err,
-                ToastAndroid.LONG,
-                ToastAndroid.CENTER,
-            ); 
-            return false;
         }
-        return true;
-
+        objApi.fetchUrl = "api/reservationPaymentCustomer";
+        objApi.method = "POST";
+        objApi.successMSG = {
+            SUCC_PAYMENTUPDATED: translations[this.props.systemLanguage].messages['SUCC_PAYMENTUPDATED'],
+        };
+        objApi.functionAfterSuccess = "saveCustReservationPayment";
+        callAPI(objApi, this);
     }
 
-    checkFileSize = (event) => {
-        let files = event.target.files
-        let size = 1500000;
-        let err = "";
-        for (var x = 0; x < files.length; x++) {
-            if (files[x].size > size) {
-                err += files[x].type + ' es demasiado grande, por favor elija un archivo de menor tamaño\n';
+    getPermissionAsync = async () => {
+        if (Constants.platform.ios) {
+            const { status } = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+            if (status !== 'granted') {
+                alert('Sorry, we need camera roll permissions to make this work!');
             }
-        };
-        if (err !== '') {
-            event.target.value = null
-            ToastAndroid.showWithGravity(
-                err,
-                ToastAndroid.LONG,
-                ToastAndroid.CENTER,
-            ); 
-            return false
         }
-
-        return true;
-
     }
 
-    // End Upload image functions
-    onChange = (evt) => {
-        if(evt.target.id != "paymentComment"){
-            if (this.maxSelectFile(evt) && this.checkMimeType(evt) && this.checkFileSize(evt)) {
-                console.log(evt.target.files);
-                this.setState({ spaceImages: [], tempFiles: evt.target.files }, () => {
-                    for (var i = 0; i < this.state.tempFiles.length; i++) {
-                        var file = this.state.tempFiles[i]; // FileList object
-                        this.getBase64(file);
-                    }
+    pickImage = async () => {
+        try{ 
+            const { status } = await Permissions.askAsync(Permissions.CAMERA, Permissions.CAMERA_ROLL)
+            if (status === 'granted') {
+                const result = await ImagePicker.launchImageLibraryAsync({
+                    mediaTypes: ImagePicker.MediaTypeOptions.All,
+                    allowsEditing: false,
+                    aspect: [4, 3],
+                    base64: true,
                 });
-                ToastAndroid.showWithGravity(
-                    'Archivo cargado correctamente. ',
-                    ToastAndroid.LONG,
-                    ToastAndroid.CENTER,
-                ); 
-            }
-        }else{
-            var objPaymentDetails = {
-                ...this.state.objPaymentDetails,
-                [evt.target.id]: evt.target.value
-            }
-            this.setState({
-                objPaymentDetails: objPaymentDetails
-            });
-        }
-
-    }
-
-    getBase64(file) {
-        var f = file; // FileList object
-        var reader = new FileReader();
-        // Closure to capture the file information.
-        const scope = this;
-        reader.onload = (function (theFile) {
-            return function (e) {
-                var binaryData = e.target.result;
-                //Converting Binary Data to base 64
-                var base64String = window.btoa(binaryData);
-                //showing file converted to base64
-                const fileTypeArr = file.type.split('/');
+                var extension = "";
+                let i = (result.uri).lastIndexOf('.');
+                if (i > 0) {
+                    extension = (result.uri).substring(i+1);
+                }
+                if (extension != 'jpg' && extension != 'png'){
+                    displayErrorMessage(translations[this.props.systemLanguage].messages['myReservedSpacesList_custPay_errorMsg2'])
+                    return;
+                }
                 var fileObj = {
-                    Extension: fileTypeArr[1],
-                    Base64String: base64String
+                    Extension: extension,
+                    Base64String: result.base64,
                 };
                 var newarchivesUpload = [];
-                if (scope.state) {
-                    newarchivesUpload = scope.state.objPaymentDetails.archivesUpload || [];
-                }
                 newarchivesUpload.push(fileObj);
                 var objPaymentDetails = {
-                    ...scope.state.objPaymentDetails,
+                    ...this.state.objPaymentDetails,
                     'archivesUpload': newarchivesUpload
                 }
-                scope.setState({ objPaymentDetails: objPaymentDetails });
-            };
-        })(f);
-        // Read in the image file as a data URL.
-        reader.readAsBinaryString(f);
+                this.setState({ objPaymentDetails: objPaymentDetails });
+                displaySuccessMessage(translations[this.props.systemLanguage].messages['myReservedSpacesList_custPay_succMsg1'])
+            }
+        }catch (err) {
+            
+        }
+    };
+
+    changePaymentComment(value){
+        var objPaymentDetails = {
+            ...this.state.objPaymentDetails,
+            paymentComment: value
+        }
+        this.setState({
+            objPaymentDetails: objPaymentDetails
+        });
     }
 
     render() {
+        const { systemLanguage } = this.props;
         return (
-            <View style={styles.container}>
-                <Text style={styles.titleText}>Detalle pago de la reserva</Text>
-                <View style={{flexDirection:'row'}}>
-                    <Text style={styles.infoText}>Monto</Text>
-                    <TextInput style={styles.inputBox} 
-                        underlineColorAndroid='rgba(0,0,0,0)'
-                        placeholder='Monto'
-                        placeholderTextColor="#ffffff"
-                        value={this.state.objPaymentDetails.reservationPaymentAmmount}
-                        editable = {false}
-                    />
-                </View>
-                <View style={{flexDirection:'row'}}>
-                    <Text style={styles.infoText}>Estatus del pago</Text>
-                    <TextInput style={styles.inputBox} 
-                        underlineColorAndroid='rgba(0,0,0,0)'
-                        placeholder='Estatus del pago'
-                        placeholderTextColor="#ffffff"
-                        value={this.state.objPaymentDetails.reservationPaymentStateText}
-                        editable = {false}
-                    />
-                </View>
-                <View style={{flexDirection:'row'}}>
-                    <Text style={styles.infoText}>Fecha de pago</Text>
-                    <TextInput style={styles.inputBox} 
-                        underlineColorAndroid='rgba(0,0,0,0)'
-                        placeholder='Fecha de pago'
-                        placeholderTextColor="#ffffff"
-                        value={this.state.objPaymentDetails.reservationpaymentDate == null ? "Pendiente" : this.state.objPaymentDetails.reservationpaymentDate}
-                        editable = {false}
-                    />
-                </View>
+            
+            <KeyboardAvoidingView style={styles.container}>
+            <KeyboardAwareScrollView 
+                vertical
+                extraScrollHeight={80} 
+                enableOnAndroid={true} 
+                keyboardShouldPersistTaps='handled'
+                style={{flex: 1}}
+            >
+                <View style={{alignItems: 'flex-start', justifyContent: 'center', marginLeft: 15}}>
+                    <Text style={styles.titleText}>{translations[systemLanguage].messages['myReservedSpacesList_custPay_header']}</Text>
+                    <View style={{flexDirection:'row', alignItems: 'center'}}>
+                        <View style={{flex:1}}>
+                            <Text style={styles.infoText}>{translations[systemLanguage].messages['amount_w']} </Text>
+                        </View>
+                        <View style={{flex:1}}>
+                            <TextInput style={styles.inputBox} 
+                                underlineColorAndroid='rgba(0,0,0,0)'
+                                placeholder= {translations[systemLanguage].messages['amount_w']}
+                                placeholderTextColor="#ffffff"
+                                value={this.state.objPaymentDetails.reservationPaymentAmmount.toString()}
+                                editable = {false}
+                            />
+                        </View>
+                    </View>
+                    <View style={{flexDirection:'row', alignItems: 'center'}}>
+                        <View style={{flex:1}}>
+                            <Text style={styles.infoText}>{translations[systemLanguage].messages['myReservedSpacesList_custPay_paymentStatusTxt']} </Text>
+                        </View>
+                        <View style={{flex:1}}>
+                            <TextInput style={styles.inputBox} 
+                                underlineColorAndroid='rgba(0,0,0,0)'
+                                placeholder={translations[systemLanguage].messages['myReservedSpacesList_custPay_paymentStatusTxt']}
+                                placeholderTextColor="#ffffff"
+                                value= {translations[systemLanguage].messages['payState_'+ this.state.objPaymentDetails.reservationPaymentStateText.replace(/\s/g,'')]}
+                                editable = {false}
+                            />
+                        </View>
+                    </View>
+                    <View style={{flexDirection:'row', alignItems: 'center'}}>
+                        <View style={{flex:1}}>
+                            <Text style={styles.infoText}>{translations[systemLanguage].messages['myReservedSpacesList_custPay_paymentDateTxt']} </Text>
+                        </View>
+                        <View style={{flex:1}}>
+                            <TextInput style={styles.inputBox} 
+                                underlineColorAndroid='rgba(0,0,0,0)'
+                                placeholder= {translations[systemLanguage].messages['myReservedSpacesList_custPay_paymentDateTxt']}
+                                placeholderTextColor="#ffffff"
+                                value={this.state.objPaymentDetails.reservationpaymentDate == null ? translations[systemLanguage].messages['resState_PENDING'] : this.state.objPaymentDetails.reservationpaymentDate.toString()}
+                                editable = {false}
+                            />
+                        </View>
+                    </View>
 
                     {this.state.objPaymentDetails.paymentDocument ? (
-                        <View style={{flexDirection:'row'}}>
-                            <Text style={styles.infoText}>Documento subido</Text>
-                            <Text style={styles.infoText} onPress={() => Linking.openURL(this.state.objPaymentDetails.paymentDocument)}>Archivo subido</Text>
+                        <View style={{flexDirection:'row', alignItems: 'center'}}>
+                            <View style={{flex:1}}>
+                                <Text style={styles.infoText}>{translations[systemLanguage].messages['myReservedSpacesList_custPay_uploadedDocument']} </Text>
+                            </View>
+                            <View style={{flex:1}}>
+                                <TouchableOpacity style={styles.button} onPress={() => Linking.openURL(this.state.objPaymentDetails.paymentDocument)}> 
+                                    <Text style={styles.buttonText}>LINK</Text>
+                                </TouchableOpacity>        
+                            </View>
                         </View>
                     ) : (null)}
                     {this.state.objPaymentDetails.reservationPaymentStateText != "PAID" && this.state.objPaymentDetails.reservationPaymentStateText != "CANCELED" ? (
-                        <View style={{flexDirection:'row'}}>
-                            <Text style={styles.infoText}>Documento prueba</Text>
-                            <Text style={styles.infoText} /*onPress={() => Linking.openURL(this.state.objPaymentDetails.paymentDocumentNew)}*/>Subir Imagen</Text>
-                        </View>
-                        // value={this.state.objPaymentDetails.paymentDocumentNew} onChange={this.onChange} />   
+                        <View style={{flexDirection:'row', alignItems: 'center'}}>
+                            <View style={{flex:1}}>
+                                <Text style={styles.infoText}>{translations[systemLanguage].messages['myReservedSpacesList_custPay_uploadDocument']} </Text>
+                            </View>
+                            <View style={{flex:1}}>
+                                <TouchableOpacity style={styles.button} onPress={this.pickImage}>
+                                    <Text style={styles.buttonText}>{translations[systemLanguage].messages['uploadImage_w']}</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>  
                     ) : (null)}
-                    <View style={{flexDirection:'row'}}>
-                        <Text style={styles.infoText}>Comentario (opcional)</Text>
-                        <TextInput style={styles.inputBox} 
-                            multiline = {true}
-                            numberOfLines = {4}
-                            underlineColorAndroid='rgba(0,0,0,0)'
-                            placeholder='Comentario'
-                            placeholderTextColor="#ffffff"
-                            value={this.state.objPaymentDetails.reservationpaymentDate == null ? "Pendiente" : this.state.objPaymentDetails.reservationpaymentDate}
-                            editable = {this.state.objPaymentDetails.reservationPaymentStateText == "PAID" || this.state.objPaymentDetails.reservationPaymentStateText == "CANCELED" ? true : false}
-                        />
-                    </View>
+                    <Text style={styles.infoText2}>{translations[systemLanguage].messages['comment_w']} ({translations[systemLanguage].messages['optional_w']})</Text>
+                    <TextInput style={styles.inputBox2} 
+                        multiline = {true}
+                        numberOfLines = {4}
+                        underlineColorAndroid='rgba(0,0,0,0)'
+                        placeholder= {translations[systemLanguage].messages['comment_w']}
+                        placeholderTextColor="#ffffff"
+                        value={this.state.objPaymentDetails.paymentComment}
+                        onChangeText={(value) => this.changePaymentComment(value)}
+                        editable = {this.state.objPaymentDetails.reservationPaymentStateText == "PAID" || this.state.objPaymentDetails.reservationPaymentStateText == "CANCELED" ? false : true}
+                    />
                     {this.state.objPaymentDetails.reservationPaymentStateText != "PAID" && this.state.objPaymentDetails.reservationPaymentStateText != "CANCELED" ? (
-                            <Text style={styles.infoText}>Atencion! El pago deberá ser confirmado por el gestor.{'\n'}Puede adjuntar una imagen/pdf y agregar un comentario.</Text>
+                            <Text style={styles.infoText}>{translations[systemLanguage].messages['myReservedSpacesList_custPay_alertMsg1']}</Text>
                         ) : (
-                            <Text style={styles.infoText}>El pago fue confirmado.</Text>
+                            <Text style={styles.infoText}>{translations[systemLanguage].messages['myReservedSpacesList_custPay_alertMsg3']}</Text>
                         )
                     }
-                    <View style={{flexDirection: 'row'}}>
-                        <TouchableOpacity style={styles.button} onPress={()=> {this.props.navigation.goBack()}} disabled={this.state.buttonIsDisabled}> 
-                            <Text style={styles.buttonText}>Cerrar</Text>
+                
+                </View> 
+                
+                <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+                    <TouchableOpacity style={styles.button} onPress={()=> {this.props.navigation.goBack()}} disabled={this.state.buttonIsDisabled}> 
+                        <Text style={styles.buttonText}>{translations[systemLanguage].messages['cancel_w']}</Text>
+                    </TouchableOpacity>
+                    {this.state.objPaymentDetails.reservationPaymentStateText != "PAID" && this.state.objPaymentDetails.reservationPaymentStateText != "CANCELED" ? (
+                        <TouchableOpacity style={styles.button} onPress={()=> {this.save()}} disabled={this.state.buttonIsDisabled}> 
+                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['save_w']}</Text>
                         </TouchableOpacity>
-                        {this.state.objPaymentDetails.reservationPaymentStateText != "PAID" && this.state.objPaymentDetails.reservationPaymentStateText != "CANCELED" ? (
-                            <TouchableOpacity style={styles.button} onPress={()=> {this.save}} disabled={this.state.buttonIsDisabled}> 
-                                <Text style={styles.buttonText}>Guardar</Text>
-                            </TouchableOpacity>
-                            ) : (null)
-                        }
-                    </View>
-            </View>
+                        ) : (null)
+                    }
+                </View>
+                               
+            </KeyboardAwareScrollView>  
+            </KeyboardAvoidingView>    
         );
     }
 }
@@ -260,6 +227,7 @@ class ReservationCustResPay extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: 110,
     backgroundColor: '#2196f3',
     alignItems: 'center',
     justifyContent: 'center',
@@ -280,8 +248,21 @@ const styles = StyleSheet.create({
   infoText:{
     color: "#FFF",
   },
+  infoText2:{
+    color: "#FFF",
+    marginTop: 10,
+  },
   inputBox: {
-    width:300,
+    width:180,
+    backgroundColor:'rgba(255,255,255,0.3)',
+    borderRadius: 25,
+    paddingHorizontal: 16,
+    fontSize: 16,
+    color:'#ffffff',
+    marginVertical: 10
+  },
+  inputBox2: {
+    width: Dimensions.get('window').width - 20,
     backgroundColor:'rgba(255,255,255,0.3)',
     borderRadius: 25,
     paddingHorizontal: 16,
@@ -307,4 +288,13 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ReservationCustResPay;
+const mapStateToProps = (state) => {
+    return {
+        login_status: state.loginData.login_status,
+        userData: state.loginData.userData,
+        tokenObj: state.loginData.tokenObj,
+        systemLanguage: state.loginData.systemLanguage
+    }
+}
+
+export default connect(mapStateToProps)(ReservationCustResPay);

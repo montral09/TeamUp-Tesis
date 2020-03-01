@@ -5,9 +5,9 @@ import { createStackNavigator } from 'react-navigation';
 import Login from './src/screens/Login';
 import Home from './src/screens/Home';
 
-const StackNavigator = createStackNavigator({
+/*const StackNavigator = createStackNavigator({
   Login: {screen: Login},
-  Home: {screen: Home}
+  //Home: {screen: Home}
 });
 
-export default StackNavigator;
+export default StackNavigator;*/

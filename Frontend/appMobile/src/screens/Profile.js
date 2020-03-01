@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {View,Text,ScrollView,StyleSheet,TextInput,TouchableOpacity} from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Header } from 'react-native-elements';
 import translations from '../common/translations';
 import {callAPI, displayErrorMessage} from '../common/genericFunctions';
@@ -11,7 +12,6 @@ import { logOut } from '../redux/actions/accountActions';
 
 import FloatingTitle from '../components/FloatingTitleTextInput';
 
-baseURL = 'http://teamup-001-site1.itempurl.com/api/';
 
 class Profile extends Component {
     constructor(props) {
@@ -89,11 +89,9 @@ class Profile extends Component {
             message='Rut debe tener 12 números';
             returnValue = true;
         } else if (this.state.razonSocial && this.state.razonSocial < 3) {
-            console.log ('entre a razon social');
             message='Razon social demasiada corta';
             returnValue = true;
         } else if (this.state.address && this.state.address < 10) {
-            console.log ('entre a address');
             message='Direccion demasiado corta';
             returnValue = true;
         }
@@ -138,10 +136,16 @@ class Profile extends Component {
     }
 
     render (){
-
+        const { systemLanguage } = this.props;
 
         return (
-            <ScrollView>
+            <KeyboardAwareScrollView
+                vertical
+                extraScrollHeight={135} 
+                enableOnAndroid={true} 
+                keyboardShouldPersistTaps='handled'
+                style={{flex: 1}}
+            >
                 <View style={styles.container}>
                     {this.state.isLoading ? (
                         <LoadingOverlay
@@ -155,48 +159,48 @@ class Profile extends Component {
                         rightComponent={{ icon: 'home', color: '#fff', flex:1, onPress: () => this.props.navigation.navigate('Home')}}
                     />
                     <View style={styles.titleContainer}>
-                        <Text style={styles.titleText}>Panel de usuario</Text> 
+                        <Text style={styles.titleText}>{translations[systemLanguage].messages['signInLinks_head_updateUserData']}</Text> 
                     </View>
                     <View style={styles.inputContainer}>
                         
                         <FloatingTitle
                             attrName = 'firstName'
-                            title = 'Nombre'
+                            title = {translations[systemLanguage].messages['name_w']}
                             value = {this.state.firstName}
                             updateMasterState = {this._updateMasterState}
                             editBool = {this.state.editActive}
                         />
                         <FloatingTitle
                             attrName = 'lastName'
-                            title = 'Apellido'
+                            title = {translations[systemLanguage].messages['lastName_w']}
                             value = {this.state.lastName}
                             updateMasterState = {this._updateMasterState}
                             editBool = {this.state.editActive}
                         />
                         <FloatingTitle
                             attrName = 'email'
-                            title = 'Correo'
+                            title = 'Email'
                             value = {this.state.email}
                             updateMasterState = {this._updateMasterState}
                             editBool = {this.state.editActive}
                         />
                         <FloatingTitle
                             attrName = 'password'
-                            title = 'Contraseña'
+                            title = {translations[systemLanguage].messages['password_w']}
                             value = {this.state.password}
                             updateMasterState = {this._updateMasterState}
                             editBool = {this.state.editActive}
                         />
                         <FloatingTitle
                             attrName = 'passwordConfirm'
-                            title = 'Confirmar contraseña'
+                            title = {translations[systemLanguage].messages['register_repeatPassword']}
                             value = {this.state.passwordConfirm}
                             updateMasterState = {this._updateMasterState}
                             editBool = {this.state.editActive}
                         />
                         <FloatingTitle
                             attrName = 'phone'
-                            title = 'Número de teléfono'
+                            title = {translations[systemLanguage].messages['phoneNumber_w']}
                             value = {this.state.phone}
                             updateMasterState = {this._updateMasterState}
                             editBool = {this.state.editActive}
@@ -217,7 +221,7 @@ class Profile extends Component {
                         />
                         <FloatingTitle
                             attrName = 'address'
-                            title = 'Dirección'
+                            title = {translations[systemLanguage].messages['address_w']}
                             value = {this.state.address}
                             updateMasterState = {this._updateMasterState}
                             editBool = {this.state.editActive}
@@ -226,13 +230,13 @@ class Profile extends Component {
                     </View>
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity style={styles.button} onPress={this.toggleEditable}>
-                            <Text style={styles.buttonText}>{this.state.editActive === true ? ('Guardar') : ('Editar')}</Text>
+                            <Text style={styles.buttonText}>{this.state.editActive === true ? (translations[systemLanguage].messages['save_w']) : (translations[systemLanguage].messages['edit_w'])}</Text>
                         </TouchableOpacity>
                     </View>
                     </>
                 )}   
                 </View>   
-            </ScrollView>     
+            </KeyboardAwareScrollView>     
         );
     }
 }
@@ -242,6 +246,7 @@ const mapStateToProps = (state) => {
         login_status: state.loginData.login_status,
         userData: state.loginData.userData,
         tokenObj: state.loginData.tokenObj,
+        systemLanguage: state.loginData.systemLanguage
     }
 }
 

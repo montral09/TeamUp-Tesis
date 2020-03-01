@@ -1,25 +1,36 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, ScrollView, Keyboard, ToastAndroid, Picker, SafeAreaView} from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, ActivityIndicator, Picker} from 'react-native';
 import { Header } from 'react-native-elements';
-
-import Globals from '../Globals';
-
+import { Ionicons } from "@expo/vector-icons";
+import { connect } from 'react-redux';
+import { callAPI } from '../common/genericFunctions';
+import SelectMultiple from 'react-native-select-multiple';
+import translations from '../common/translations';
 import SearchSpaceList from '../components/SearchSpaceList';
 
-class SearchPublications extends React.Component {
+const renderLabel = (label, style) => {
+    return (
+    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <View style={{marginLeft: 10}}>
+        <Text style={{color: 'white'}}>{label}</Text>
+        </View>
+    </View>
+    )
+}
+
+class SearchPublications extends Component {
 	constructor(props) {
         super(props);
         const { navigation } = this.props;
-        const spaceTypeSelectParam = JSON.stringify(navigation.getParam('spaceTypeSelect', 'default value'));//props.match.params.publicationID;
+        const spaceTypeSelectParam = navigation.getParam('spaceTypeSelect', 'default value');
         const cityParam = navigation.getParam('city', 'default value');
         const capacityParam = navigation.getParam('capacity', 'default value');
-        console.log("params: " + spaceTypeSelectParam)
         this.state = { 
             list: 'active',
             publications : [],
             facilities : [],
             spaceTypes : [],
-            spacetypeSelected : spaceTypeSelectParam == "empty" ? "" : spaceTypeSelectParam,
+            spacetypeSelected : spaceTypeSelectParam,
             spaceTypeSelectedText : "",
             capacity : capacityParam == "empty" ? "" : capacityParam,
             city : cityParam  == "empty" ? "" : cityParam,
@@ -31,65 +42,57 @@ class SearchPublications extends React.Component {
             publicationsPerPage : 10,
             pagination : [1],
             generalError : false,
-            facilitiesSelected : []
+            facilitiesSelected : [],
+            facilitiesSelectMultiple: [],
+            filterVisible: false,
         };
-        this.loadInfraestructure = this.loadInfraestructure.bind(this);		
-        this.loadSpaceTypes = this.loadSpaceTypes.bind(this);
-        this.startSearch = this.startSearch.bind(this);
-        //this.redirectToPub = this.redirectToPub.bind(this);
-        this.handleErrors = this.handleErrors.bind(this);
     }
     
-    handleErrors(error){
-        this.setState({ generalError: true });
-        console.log("ERROR:");
-        console.log(error);
-    }
-
-    onSelectionsChangePubPerPage = (itemValue,itemIndex) => {
-        this.setState({publicationsPerPage:itemValue})
-    }
-
     onChange = (e) => {
-        const targetId = e.target.label;
+        const targetId = e.target.id;
         this.setState({
             [targetId]: e.target.value
         }, () =>{
             if(targetId == "publicationsPerPage" || targetId == "currentPage" || targetId == "facilitiesSelected" || targetId == "spacetypeSelected"){
-                this.startSearch();
+                //this.startSearchMP();
             }
         });
     }
     
     componentDidMount() {
-        this.loadInfraestructure();
-        this.loadSpaceTypes();
+        this.loadInfraestructureMP();
+        this.loadSpaceTypesMP();
     }
 
-    componentWillReceiveProps(newProps) {
-
+    loadInfraestructureMP = () => {
+        var objApi = {};
+        objApi.objToSend = {}
+        objApi.fetchUrl = "api/facilities";
+        objApi.method = "GET";
+        objApi.successMSG = {
+            SUCC_FACILITIESOK : '',
+        };
+        objApi.functionAfterSuccess = "loadInfraestructureMP";
+        objApi.errorMSG= {}
+        callAPI(objApi, this);
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if (prevState.spacetypeSelected !== this.state.spacetypeSelected) {
-        this.handleUpdateName();
-        }
+    loadSpaceTypesMP = () => {
+        var objApi = {};
+        objApi.objToSend = {}
+        objApi.fetchUrl = "api/spaceTypes";
+        objApi.method = "GET";
+        objApi.successMSG = {
+            SUCC_SPACETYPESOK : '',
+        };
+        objApi.functionAfterSuccess = "loadSpaceTypesMP";
+        objApi.errorMSG= {}
+        callAPI(objApi, this);
     }
 
-    handleUpdateName = () => {
-        this.setState({ spacetypeSelected: this.spaceTypeSelectParam })
-    }
-
-    /*redirectToPub(id){
-        this.props.history.push('/publications/viewPublication/viewPublication/'+id);
-    }*/
-
-    startSearch() {
-        var objToSend = {}
-        var fetchUrl = Globals.baseURL + '/publications';
-        var method = "POST";
-
-        var objToSend = {
+    startSearchMP= () => {
+        var objApi = {};
+        objApi.objToSend = {
             "SpaceType": this.state.spacetypeSelected,
             "Capacity": this.state.capacity,
             "State": "ACTIVE",
@@ -98,136 +101,161 @@ class SearchPublications extends React.Component {
             "PublicationsPerPage": parseInt(this.state.publicationsPerPage)
         }
         if(this.state.facilitiesSelected.length > 0){
-            objToSend.Facilities = this.state.facilitiesSelected;
+            objApi.objToSend.Facilities = this.state.facilitiesSelected;
         }
-        console.log("startSearch:");
-        console.log(JSON.stringify(objToSend));
+        objApi.fetchUrl = "api/publications";
+        objApi.method = "POST";
+        objApi.successMSG = {
+            SUCC_PUBLICATIONSOK : '',
+        };
+        objApi.functionAfterSuccess = "startSearchMP";
+        objApi.errorMSG= {}
         this.setState({ publicationsLoaded: false });
-        fetch(fetchUrl, {
-            method: method,
-            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify(objToSend)
-        }).then(response => response.json()).then(data => {
-            console.log(data);
-            if (data.responseCode == "SUCC_PUBLICATIONSOK") {
-                let newTotalPages = Math.round(parseFloat(data.TotalPublications/this.state.publicationsPerPage));
-                let newPagination = [];
-                for(var i=1;i<=newTotalPages;i++){
-                    newPagination.push(i);
-                }
-                this.setState({ publicationsLoaded: true, publications:data.Publications, 
-                    totalPublications:data.TotalPublications,totalPages:newTotalPages, pagination: newPagination });
-            } else {
-                this.handleErrors(data.responseCode || "Generic error");
-            }
-        }
-        ).catch(error => {
-            this.handleErrors(error);
-        }
-        )
+        this.setState({filterVisible:false})
+        let sts = this.state.spacetypeSelected;
+        var spaceTypeSelectedTextNew = this.state.spaceTypes.filter(function(st){
+            return parseInt(st.Code) === parseInt(sts);
+        });
+        this.setState({spaceTypeSelectedText:spaceTypeSelectedTextNew[0].Description})
+        callAPI(objApi, this);
     }
 
-    loadInfraestructure() {
-        try {
-            fetch(Globals.baseURL + '/facilities').then(response => response.json()).then(data => {
-                if (data.responseCode == "SUCC_FACILITIESOK") {
-                    this.setState({ facilities: data.facilities });
-                } else {
-                    ToastAndroid.showWithGravity(
-                        'Internal error',
-                        ToastAndroid.LONG,
-                        ToastAndroid.CENTER,
-                    );
-                }
-            }
-            ).catch(error => {
-                this.handleErrors(error || "Generic error");
-            }
-            )
-        } catch (error) {
-            this.handleErrors(error);
+    handleOnPress(){
+        if (this.state.filterVisible) {
+            this.setState({filterVisible:false});
+        }else{
+            this.setState({filterVisible:true});
         }
     }
 
-    loadSpaceTypes() {
-        try {
-            fetch(Globals.baseURL + '/spaceTypes'
-            ).then(response => response.json()).then(data => {
-                if (data.responseCode == "SUCC_SPACETYPESOK") {
-                    console.log("Space para search: " + JSON.stringify(data));
-                    if(this.state.spacetypeSelected == ""){
-                        var newSpaceTypeSelected = data.spaceTypes[0].Code;
-                        var spaceTypeSelectedText = data.spaceTypes.filter(function(st){
-                            return parseInt(st.Code) === parseInt(newSpaceTypeSelected);
-                        });
-                        this.setState({ spaceTypes: data.spaceTypes, spacetypeSelected: newSpaceTypeSelected, spaceTypesLoaded: true, spaceTypeSelectedText: spaceTypeSelectedText[0].Description },
-                                        () => {this.startSearch();})
-                    }else{
-                        let sts = this.state.spacetypeSelected;
-                        var spaceTypeSelectedText = data.spaceTypes.filter(function(st){
-                            return parseInt(st.Code) === parseInt(sts);
-                        });
-                        if(!spaceTypeSelectedText){
-                            spaceTypeSelectedText = data.spaceTypes[0].Description;
-                            this.setState({ spacetypeSelected: data.spaceTypes[0].Code})
-                        }
-                        this.setState({ spaceTypes: data.spaceTypes, spaceTypesLoaded: true, spaceTypeSelectedText: spaceTypeSelectedText[0].Description || "" },
-                            () => {this.startSearch();})
-                    }
-                } else {
-                    this.handleErrors(data.responseCode || "Generic error");
+    onSelectionsChange = (facilitiesSelectMultiple) => {
+        // selectedFacilities is array of { label, value }
+        this.setState({facilitiesSelectMultiple})
+        var newFacilities = [];
+        facilitiesSelectMultiple.map((y) => {
+            return newFacilities.push(y.value)
+        })
+        this.setState({facilitiesSelected:newFacilities})
+    }
 
-                }
-            }
-            ).catch(error => {
-                this.handleErrors(error || "Generic error");
+    onSelectionsChangeSpace = (itemValue,itemIndex) => {
+        this.setState({spacetypeSelected:itemValue})
+    }
 
-            }
-            )
-        } catch (error) {
-            this.handleErrors(error || "Generic error");
-        }
+    getInfraList = () => {
+        var obj = {value: null, label: null}
+        var newArray = []
+        this.state.facilities.map((facility) => {
+        return (obj = {value: facility.Code, label: facility.Description},
+        newArray.push(obj) // Push the object
+        );
+        
+        })
+        this.setState({ facilities: newArray });
     }
 
     render() {
+        const { systemLanguage } = this.props;
         return (
-            <View style={styles.container}>
-                <Text style={styles.titleText}>{this.state.spaceTypeSelectedText}</Text>
-                <View style={{flexDirection: 'row'}}>
-                    <Text style={styles.descriptionText}>Ordenar por: </Text>
-                    <Picker
-                        style={styles.pickerBoxOrder}
-                        //selectedValue={this.props.parentState.spaceTypeSelect}
-                        //onValueChange={this.onChange}
-                        >  
-                        <Picker.Item value={1} label={'Defecto'}/>
-                        <Picker.Item value={2} label={'Menor Precio'}/>
-                        <Picker.Item value={3} label={'Mayor Precio'}/>
-                    </Picker>
-                    <Text style={styles.descriptionText}>Mostrar: </Text>
-                    <Picker
-                        style={styles.pickerBoxShow}
-                        selectedValue={this.state.publicationsPerPage}
-                        onValueChange={this.onSelectionsChangePubPerPage}
+            <>
+                {this.state.spaceTypesLoaded === true && this.state.publicationsLoaded === true ? (
+                    <>
+                    <View style={styles.container}>   
+                        <Header
+                            leftComponent={{ icon: 'menu', color: '#fff', flex: 1, onPress: () => this.props.navigation.openDrawer() }}
+                            rightComponent={{ icon: 'home', color: '#fff', flex:1, onPress: () => this.props.navigation.navigate('Home')}}
+                        />
+                        <Text style={styles.titleText}>{this.state.spaceTypeSelectedText}</Text>
+                        <View style={{flexDirection: 'row'}}>
+                            <Text style={styles.descriptionText}>{translations[systemLanguage].messages['sortBy_w']}: </Text>
+                            <Picker
+                                style={styles.pickerBoxOrder}
+                                //selectedValue={this.props.parentState.spaceTypeSelect}
+                                //onValueChange={this.onChange}
+                                >  
+                                <Picker.Item value={1} label={translations[systemLanguage].messages['default_w']}/>
+                                
+                            </Picker>
+                            <Text style={styles.descriptionText}>{translations[systemLanguage].messages['show_w']}: </Text>
+                            <Picker
+                                style={styles.pickerBoxShow}
+                                selectedValue={this.state.publicationsPerPage}
+                                onValueChange={this.onChange}
+                                >
+                                <Picker.Item value={10} label={'10'}/>
+                                <Picker.Item value={30} label={'30'}/>
+                                <Picker.Item value={50} label={'50'}/>
+                            </Picker>
+                            <TouchableOpacity
+                                style={{marginLeft: 10}}
+                                onPress={() => {
+                                this.handleOnPress();
+                                }}>
+                                <Ionicons name="ios-options" size={40} color="white"/>
+                            </TouchableOpacity> 
+                        </View>
+                        <ScrollView vertical={true}            
+                            contentContainerStyle={styles.scrollContainer}
                         >
-                        <Picker.Item value={10} label={'10'}/>
-                        <Picker.Item value={30} label={'30'}/>
-                        <Picker.Item value={50} label={'50'}/>
-                    </Picker>
-                </View>
-                {parseInt(this.state.publications.length) === 0 ? (
-                    <Text style={styles.subtitleText}>No se encontraron publicaciones</Text>
-                ) : (/*<View style={styles.scrollContainer}>*/
-                        <ScrollView vertical={true}
-                                    contentContainerStyle={styles.scrollContainer}
-                        >
-                            <SearchSpaceList /*redirectToPub={this.redirectToPub}*/ publications = {this.state.publications} navigate={this.props.navigation.navigate}/>
-                            <Text style={styles.descriptionText}>Mostrando {this.state.publications.length} publicaciones de {this.state.totalPublications}</Text>
-                        </ScrollView>
-                     /*</View>*/
-                    )
-                }    
-            </View>
+                        {this.state.filterVisible === true ? (
+                            <>
+                                <Picker
+                                    style={styles.pickerBox}
+                                    selectedValue={this.state.spacetypeSelected}
+                                    onValueChange={this.onSelectionsChangeSpace}
+                                >
+                                    {
+                                        this.state.spaceTypes.map((space, key) => {
+                                            return (<Picker.Item key={key} value={space.Code} label={space.Description} />);
+                                        })
+                                    }  
+                                </Picker>
+                                <View style={{width:300}}>
+                                    <SelectMultiple
+                                        items={this.state.facilities}
+                                        renderLabel={renderLabel}
+                                        rowStyle={{backgroundColor: '#2196f3'}}
+                                        checkboxSource={require('../images/facilityNotSelected.png')}
+                                        checkboxStyle={{width: 20, height: 20}}
+                                        selectedCheckboxSource={require('../images/facilitySelected.png')}
+                                        selectedCheckboxStyle={{width: 20, height: 20}}
+                                        selectedItems={this.state.facilitiesSelectMultiple}
+                                        onSelectionsChange={this.onSelectionsChange} 
+                                    />
+                                </View>
+                                <TouchableOpacity style={styles.button} onPress={this.startSearchMP}><Text style={styles.buttonText}>Filtrar</Text></TouchableOpacity>
+                            </>
+                        ) : (null)
+                        }
+                        {parseInt(this.state.publications.length) === 0 ? (
+                            <Text style={styles.subtitleText}>{translations[systemLanguage].messages['searchNo_pubs']}</Text>
+                        ) : (   
+                                <>
+                                    <SearchSpaceList publications = {this.state.publications} navigate={this.props.navigation.navigate}/>
+                                    {this.state.pagination.map(page => {
+                                        return (
+                                            <>
+                                                {this.state.currentPage === page ? 'active' : ''} 
+                                                <TouchableOpacity style={styles.button} key={page} onClick={() => this.onChange({target:{id:'currentPage',value:page}})}><Text style={styles.buttonText}>{page}</Text></TouchableOpacity>>
+                                            </>
+                                        );
+                                    })}
+                                    <Text style={styles.descriptionText}>{translations[systemLanguage].messages['showing_w']} {this.state.publications.length} {translations[systemLanguage].messages['publicationsLC_w']} {translations[systemLanguage].messages['of_w']} {this.state.totalPublications}</Text>
+                                </>
+                            )
+                        }   
+                        </ScrollView> 
+                    </View>
+                    </>
+                ) : 
+                (<ActivityIndicator
+                    animating = {true}
+                    color = '#bc2b78'
+                    size = "large"
+                    style = {styles.activityIndicator}
+                />)
+            }
+            </>     
         );
     }
 }
@@ -237,10 +265,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#2196f3',
     alignItems: 'center',
-    //justifyContent: 'center',
   },
   scrollContainer: {
-    //paddingTop: 10,
     alignItems: 'center',
   },
   titleText:{
@@ -248,7 +274,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: "#FFF",
     marginTop: 40,
-    //marginLeft: 20,
     marginBottom: 10,
   },
   subtitleText:{
@@ -256,13 +281,18 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: "#FFF",
     marginTop: 20,
-    //marginLeft: 20,
     marginBottom: 10,  
   },
   descriptionText: {
     color: '#FFF',
     marginLeft: 25,
     marginTop: 10,
+  },
+  pickerBox: {
+    width:300,
+    backgroundColor:'rgba(255,255,255,0.3)',
+    color:'#ffffff',
+    marginVertical: 10
   },
   pickerBoxOrder: {
     width: 120,
@@ -278,6 +308,34 @@ const styles = StyleSheet.create({
     color:'#ffffff',
     marginVertical: 10
   },
+  button: {
+    width: 130,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#0069c0',
+    borderRadius: 15,
+    marginVertical: 10,
+    elevation: 3,
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#ffffff'
+  },
+  activityIndicator: {
+    flex: 1,
+    backgroundColor: '#2196f3',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 80,
+  },
 });
 
-export default SearchPublications;
+const mapStateToProps = (state) => {
+    return {
+        systemLanguage: state.loginData.systemLanguage
+    }
+}
+
+export default connect(mapStateToProps)(SearchPublications);

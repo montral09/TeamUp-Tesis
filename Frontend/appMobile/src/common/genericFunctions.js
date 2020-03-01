@@ -1,17 +1,13 @@
-import { MAIN_URL, MAIN_URL_WEB} from './constants';
-import { showMessage, hideMessage } from "react-native-flash-message";
+import { MAIN_URL, MAX_ELEMENTS_PER_TABLE} from './constants';
+import { showMessage} from "react-native-flash-message";
+import registerForPushNotificationsAsync from './registerForPushNotificationsAsync';
 
 export const handleErrors = (error, bindThis) => {
-    console.log("handleErrors: "+error)
     displayErrorMessage("Hubo un error, intente nuevamente");
 }
 export const callAPI = (objApi, bindThis) => {
-    console.log("objApi ")
-    console.log(objApi)   
     if(objApi.method == "GET"){
         fetch(MAIN_URL+objApi.fetchUrl).then(response => response.json()).then(data => {
-            console.log("data.responseCode "+data.responseCode)
-            console.log(data)   
             if (data.responseCode && objApi.successMSG && data.responseCode in objApi.successMSG) {
                 if(objApi.successMSG[data.responseCode] && objApi.successMSG[data.responseCode] != ""){
                     displaySuccessMessage(objApi.successMSG[data.responseCode]);
@@ -31,8 +27,6 @@ export const callAPI = (objApi, bindThis) => {
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify(objApi.objToSend)
         }).then(response => response.json()).then(data => {
-            console.log("data.responseCode "+data.responseCode)
-            console.log(data)
             if (data.responseCode && objApi.successMSG && data.responseCode in objApi.successMSG) {
                 if(objApi.successMSG[data.responseCode] && objApi.successMSG[data.responseCode] != ""){
                     displaySuccessMessage(objApi.successMSG[data.responseCode]);
@@ -62,6 +56,11 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
                 accesToken : objData.AccessToken,
                 refreshToken : objData.RefreshToken,
             }});
+            //registerForPushNotificationsAsync(objData.voUserLog.Mail);
+        break;
+        case "restoreUser":
+            bindThis.setState({isLoading: false});
+            bindThis.props.history.push('/account/login');
         break;
         case "modifyUser":
             bindThis.setState({ isLoading: false });
@@ -82,8 +81,49 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
                     });
                 }catch(error){}
             }
-        break;        
-        case "deleteUser": bindThis.setState({ isLoading: false }); objApi.logOut();
+        break;   
+        case "requestBePublisher":
+            bindThis.props.navigation.navigate('Home');
+        break;     
+        case "deleteUser": 
+            bindThis.setState({ isLoading: false }); 
+            objApi.logOut();
+        break;
+        case "loadSpaceTypesBR":
+            bindThis.setState({ spaceTypes: objData.spaceTypes })
+        break;
+        case "loadSpaceTypesRP" : 
+            bindThis.setState({ spaceTypes: objData.spaceTypes }, () => {bindThis.loadRecommendedPubs()}); 
+        break;
+        case "loadRecommendedPubs":
+            var finalRecommended = objData.Recommended;
+            const spaceTypes = bindThis.state.spaceTypes;
+            finalRecommended.forEach(element => {
+                const spaceType = spaceTypes.filter(space => {
+                    return space.Code === element.SpaceType
+                });
+                element.SpaceTypeDesc = spaceType[0].Description;    
+            });
+            bindThis.setState({ recommendedPublications: finalRecommended});
+        break;
+        case "loadSpaceTypesMPL"    : 
+            bindThis.setState({ spaceTypes: objData.spaceTypes, loadingSpaceTypes: false }); 
+        break;
+        case "changePubStateMPL"    : 
+            bindThis.loadMyPublications(); 
+        break;
+        case "loadMyPublications"   :
+            var newTotalPages = Math.round(parseFloat(objData.Publications.length/MAX_ELEMENTS_PER_TABLE));
+            if(newTotalPages % 2 != 0){
+                newTotalPages=newTotalPages+1;
+            }
+            var newPagination = [];
+            for(var i=1;i<=newTotalPages;i++){
+                newPagination.push(i);
+            }
+            bindThis.setState({ publications: objData.Publications, loadingPubs: false, 
+                publicationsToDisplay: bindThis.filterPaginationArray(objData.Publications, 0), pagination: newPagination });   
+        
         break;
         case "loadInfraestructureVP": bindThis.setState({ facilities: objData.facilities, infIsLoading: false }); 
         break;
@@ -94,12 +134,90 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             if (pubObj.HourPrice > 0) { defaultPlanSelected = "HourPrice"; } else if (pubObj.DailyPrice > 0) { defaultPlanSelected = "DailyPrice" } else if (pubObj.WeeklyPrice > 0) { defaultPlanSelected = "WeeklyPrice"; } else if (pubObj.MonthlyPrice > 0) { defaultPlanSelected = "MonthlyPrice"; }
             bindThis.setState({
                 pubIsLoading: false, pubObj: pubObj, activeImage: { index: 0, src: pubObj.ImagesURL[0] },
-                relatedPublications: objData.RelatedPublications, planChosen: defaultPlanSelected, arrQA : objData.Questions
+                relatedPublications: objData.RelatedPublications, otherPublicationConfig: objData.OtherPublicationConfig, planChosen: defaultPlanSelected, arrQA : objData.Questions
             });
         break;
         case "saveAnswerVP":
         case "saveQuestionVP":
             bindThis.loadPublicationVP(bindThis.state.pubID);
+        break;
+        case "loadMyReservationsMRSL":
+            var newTotalPages = Math.round(parseFloat(objData.Reservations.length/MAX_ELEMENTS_PER_TABLE));
+            var newPagination = [];
+            for(var i=1;i<=newTotalPages;i++){
+                newPagination.push(i);
+            }
+            bindThis.setState({ reservations: objData.Reservations, loadingReservations: false,
+                reservationsToDisplay: bindThis.filterPaginationArray(objData.Reservations, 0), pagination: newPagination })
+        break;
+        case "loadMyReservationsRP":
+            var newTotalPages = Math.round(parseFloat(objData.Reservations.length/MAX_ELEMENTS_PER_TABLE));
+            var newPagination = [];
+            for(var i=1;i<=newTotalPages;i++){
+                newPagination.push(i);
+            }
+            bindThis.setState({ reservations: objData.Reservations, loadingReservations: false,
+            reservationsToDisplay: bindThis.filterPaginationArray(objData.Reservations, 0), pagination: newPagination })
+        break;
+        case "confirmEditReservationMRSL":
+        case "saveRateMRSL":
+        case "saveCustReservationPayment":
+        case "saveComissionPayment":
+        case "confirmPaymentRP":
+        case "rejectPayment":
+        case "saveConfirmRP":
+        case "saveCancelRP":
+            bindThis.props.navigation.goBack()
+        break;
+        case "loadInfraestructureMP":
+            bindThis.setState({ facilities: objData.facilities });
+            bindThis.getInfraList();
+        break;
+        case "loadSpaceTypesFP": 
+            bindThis.setState({ spaceTypes: objData.spaceTypes, loadingSpaceTypes: false }); 
+        break;
+        case "loadMyFavoritePublications": 
+            bindThis.setState({ publications: objData.Publications, loadingPubs: false });   
+        break;
+        case "loadSpaceTypesMP":
+            if(bindThis.state.spacetypeSelected == ""){
+                var newSpaceTypeSelected = objData.spaceTypes[0].Code;
+                var spaceTypeSelectedText = objData.spaceTypes.filter(function(st){
+                    return parseInt(st.Code) === parseInt(newSpaceTypeSelected);
+                });
+                bindThis.setState({ spaceTypes: objData.spaceTypes, spacetypeSelected: newSpaceTypeSelected, spaceTypesLoaded: true, spaceTypeSelectedText: spaceTypeSelectedText[0].Description },
+                                () => {bindThis.startSearchMP();})
+            }else{
+                let sts = bindThis.state.spacetypeSelected;
+                var spaceTypeSelectedText = objData.spaceTypes.filter(function(st){
+                    return parseInt(st.Code) === parseInt(sts);
+                });
+                if(!spaceTypeSelectedText){
+                    spaceTypeSelectedText = objData.spaceTypes[0].Description;
+                    bindThis.setState({ spacetypeSelected: objData.spaceTypes[0].Code})
+                }
+                bindThis.setState({ spaceTypes: objData.spaceTypes, spaceTypesLoaded: true, spaceTypeSelectedText: spaceTypeSelectedText[0].Description || "" },
+                    () => {bindThis.startSearchMP();})
+            }
+        break;
+        case "startSearchMP":
+            var newTotalPages = Math.round(parseFloat(objData.TotalPublications/bindThis.state.publicationsPerPage));
+            var newPagination = [];
+            for(var i=1;i<=newTotalPages;i++){
+                newPagination.push(i);
+            }
+            bindThis.setState({ publicationsLoaded: true, publications:objData.Publications, 
+                totalPublications:objData.TotalPublications,totalPages:newTotalPages, pagination: newPagination });
+        break;
+        case "saveQuestionVP":
+            objApi.tabQuestionThis.setState({isLoading : false});
+        break;  
+        case "submitFavoriteVP":
+            bindThis.setState({ pubObj: { ...bindThis.state.pubObj, Favorite: objApi.objToSend.Code === 1 ? true : false } })
+        break;
+        case "confirmReservationVP":
+            bindThis.setState({ isLoading: false, buttonIsDisable: false });
+            bindThis.triggerScreen({mode:'"RESSUCC"'});    
         break;
     }
 }
@@ -111,12 +229,9 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
         case "ERR_ACCESSTOKENEXPIRED":
         case "ERR_REFRESHTOKENEXPIRED":
         case "ERR_INVALIDREFRESHTOKEN":
-            //handleExpiredToken(objApi, bindThis)
-            break;
-    }
-    console.log("callFunctionAfterApiError objData.responseCode = "+objData.responseCode)
-    console.log("callFunctionAfterApiError objApi.errorMSG = "+JSON.stringify(objApi.errorMSG))
 
+        break;
+    }
     if(objData.responseCode && objApi.errorMSG && objData.responseCode in objApi.errorMSG && objApi.errorMSG[objData.responseCode] && objApi.errorMSG[objData.responseCode] != ""){
         displayErrorMessage(objApi.errorMSG[objData.responseCode]);
     }else{
@@ -125,8 +240,8 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
 
     switch(trigger){
         case "registerUser":
-            //bindThis.setState({isLoading: false, buttonIsDisable: false});
-            //objApi.dispatch({ type: objApi.typeSuccess, messageObj: { responseCode: objData.responseCode, errorMessage: objApi.errorMSG.ERR_MAILALREADYEXIST}});
+            bindThis.setState({isLoading: false, buttonIsDisable: false});
+            objApi.dispatch({ type: objApi.typeSuccess, messageObj: { responseCode: objData.responseCode, errorMessage: objApi.errorMSG.ERR_MAILALREADYEXIST}});
         break;
         case "logIn":
             bindThis.setState({ isLoading: false });
@@ -152,5 +267,12 @@ export const displaySuccessMessage = (message) =>{
     showMessage({
         message: message,
         type: "success",
+      });
+}
+
+export const displayInfoMessage = (message) =>{
+    showMessage({
+        message: message,
+        type: "info",
       });
 }

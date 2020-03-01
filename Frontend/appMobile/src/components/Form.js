@@ -4,7 +4,6 @@ import { withNavigation } from 'react-navigation';
 import { connect } from 'react-redux';
 import { logIn, changeLanguage } from '../redux/actions/accountActions';
 import { displayErrorMessage } from '../common/genericFunctions';
-//import Globals from '../Globals'; 
 import languages from '../common/languages'
 import translations from '../common/translations';
 
@@ -33,16 +32,18 @@ class Form extends Component{
     
     onSelectionsChangeLanguage = (value, index) => {
         this.setState({language: value})
+        this.props.changeParentLanguage(value);
         this.props.changeLanguage(value);
     }
+
     checkRequiredInputs() {
         let returnValue = false;
         let message = "";
         if (!this.state.password || !this.state.email) {
-            message = 'Por favor ingrese correo y contraseña';
+            message = translations[this.props.systemLanguage].messages['login_errorMsg1']//'Por favor ingrese correo y contraseña';
             returnValue = true;
         } else if (!this.state.email.match(/\S+@\S+/)) {
-            message = 'Formato de email incorrecto';
+            message = translations[this.props.systemLanguage].messages['login_errorMsg2']//'Formato de email incorrecto';
             returnValue = true;
         }
 
@@ -58,23 +59,20 @@ class Form extends Component{
             this.props.logIn(this.state);
         }
     }
+
     render() {
         const { login_status, systemLanguage } = this.props;
         if (login_status == 'LOGGED_IN'){
             if (this.props.userData.PublisherValidated == true){
-                return this.props.navigation.navigate('HomeG');
+                return this.props.navigation.navigate('DrawerNavigator', {language:this.state.language});
             }
             else{
-                return this.props.navigation.navigate('HomeC');
+                return this.props.navigation.navigate('DrawerNavigatorC', {language:this.state.language});
             }
         } 
 
         return (
             <View style={styles.container}>
-                
-                {!this.state.loaded && (
-                    <Text>Cargando</Text>
-                )}
                 {this.state.isLoading ? (
                     <ActivityIndicator
                     animating = {this.state.isLoading}
@@ -100,7 +98,7 @@ class Form extends Component{
                         />
                         <Text style={styles.signupButton} onPress={() => { this.props.navigation.navigate('PasswordRecovery') }}> {translations[systemLanguage].messages['forgotPassword_header']}</Text>
                         <TouchableOpacity style={styles.button} onPress={() => { this.login() }}>
-                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['singOutLinks_head_login']}</Text>
+                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['signOutLinks_head_login']}</Text>
                         </TouchableOpacity>
                         <Text style={styles.infoText}>{translations[systemLanguage].messages['language_w']}</Text> 
                         <Picker
@@ -109,82 +107,16 @@ class Form extends Component{
                         onValueChange={this.onSelectionsChangeLanguage}
                         >
                             {
-                                languages.map((lang, key) => {
+                                languages.map((lang) => {
                                 return (<Picker.Item key={lang.code} value={lang.code} label={lang.title} />);
                                 })
                             }  
                         </Picker>
                     </>
                 )} 
-
-                
-                {this.state.error && (
-                    <Text style={styles.errorText}>{this.state.error}</Text>
-                )}
             </View>
         )
     }
-    /*login = (ev) => {
-        console.log("Entra: " + this.state.email + " " + this.state.password)
-        //Loaded seteada en false para desplegar gif de carga al momento de inciar sesión
-        //Se vuelve a poner error en null, para limpiar errores previos de la pantalla
-        this.setState({loaded:false, error:null});
-        let url = baseURL + 'Login';
-        console.log(url);
-        let req = new Request(url, {
-            headers: {'Content-Type': 'application/json',
-                      'Accept' : 'application/json',
-            },
-            method: 'POST',
-            body: JSON.stringify({
-            Password: this.state.password,
-            Mail: this.state.email
-            })
-        })
-        
-        fetch(req)
-        .then(response=>response.json())
-        .then(this.showData)
-        .catch(this.allErrors)
-
-    }
-
-    //Devuelve la data que se obtuvo en el fetch
-    showData = (data)=>{
-        //Al momento de mostrar concretarse el inicio de sesión correctamente ya no se muestra el gif
-        this.setState({loaded:true});
-        console.log(data);
-        switch(data.responseCode) {
-            case "ERR_USRMAILNOTEXIST":
-                this.setState({error:"El mail ingresado no existe"})
-                break;
-            case "ERR_USRWRONGPASS":
-                this.setState({error:"Contraseña incorrecta"})
-                break;
-            case "ERR_MAILNOTVALIDATED":
-                this.setState({error:"El mail ingresado se encuentra en espera de validación"})
-                break;   
-            case "SUCC_USRLOGSUCCESS":
-                this.props.logIn(data.voUserLog);
-                ToastAndroid.showWithGravity(
-                "Bienvenido, " + data.voUserLog.Name,
-                ToastAndroid.LONG,
-                ToastAndroid.CENTER,
-                );
-                //ToastAndroid.show(, ToastAndroid.SHORT);
-                this.props.navigation.navigate('Home')
-                break;
-        }
-        
-    }
-
-    //Se encarga de todo el manejo de errores en el llamado al API
-    allErrors = (err) => {
-        //Se saca el gif de carga, ya que para desplegar un error se tiene que haber cargado la información
-        this.setState({loaded:true, error: err.message});
-        console.log(err)
-    }*/
-
 }
 
 const mapStateToProps = (state) => {

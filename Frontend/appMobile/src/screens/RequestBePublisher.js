@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
-import {View,Text,Image,StyleSheet,ToastAndroid,TouchableOpacity} from 'react-native';
+import {View,Text,StyleSheet,TouchableOpacity} from 'react-native';
+import { Header } from 'react-native-elements';
 import { connect } from 'react-redux';
-
-import Globals from '../Globals';
+import { callAPI } from '../common/genericFunctions';
+import translations from '../common/translations';
 
 class RequestBePublisher extends Component {  
     constructor(props) {
@@ -14,59 +15,42 @@ class RequestBePublisher extends Component {
         }
     }
 
-    requestBePublisher(){
-      fetch(Globals.baseURL + '/customer', {
-          method: 'PUT',
-          header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-
-          body: JSON.stringify({
-              Mail: Mail,
-              AccessToken : tokenObj.accesToken
-          })
-      }).then(response => response.json()).then(data => {
-          console.log("data:" + JSON.stringify(data));
-          if (data.responseCode == "SUCC_USRUPDATED") {
-            ToastAndroid.showWithGravity(
-                'Solicitud enviada correctamente',
-                ToastAndroid.LONG,
-                ToastAndroid.CENTER,
-            );
-          } else{
-                ToastAndroid.showWithGravity(
-                    'Hubo un error',
-                    ToastAndroid.LONG,
-                    ToastAndroid.CENTER,
-                );
-          }
-      }
-      ).catch(error => {
-          toast.error('Internal error', {
-              position: "top-right",
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-          });
-          console.log(error);
-      }
-      )
-      
+    requestBePublisher = () =>{
+        var objApi = {};
+        objApi.objToSend = {
+            Mail: this.state.Mail,
+            AccessToken : this.state.tokenObj.accesToken
+        }
+        objApi.fetchUrl = "api/customer";
+        objApi.method = "PUT";
+        objApi.successMSG = {
+            SUCC_USRUPDATED : translations[this.props.systemLanguage].messages['SUCC_USRUPDATED3'],
+        };
+        objApi.functionAfterSuccess = "requestBePublisher";
+        objApi.functionAfterError = "requestBePublisher";
+        objApi.errorMSG= {}
+        callAPI(objApi, this);     
     }
 
     render (){
-
+        const { systemLanguage } = this.props;
         return (
                 <View style={styles.container}>
-                    <Text style={styles.titleText}>Quiero publicar</Text>
-                    <Text style={styles.infoText}>Si quieres ser uno de nuestros colaboradores, pudiendo realizar publicaciones en el sito, haz click en el boton 'Quiero!'. Se enviará una solicitud y uno de nuestros representantes se comunicará contigo a la brevedad.</Text>
-                    <View style={{flexDirection: 'row'}}>
-                        <TouchableOpacity style={styles.button} onPress={() => {this.props.navigation.navigate('Home')}}>
-                            <Text style={styles.buttonText}>Me lo pierdo</Text>   
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.button} onPress={() => {this.requestBePublisher}}>
-                            <Text style={styles.buttonText}>Quiero</Text>   
-                        </TouchableOpacity>
+                    <Header
+                        leftComponent={{ icon: 'menu', color: '#fff', flex: 1, onPress: () => this.props.navigation.openDrawer()}}
+                        rightComponent={{ icon: 'home', color: '#fff', flex:1, onPress: () => this.props.navigation.navigate('Home')}}
+                    />
+                    <View style={{alignItems: 'center', justifyContent: 'center',}}>
+                        <Text style={styles.titleText}>{translations[systemLanguage].messages['signInLinks_wantToPublish']}</Text>
+                        <Text style={styles.infoText}>{translations[systemLanguage].messages['signInLinks_wantToPublishBody']}</Text>
+                        <View style={{flexDirection: 'row'}}>
+                            <TouchableOpacity style={styles.button} onPress={() => {this.props.navigation.navigate('Home')}}>
+                                <Text style={styles.buttonText}>{translations[systemLanguage].messages['signInLinks_notwantToPublishBody']}</Text>   
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.button} onPress={() => {this.requestBePublisher()}}>
+                                <Text style={styles.buttonText}>{translations[systemLanguage].messages['signInLinks_wantToPublishButton']}</Text>   
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>    
         );
@@ -78,15 +62,14 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#2196f3',
-        alignItems: 'center',
-        justifyContent: 'center',
+        alignItems: 'flex-start',
+        justifyContent: 'flex-start',
     },
     titleText:{
         fontSize: 32, 
         fontWeight: 'bold',
         color: "#FFF",
         marginTop: 20,
-        marginLeft: 20,
         marginBottom: 5,
     },
     infoText:{
@@ -117,6 +100,7 @@ const mapStateToProps = (state) => {
     return {
         userData: state.loginData.userData,
         tokenObj: state.loginData.tokenObj,
+        systemLanguage: state.loginData.systemLanguage
     }
 }
 

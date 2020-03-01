@@ -1,0 +1,10 @@
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\teamupML.Model\bin\Debug\netstandard2.0\MLModel.zip
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\teamupML.Model\bin\Debug\netstandard2.0\teamupML.Model.deps.json
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\teamupML.Model\bin\Debug\netstandard2.0\teamupML.Model.dll
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\teamupML.Model\bin\Debug\netstandard2.0\teamupML.Model.pdb
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\teamupML.Model\obj\Debug\netstandard2.0\teamupML.Model.csprojAssemblyReference.cache
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\teamupML.Model\obj\Debug\netstandard2.0\teamupML.Model.csproj.CoreCompileInputs.cache
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\teamupML.Model\obj\Debug\netstandard2.0\teamupML.Model.AssemblyInfoInputs.cache
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\teamupML.Model\obj\Debug\netstandard2.0\teamupML.Model.AssemblyInfo.cs
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\teamupML.Model\obj\Debug\netstandard2.0\teamupML.Model.dll
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\teamupML.Model\obj\Debug\netstandard2.0\teamupML.Model.pdb

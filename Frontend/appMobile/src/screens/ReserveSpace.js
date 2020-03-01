@@ -21,17 +21,11 @@ class ReserveSpace extends Component {
                                     , '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
             hourFromSelect      : '00',
             hourToSelect        : '01',
+            totalPrice          : 0,
             reservationComment  : "",
             pubObj              : pubObjParams,
         }
     }
-
-    /*setInitialHour(){
-        var today = new Date();
-        var hourFromSelect = today.getHours();
-        this.changeHour({target : {value : hourFromSelect, id: "hourFromSelect" }})
-
-    }*/
 
     triggerSummaryScreen(){
         var validObj = this.validateReservation();
@@ -45,7 +39,7 @@ class ReserveSpace extends Component {
                 case "WeeklyPrice" : planChosenText = "por semana"; break;
                 case "MonthlyPrice" : planChosenText = "por mes"; break;
             }
-            var totalPrice = (parseInt(tmpHts-tmpHfs) * parseInt(this.state.pubObj[this.state.planChosen]));
+            var totalPrice = (parseInt(tmpHts - tmpHfs) * parseInt(this.state.pubObj[this.state.planChosen]) * parseInt(this.state.quantityPlan));
             if(this.state.pubObj.IndividualRent == true){
                 totalPrice = totalPrice * parseInt(this.state.quantityPeople);
             }
@@ -54,12 +48,14 @@ class ReserveSpace extends Component {
             });
             
             var summaryObject = {
+                pubID: this.state.pubObj.IdPublication,
                 planChosen: this.state.planChosen,
                 planChosenText: planChosenText,
                 planValue : this.state.pubObj[this.state.planChosen],
+                reservedQuantity: this.state.quantityPlan,
                 hourFromSelect : tmpHfs,
                 hourToSelect : tmpHts,
-                date: this.convertDate(this.state.date),
+                date: this.state.date,
                 quantityPeople : this.state.quantityPeople,
                 totalPrice : totalPrice,
             };
@@ -152,23 +148,7 @@ class ReserveSpace extends Component {
         });
     }
 
-    convertDate(date) {
-        var today = new Date(date);
-        var dd = today.getDate();
-        var mm = today.getMonth() + 1; //January is 0!
-
-        var yyyy = today.getFullYear();
-        if (dd < 10) {
-            dd = '0' + dd;
-        }
-        if (mm < 10) {
-            mm = '0' + mm;
-        }
-        var dateConv = dd + "-" + mm + '-' + yyyy;
-        return dateConv;
-    }
-
-    handleChangeDate(date){
+    handleChangeDate = (date) =>{
         this.setState({date:date});
     }
 
@@ -289,10 +269,11 @@ class ReserveSpace extends Component {
                     <View style={{flexDirection: 'row', alignItems: 'center'}}>
                         <Text style={styles.subTitleText}>{translations[systemLanguage].messages['date_w']} </Text>
                         <DatePicker 
-                            parentState={this.state} 
+                            parentDate={this.state.date} 
                             handleChangeDate={this.handleChangeDate}
                             placeholder={translations[systemLanguage].messages['date_w']}
-                            onChangeDate={(date) => {this.props.handleChangeDate(date)}}
+                            onChangeDate={(date) => this.setState({date})}
+                            /*{(date) => {this.props.handleChangeDate(date)}}*/
                         />      
                     </View>
                     <View style={{flexDirection: 'row', alignItems: 'center'}}>                    
@@ -315,10 +296,10 @@ class ReserveSpace extends Component {
                 </View>
                 <View style={{flexDirection: 'row'}}> 
                     <TouchableOpacity style={styles.button} onPress={() => {this.props.navigation.goBack()}}> 
-                        <Text style={styles.buttonText}>Cancelar</Text>
+                        <Text style={styles.buttonText}>{translations[systemLanguage].messages['cancel_w']}</Text>
                     </TouchableOpacity>                     
                     <TouchableOpacity style={styles.button} onPress={() => this.triggerSummaryScreen()}> 
-                        <Text style={styles.buttonText}>Confirmar</Text>
+                        <Text style={styles.buttonText}>{translations[systemLanguage].messages['confirm_w']}</Text>
                     </TouchableOpacity>
                 </View>
             </View>                    

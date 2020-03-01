@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
-import {StyleSheet,Text,View,ScrollView,Keyboard,TouchableOpacity,ToastAndroid} from 'react-native';
-
+import {StyleSheet,Text,View,ScrollView} from 'react-native';
+import { connect } from 'react-redux';
+import { callAPI } from '../common/genericFunctions';
 import SpacesScrollView from './SpacesScrollView';
+import translations from '../common/translations';
 
-import Globals from '../Globals';
 
 class RecommendedPublications extends Component {
     constructor(props) {
@@ -14,111 +15,45 @@ class RecommendedPublications extends Component {
             spaceTypes              : [],
             generalError            : false,
         }
-        this.loadRecommendedPubs = this.loadRecommendedPubs.bind(this);
-        //this.redirectToPub = this.redirectToPub.bind(this);
-        this.handleErrors           = this.handleErrors.bind(this);
     }
     
-    handleErrors(error) {
-        this.setState({ generalError: true });
-    }
-
     componentDidMount() {
-        this.loadSpaceTypes();
+        this.loadSpaceTypesRP();
     }
 
-    loadSpaceTypes() {
+    // This function will call the API
+    loadSpaceTypesRP = () => {
         var objApi = {};
         objApi.objToSend = {}
-        objApi.fetchUrl = Globals.baseURL + '/spaceTypes';
+        objApi.fetchUrl = "api/spaceTypes";
         objApi.method = "GET";
-        objApi.responseSuccess = "SUCC_SPACETYPESOK";
-        objApi.successMessage = "";
-        objApi.functionAfterSuccess = "loadSpaceTypes";
-        this.callAPI(objApi);
+        objApi.successMSG = {
+            SUCC_SPACETYPESOK : '',
+        };
+        objApi.functionAfterSuccess = "loadSpaceTypesRP";
+        objApi.errorMSG= {}
+        callAPI(objApi, this);
     }
 
-    loadRecommendedPubs(){
+    // This function will call the API
+    loadRecommendedPubs = () =>{
         var objApi = {};
         objApi.objToSend = {}
-        objApi.fetchUrl = Globals.baseURL + '/recommendedPublications';
+        objApi.fetchUrl = "api/recommendedPublications";
         objApi.method = "GET";
-        objApi.responseSuccess = "SUCC_FAVORITESOK";
-        objApi.successMessage = "";
+        objApi.successMSG = {
+            SUCC_FAVORITESOK : '',
+        };
         objApi.functionAfterSuccess = "loadRecommendedPubs";
-        this.callAPI(objApi);
+        objApi.errorMSG= {}
+        callAPI(objApi, this);
     }
-
-    callAPI(objApi){
-        if(objApi.method == "GET"){
-            fetch(objApi.fetchUrl).then(response => response.json()).then(data => {
-                if (data.responseCode == objApi.responseSuccess) {
-                    if(objApi.successMessage != ""){
-                        ToastAndroid.showWithGravity(
-                            objApi.successMessage,
-                            ToastAndroid.LONG,
-                            ToastAndroid.CENTER,
-                        );
-                    }
-                    this.callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data);
-                } else {
-                    this.handleErrors("Internal error");
-                }
-            }
-            ).catch(error => {
-                this.handleErrors(error);
-            }
-            )
-        }else{
-            fetch(objApi.fetchUrl,{
-                    method: objApi.method,
-                    header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify(objApi.objToSend)
-                }).then(response => response.json()).then(data => {
-                if (data.responseCode == objApi.responseSuccess) {
-                    if(objApi.successMessage != ""){
-                        ToastAndroid.showWithGravity(
-                            objApi.successMessage,
-                            ToastAndroid.LONG,
-                            ToastAndroid.CENTER,
-                        );
-                    }
-                    this.callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data);
-                } else {
-                    this.handleErrors("Internal error");
-                }
-            }
-            ).catch(error => {
-                this.handleErrors(error);
-            }
-            )
-        }
-    }
-
-    callFunctionAfterApiSuccess(trigger, objData){
-        switch(trigger){
-            case "loadRecommendedPubs":
-                console.log("loadRecommendedPubs")
-                console.log(objData)
-
-                var finalRecommended = objData.Recommended;
-                const spaceTypes = this.state.spaceTypes;
-                finalRecommended.forEach(element => {
-                    const spaceType = spaceTypes.filter(space => {
-                        return space.Code === element.SpaceType
-                    });
-                    element.SpaceTypeDesc = spaceType[0].Description;    
-                });
-                this.setState({ recommendedPublications: finalRecommended});
-            break;
-            case "loadSpaceTypes" : this.setState({ spaceTypes: objData.spaceTypes }, () => {this.loadRecommendedPubs()}); break;
-        }
-    }
-
+    
     render() {
+        const { systemLanguage } = this.props;
         return (
             <View style={{marginTop: 20}}>
-                <Text style={styles.titleText}>Publicaciones recomendadas!</Text>
+                <Text style={styles.titleText}>{translations[systemLanguage].messages['recPubs_recommendedPubls']}</Text>
                 {this.state.recommendedPublications.map((relPubs) => {
                     if(relPubs.Publications.length == 0){
                         return null;
@@ -161,5 +96,11 @@ const styles = StyleSheet.create({
   },
 });
 
-export default RecommendedPublications;
+const mapStateToProps = (state) => {
+    return {
+        systemLanguage: state.loginData.systemLanguage
+    }
+}
+
+export default connect(mapStateToProps)(RecommendedPublications);
 
