@@ -17,7 +17,7 @@ class UserBox extends React.Component {
         this.state = {
             active: false,
         };
-        if (!this.props.adminData.Mail) {
+        if (!this.props.adminData || !this.props.adminData.Mail) {
             this.props.logOut()
         }
     }
@@ -29,7 +29,7 @@ class UserBox extends React.Component {
                 <div className="header-btn-lg pr-0">
                     <div className="widget-content p-0">
                         <div className="widget-content-wrapper">
-                            {this.props.adminData.Mail ? (
+                            {this.props.adminData && this.props.adminData.Mail ? (
                                 <Fragment>
                                     <div className="widget-content-left">
 
