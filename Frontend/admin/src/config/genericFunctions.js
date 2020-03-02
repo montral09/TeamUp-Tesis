@@ -60,6 +60,9 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             objApi.retryObjApi.objToSend.AccessToken = objData.AccessToken;
             callAPI(objApi.retryObjApi, bindThis);
             break;
+        case "updateReservatonsStates" : 
+            bindThis.loadReservations();
+            break;
         case "logIn":
             bindThis.toggleButton();
             let admTokenObj = {
@@ -77,7 +80,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             })
             bindThis.setState({ 'gestPendApr': sanitizedValues,'gestPendAprToDisplay': filterInitialElementsToDisplay(sanitizedValues) ,isLoading: false })
         break;
-        case "submitPublisher" : bindThis.setState({ gestPendApr: objApi.newArrIfSuccess }); break;
+        case "submitPublisher" : bindThis.setState({ gestPendApr: objApi.newArrIfSuccess, isLoading: false, processing:false }); bindThis.loadPendingPublishers(); break;
         case "getUsers" : bindThis.setState ({...bindThis.state, arrDataUsers: objData.voUsers, arrDataUsersToDisplay: filterInitialElementsToDisplay(objData.voUsers), isLoading: false}); break;
         case "updateUser" : 
             bindThis.setState({ 
@@ -214,6 +217,7 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
             bindThis.toggleButton();
             objApi.dispatch({ type: objApi.typeError});
         break;
+        case "submitPublisher" : bindThis.setState({ isLoading: false }); break;
         case "registerUser":
             bindThis.setState({isLoading: false, buttonIsDisable: false});
         break;

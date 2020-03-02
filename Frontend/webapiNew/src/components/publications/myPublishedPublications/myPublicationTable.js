@@ -32,7 +32,7 @@ const MyPublicationTable = (props) =>{
                 obj.PreferentialPlan.StateDescription = ''
             } 
             var objPayment = {paymentStatus: obj.PreferentialPlan.StateDescription, paymentStatusText: translate('payState_'+obj.PreferentialPlan.StateDescription.replace(/\s/g,'')), paymentAmmount: 
-                obj.PreferentialPlan.Price,plan: obj.PreferentialPlan.Description,paymentDate:obj.PreferentialPlan.PaymentDate, IdPublication: obj.IdPublication, paymentDocument : obj.PreferentialPlan.Evidence};
+                obj.PreferentialPlan.PublicationPrice,plan: obj.PreferentialPlan.Description,paymentDate:obj.PreferentialPlan.PaymentDate, IdPublication: obj.IdPublication, paymentDocument : obj.PreferentialPlan.Evidence};
             return(
             <tr key={obj.IdPublication}>
                 <td>{obj.IdPublication}</td>
@@ -55,7 +55,7 @@ const MyPublicationTable = (props) =>{
                 <td>{obj.QuestionsWithoutAnswer}</td>
                 <td>{obj.TotalViews}</td>
                 <td>
-                    {obj.State != 'FINISHED' ? (<a href={url}><span><i className="col-md-3 fa fa-eye"></i></span> {translate('view_w')}</a>) : (null)}
+                    {obj.State != 'FINISHED' && obj.State != 'NOT VALIDATED' && obj.State != 'PAUSED P'? (<a href={url}><span><i className="col-md-3 fa fa-eye"></i></span> {translate('view_w')}</a>) : (null)}
                 </td>
                 {obj.State === 'ACTIVE' ? (
                     <>

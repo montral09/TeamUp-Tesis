@@ -38,6 +38,7 @@ class ViewPublication extends React.Component {
             relatedPublications: [],
             otherPublicationConfig : [],
             facilities: [],
+            spaceTypes: [],
             pubIsLoading: true,
             infIsLoading: true,
             planChosen: "HourPrice",
@@ -56,6 +57,7 @@ class ViewPublication extends React.Component {
     }
 
     componentWillMount() {
+        this.loadSpaceTypesCP();
         this.loadInfraestructureVP();
         this.loadPublicationVP(this.state.pubID);
         this.setInitialHour();
@@ -111,6 +113,20 @@ class ViewPublication extends React.Component {
         if (parseInt(value) > 0) {
             this.setState({ quantityPlan: parseInt(value) });
         }
+    }
+
+    // This function will call the API
+    loadSpaceTypesCP() {
+        var objApi = {};
+        objApi.objToSend = {}
+        objApi.fetchUrl = 'api/spaceTypes';
+        objApi.method = "GET";
+        objApi.successMSG = {
+            SUCC_SPACETYPESOK : '',
+        };
+        objApi.functionAfterSuccess = "loadSpaceTypesCP";
+        objApi.errorMSG= {}
+        callAPI(objApi, this);
     }
 
     // This function will call the API 
@@ -396,6 +412,14 @@ class ViewPublication extends React.Component {
         callAPI(objApi, this);
     }
 
+    printSpaceType = () =>{
+        var spaceTypeSelected = this.state.pubObj.SpaceType;
+        var spaceTypeFound = this.state.spaceTypes.filter(function(obj){
+            return obj.Code == spaceTypeSelected
+        })
+        return (spaceTypeFound[0].Description)
+    } 
+
     render() {
         const { login_status } = this.props;
         const options = {
@@ -447,6 +471,21 @@ class ViewPublication extends React.Component {
                                         <div className="row">
                                             <div className="col-md-12 ">
                                                 <div className="row">
+                                                <div className="breadcrumb full-width ">
+                                                    <div className="background-breadcrumb"></div>
+                                                    <div className="background">
+                                                        <div className="shadow"></div>
+                                                        <div className="pattern">
+                                                            <div className="container" style={{ paddingBottom: '1px' }}>
+                                                                <div className="clearfix">
+                                                                    <ul>
+                                                                        {this.state.pubObj.SpaceType && this.state.spaceTypes ? (this.printSpaceType()) : (null)}
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                     <div className="main-content  full-width ">
                                                         <div className="background-content"></div>
                                                         <div className="background">

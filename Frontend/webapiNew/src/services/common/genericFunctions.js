@@ -89,22 +89,9 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         break;
 
         case "modifyUser":
-            if(objApi.emailChanged){
-                objApi.logOut()
-                bindThis.props.history.push('/account/login');
-            }else{
-                bindThis.props.modifyData({
-                    Mail: bindThis.state.originalEmail,
-                    Name: bindThis.state.firstName,
-                    LastName: bindThis.state.lastName,
-                    Phone: bindThis.state.phone,
-                    Rut: bindThis.state.rut,
-                    RazonSocial: bindThis.state.razonSocial,
-                    Address: bindThis.state.address,
-                    Language: bindThis.state.Language
-                });
-                bindThis.props.history.push('/');
-            }
+            bindThis.setState({ isLoading: false});
+            objApi.logOut()
+            bindThis.props.history.push('/account/login');
         break;
         case "registerUser":
             bindThis.props.history.push('/account/login')

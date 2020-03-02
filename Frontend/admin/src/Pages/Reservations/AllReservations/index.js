@@ -18,8 +18,6 @@ import {
 class AllReservations extends Component {
     constructor(props) {
         super(props);
-        console.log("AllReservations - props:")
-        console.log(props);
         const admTokenObj = props.admTokenObj;
         const adminMail = props.adminData.Mail
         this.state = {
@@ -50,19 +48,25 @@ class AllReservations extends Component {
 
     // This function will trigger when the component is mounted, to fill the data from the state
     componentDidMount = () => {
-        this.loadReservations()
+        this.loadReservations();
     }
 
     updateElementsToDisplay = (toDisplayArray) => {
-        this.setState({publToDisplay : toDisplayArray})
+        this.setState({reservationsToDisplay : toDisplayArray})
     }
-    // This function will trigger the save function inside the modal to update the values
-    editPublication = (key) => {
-        const publData = this.state.publ.filter(publ => {
-            return publ.IdPublication === key
-        });
 
-        //this.modalElement.current.toggle(publData[0],this.state.admTokenObj,this.props.adminData, this.state.spaceTypes, this.state.facilities);
+    // This function will call the api to update the states of the reservations
+    updateReservatonsStates = () => {
+        this.setState({isLoading : true, reservationsToDisplay: [], reservations : []});
+        var objApi = {};
+        objApi.objToSend = {}   
+        objApi.fetchUrl = "api/scheduledJobs";
+        objApi.method = "POST";
+        objApi.successMSG = {
+            SUCC_STATESUPDATES : '',
+        };
+        objApi.functionAfterSuccess = "updateReservatonsStates";
+        callAPI(objApi, this);
     }
 
     render() {
@@ -85,7 +89,7 @@ class AllReservations extends Component {
                             <Card className="main-card mb-3">
                                 <CardBody>
                                     <CardTitle>Reservas</CardTitle>
-                                    <AllReservationsTable elements = {this.state.reservationsToDisplay} isLoading = {this.state.isLoading} />
+                                    <AllReservationsTable elements = {this.state.reservationsToDisplay} isLoading = {this.state.isLoading} updateReservatonsStates = {this.updateReservatonsStates} />
                                 </CardBody>
                             </Card>
                         </Col>

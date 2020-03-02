@@ -49,7 +49,7 @@ class Register extends React.Component {
             || !this.state.lastName || !this.state.phone) {
                 message= this.props.translate('register_checkErrorMsg1');
                 returnValue = true;
-        } else if (!this.state.firstName.match(/^[A-Za-z]+$/)) {        
+        } else if (!this.state.firstName.match(/^[A-Za-z ]+$/)) {        
             returnValue = true;
             message = this.props.translate('register_checkErrorMsg2');
         } else if (this.state.firstName.length < 2) {        

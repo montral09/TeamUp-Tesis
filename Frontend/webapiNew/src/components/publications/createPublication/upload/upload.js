@@ -74,7 +74,6 @@ class Upload extends React.Component {
   // End Upload image functions
   onChange = (evt) => {
     if (this.maxSelectFile(evt) && this.checkMimeType(evt) && this.checkFileSize(evt)) {
-      console.log(evt.target.files);
       this.setState({ spaceImages: [], tempFiles: evt.target.files}, () => {
         for(var i=0;i<this.state.tempFiles.length;i++){
           var file = this.state.tempFiles[i]; // FileList object

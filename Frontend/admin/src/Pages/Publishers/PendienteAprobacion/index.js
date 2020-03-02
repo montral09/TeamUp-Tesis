@@ -12,14 +12,12 @@ import { callAPI } from '../../../config/genericFunctions'
 import {
     Row, Col,
     Card, CardBody,
-    CardTitle
+    CardTitle, Progress
 } from 'reactstrap';
 
 class PendienteAprobacion extends Component {
     constructor(props) {
         super(props);
-        console.log("AllPublishers - props:")
-        console.log(props);
         const admTokenObj = props.admTokenObj;
         const adminMail = props.adminData.Mail
         this.state = {
@@ -27,12 +25,14 @@ class PendienteAprobacion extends Component {
             gestPendAprToDisplay : [],
             admTokenObj: admTokenObj,
             adminMail: adminMail,
-            isLoading : true
+            isLoading : true,
+            processing : false,
         }
     }
 
     // This function will try to approve an specific publisher
     approvePublisher = (key) => {
+
         const gestToApprove = this.state.gestPendApr.filter(gest => {
             return gest.Mail === key
         });
@@ -54,6 +54,7 @@ class PendienteAprobacion extends Component {
         this.loadPendingPublishers();
     }
 
+    // Call the api to get the publsihers
     loadPendingPublishers = () => {
         var objApi = {};
         objApi.objToSend = {
@@ -69,12 +70,14 @@ class PendienteAprobacion extends Component {
         callAPI(objApi, this);
     }
 
+    // This function will update elements to display
     updateElementsToDisplay = (toDisplayArray) => {
         this.setState({publToDisplay : toDisplayArray})
     }
 
     // This funciton will call the api to submit the publisher
     submitPublisher(publishersEmails, newArrIfSuccess, admTokenObj, adminMail) {
+        this.setState({isLoading : true, processing:true})
         var objApi = {};
         objApi.objToSend = {
             Mails: publishersEmails,
@@ -111,7 +114,8 @@ class PendienteAprobacion extends Component {
                             <Card className="main-card mb-3">
                                 <CardBody>
                                     <CardTitle>Pendientes de aprobación</CardTitle>
-                                    <PublisherApprovTable isLoading = {this.state.isLoading} pubPendApp={this.state.gestPendAprToDisplay} approvePublisher={this.approvePublisher} approveAllPublishers={this.approveAllPublishers} />
+                                    {!this.state.processing ? (<PublisherApprovTable isLoading = {this.state.isLoading} pubPendApp={this.state.gestPendAprToDisplay} approvePublisher={this.approvePublisher} approveAllPublishers={this.approveAllPublishers} />
+                                                                ) : (<Progress className="mb-3" animated value={100} />)}
                                 </CardBody>
                             </Card>
                         </Col>

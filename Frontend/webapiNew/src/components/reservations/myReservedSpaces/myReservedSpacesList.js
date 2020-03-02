@@ -138,6 +138,7 @@ class MyReservedSpacesList extends React.Component {
             case "PAYRESCUST":
                 this.ModalCustResPay.current.toggle(auxParam);
                 break;
+
         }
     }
 
@@ -209,8 +210,8 @@ class MyReservedSpacesList extends React.Component {
             "IdReservation": objPaymentDetails.IdReservation,
             "Comment": objPaymentDetails.paymentComment || "",
             "Evidence": {
-                "Base64String": objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Base64String : "",
-                "Extension": objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Extension : ""
+                "Base64String": objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Base64String : null,
+                "Extension": objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Extension : null
             }
         }
         objApi.fetchUrl = "api/reservationPaymentCustomer";

@@ -109,7 +109,6 @@ class ModalCustResPay extends React.Component {
     onChange = (evt) => {
         if(evt.target.id != "paymentComment"){
             if (this.maxSelectFile(evt) && this.checkMimeType(evt) && this.checkFileSize(evt)) {
-                console.log(evt.target.files);
                 this.setState({ spaceImages: [], tempFiles: evt.target.files }, () => {
                     for (var i = 0; i < this.state.tempFiles.length; i++) {
                         var file = this.state.tempFiles[i]; // FileList object

@@ -121,7 +121,7 @@ class ModifyPublicationModal extends React.Component {
               ...this.state.publDataChanged,
               [e.target.name] : valueToUpdate
             }
-          }, () => console.log ((this.state)))
+          })
     }
 
     handleRichTextChange = (value) =>{

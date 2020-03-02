@@ -512,7 +512,7 @@ var translations = {
             SUCC_RESERVATIONUPDATED : 'Your reservation has been updated',
             SUCC_REVIEWCREATED : 'Review successfully created!',
             SUCC_PAYMENTUPDATED : 'Payment has been sent for processing',
-            SUCC_PAYMENTUPDATED2: 'Payment submission has been declines',
+            SUCC_PAYMENTUPDATED2: 'Payment submission has been declined',
             SUCC_RESERVATIONUPDATED: 'The reservation has been canceled',
             SUCC_RESERVATIONUPDATED2: 'The reservation has been confirmed',            
             ERR_ACTIVATIONCODENOTEXIST: "Activation code doesn't exist",
