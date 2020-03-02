@@ -74,10 +74,10 @@ class ReserveSpaceSummary extends Component {
                 <ScrollView>
                     <View style={{alignItems: 'flex-start', marginLeft: 15}}>
                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                            <Text style={styles.subTitleText}>Tipo de reserva </Text>
+                            <Text style={styles.subTitleText}>{translations[systemLanguage].messages['modalReservation_resType']} </Text>
                             <TextInput style={styles.inputBox} 
                                 underlineColorAndroid='rgba(0,0,0,0)'
-                                placeholder='Tipo de reserva'
+                                placeholder={translations[systemLanguage].messages['modalReservation_resType']}
                                 placeholderTextColor="#ffffff"
                                 value={this.state.summaryObject.planChosenText}
                                 editable = {false}
@@ -94,10 +94,10 @@ class ReserveSpaceSummary extends Component {
                             />
                         </View>
                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                            <Text style={styles.subTitleText}>Fecha de reserva </Text>
+                            <Text style={styles.subTitleText}>{translations[systemLanguage].messages['modalReservation_reservationDate']} </Text>
                             <TextInput style={styles.inputBox} 
                                 underlineColorAndroid='rgba(0,0,0,0)'
-                                placeholder='Tipo de reserva'
+                                placeholder={translations[systemLanguage].messages['modalReservation_reservationDate']}
                                 placeholderTextColor="#ffffff"
                                 value={this.state.summaryObject.date}
                                 editable = {false}
@@ -107,7 +107,7 @@ class ReserveSpaceSummary extends Component {
                             <Text style={styles.subTitleText}>{translations[systemLanguage].messages['people_w']} </Text>
                             <TextInput style={styles.inputBox2} 
                                 underlineColorAndroid='rgba(0,0,0,0)'
-                                placeholder='Tipo de reserva'
+                                placeholder={translations[systemLanguage].messages['people_w']}
                                 placeholderTextColor="#ffffff"
                                 value={this.state.summaryObject.quantityPeople.toString()}
                                 editable = {false}
@@ -120,7 +120,7 @@ class ReserveSpaceSummary extends Component {
                                     <Text style={styles.subTitleText}>{translations[systemLanguage].messages['hour_w']} </Text>
                                     <TextInput style={styles.inputBox} 
                                         underlineColorAndroid='rgba(0,0,0,0)'
-                                        placeholder='Tipo de reserva'
+                                        placeholder={translations[systemLanguage].messages['hour_w']}
                                         placeholderTextColor="#ffffff"
                                         value={'Desde '+this.state.summaryObject.hourFromSelect+ ' hasta '+this.state.summaryObject.hourToSelect+' hrs'}
                                         editable = {false}
@@ -130,7 +130,7 @@ class ReserveSpaceSummary extends Component {
                                 <Text style={styles.subTitleText}>{translations[systemLanguage].messages['totalHours_w']} </Text>
                                     <TextInput style={styles.inputBox2} 
                                         underlineColorAndroid='rgba(0,0,0,0)'
-                                        placeholder='Tipo de reserva'
+                                        placeholder={translations[systemLanguage].messages['totalHours_w']}
                                         placeholderTextColor="#ffffff"
                                         value={(this.state.summaryObject.hourToSelect-this.state.summaryObject.hourFromSelect).toString()}
                                         editable = {false}
@@ -144,7 +144,7 @@ class ReserveSpaceSummary extends Component {
                             <Text style={styles.subTitleText}>{translations[systemLanguage].messages['totalAmount_w']} </Text>
                             <TextInput style={styles.inputBox} 
                                 underlineColorAndroid='rgba(0,0,0,0)'
-                                placeholder='Tipo de reserva'
+                                placeholder={translations[systemLanguage].messages['totalAmount_w']}
                                 placeholderTextColor="#ffffff"
                                 value={this.state.summaryObject.totalPrice.toString()}
                                 editable = {false}
@@ -158,8 +158,8 @@ class ReserveSpaceSummary extends Component {
                             onChangeText= {(reservationComment) => this.setState({reservationComment})}
                             value={this.state.reservationComment}
                         />
-                        <Text style={styles.infoText}>Atencion! Este valor esta pendiente de confirmar.{'\n'}
-                                Va a recibir un correo con los detalles finales y la confirmacion dentro de las proximas 48hrs.</Text>
+                        <Text style={styles.infoText}>{translations[systemLanguage].messages['modalReservation_msg1']}{'\n'}
+                        {translations[systemLanguage].messages['modalReservation_msg2']}</Text>
                         <View style={{flexDirection: 'row'}}> 
                             <TouchableOpacity style={styles.button} onPress={() => {this.props.navigation.goBack()}}> 
                                 <Text style={styles.buttonText}>{translations[systemLanguage].messages['cancel_w']}</Text>

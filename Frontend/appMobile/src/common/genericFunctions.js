@@ -31,6 +31,7 @@ export const callAPI = (objApi, bindThis) => {
                 if(objApi.successMSG[data.responseCode] && objApi.successMSG[data.responseCode] != ""){
                     displaySuccessMessage(objApi.successMSG[data.responseCode]);
                 }
+                console.log(objApi)
                 callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data, objApi, bindThis);
             } else {
                 callFunctionAfterApiError(objApi.functionAfterError, data, objApi, bindThis);
@@ -47,6 +48,7 @@ export const callAPI = (objApi, bindThis) => {
 export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) =>{
     switch(trigger){
         case "registerUser":
+            bindThis.setState({isLoading: false, buttonIsDisable: false});
             objApi.dispatch({ type: objApi.typeSuccess, userData: objApi.objToSend});
         break;
         case "logIn":
@@ -167,6 +169,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         case "rejectPayment":
         case "saveConfirmRP":
         case "saveCancelRP":
+            bindThis.setState({isLoading: false});
             bindThis.props.navigation.goBack()
         break;
         case "loadInfraestructureMP":

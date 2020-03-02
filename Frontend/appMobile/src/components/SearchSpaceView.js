@@ -2,15 +2,27 @@ import React, {Component} from 'react';
 import {View,Text,Image,StyleSheet,Dimensions,TouchableOpacity} from 'react-native';
 import { connect } from 'react-redux';
 import { Ionicons } from "@expo/vector-icons";
+import Icon from 'react-native-vector-icons/FontAwesome';
 import translations from '../common/translations';
 
 class SearchSpaceView extends Component {
     render (){
         const { systemLanguage } = this.props;
-        const {IdPublication, Capacity, HourPrice, DailyPrice, WeeklyPrice, MonthlyPrice, Title, ImagesURL, City} = this.props;
+        const {IdPublication, Capacity, HourPrice, DailyPrice, WeeklyPrice, MonthlyPrice, Title, ImagesURL, City, IsRecommended} = this.props;
         return (
             <View style={styles.spacesContainer}>
                 <View style={{flexDirection: 'row'}}>
+                    {IsRecommended == true ? (
+                        <View style={styles.recommendedView}>
+                            <Icon
+                                name="thumbs-o-up"
+                                size={18}
+                                color='white'
+                            />
+                            <Text style={styles.buttonText}> {translations[this.props.systemLanguage].messages['recommended_w']}</Text>
+                        </View>
+                        ):(null)
+                    }
                     <Image style={styles.image} source={{uri:ImagesURL[0]}}/>
                         <View style={{marginTop: 10}}>
                             <Text style={styles.titleText}>{Title}</Text>
@@ -77,6 +89,20 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps)(SearchSpaceView);
 
 const styles = StyleSheet.create({
+    recommendedView: {
+        width: 140,
+        height: 30,
+        borderRadius: 4,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#0069c0',
+        position: 'absolute',
+        paddingHorizontal: 5,
+        elevation: 1,
+        left: 8,
+        top: 15,
+    },
     image:{
         width: 200,
         height: 220,  

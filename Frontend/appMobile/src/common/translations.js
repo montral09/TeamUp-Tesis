@@ -720,7 +720,7 @@ var translations = {
 
             payState_PENDINGPAYMENT: 'Pending payment',
             payState_PAID : 'Payment',
-            payState_PENDINGCONFIRMATION : 'Pending payment',
+            payState_PENDINGCONFIRMATION : 'Pending confirmation',
             payState_CANCELED : 'Cenceled payment',
             payState_REJECTED : 'Rejected payment',
 
