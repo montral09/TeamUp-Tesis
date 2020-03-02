@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, TextInput, Dimensions, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, TextInput, Dimensions, TouchableOpacity, ActivityIndicator} from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { connect } from 'react-redux';
 import translations from '../common/translations';
@@ -30,6 +30,7 @@ class ReservationResComPay extends Component {
     }
 
     save = () => {
+        this.setState({isLoading: true})
         this.saveComissionPayment(this.state.objPaymentDetails);
     }
 
@@ -139,110 +140,122 @@ class ReservationResComPay extends Component {
     render() {
         const { systemLanguage } = this.props;
         return (
-            <View style={styles.container}>
-                <KeyboardAwareScrollView 
-                    vertical
-                    extraScrollHeight={135} 
-                    enableOnAndroid={true} 
-                    keyboardShouldPersistTaps='handled'
-                    style={{flex: 1}}
-                >
-                <View style={{alignItems: 'flex-start', marginLeft: 15}}>
-                    <Text style={styles.titleText}>{translations[systemLanguage].messages['modalResComPay_header']}</Text>
-                    <View style={{flexDirection:'row', alignItems: 'center'}}>
-                        <View style={{flex:1}}>
-                            <Text style={styles.infoText}>{translations[systemLanguage].messages['amount_w']}</Text>
-                        </View>
-                        <View style={{flex:1}}>
-                            <TextInput style={styles.inputBox} 
-                                underlineColorAndroid='rgba(0,0,0,0)'
-                                placeholder= {translations[systemLanguage].messages['amount_w']}
-                                placeholderTextColor="#ffffff"
-                                value={this.state.objPaymentDetails.paymentAmmount.toString()}
-                                editable = {false}
-                            />
-                        </View>
-                    </View>
-                    <View style={{flexDirection:'row', alignItems: 'center'}}>
-                        <View style={{flex:1}}>
-                            <Text style={styles.infoText}>{translations[systemLanguage].messages['myReservedSpacesList_custPay_paymentStatusTxt']}</Text>
-                        </View>
-                        <View style={{flex:1}}>
-                            <TextInput style={styles.inputBox} 
-                                underlineColorAndroid='rgba(0,0,0,0)'
-                                placeholder= {translations[systemLanguage].messages['myReservedSpacesList_custPay_paymentStatusTxt']}
-                                placeholderTextColor="#ffffff"
-                                value={this.state.objPaymentDetails.paymentStatusText}
-                                editable = {false}
-                            />
-                        </View>
-                    </View>
-                    <View style={{flexDirection:'row', alignItems: 'center'}}>
-                        <View style={{flex:1}}>
-                            <Text style={styles.infoText}>{translations[systemLanguage].messages['myReservedSpacesList_custPay_paymentDateTxt']}</Text>
-                        </View>
-                        <View style={{flex:1}}>
-                            <TextInput style={styles.inputBox} 
-                                underlineColorAndroid='rgba(0,0,0,0)'
-                                placeholder= {translations[systemLanguage].messages['myReservedSpacesList_custPay_paymentDateTxt']}
-                                placeholderTextColor="#ffffff"
-                                value={this.state.objPaymentDetails.paymentDate == null ? "Pendiente" : this.state.objPaymentDetails.paymentDate.toString()}
-                                editable = {false}
-                            />
-                        </View>
-                    </View>
-                    {this.state.objPaymentDetails.paymentDocument ? (
+            <>
+            {this.state.isLoading == false ? (
+                <View style={styles.container}>
+                    <KeyboardAwareScrollView 
+                        vertical
+                        extraScrollHeight={135} 
+                        enableOnAndroid={true} 
+                        keyboardShouldPersistTaps='handled'
+                        style={{flex: 1}}
+                    >
+                    <View style={{alignItems: 'flex-start', marginLeft: 15}}>
+                        <Text style={styles.titleText}>{translations[systemLanguage].messages['modalResComPay_header']}</Text>
                         <View style={{flexDirection:'row', alignItems: 'center'}}>
                             <View style={{flex:1}}>
-                                <Text style={styles.infoText}>{translations[systemLanguage].messages['myReservedSpacesList_custPay_uploadedDocument']}</Text>
+                                <Text style={styles.infoText}>{translations[systemLanguage].messages['amount_w']}</Text>
                             </View>
                             <View style={{flex:1}}>
-                                <Text style={styles.infoText}>LINK</Text>
+                                <TextInput style={styles.inputBox} 
+                                    underlineColorAndroid='rgba(0,0,0,0)'
+                                    placeholder= {translations[systemLanguage].messages['amount_w']}
+                                    placeholderTextColor="#ffffff"
+                                    value={this.state.objPaymentDetails.paymentAmmount.toString()}
+                                    editable = {false}
+                                />
                             </View>
                         </View>
-                    ) : (null)}
-                    {this.state.objPaymentDetails.paymentStatus != "PAID" && this.state.objPaymentDetails.paymentStatus != "CANCELED" ? (
                         <View style={{flexDirection:'row', alignItems: 'center'}}>
                             <View style={{flex:1}}>
-                                <Text style={styles.infoText}>{translations[systemLanguage].messages['myReservedSpacesList_custPay_uploadDocument']}</Text>
+                                <Text style={styles.infoText}>{translations[systemLanguage].messages['myReservedSpacesList_custPay_paymentStatusTxt']}</Text>
                             </View>
                             <View style={{flex:1}}>
-                                <TouchableOpacity style={styles.button} onPress={this.pickImage}>
-                                    <Text style={styles.buttonText}>{translations[systemLanguage].messages['uploadImage_w']}</Text>
-                                </TouchableOpacity>
+                                <TextInput style={styles.inputBox} 
+                                    underlineColorAndroid='rgba(0,0,0,0)'
+                                    placeholder= {translations[systemLanguage].messages['myReservedSpacesList_custPay_paymentStatusTxt']}
+                                    placeholderTextColor="#ffffff"
+                                    value={this.state.objPaymentDetails.paymentStatusText}
+                                    editable = {false}
+                                />
                             </View>
-                        </View>        
-                    ) : (null)}
-                    <Text style={styles.infoText}>{translations[systemLanguage].messages['comment_w']} ({translations[systemLanguage].messages['optional_w']})</Text>
-                    <TextInput style={styles.inputBox2} 
-                        multiline = {true}
-                        numberOfLines = {4}
-                        underlineColorAndroid='rgba(0,0,0,0)'
-                        placeholder= {translations[systemLanguage].messages['comment_w']}
-                        placeholderTextColor="#ffffff"
-                        value={this.state.objPaymentDetails.paymentComment}
-                        onChangeText = {(value) => this.changePaymentComment(value)}
-                        editable = {this.state.objPaymentDetails.paymentStatus != "PAID" && this.state.objPaymentDetails.paymentStatus != "CANCELED" ? true : false}
-                    />
-                    {this.state.objPaymentDetails.paymentStatus != "PAID" && this.state.objPaymentDetails.paymentStatus != "CANCELED" ? (
-                        <Text style={styles.infoText}>{translations[systemLanguage].messages['modalResComPay_txt1']} {translations[systemLanguage].messages['modalResComPay_txt2']}</Text> 
-                    ) : (
-                        this.state.objPaymentDetails.paymentStatus != "CANCELED" ? (<Text>{translations[systemLanguage].messages['modalResComPay_txt3']}</Text>) : (null)
-                    )}    
-                </View>
-                <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-                    <TouchableOpacity style={styles.button} onPress={()=> {this.props.navigation.goBack()}} disabled={this.state.buttonIsDisabled}> 
-                        <Text style={styles.buttonText}>{translations[systemLanguage].messages['close_w']}</Text>
-                    </TouchableOpacity>
-                    {this.state.objPaymentDetails.paymentStatus != "PAID" && this.state.objPaymentDetails.paymentStatus != "CANCELED" ? (
-                        <TouchableOpacity style={styles.button} onPress={()=> {this.save()}} disabled={this.state.buttonIsDisabled}> 
-                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['save_w']}</Text>
+                        </View>
+                        <View style={{flexDirection:'row', alignItems: 'center'}}>
+                            <View style={{flex:1}}>
+                                <Text style={styles.infoText}>{translations[systemLanguage].messages['myReservedSpacesList_custPay_paymentDateTxt']}</Text>
+                            </View>
+                            <View style={{flex:1}}>
+                                <TextInput style={styles.inputBox} 
+                                    underlineColorAndroid='rgba(0,0,0,0)'
+                                    placeholder= {translations[systemLanguage].messages['myReservedSpacesList_custPay_paymentDateTxt']}
+                                    placeholderTextColor="#ffffff"
+                                    value={this.state.objPaymentDetails.paymentDate == null ? "Pendiente" : this.state.objPaymentDetails.paymentDate.toString()}
+                                    editable = {false}
+                                />
+                            </View>
+                        </View>
+                        {this.state.objPaymentDetails.paymentDocument ? (
+                            <View style={{flexDirection:'row', alignItems: 'center'}}>
+                                <View style={{flex:1}}>
+                                    <Text style={styles.infoText}>{translations[systemLanguage].messages['myReservedSpacesList_custPay_uploadedDocument']}</Text>
+                                </View>
+                                <View style={{flex:1}}>
+                                    <Text style={styles.infoText}>LINK</Text>
+                                </View>
+                            </View>
+                        ) : (null)}
+                        {this.state.objPaymentDetails.paymentStatus != "PAID" && this.state.objPaymentDetails.paymentStatus != "CANCELED" ? (
+                            <View style={{flexDirection:'row', alignItems: 'center'}}>
+                                <View style={{flex:1}}>
+                                    <Text style={styles.infoText}>{translations[systemLanguage].messages['myReservedSpacesList_custPay_uploadDocument']}</Text>
+                                </View>
+                                <View style={{flex:1}}>
+                                    <TouchableOpacity style={styles.button} onPress={this.pickImage}>
+                                        <Text style={styles.buttonText}>{translations[systemLanguage].messages['uploadImage_w']}</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>        
+                        ) : (null)}
+                        <Text style={styles.infoText}>{translations[systemLanguage].messages['comment_w']} ({translations[systemLanguage].messages['optional_w']})</Text>
+                        <TextInput style={styles.inputBox2} 
+                            multiline = {true}
+                            numberOfLines = {4}
+                            underlineColorAndroid='rgba(0,0,0,0)'
+                            placeholder= {translations[systemLanguage].messages['comment_w']}
+                            placeholderTextColor="#ffffff"
+                            value={this.state.objPaymentDetails.paymentComment}
+                            onChangeText = {(value) => this.changePaymentComment(value)}
+                            editable = {this.state.objPaymentDetails.paymentStatus != "PAID" && this.state.objPaymentDetails.paymentStatus != "CANCELED" ? true : false}
+                        />
+                        {this.state.objPaymentDetails.paymentStatus != "PAID" && this.state.objPaymentDetails.paymentStatus != "CANCELED" ? (
+                            <Text style={styles.infoText}>{translations[systemLanguage].messages['modalResComPay_txt1']} {translations[systemLanguage].messages['modalResComPay_txt2']}</Text> 
+                        ) : (
+                            this.state.objPaymentDetails.paymentStatus != "CANCELED" ? (<Text>{translations[systemLanguage].messages['modalResComPay_txt3']}</Text>) : (null)
+                        )}    
+                    </View>
+                    <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+                        <TouchableOpacity style={styles.button} onPress={()=> {this.props.navigation.goBack()}} disabled={this.state.buttonIsDisabled}> 
+                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['close_w']}</Text>
                         </TouchableOpacity>
-                        ) : (null)
-                    }
+                        {this.state.objPaymentDetails.paymentStatus != "PAID" && this.state.objPaymentDetails.paymentStatus != "CANCELED" ? (
+                            <TouchableOpacity style={styles.button} onPress={()=> {this.save()}} disabled={this.state.buttonIsDisabled}> 
+                                <Text style={styles.buttonText}>{translations[systemLanguage].messages['save_w']}</Text>
+                            </TouchableOpacity>
+                            ) : (null)
+                        }
+                    </View>
+                    </KeyboardAwareScrollView> 
                 </View>
-                </KeyboardAwareScrollView> 
-            </View>                
+                ) : (
+                    <ActivityIndicator
+                        animating = {this.state.isLoading}
+                        color = 'white'
+                        size = "large"
+                        style = {styles.activityIndicator}
+                    />
+                )
+            } 
+            </>                    
         );
     }
 
@@ -310,6 +323,13 @@ const styles = StyleSheet.create({
       fontWeight:'500',
       color:'#ffffff'
     },
+    activityIndicator: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#2196f3',
+        height: 80,
+    },  
   });
 
 const mapStateToProps = (state) => {

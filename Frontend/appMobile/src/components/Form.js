@@ -75,10 +75,11 @@ class Form extends Component{
             <View style={styles.container}>
                 {this.state.isLoading ? (
                     <ActivityIndicator
-                    animating = {this.state.isLoading}
-                    color = '#bc2b78'
-                    size = "large"
-                    style = {styles.activityIndicator}/>
+                        animating = {this.state.isLoading}
+                        color = 'white'
+                        size = "large"
+                        style = {styles.activityIndicator}
+                    />
                 ) : (
                     <> 
                         <TextInput style={styles.inputBox}

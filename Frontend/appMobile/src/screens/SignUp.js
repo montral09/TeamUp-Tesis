@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet,Text,View,TextInput,TouchableOpacity,KeyboardAvoidingView} from 'react-native';
+import { StyleSheet,Text,ActivityIndicator,TextInput,TouchableOpacity,KeyboardAvoidingView} from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { callAPI, displayErrorMessage } from '../common/genericFunctions';
 import UserTypeSelector from '../components/UserTypeSelector';
@@ -122,108 +122,119 @@ class SignUp extends Component{
    render(){
         const { systemLanguage } = this.props;
         return (
-
-            <KeyboardAwareScrollView 
-                vertical
-                extraScrollHeight={135} 
-                enableOnAndroid={true} 
-                keyboardShouldPersistTaps='handled'
-                style={{flex: 1}}
-            >
-                <KeyboardAvoidingView style={styles.container}>  
-                    <KeyboardAvoidingView style={styles.signupTitleContainer}>
-                        <Text style={styles.titleText}>{translations[systemLanguage].messages['registerYourself2_w']}</Text>
-                        <UserTypeSelector handleCheckPublisher={this.handleCheckPublisher}/>
-                        {<TextInput style={styles.inputBox} 
-                                underlineColorAndroid='rgba(0,0,0,0)'
-                                placeholder={translations[systemLanguage].messages['name_w'] + '(*)'}
-                                placeholderTextColor="#ffffff"
-                                onChangeText={(name) => this.setState({name})}
-                                value={this.state.name}
-                        />}
-                        {<TextInput style={styles.inputBox} 
-                                underlineColorAndroid='rgba(0,0,0,0)'
-                                placeholder={translations[systemLanguage].messages['lastName_w'] + '(*)'}
-                                placeholderTextColor="#ffffff"
-                                onChangeText={(lastName) => this.setState({lastName})}
-                                value={this.state.lastName}
-                        />}
-                        <TextInput style={styles.inputBox} 
-                                underlineColorAndroid='rgba(0,0,0,0)'
-                                placeholder={translations[systemLanguage].messages['email_w'] + '(*)'}
-                                placeholderTextColor="#ffffff"
-                                value={this.state.email}
-                                onChangeText={(email) => this.setState({email})}
-                        />
-                        {<TextInput style={styles.inputBox} 
-                                underlineColorAndroid='rgba(0,0,0,0)'
-                                placeholder={translations[systemLanguage].messages['phoneNumber_w'] + '(*)'}
-                                placeholderTextColor="#ffffff"
-                                name = "phone"
-                                value={this.state.phone}
-                                onChangeText={(phone) => this.setState({phone})}
-                        />}
-                        <TextInput style={styles.inputBox} 
-                                underlineColorAndroid='rgba(0,0,0,0)'
-                                placeholder={translations[systemLanguage].messages['password_w'] + '(*)'}
-                                placeholderTextColor="#ffffff"
-                                secureTextEntry={true}
-                                name = "password"
-                                value={this.state.password}
-                                onChangeText={(password) => this.setState({password})}
-                        />
-                        {<TextInput style={styles.inputBox} 
-                                underlineColorAndroid='rgba(0,0,0,0)'
-                                placeholder={translations[systemLanguage].messages['register_repeatPassword'] + '(*)'}
-                                placeholderTextColor="#ffffff"
-                                secureTextEntry={true}
-                                name = "confirmPassword"
-                                value={this.state.confirmPassword}
-                                onChangeText={(confirmPassword) => this.setState({confirmPassword})}
-                        />}
-                        {<TextInput style={styles.inputBox} 
-                                underlineColorAndroid='rgba(0,0,0,0)'
-                                placeholder="RUT"
-                                placeholderTextColor="#ffffff"
-                                name = "rut"
-                                value={this.state.rut}
-                                onChangeText={(rut) => this.setState({rut})}
-                        />}
-                        {<TextInput style={styles.inputBox} 
-                                underlineColorAndroid='rgba(0,0,0,0)'
-                                placeholder={translations[systemLanguage].messages['socialReason']}
-                                placeholderTextColor="#ffffff"
-                                name = "razonSocial"
-                                value={this.state.razonSocial}
-                                onChangeText={(razonSocial) => this.setState({razonSocial})}
-                        />}
-                        {<TextInput style={styles.inputBox} 
-                                underlineColorAndroid='rgba(0,0,0,0)'
-                                placeholder={translations[systemLanguage].messages['address_w']}
-                                placeholderTextColor="#ffffff"
-                                name = "address"
-                                value={this.state.address}
-                                onChangeText={(address) => this.setState({address})}
-                        />}
-                        <KeyboardAvoidingView style={{flexDirection:'row'}}>
-                        <TouchableOpacity style={styles.button} onPress={() => {this.props.navigation.goBack()}}>
-                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['cancel_w']}</Text>   
-                        </TouchableOpacity>    
-                        <TouchableOpacity style={styles.button} onPress={() => { this.register() }}>
-                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['registerYourself2_w']}</Text>   
-                        </TouchableOpacity>
-                        </KeyboardAvoidingView>
-                        <KeyboardAvoidingView style={{flexDirection:'row'}}>
-                            <Text style={styles.infoText}>{translations[systemLanguage].messages['register_termsMsg1']} </Text> 
-                            <Text style={styles.infoText2}>{translations[systemLanguage].messages['registerYourself2_w']} </Text> 
-                            <Text style={styles.infoText}>{translations[systemLanguage].messages['register_termsMsg2']} </Text> 
-                        </KeyboardAvoidingView>
-                        <TouchableOpacity onPress={() => { this.props.navigation.navigate('TermsAndConditions') }}>
-                            <Text style={styles.infoText3}>{translations[systemLanguage].messages['register_termsMsg3']}</Text>
-                        </TouchableOpacity>
-                    </KeyboardAvoidingView>    
-                </KeyboardAvoidingView>
-            </KeyboardAwareScrollView>
+            <>
+            {this.state.isLoading == false ? (
+                <KeyboardAwareScrollView 
+                    vertical
+                    extraScrollHeight={135} 
+                    enableOnAndroid={true} 
+                    keyboardShouldPersistTaps='handled'
+                    style={{flex: 1}}
+                >
+                    <KeyboardAvoidingView style={styles.container}>  
+                        <KeyboardAvoidingView style={styles.signupTitleContainer}>
+                            <Text style={styles.titleText}>{translations[systemLanguage].messages['registerYourself2_w']}</Text>
+                            <UserTypeSelector handleCheckPublisher={this.handleCheckPublisher}/>
+                            {<TextInput style={styles.inputBox} 
+                                    underlineColorAndroid='rgba(0,0,0,0)'
+                                    placeholder={translations[systemLanguage].messages['name_w'] + '(*)'}
+                                    placeholderTextColor="#ffffff"
+                                    onChangeText={(name) => this.setState({name})}
+                                    value={this.state.name}
+                            />}
+                            {<TextInput style={styles.inputBox} 
+                                    underlineColorAndroid='rgba(0,0,0,0)'
+                                    placeholder={translations[systemLanguage].messages['lastName_w'] + '(*)'}
+                                    placeholderTextColor="#ffffff"
+                                    onChangeText={(lastName) => this.setState({lastName})}
+                                    value={this.state.lastName}
+                            />}
+                            <TextInput style={styles.inputBox} 
+                                    underlineColorAndroid='rgba(0,0,0,0)'
+                                    placeholder={translations[systemLanguage].messages['email_w'] + '(*)'}
+                                    placeholderTextColor="#ffffff"
+                                    value={this.state.email}
+                                    onChangeText={(email) => this.setState({email})}
+                            />
+                            {<TextInput style={styles.inputBox} 
+                                    underlineColorAndroid='rgba(0,0,0,0)'
+                                    placeholder={translations[systemLanguage].messages['phoneNumber_w'] + '(*)'}
+                                    placeholderTextColor="#ffffff"
+                                    name = "phone"
+                                    value={this.state.phone}
+                                    onChangeText={(phone) => this.setState({phone})}
+                            />}
+                            <TextInput style={styles.inputBox} 
+                                    underlineColorAndroid='rgba(0,0,0,0)'
+                                    placeholder={translations[systemLanguage].messages['password_w'] + '(*)'}
+                                    placeholderTextColor="#ffffff"
+                                    secureTextEntry={true}
+                                    name = "password"
+                                    value={this.state.password}
+                                    onChangeText={(password) => this.setState({password})}
+                            />
+                            {<TextInput style={styles.inputBox} 
+                                    underlineColorAndroid='rgba(0,0,0,0)'
+                                    placeholder={translations[systemLanguage].messages['register_repeatPassword'] + '(*)'}
+                                    placeholderTextColor="#ffffff"
+                                    secureTextEntry={true}
+                                    name = "confirmPassword"
+                                    value={this.state.confirmPassword}
+                                    onChangeText={(confirmPassword) => this.setState({confirmPassword})}
+                            />}
+                            {<TextInput style={styles.inputBox} 
+                                    underlineColorAndroid='rgba(0,0,0,0)'
+                                    placeholder="RUT"
+                                    placeholderTextColor="#ffffff"
+                                    name = "rut"
+                                    value={this.state.rut}
+                                    onChangeText={(rut) => this.setState({rut})}
+                            />}
+                            {<TextInput style={styles.inputBox} 
+                                    underlineColorAndroid='rgba(0,0,0,0)'
+                                    placeholder={translations[systemLanguage].messages['socialReason']}
+                                    placeholderTextColor="#ffffff"
+                                    name = "razonSocial"
+                                    value={this.state.razonSocial}
+                                    onChangeText={(razonSocial) => this.setState({razonSocial})}
+                            />}
+                            {<TextInput style={styles.inputBox} 
+                                    underlineColorAndroid='rgba(0,0,0,0)'
+                                    placeholder={translations[systemLanguage].messages['address_w']}
+                                    placeholderTextColor="#ffffff"
+                                    name = "address"
+                                    value={this.state.address}
+                                    onChangeText={(address) => this.setState({address})}
+                            />}
+                            <KeyboardAvoidingView style={{flexDirection:'row'}}>
+                            <TouchableOpacity style={styles.button} onPress={() => {this.props.navigation.goBack()}}>
+                                <Text style={styles.buttonText}>{translations[systemLanguage].messages['cancel_w']}</Text>   
+                            </TouchableOpacity>    
+                            <TouchableOpacity style={styles.button} onPress={() => { this.register() }}>
+                                <Text style={styles.buttonText}>{translations[systemLanguage].messages['registerYourself2_w']}</Text>   
+                            </TouchableOpacity>
+                            </KeyboardAvoidingView>
+                            <KeyboardAvoidingView style={{flexDirection:'row'}}>
+                                <Text style={styles.infoText}>{translations[systemLanguage].messages['register_termsMsg1']} </Text> 
+                                <Text style={styles.infoText2}>{translations[systemLanguage].messages['registerYourself2_w']} </Text> 
+                                <Text style={styles.infoText}>{translations[systemLanguage].messages['register_termsMsg2']} </Text> 
+                            </KeyboardAvoidingView>
+                            <TouchableOpacity onPress={() => { this.props.navigation.navigate('TermsAndConditions') }}>
+                                <Text style={styles.infoText3}>{translations[systemLanguage].messages['register_termsMsg3']}</Text>
+                            </TouchableOpacity>
+                        </KeyboardAvoidingView>    
+                    </KeyboardAvoidingView>
+                </KeyboardAwareScrollView>
+            ) : (
+                    <ActivityIndicator
+                        animating = {this.state.isLoading}
+                        color = '#bc2b78'
+                        size = "large"
+                        style = {styles.activityIndicator}
+                    />
+                )
+            }
+            </>
         );
     }
 
@@ -295,6 +306,13 @@ const styles = StyleSheet.create({
         textShadowColor: 'rgba(0, 0, 0, 0.75)',
         textShadowOffset: {width: -1, height: 1},
         textShadowRadius: 10
+    },
+    activityIndicator: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#2196f3',
+        height: 80,
     },
 });
 

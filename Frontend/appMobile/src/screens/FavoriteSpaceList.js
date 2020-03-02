@@ -114,7 +114,7 @@ class FavoriteSpaceList extends Component {
             ) : (
                 <ActivityIndicator
                     animating = {loadStatus}
-                    color = '#bc2b78'
+                    color = 'white'
                     size = "large"
                     style = {styles.activityIndicator}
                 />

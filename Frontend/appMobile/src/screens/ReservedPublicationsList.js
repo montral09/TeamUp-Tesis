@@ -8,8 +8,6 @@ import { logOut, updateToken } from '../redux/actions/accountActions';
 import translations from '../common/translations';
 import ReservedPublicationsListScrollView from '../components/ReservedPublicationsListScrollView';
 
-import Globals from '../Globals';
-
 class ReservedPublicationsList extends Component {
 
     constructor(props) {
@@ -27,9 +25,7 @@ class ReservedPublicationsList extends Component {
             pagination: [1],
             currentPage: 1
         }  
-        this.triggerScreen = this.triggerScreen.bind(this);   
-        this.saveComissionPayment = this.saveComissionPayment.bind(this);
-        this.handleExpiredToken = this.handleExpiredToken.bind(this);
+        this.triggerScreen = this.triggerScreen.bind(this);
     }
 
     componentDidMount() {
@@ -49,10 +45,6 @@ class ReservedPublicationsList extends Component {
     
     componentWillUnmount() {
         this.willFocusSubscription.remove();
-    }
-
-    handleErrors(error) {
-        this.setState({ generalError: true });
     }
 
     loadMyReservationsRP = () => {
@@ -98,56 +90,7 @@ class ReservedPublicationsList extends Component {
             break;
         }
     }
-
-    saveComissionPayment(objPaymentDetails){
-        var objApi = {};
-        objApi.objToSend = {
-            "AccessToken": this.props.tokenObj.accesToken,
-            "Mail": this.props.userData.Mail,
-            "IdReservation" : objPaymentDetails.IdReservation,
-            "Comment" : objPaymentDetails.paymentComment || "",
-            "Evidence" : {
-                "Base64String" : objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Base64String : "",
-                "Extension" :  objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Extension : ""
-            }
-        }
-        objApi.fetchUrl = Globals.baseURL + '/reservationPaymentPublisher';
-        objApi.method = "POST";
-        objApi.responseSuccess = "SUCC_PAYMENTUPDATED";
-        objApi.successMessage = "Se ha enviado el pago de comisión";
-        objApi.functionAfterSuccess = "saveComissionPayment";
-        callAPI(objApi);
-    }
  
-    handleExpiredToken(retryObjApi){
-        if(retryObjApi.functionAfterSuccess == "updateExpiredToken"){
-            // This is the second attempt -> Log off
-            this.props.logOut();
-            toast.error("Su sesión expiró, por favor inicie sesión nuevamente", {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-            });
-        }else{
-            var objApi = {};
-            objApi.objToSend = {
-                "RefreshToken": this.props.tokenObj.refreshToken,
-                "Mail": this.props.userData.Mail
-            }
-            objApi.fetchUrl = Globals.baseURL + '/tokens';
-            objApi.method = "PUT";
-            objApi.responseSuccess = "SUCC_TOKENSUPDATED";
-            objApi.successMessage = "";
-            objApi.functionAfterSuccess = "updateExpiredToken";
-            objApi.retryObjApi = retryObjApi;
-            this.callAPI(objApi);
-        }
-
-    }
-
     changePage = (pageClicked) => {
         this.setState({ reservationsToDisplay: this.filterPaginationArray(this.state.reservations, (pageClicked - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked },
             () => this.setState({ reservationsToDisplay: this.filterPaginationArray(this.state.reservations, (pageClicked - 1) * MAX_ELEMENTS_PER_TABLE), currentPage: pageClicked }))

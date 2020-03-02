@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, Dimensions, Picker} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, ActivityIndicator, Picker} from 'react-native';
 import { connect } from 'react-redux';
 import { callAPI } from '../common/genericFunctions';
 import translations from '../common/translations';
@@ -65,6 +65,7 @@ class ReservationEditResCustPay extends Component {
     }
 
     confirmEditReservationMRSL = () => {
+        this.setState({isLoading: true})
         let {IdReservation, HourFrom, HourTo, TotalPrice, People, ReservedQuantity} = this.state.resDataChanged;
         var objApi = {};
         objApi.objToSend = {
@@ -217,129 +218,141 @@ class ReservationEditResCustPay extends Component {
     render() {
         const { systemLanguage } = this.props;
         return (
-            <View style={styles.container}>
-                <View style={{alignItems: 'center', marginLeft: 15}}>
-                    <Text style={styles.titleText}>{translations[systemLanguage].messages['myReservedSpacesList_modalModify_header']}</Text>
-                    <View style={{flexDirection:'row', alignItems: 'center'}}>
-                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                            <View style={{flex:1}}> 
-                                <Text style={styles.subTitleText}>{translations[systemLanguage].messages['date_w']} </Text>
-                            </View>
-                            <View style={{flex:1}}> 
-                            <DatePicker 
-                                parentDate={this.state.dateFrom} 
-                                handleChangeDate={this.handleChangeDate}
-                                placeholder={translations[systemLanguage].messages['date_w']}
-                                onChangeDate={(dateFrom) => this.setState({dateFrom})}
-                            />      
+            <>
+            {this.state.isLoading == false ? (
+                <View style={styles.container}>
+                    <View style={{alignItems: 'center', marginLeft: 15}}>
+                        <Text style={styles.titleText}>{translations[systemLanguage].messages['myReservedSpacesList_modalModify_header']}</Text>
+                        <View style={{flexDirection:'row', alignItems: 'center'}}>
+                            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                                <View style={{flex:1}}> 
+                                    <Text style={styles.subTitleText}>{translations[systemLanguage].messages['date_w']} </Text>
+                                </View>
+                                <View style={{flex:1}}> 
+                                <DatePicker 
+                                    parentDate={this.state.dateFrom} 
+                                    handleChangeDate={this.handleChangeDate}
+                                    placeholder={translations[systemLanguage].messages['date_w']}
+                                    onChangeDate={(dateFrom) => this.setState({dateFrom})}
+                                />      
+                                </View>
                             </View>
                         </View>
-                    </View>
-                    {this.state.resData.PlanSelected != 'Hour' ? (
+                        {this.state.resData.PlanSelected != 'Hour' ? (
+                            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                                <View style={{flex:1}}> 
+                                    <Text style={styles.subTitleText}>
+                                        {this.state.resData.PlanSelected == "Day" ? (translations[systemLanguage].messages['planChosenQuantityDescriptionDays_w']): ('')}
+                                        {this.state.resData.PlanSelected == "Week" ? (translations[systemLanguage].messages['planChosenQuantityDescriptionWeeks_w']): ('')}
+                                        {this.state.resData.PlanSelected == "Month" ? (translations[systemLanguage].messages['planChosenQuantityDescriptionMonths_w']): ('')}
+                                    </Text>
+                                </View>
+                                <View style={{flex:1, flexDirection: 'row'}}>
+                                    <TouchableOpacity style={styles.button2} onPress={() => this.decreaseQuantityPlan()}> 
+                                        <Text style={styles.buttonText}>-</Text>
+                                    </TouchableOpacity>
+                                    <TextInput style={styles.inputBox}
+                                        underlineColorAndroid='rgba(0,0,0,0)'
+                                        onChangeText={(value) => this.changeQuantityPlan(value)} 
+                                        value={this.state.resDataChanged.ReservedQuantity.toString()}
+                                        maxLength={3}
+                                    />     
+                                    <TouchableOpacity style={styles.button2} onPress={() => this.increaseQuantityPlan()}> 
+                                        <Text style={styles.buttonText}>+</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                            ) : (
+                                <>
+                                    {this.state.resData.PlanSelected == 'Hour' ? (
+                                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                                            <View style={{flex: 1}}>
+                                                <Text style={styles.subTitleText}>{translations[systemLanguage].messages['hour_w']} </Text>
+                                            </View>
+                                            <View style={{flex: 1, flexDirection: 'row'}}>
+                                                <Picker
+                                                    style={styles.pickerBox2}
+                                                    selectedValue={this.state.resDataChanged.HourFrom}
+                                                    onValueChange={(itemValue) => this.changeHour('hourFrom', itemValue)}
+                                                    > 
+                                                    {this.state.hoursAvailable.map((hours) => {
+                                                        return (
+                                                            <Picker.Item key={'hourFrom'+hours} value={hours} label={hours} />
+                                                        );
+                                                    })}
+                                                </Picker>
+                                                <Text style={styles.subTitleText}> {translations[systemLanguage].messages['to_w']} </Text>
+                                                <Picker
+                                                    style={styles.pickerBox2}
+                                                    selectedValue={this.state.resDataChanged.HourTo}
+                                                    onValueChange={(itemValue) => this.changeHour('hourTo', itemValue)}
+                                                    > 
+                                                        {this.state.hoursAvailable.map((hours) => {
+                                                            return (
+                                                                <Picker.Item key={'hourTo'+hours} value={hours} label={hours} />
+                                                            );
+                                                        })}
+                                                </Picker>
+                                            </View>
+                                        </View>                             
+                                    ) : (null)
+                                    }
+                                </>
+                                ) 
+                            }
+                        
                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                            <View style={{flex:1}}> 
-                                <Text style={styles.subTitleText}>
-                                    {this.state.resData.PlanSelected == "Day" ? (translations[systemLanguage].messages['planChosenQuantityDescriptionDays_w']): ('')}
-                                    {this.state.resData.PlanSelected == "Week" ? (translations[systemLanguage].messages['planChosenQuantityDescriptionWeeks_w']): ('')}
-                                    {this.state.resData.PlanSelected == "Month" ? (translations[systemLanguage].messages['planChosenQuantityDescriptionMonths_w']): ('')}
-                                </Text>
+                            <View style={{flex:1}}>                    
+                                <Text style={styles.subTitleText}>{translations[systemLanguage].messages['people_w']} </Text>
                             </View>
                             <View style={{flex:1, flexDirection: 'row'}}>
-                                <TouchableOpacity style={styles.button2} onPress={() => this.decreaseQuantityPlan()}> 
+                                <TouchableOpacity style={styles.button2} onPress={() => this.decreaseQuantityPeople()}> 
                                     <Text style={styles.buttonText}>-</Text>
                                 </TouchableOpacity>
                                 <TextInput style={styles.inputBox}
-                                    underlineColorAndroid='rgba(0,0,0,0)'
-                                    onChangeText={(value) => this.changeQuantityPlan(value)} 
-                                    value={this.state.resDataChanged.ReservedQuantity.toString()}
+                                    onChangeText={(value) => this.changeQuantityPeople(value)} 
+                                    value={this.state.resDataChanged.People.toString()}
                                     maxLength={3}
-                                />     
-                                <TouchableOpacity style={styles.button2} onPress={() => this.increaseQuantityPlan()}> 
+                                />
+                                <TouchableOpacity style={styles.button2} onPress={() => this.increaseQuantityPeople()}> 
                                     <Text style={styles.buttonText}>+</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
-                        ) : (
-                            <>
-                                {this.state.resData.PlanSelected == 'Hour' ? (
-                                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                        <View style={{flex: 1}}>
-                                            <Text style={styles.subTitleText}>{translations[systemLanguage].messages['hour_w']} </Text>
-                                        </View>
-                                        <View style={{flex: 1, flexDirection: 'row'}}>
-                                            <Picker
-                                                style={styles.pickerBox2}
-                                                selectedValue={this.state.resDataChanged.HourFrom}
-                                                onValueChange={(itemValue) => this.changeHour('hourFrom', itemValue)}
-                                                > 
-                                                {this.state.hoursAvailable.map((hours) => {
-                                                    return (
-                                                        <Picker.Item key={'hourFrom'+hours} value={hours} label={hours} />
-                                                    );
-                                                })}
-                                            </Picker>
-                                            <Text style={styles.subTitleText}> {translations[systemLanguage].messages['to_w']} </Text>
-                                            <Picker
-                                                style={styles.pickerBox2}
-                                                selectedValue={this.state.resDataChanged.HourTo}
-                                                onValueChange={(itemValue) => this.changeHour('hourTo', itemValue)}
-                                                > 
-                                                    {this.state.hoursAvailable.map((hours) => {
-                                                        return (
-                                                            <Picker.Item key={'hourTo'+hours} value={hours} label={hours} />
-                                                        );
-                                                    })}
-                                            </Picker>
-                                        </View>
-                                    </View>                             
-                                ) : (null)
-                                }
-                            </>
-                            ) 
-                        }
-                    
-                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                        <View style={{flex:1}}>                    
-                            <Text style={styles.subTitleText}>{translations[systemLanguage].messages['people_w']} </Text>
-                        </View>
-                        <View style={{flex:1, flexDirection: 'row'}}>
-                            <TouchableOpacity style={styles.button2} onPress={() => this.decreaseQuantityPeople()}> 
-                                <Text style={styles.buttonText}>-</Text>
-                            </TouchableOpacity>
-                            <TextInput style={styles.inputBox}
-                                onChangeText={(value) => this.changeQuantityPeople(value)} 
-                                value={this.state.resDataChanged.People.toString()}
-                                maxLength={3}
-                            />
-                            <TouchableOpacity style={styles.button2} onPress={() => this.increaseQuantityPeople()}> 
-                                <Text style={styles.buttonText}>+</Text>
-                            </TouchableOpacity>
-                        </View>
+                        <View style={{flexDirection:'row', alignItems: 'center'}}>
+                            <View style={{flex:1}}>
+                                <Text style={styles.subTitleText}>{translations[systemLanguage].messages['amount_w']} </Text>
+                            </View>
+                            <View style={{flex:1}}>
+                                <TextInput style={styles.inputBox3} 
+                                    underlineColorAndroid='rgba(0,0,0,0)'
+                                    placeholder='Monto'
+                                    placeholderTextColor="#ffffff"
+                                    value={this.state.resDataChanged.TotalPrice.toString()}
+                                    editable = {false}
+                                />
+                            </View>
+                        </View>  
                     </View>
-                    <View style={{flexDirection:'row', alignItems: 'center'}}>
-                        <View style={{flex:1}}>
-                            <Text style={styles.subTitleText}>{translations[systemLanguage].messages['amount_w']} </Text>
-                        </View>
-                        <View style={{flex:1}}>
-                            <TextInput style={styles.inputBox3} 
-                                underlineColorAndroid='rgba(0,0,0,0)'
-                                placeholder='Monto'
-                                placeholderTextColor="#ffffff"
-                                value={this.state.resDataChanged.TotalPrice.toString()}
-                                editable = {false}
-                            />
-                        </View>
-                    </View>  
+                    <View style={{flexDirection: 'row'}}>
+                        <TouchableOpacity style={styles.button} onPress={()=> {this.props.navigation.goBack()}} disabled={this.state.buttonIsDisabled}> 
+                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['cancel_w']}</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.button} onPress={()=> {this.confirmEditReservationMRSL()}} disabled={this.state.buttonIsDisabled}> 
+                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['save_w']}</Text>
+                        </TouchableOpacity>
+                    </View>        
                 </View>
-                <View style={{flexDirection: 'row'}}>
-                    <TouchableOpacity style={styles.button} onPress={()=> {this.props.navigation.goBack()}} disabled={this.state.buttonIsDisabled}> 
-                        <Text style={styles.buttonText}>{translations[systemLanguage].messages['cancel_w']}</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={()=> {this.confirmEditReservationMRSL()}} disabled={this.state.buttonIsDisabled}> 
-                        <Text style={styles.buttonText}>{translations[systemLanguage].messages['save_w']}</Text>
-                    </TouchableOpacity>
-                </View>        
-            </View>
+            ) : (
+                    <ActivityIndicator
+                        animating = {this.state.isLoading}
+                        color = 'white'
+                        size = "large"
+                        style = {styles.activityIndicator}
+                    />
+                )
+            } 
+            </>
         );
     }
 }
@@ -432,8 +445,14 @@ const styles = StyleSheet.create({
         color:'#ffffff',
         marginVertical: 10,
     },
-    
-  });
+    activityIndicator: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#2196f3',
+        height: 80,
+    },  
+});
 
 const mapStateToProps = (state) => {
     return {

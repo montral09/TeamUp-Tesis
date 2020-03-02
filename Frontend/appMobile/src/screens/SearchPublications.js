@@ -1,10 +1,11 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, ActivityIndicator, Picker} from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, ActivityIndicator, Picker, Dimensions} from 'react-native';
 import { Header } from 'react-native-elements';
 import { Ionicons } from "@expo/vector-icons";
+import { connect } from 'react-redux';
 import { callAPI } from '../common/genericFunctions';
 import SelectMultiple from 'react-native-select-multiple';
-
+import translations from '../common/translations';
 import SearchSpaceList from '../components/SearchSpaceList';
 
 const renderLabel = (label, style) => {
@@ -89,7 +90,7 @@ class SearchPublications extends Component {
         callAPI(objApi, this);
     }
 
-    startSearchMP= () => {
+    startSearchMP = () => {
         var objApi = {};
         objApi.objToSend = {
             "SpaceType": this.state.spacetypeSelected,
@@ -154,27 +155,27 @@ class SearchPublications extends Component {
     }
 
     render() {
+        const { systemLanguage } = this.props;
         return (
             <>
                 {this.state.spaceTypesLoaded === true && this.state.publicationsLoaded === true ? (
                     <>
                     <View style={styles.container}>   
                         <Header
-                            //leftComponent={{ icon: 'menu', color: '#fff', flex: 1, onPress: () => this.props.navigation.openDrawer() }}
                             rightComponent={{ icon: 'home', color: '#fff', flex:1, onPress: () => this.props.navigation.navigate('Home')}}
                         />
                         <Text style={styles.titleText}>{this.state.spaceTypeSelectedText}</Text>
-                        <View style={{flexDirection: 'row'}}>
-                            <Text style={styles.descriptionText}>Ordenar por: </Text>
+                        <View style={{flexDirection: 'row', width: Dimensions.get('window').width - 20}}>
+                            <Text style={styles.descriptionText}>{translations[systemLanguage].messages['sortBy_w']}: </Text>
                             <Picker
                                 style={styles.pickerBoxOrder}
                                 //selectedValue={this.props.parentState.spaceTypeSelect}
                                 //onValueChange={this.onChange}
                                 >  
-                                <Picker.Item value={1} label={'Defecto'}/>
+                                <Picker.Item value={1} label={translations[systemLanguage].messages['default_w']}/>
                                 
                             </Picker>
-                            <Text style={styles.descriptionText}>Mostrar: </Text>
+                            <Text style={styles.descriptionText}>{translations[systemLanguage].messages['show_w']}: </Text>
                             <Picker
                                 style={styles.pickerBoxShow}
                                 selectedValue={this.state.publicationsPerPage}
@@ -189,7 +190,7 @@ class SearchPublications extends Component {
                                 onPress={() => {
                                 this.handleOnPress();
                                 }}>
-                                <Ionicons name="ios-color-filter" size={40} color="white"></Ionicons>
+                                <Ionicons name="ios-options" size={40} color="white"/>
                             </TouchableOpacity> 
                         </View>
                         <ScrollView vertical={true}            
@@ -226,7 +227,7 @@ class SearchPublications extends Component {
                         ) : (null)
                         }
                         {parseInt(this.state.publications.length) === 0 ? (
-                            <Text style={styles.subtitleText}>No se encontraron publicaciones</Text>
+                            <Text style={styles.subtitleText}>{translations[systemLanguage].messages['searchNo_pubs']}</Text>
                         ) : (   
                                 <>
                                     <SearchSpaceList publications = {this.state.publications} navigate={this.props.navigation.navigate}/>
@@ -238,7 +239,7 @@ class SearchPublications extends Component {
                                             </>
                                         );
                                     })}
-                                    <Text style={styles.descriptionText}>Mostrando {this.state.publications.length} publicaciones de {this.state.totalPublications}</Text>
+                                    <Text style={styles.descriptionText}>{translations[systemLanguage].messages['showing_w']} {this.state.publications.length} {translations[systemLanguage].messages['publicationsLC_w']} {translations[systemLanguage].messages['of_w']} {this.state.totalPublications}</Text>
                                 </>
                             )
                         }   
@@ -248,7 +249,7 @@ class SearchPublications extends Component {
                 ) : 
                 (<ActivityIndicator
                     animating = {true}
-                    color = '#bc2b78'
+                    color = 'white'
                     size = "large"
                     style = {styles.activityIndicator}
                 />)
@@ -263,10 +264,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#2196f3',
     alignItems: 'center',
-    //justifyContent: 'center',
   },
   scrollContainer: {
-    //paddingTop: 10,
     alignItems: 'center',
   },
   titleText:{
@@ -274,7 +273,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: "#FFF",
     marginTop: 40,
-    //marginLeft: 20,
     marginBottom: 10,
   },
   subtitleText:{
@@ -282,12 +280,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: "#FFF",
     marginTop: 20,
-    //marginLeft: 20,
     marginBottom: 10,  
   },
   descriptionText: {
     color: '#FFF',
-    marginLeft: 25,
+    marginLeft: 10,
     marginTop: 10,
   },
   pickerBox: {
@@ -334,8 +331,10 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SearchPublications;
+const mapStateToProps = (state) => {
+    return {
+        systemLanguage: state.loginData.systemLanguage
+    }
+}
 
-//Add once the functionality is fully working
-/*<Picker.Item value={2} label={'Menor Precio'}/>
-<Picker.Item value={3} label={'Mayor Precio'}/>*/
+export default connect(mapStateToProps)(SearchPublications);
