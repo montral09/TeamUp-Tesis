@@ -3,7 +3,6 @@ import {View,Text,StyleSheet} from 'react-native';
 import { PropTypes } from 'prop-types';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-
 export default class Stars extends Component {
 
 get stars() {

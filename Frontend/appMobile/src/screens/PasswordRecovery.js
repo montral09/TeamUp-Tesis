@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator} from 'react-native';
 import { connect } from 'react-redux';
 import translations from '../common/translations';
 
@@ -10,6 +10,7 @@ class PasswordRecovery extends Component{
         this.state = {
             email: '',
             error: null,
+            isLoading : false,
         }
     }
 
@@ -40,29 +41,41 @@ class PasswordRecovery extends Component{
     render(){
         const { systemLanguage } = this.props;
         return(
-            <View style={styles.container}>
-                <Text style={styles.titleText}>{translations[systemLanguage].messages['forgotPassword_header']}</Text>
-                <TextInput style={styles.inputBox} 
-                    underlineColorAndroid='rgba(0,0,0,0)'
-                    placeholder={translations[systemLanguage].messages['email_w']}
-                    placeholderTextColor="#ffffff"
-                    value={this.state.email}
-                    onChangeText={(email) => this.setState({email})}
-                />
-                
-                <View style={{flexDirection:'row'}}>
-                    <View style={{marginRight:10}}>
-                        <TouchableOpacity style={styles.button} onPress={()=> {this.props.navigation.goBack()}}>
-                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['cancel_w']}</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={{marginLeft:10}}>
-                        <TouchableOpacity style={styles.button} onPress={this.restoreUser} > 
-                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['recover_w']}</Text>      
-                        </TouchableOpacity>
+            <>
+            {this.state.isLoading == false ? (
+                <View style={styles.container}>
+                    <Text style={styles.titleText}>{translations[systemLanguage].messages['forgotPassword_header']}</Text>
+                    <TextInput style={styles.inputBox} 
+                        underlineColorAndroid='rgba(0,0,0,0)'
+                        placeholder={translations[systemLanguage].messages['email_w']}
+                        placeholderTextColor="#ffffff"
+                        value={this.state.email}
+                        onChangeText={(email) => this.setState({email})}
+                    />
+                    
+                    <View style={{flexDirection:'row'}}>
+                        <View style={{marginRight:10}}>
+                            <TouchableOpacity style={styles.button} onPress={()=> {this.props.navigation.goBack()}}>
+                                <Text style={styles.buttonText}>{translations[systemLanguage].messages['cancel_w']}</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{marginLeft:10}}>
+                            <TouchableOpacity style={styles.button} onPress={this.restoreUser} > 
+                                <Text style={styles.buttonText}>{translations[systemLanguage].messages['recover_w']}</Text>      
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </View>
-            </View>
+            ) : (
+                    <ActivityIndicator
+                        animating = {this.state.isLoading}
+                        color = 'white'
+                        size = "large"
+                        style = {styles.activityIndicator}
+                    />
+                )
+            }
+            </>
         )
     }
 
@@ -112,5 +125,12 @@ const styles = StyleSheet.create({
         fontSize:16,
         fontWeight:'500',
         color:'#ffffff'
+    },
+    activityIndicator: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#2196f3',
+        height: 80,
     },
 });

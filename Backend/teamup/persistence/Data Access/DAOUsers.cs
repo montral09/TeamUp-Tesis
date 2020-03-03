@@ -153,7 +153,7 @@ namespace backend.Data_Access.Query
                 objTrans.Commit();
                 return activationCode;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (objTrans != null && objTrans.Connection != null)
                 {
@@ -426,7 +426,7 @@ namespace backend.Data_Access.Query
                     }
                 }
                 dr.Close();
-            } catch (Exception e)
+            } catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }

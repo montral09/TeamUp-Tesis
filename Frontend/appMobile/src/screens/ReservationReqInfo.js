@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, Picker, Keyboard, TextInput, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, Picker, ActivityIndicator, TextInput, TouchableOpacity} from 'react-native';
 import { callAPI } from '../common/genericFunctions';
 import { connect } from 'react-redux';
 import { ML_MODE } from '../common/constants';
@@ -47,6 +47,7 @@ class ReservationReqInfo extends Component {
     }
 
     save() {
+        this.setState({isLoading: true})
         if(this.state.screenConfig.saveFunction){
             this.triggerSaveScreen(this.state.screenConfig.saveFunction,{optionValue:this.state.optionValue, textboxValue:this.state.textboxValue, dateSelectValue: this.state.dateSelectValue })
         }
@@ -78,6 +79,7 @@ class ReservationReqInfo extends Component {
         };
         objApi.functionAfterSuccess = "saveCancelRP";
         objApi.errorMSG = {}
+        console.log(objApi.objToSend)
         callAPI(objApi, this);
     }
 
@@ -156,6 +158,8 @@ class ReservationReqInfo extends Component {
         const { systemLanguage } = this.props;
         return (
             <>
+            {this.state.isLoading == false ? (
+            <>
                 {this.state.screenConfig ? (
                     <View style={styles.container}>
                         <Text style={styles.titleText}>{this.state.screenConfig.title}</Text>
@@ -217,6 +221,16 @@ class ReservationReqInfo extends Component {
                     </View>
                 ) : (null)}                
             </>   
+            ) : (
+                    <ActivityIndicator
+                        animating = {this.state.isLoading}
+                        color = 'white'
+                        size = "large"
+                        style = {styles.activityIndicator}
+                    />
+                )
+            }
+            </>
         );
     }
         
@@ -286,6 +300,13 @@ const styles = StyleSheet.create({
     color:'#ffffff',
     marginVertical: 10,
   },  
+  activityIndicator: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#2196f3',
+    height: 80,
+  },
 });
 
 const mapStateToProps = (state) => {

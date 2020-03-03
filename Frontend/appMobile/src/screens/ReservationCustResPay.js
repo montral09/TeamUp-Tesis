@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View,TouchableOpacity, Linking, TextInput, Dimensions, KeyboardAvoidingView} from 'react-native';
+import { StyleSheet, Text, View,TouchableOpacity, Linking, TextInput, Dimensions, KeyboardAvoidingView, ActivityIndicator} from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import * as ImagePicker from 'expo-image-picker';
 import * as Permissions from "expo-permissions";
@@ -25,6 +25,7 @@ class ReservationCustResPay extends Component {
     }
 
     save = () => {
+        this.setState({isLoading: true})
         this.saveCustReservationPayment(this.state.objPaymentDetails);
     }
 
@@ -107,8 +108,9 @@ class ReservationCustResPay extends Component {
 
     render() {
         const { systemLanguage } = this.props;
-        return (
-            
+        return (    
+            <>
+            {this.state.isLoading == false ? (
             <KeyboardAvoidingView style={styles.container}>
             <KeyboardAwareScrollView 
                 vertical
@@ -219,7 +221,17 @@ class ReservationCustResPay extends Component {
                 </View>
                                
             </KeyboardAwareScrollView>  
-            </KeyboardAvoidingView>    
+            </KeyboardAvoidingView>  
+            ) : (
+                    <ActivityIndicator
+                        animating = {this.state.isLoading}
+                        color = 'white'
+                        size = "large"
+                        style = {styles.activityIndicator}
+                    />
+                )
+            } 
+            </> 
         );
     }
 }
@@ -285,6 +297,13 @@ const styles = StyleSheet.create({
     fontSize:16,
     fontWeight:'500',
     color:'#ffffff'
+  },
+  activityIndicator: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#2196f3',
+    height: 80,
   },
 });
 

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, ActivityIndicator, Picker} from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, ActivityIndicator, Picker, Dimensions} from 'react-native';
 import { Header } from 'react-native-elements';
 import { Ionicons } from "@expo/vector-icons";
 import { connect } from 'react-redux';
@@ -90,7 +90,7 @@ class SearchPublications extends Component {
         callAPI(objApi, this);
     }
 
-    startSearchMP= () => {
+    startSearchMP = () => {
         var objApi = {};
         objApi.objToSend = {
             "SpaceType": this.state.spacetypeSelected,
@@ -162,11 +162,10 @@ class SearchPublications extends Component {
                     <>
                     <View style={styles.container}>   
                         <Header
-                            leftComponent={{ icon: 'menu', color: '#fff', flex: 1, onPress: () => this.props.navigation.openDrawer() }}
                             rightComponent={{ icon: 'home', color: '#fff', flex:1, onPress: () => this.props.navigation.navigate('Home')}}
                         />
                         <Text style={styles.titleText}>{this.state.spaceTypeSelectedText}</Text>
-                        <View style={{flexDirection: 'row'}}>
+                        <View style={{flexDirection: 'row', width: Dimensions.get('window').width - 20}}>
                             <Text style={styles.descriptionText}>{translations[systemLanguage].messages['sortBy_w']}: </Text>
                             <Picker
                                 style={styles.pickerBoxOrder}
@@ -250,7 +249,7 @@ class SearchPublications extends Component {
                 ) : 
                 (<ActivityIndicator
                     animating = {true}
-                    color = '#bc2b78'
+                    color = 'white'
                     size = "large"
                     style = {styles.activityIndicator}
                 />)
@@ -285,7 +284,7 @@ const styles = StyleSheet.create({
   },
   descriptionText: {
     color: '#FFF',
-    marginLeft: 25,
+    marginLeft: 10,
     marginTop: 10,
   },
   pickerBox: {

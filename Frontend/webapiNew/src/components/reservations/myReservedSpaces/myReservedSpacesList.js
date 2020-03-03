@@ -91,8 +91,12 @@ class MyReservedSpacesList extends React.Component {
     }
 
     confirmEditReservationMRSL=(modalInfo)=> {
-        let {IdReservation, HourFrom, HourTo, TotalPrice, People, ReservedQuantity} = modalInfo.resDataChanged;
+        let {IdReservation, HourFrom, HourTo, TotalPrice, People, ReservedQuantity, PlanSelected} = modalInfo.resDataChanged;
         var objApi = {};
+        if(PlanSelected != "Hour"){
+            HourFrom = null;
+            HourTo = null;
+        }
         objApi.objToSend = {
             AccessToken: this.props.tokenObj.accesToken,
             Mail: this.props.userData.Mail,

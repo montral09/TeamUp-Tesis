@@ -284,7 +284,7 @@ class SpaceView extends Component {
                                     <Text style={styles.buttonText}>{translations[systemLanguage].messages['makeReservation_w']}</Text>   
                                 </TouchableOpacity>
                                 ) : (<View style={styles.buttonsView}>
-                                        <Text style={styles.descriptionText}>{styles.buttonText}>{translations[systemLanguage].messages['viewPub_resAvToCustomers']}</Text>
+                                        <Text style={styles.descriptionText}>{translations[systemLanguage].messages['viewPub_resAvToCustomers']}</Text>
                                      </View>
                                     )
                             }
@@ -466,6 +466,3 @@ const stylesHtml = StyleSheet.create({
         fontWeight: '300',
     },
 });
-
-
-//<Text style={styles.descriptionText}>{this.state.pubObj.Description}</Text>

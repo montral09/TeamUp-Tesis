@@ -72,10 +72,10 @@ class ReservationSpaceList extends Component {
         switch (mode) {
             case "CANCEL": 
                 screenConfigObj ={
-                    title: translations[this.props.systemLanguage].messages['myReservedSpacesList_modalCancel_header'], mainText: translations[this.props.systemLanguage].messages['myReservedSpacesList_modalCancel_main'], mode : mode, saveFunction : "saveCancel", textboxLabel: translations[this.props.systemLanguage].messages['comment_w'],
+                    title: translations[this.props.systemLanguage].messages['myReservedSpacesList_modalCancel_header'], mainText: translations[this.props.systemLanguage].messages['myReservedSpacesList_modalCancel_main'], mode : mode, saveFunction : "saveCancelRP", textboxLabel: translations[this.props.systemLanguage].messages['comment_w'],
                     textboxDisplay:true, cancelAvailable:true, confirmAvailable:true, cancelText : translations[this.props.systemLanguage].messages['no_w'], confirmText : translations[this.props.systemLanguage].messages['yes_w'] , login_status: this.props.login_status
                 };
-                this.props.navigation.navigate('ReservationReqInfo', {screenConfig: screenConfigObj});
+                this.props.navigation.navigate('ReservationReqInfo', {screenConfig: screenConfigObj, selectedIdRes: IdReservation, selectedResStateParam: auxParam});
             break;
             case "RATE":
                 screenConfigObj = {
@@ -105,7 +105,7 @@ class ReservationSpaceList extends Component {
             (
                 <ActivityIndicator
                     animating = {this.state.loadingReservations || this.state.loadingStatusChange ? true : false}
-                    color = '#bc2b78'
+                    color = 'white'
                     size = "large"
                     style = {styles.activityIndicator}
                 />      
