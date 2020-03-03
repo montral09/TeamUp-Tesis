@@ -1703,32 +1703,36 @@ namespace backend.Logic
         /// <summary>
         /// Updates finished publications state 
         /// </summary>
-       public void FinishPublications()
+        private VOResponse FinishPublications()
        {
-
+            VOResponse response = new VOResponse();
             EmailDataGeneric mailData;
             try
             {
                 //Finish Publications
                 List<EmailData> finishedPublications = spaces.FinishPublications();
                 //Send email to publishers
-                foreach (var publication  in finishedPublications)
+                foreach (var publication in finishedPublications)
                 {
                     mailData = emailUtil.GetFormatMailFinishPublications(EmailFormatCodes.CODE_FINISH_PUBLICATION, publication.PublisherLanguage, publication);
                     emailUtil.SendEmailAsync(publication.PublisherMail, mailData.Body, mailData.Subject);
                 }
-            } catch (Exception)
-            {
-                //Dont do anything, wait for next execution
+                response.responseCode = EnumMessages.SUCC_STATESUPDATES.ToString();
+                return response;
             }
-            
-       }
+            catch (GeneralException e)
+            {
+                throw e;
+            }
+
+        }
 
         /// <summary>
         /// Updates finished reservations state
         /// </summary>
-       public void FinishReservations()
+        private VOResponse FinishReservations()
        {
+            VOResponse response = new VOResponse();
             EmailDataGeneric mailData;
             try
             {                
@@ -1743,53 +1747,57 @@ namespace backend.Logic
                     mailData = emailUtil.GetFormatMailFinishReservations(EmailFormatCodes.CODE_FINISH_RESERVATION_CUSTOMER, publication.CustomerLanguage, publication, true);
                     emailUtil.SendEmailAsync(publication.CustomerMail, mailData.Body, mailData.Subject);
                 }
+                response.responseCode = EnumMessages.SUCC_STATESUPDATES.ToString();
+                return response;
             }
-            catch (Exception)
+            catch (GeneralException e)
             {
-                //Dont do anything, wait for next execution
+                throw e;
             }
         }
 
         /// <summary>
         /// Update reservations state to in progress
         /// </summary>
-        public void StartReservation()
+        private VOResponse StartReservation()
         {
+            VOResponse response = new VOResponse();
             try
             {
                 //Make reservation state = in progress
-                spaces.StartReservation();                
+                spaces.StartReservation();
+                response.responseCode = EnumMessages.SUCC_STATESUPDATES.ToString();
+                return response;
             }
-            catch (Exception)
+            catch (GeneralException e)
             {
-                //Dont do anything, wait for next execution
+                throw e;
             }
         }
 
-        public void Test()
+        /// <summary>
+        /// Calls FinishReservations, FinishPublications and StartReservations
+        /// </summary>
+        /// <param name="voCreateDeviceToken"></param>
+        /// <returns></returns>
+        public VOResponse RunScheduledJobs()
         {
+            VOResponse response = new VOResponse();
             try
             {
-                MailMessage mm = new MailMessage("teamupude@gmail.com", "teamup_cliente1@yopmail.com");
-
-                mm.Body = "prueba";
-                mm.Subject = "prueba";
-                mm.IsBodyHtml = true;
-                SmtpClient smtp = new SmtpClient();
-                smtp.Host = "smtp.gmail.com";
-                smtp.EnableSsl = true;
-                NetworkCredential NetworkCred = new NetworkCredential("teamupude@gmail.com", "TeamUp20..");
-                smtp.UseDefaultCredentials = true;
-                smtp.Credentials = NetworkCred;
-                smtp.Port = 587;
-                smtp.Send(mm);
+                FinishPublications();
+                FinishReservations();
+                StartReservation();
+                response.responseCode = EnumMessages.SUCC_STATESUPDATES.ToString();
+                return response;
             }
-            catch (Exception e)
+            catch (GeneralException e)
             {
-
+                throw e;
             }
-        }
 
+
+        }
         /// <summary>
         /// Insert device token
         /// </summary>

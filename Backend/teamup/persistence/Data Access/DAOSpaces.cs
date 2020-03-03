@@ -218,7 +218,7 @@ namespace backend.Data_Access
                 keyValuePairs[ParamCodes.PRICE] = prefPlanPrice.ToString(); ;
                 return keyValuePairs;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (objTrans != null && objTrans.Connection != null)
                 {
@@ -472,7 +472,7 @@ namespace backend.Data_Access
                 }
                 dr.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -582,7 +582,7 @@ namespace backend.Data_Access
                 }
                 dr.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -626,7 +626,7 @@ namespace backend.Data_Access
                 dr.Close();
                 return isChild;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -673,7 +673,7 @@ namespace backend.Data_Access
                 }
                 dr.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -743,7 +743,7 @@ namespace backend.Data_Access
                 }
                 dr.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -821,7 +821,7 @@ namespace backend.Data_Access
                 }
                 dr.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -855,7 +855,7 @@ namespace backend.Data_Access
                 updateCommand.Parameters.Add(param);
                 updateCommand.ExecuteNonQuery();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -918,7 +918,7 @@ namespace backend.Data_Access
                     dr.Close();
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -1061,7 +1061,7 @@ namespace backend.Data_Access
                 result = Tuple.Create(publications, qty);
 
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -1133,7 +1133,7 @@ namespace backend.Data_Access
                 dr.Close();
                 return isFavourite;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -1175,7 +1175,7 @@ namespace backend.Data_Access
                 }
                 dr.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -1289,7 +1289,7 @@ namespace backend.Data_Access
                 }
                 dr.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -1482,7 +1482,7 @@ namespace backend.Data_Access
                 keyValuePairs = GetPublicationInfoAfterUpdate(idPublication, con);
                 return keyValuePairs;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (objTrans != null && objTrans.Connection != null)
                 {
@@ -1716,7 +1716,7 @@ namespace backend.Data_Access
                 insertCommand.ExecuteNonQuery();
                 objTrans.Commit();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (objTrans != null && objTrans.Connection != null)
                 {
@@ -1764,7 +1764,7 @@ namespace backend.Data_Access
                 dr.Close();
                 return reservationPlan;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -1808,7 +1808,7 @@ namespace backend.Data_Access
                 dr.Close();
                 return user;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -1872,7 +1872,7 @@ namespace backend.Data_Access
                 }
                 dr.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -1976,7 +1976,7 @@ namespace backend.Data_Access
                 dr.Close();
 
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -2040,7 +2040,7 @@ namespace backend.Data_Access
                 result = GetUsersReservationBasicData(idReservation);
                 return result;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -2084,7 +2084,7 @@ namespace backend.Data_Access
                 dr.Close();
                 return result;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -2125,8 +2125,8 @@ namespace backend.Data_Access
                 {
                     new SqlParameter("@idReservation", SqlDbType.Int) {Value = idReservation},
                     new SqlParameter("@dateFrom", SqlDbType.DateTime) {Value = dateFrom},
-                    new SqlParameter("@hourFrom", SqlDbType.VarChar) {Value = hourFrom},
-                    new SqlParameter("@hourTo", SqlDbType.VarChar) {Value = hourTo},
+                    new SqlParameter("@hourFrom", SqlDbType.VarChar) {Value = hourFrom != null ? hourFrom : ""},
+                    new SqlParameter("@hourTo", SqlDbType.VarChar) {Value = hourTo != null ? hourTo : ""},
                     new SqlParameter("@totalPrice", SqlDbType.Int) {Value = totalPrice},
                     new SqlParameter("@people", SqlDbType.Int) {Value = people},
                     new SqlParameter("@reservedQty", SqlDbType.Int) {Value = reservedQuantity},
@@ -2138,7 +2138,7 @@ namespace backend.Data_Access
                 result = GetUsersReservationBasicData(idReservation);
                 return result;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (objTrans != null && objTrans.Connection != null)
                 {
@@ -2180,7 +2180,7 @@ namespace backend.Data_Access
                 insertCommand.Parameters.AddRange(prm.ToArray());
                 insertCommand.ExecuteNonQuery();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -2217,7 +2217,7 @@ namespace backend.Data_Access
                 insertCommand.Parameters.AddRange(prm.ToArray());
                 insertCommand.ExecuteNonQuery();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -2255,7 +2255,7 @@ namespace backend.Data_Access
                 User user = GetUserByQuestion(idQuestion, con);
                 return user;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -2345,7 +2345,7 @@ namespace backend.Data_Access
                 }
                 dr.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -2379,7 +2379,7 @@ namespace backend.Data_Access
                 }
 
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -2413,7 +2413,7 @@ namespace backend.Data_Access
                 }
                 dr.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -2443,7 +2443,7 @@ namespace backend.Data_Access
                 }
                 dr.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -2476,7 +2476,7 @@ namespace backend.Data_Access
                 con.Open();
                 objTrans = con.BeginTransaction();
                 int idPayment = GetIdPreferentialPayment(idPublicaton, con, objTrans);
-                if (evidence != null)
+                if (evidence != null && evidence.Base64String != null)
                 {
                     // Insert evidence
                     url = await storageUtil.StoreEvidencePaymentPlanAsync(evidence, idPayment, idPublicaton);
@@ -2498,7 +2498,7 @@ namespace backend.Data_Access
                 updateCommand.ExecuteNonQuery();
                 objTrans.Commit();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (objTrans != null && objTrans.Connection != null)
                 {
@@ -2545,7 +2545,7 @@ namespace backend.Data_Access
                 }
                 dr.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -2581,7 +2581,7 @@ namespace backend.Data_Access
                 }
                 dr.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -2610,7 +2610,7 @@ namespace backend.Data_Access
             {
                 con = new SqlConnection(GetConnectionString());
                 con.Open();
-                if (evidence != null)
+                if (evidence != null && evidence.Base64String != null)
                 {
                     // Insert evidence
                     url = await storageUtil.StoreEvidencePaymentReservationCustomerAsync(evidence, idUser, idReservation);
@@ -2628,7 +2628,7 @@ namespace backend.Data_Access
                 UserBasicData user = GetPublisherFromReservation(idReservation, con);
                 return user;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -2668,7 +2668,7 @@ namespace backend.Data_Access
                 }
                 dr.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -2696,7 +2696,7 @@ namespace backend.Data_Access
             {
                 con = new SqlConnection(GetConnectionString());
                 con.Open();
-                if (evidence.Base64String != "")
+                if (evidence != null && evidence.Base64String != null)
                 {
                     // Insert evidence
                     url = await storageUtil.StoreEvidencePaymentReservationPublisherAsync(evidence, idUser, idReservation);
@@ -2712,7 +2712,7 @@ namespace backend.Data_Access
                 updateCommand.Parameters.AddRange(prm.ToArray());
                 updateCommand.ExecuteNonQuery();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -2760,7 +2760,7 @@ namespace backend.Data_Access
 
 
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -2800,7 +2800,7 @@ namespace backend.Data_Access
                 }
                 dr.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -2834,7 +2834,7 @@ namespace backend.Data_Access
                 }
                 dr.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -2874,7 +2874,7 @@ namespace backend.Data_Access
                 }
                 dr.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -2920,7 +2920,7 @@ namespace backend.Data_Access
                 }
                 dr.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -2972,7 +2972,7 @@ namespace backend.Data_Access
                 }
                 dr.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -3033,7 +3033,7 @@ namespace backend.Data_Access
                 };
                 recommendedList.Add(recommended);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -3201,7 +3201,7 @@ namespace backend.Data_Access
                 }
 
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (con != null)
                 {
@@ -3331,7 +3331,7 @@ namespace backend.Data_Access
                 UserBasicData user = GetPublisherFromPublication(idPublication, con);
                 return user;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 if (objTrans != null && objTrans.Connection != null)
                 {
@@ -3412,7 +3412,7 @@ namespace backend.Data_Access
                 UserBasicData user = GetPublisherFromReservation(idReservation, con);
                 return user;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -3505,10 +3505,10 @@ namespace backend.Data_Access
                    messages.Sort();
                 }                
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw e;
-               // throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+                throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
+
             }
             return messages;
         }
@@ -3571,7 +3571,7 @@ namespace backend.Data_Access
                 drPlan.Close();
                 return description;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -3614,7 +3614,7 @@ namespace backend.Data_Access
                 dr.Close();
                 return title;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -3657,7 +3657,7 @@ namespace backend.Data_Access
                 dr.Close();
                 return title;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -3693,7 +3693,7 @@ namespace backend.Data_Access
                 updateCommand.Parameters.AddRange(param.ToArray());
                 updateCommand.ExecuteNonQuery();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -3738,7 +3738,7 @@ namespace backend.Data_Access
                 dr.Close();
                 return description;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -3789,7 +3789,7 @@ namespace backend.Data_Access
                     }
                     dr.Close();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
                 }
@@ -3843,7 +3843,7 @@ namespace backend.Data_Access
                 }
                 dr.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -3897,7 +3897,7 @@ namespace backend.Data_Access
                 }
                 dr.Close();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -3925,7 +3925,7 @@ namespace backend.Data_Access
                 SqlCommand updateCommand = new SqlCommand(query, con);
                 updateCommand.ExecuteNonQuery();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -4001,7 +4001,7 @@ namespace backend.Data_Access
                 }
                 return otherPublications;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -4071,7 +4071,7 @@ namespace backend.Data_Access
                 dr.Close();
                 return idOtherPublications;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }

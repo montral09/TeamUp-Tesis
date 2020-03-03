@@ -205,42 +205,48 @@ class ViewPublication extends React.Component {
         this.modalReqInfo.current.changeModalLoadingState(true);
     }
 
-    // This function will call the API
-    confirmReservationVP = (comment) => {
-        var objApi = {}; var PlanSelected = "";
-        switch (this.state.planChosen) {
-            case "HourPrice": PlanSelected = "Hour"; break;
-            case "DailyPrice": PlanSelected = "Day"; break;
-            case "WeeklyPrice": PlanSelected = "Week"; break;
-            case "MonthlyPrice": PlanSelected = "Month"; break;
-        }
-        objApi.objToSend = {
-            "AccessToken": this.props.tokenObj.accesToken,
-            "VOReservation": {
-                "IdPublication": this.state.pubID,
-                "MailCustomer": this.props.userData.Mail,
-                "PlanSelected": PlanSelected,
-                "ReservedQuantity": this.state.quantityPlan,
-                "DateFrom": this.state.date,
-                "HourFrom": this.state.hourFromSelect,
-                "HourTo": this.state.hourToSelect,
-                "People": this.state.quantityPeople,
-                "Comment": comment,
-                "TotalPrice": this.state.totalPrice
-            }
-        }
-
-        objApi.fetchUrl = 'api/reservation';
-        objApi.method = "POST";
-        objApi.successMSG = {
-            SUCC_RESERVATIONCREATED: "",
-        };
-        objApi.functionAfterSuccess = "confirmReservationVP";
-        objApi.functionAfterError = "confirmReservationVP";
-        objApi.errorMSG = {}
-        this.modalSummaryElement.current.changeModalLoadingState(false);
-        callAPI(objApi, this);
+// This function will call the API
+confirmReservationVP = (comment) => {
+    var objApi = {}; var PlanSelected = "";
+    switch (this.state.planChosen) {
+        case "HourPrice": PlanSelected = "Hour"; break;
+        case "DailyPrice": PlanSelected = "Day"; break;
+        case "WeeklyPrice": PlanSelected = "Week"; break;
+        case "MonthlyPrice": PlanSelected = "Month"; break;
     }
+    var hourFrom = null;
+    var hourTo = null;
+    if(PlanSelected == "Hour"){
+        hourFrom = this.state.hourFromSelect;
+        hourTo = this.state.hourToSelect;
+    }
+    objApi.objToSend = {
+        "AccessToken": this.props.tokenObj.accesToken,
+        "VOReservation": {
+            "IdPublication": this.state.pubID,
+            "MailCustomer": this.props.userData.Mail,
+            "PlanSelected": PlanSelected,
+            "ReservedQuantity": this.state.quantityPlan,
+            "DateFrom": this.state.date,
+            "HourFrom": hourFrom,
+            "HourTo": hourTo,
+            "People": this.state.quantityPeople,
+            "Comment": comment,
+            "TotalPrice": this.state.totalPrice
+        }
+    }
+
+    objApi.fetchUrl = 'api/reservation';
+    objApi.method = "POST";
+    objApi.successMSG = {
+        SUCC_RESERVATIONCREATED: "",
+    };
+    objApi.functionAfterSuccess = "confirmReservationVP";
+    objApi.functionAfterError = "confirmReservationVP";
+    objApi.errorMSG = {}
+    this.modalSummaryElement.current.changeModalLoadingState(false);
+    callAPI(objApi, this);
+}
 
 
     triggerSummaryModal() {

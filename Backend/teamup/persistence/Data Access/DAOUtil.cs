@@ -213,7 +213,7 @@ namespace backend.Data_Access
                 dr.Close();
                 return data;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -256,7 +256,7 @@ namespace backend.Data_Access
                 dr.Close();
                 return stateCode;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
@@ -299,7 +299,7 @@ namespace backend.Data_Access
                 dr.Close();
                 return stateCode;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
