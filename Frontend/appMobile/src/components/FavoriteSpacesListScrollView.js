@@ -15,15 +15,49 @@ class FavoriteSpacesListScrollView extends Component {
                     <Text style={styles.titleText}>{this.props.parentData.Title}</Text>
                     <Text style={styles.subtitleText}>{this.props.parentData.SpaceTypeDesc}</Text>
                     <View style={{flexDirection: 'row'}}>
+                        <Ionicons name="ios-home"
+                            color="#fff"
+                            size={20}
+                        />
                         <Text style={styles.infoText}>{this.props.parentData.City} -</Text>
                         <Text style={styles.infoText}>{this.props.parentData.Address}</Text>
-                    </View>  
-                    <Text style={styles.infoText}>{translations[systemLanguage].messages['capacity_w']}: {this.props.parentData.Capacity}</Text>
+                    </View>
+                    <View style={{flexDirection: 'row'}}>
+                        <Ionicons name="ios-people"
+                            color="#fff"
+                            size={20}
+                        />
+                        <Text style={styles.infoText}>{translations[systemLanguage].messages['capacity_w']}: {this.props.parentData.Capacity}</Text>
+                    </View>
                     <Text style={styles.subtitleText2}>{translations[systemLanguage].messages['price_w']}</Text>
-                    <Text style={styles.infoText}>{this.props.parentData.HourPrice == 0 ? (translations[systemLanguage].messages['hourlyPrice_w'] + ":  N/A") : (translations[systemLanguage].messages['hourlyPrice_w'] + ": $" + this.props.parentData.HourPrice)}</Text>
-                    <Text style={styles.infoText}>{this.props.parentData.DailyPrice == 0 ? (translations[systemLanguage].messages['dailyPrice_w'] + ": N/A") : (translations[systemLanguage].messages['dailyPrice_w'] + ": $" + this.props.parentData.DailyPrice)}</Text>
-                    <Text style={styles.infoText}>{this.props.parentData.WeeklyPrice == 0 ? (translations[systemLanguage].messages['weeklyPrice_w'] + ": N/A") : (translations[systemLanguage].messages['weeklyPrice_w'] + ": $" + this.props.parentData.WeeklyPrice)}</Text>
-                    <Text style={styles.infoText}>{this.props.parentData.MonthlyPrice == 0 ? (translations[systemLanguage].messages['monthlyPrice_w'] + ": N/A") : (translations[systemLanguage].messages['monthlyPrice_w'] + ": $" + this.props.parentData.MonthlyPrice)}</Text>
+                    <View style={{flexDirection: 'row'}}>
+                        <Ionicons name="ios-clock"
+                            color="#fff"
+                            size={20}
+                        />
+                        <Text style={styles.infoText}>{this.props.parentData.HourPrice == 0 ? (translations[systemLanguage].messages['hourlyPrice_w'] + ":  N/A") : (translations[systemLanguage].messages['hourlyPrice_w'] + ": $" + this.props.parentData.HourPrice)}</Text>
+                    </View>
+                    <View style={{flexDirection: 'row'}}>
+                        <Ionicons name="ios-today"
+                            color="#fff"
+                            size={20}
+                        />
+                        <Text style={styles.infoText}>{this.props.parentData.DailyPrice == 0 ? (translations[systemLanguage].messages['dailyPrice_w'] + ": N/A") : (translations[systemLanguage].messages['dailyPrice_w'] + ": $" + this.props.parentData.DailyPrice)}</Text>
+                    </View>
+                    <View style={{flexDirection: 'row'}}>
+                        <Ionicons name="ios-calendar"
+                            color="#fff"
+                            size={20}
+                        />
+                        <Text style={styles.infoText}>{this.props.parentData.WeeklyPrice == 0 ? (translations[systemLanguage].messages['weeklyPrice_w'] + ": N/A") : (translations[systemLanguage].messages['weeklyPrice_w'] + ": $" + this.props.parentData.WeeklyPrice)}</Text>
+                    </View>
+                    <View style={{flexDirection: 'row'}}>
+                        <Ionicons name="ios-calendar"
+                            color="#fff"
+                            size={20}
+                        />
+                        <Text style={styles.infoText}>{this.props.parentData.MonthlyPrice == 0 ? (translations[systemLanguage].messages['monthlyPrice_w'] + ": N/A") : (translations[systemLanguage].messages['monthlyPrice_w'] + ": $" + this.props.parentData.MonthlyPrice)}</Text>
+                    </View>
                     <Text style={styles.infoText}>{translations[systemLanguage].messages['score_w']}: {this.props.parentData.Ranking == 0 ? 'N/A' : this.props.parentData.Ranking}</Text>
                     <TouchableOpacity style={styles.button} onPress={()=>this.props.navigate('SpaceView', {PubId: this.props.parentData.IdPub})}> 
                         <Text style={styles.buttonText}>{translations[systemLanguage].messages['view_w']}</Text>

@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         marginVertical: 20,
         elevation: 3,
-        paddingHorizontal: 10,
+        marginHorizontal: 10,
     },
     buttonText: {
         fontSize:16,

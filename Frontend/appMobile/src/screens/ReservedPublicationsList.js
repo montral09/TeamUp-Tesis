@@ -108,7 +108,7 @@ class ReservedPublicationsList extends Component {
             (
                 <ActivityIndicator
                     animating = {this.state.loadingReservations || this.state.loadingStatusChange ? true : false}
-                    color = '#bc2b78'
+                    color = 'white'
                     size = "large"
                     style = {styles.activityIndicator}
                 />      
