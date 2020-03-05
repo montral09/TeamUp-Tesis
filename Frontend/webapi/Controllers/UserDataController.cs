@@ -12,7 +12,7 @@ namespace webapi.Controllers
 
     public class UserDataController : ApiController
     {
-        IFacadeWeb fach = new FacadeFactory().CreateFacadeWeb;
+        IFacade fach = Facade.Instance;  
 
         [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpPost]

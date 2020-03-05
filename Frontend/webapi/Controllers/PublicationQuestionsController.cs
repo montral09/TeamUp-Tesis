@@ -12,7 +12,7 @@ namespace webapi.Controllers
 {
     public class PublicationQuestionsController : ApiController
     {
-        IFacadeWeb fach = new FacadeFactory().CreateFacadeWeb;      
+        IFacade fach = Facade.Instance;        
         [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpPost]
         [Route("api/publicationQuestions")]
