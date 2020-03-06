@@ -38,6 +38,7 @@ class ViewPublication extends React.Component {
             relatedPublications: [],
             otherPublicationConfig : [],
             facilities: [],
+            spaceTypes: [],
             pubIsLoading: true,
             infIsLoading: true,
             planChosen: "HourPrice",
@@ -56,6 +57,7 @@ class ViewPublication extends React.Component {
     }
 
     componentWillMount() {
+        this.loadSpaceTypesCP();
         this.loadInfraestructureVP();
         this.loadPublicationVP(this.state.pubID);
         this.setInitialHour();
@@ -111,6 +113,20 @@ class ViewPublication extends React.Component {
         if (parseInt(value) > 0) {
             this.setState({ quantityPlan: parseInt(value) });
         }
+    }
+
+    // This function will call the API
+    loadSpaceTypesCP() {
+        var objApi = {};
+        objApi.objToSend = {}
+        objApi.fetchUrl = 'api/spaceTypes';
+        objApi.method = "GET";
+        objApi.successMSG = {
+            SUCC_SPACETYPESOK : '',
+        };
+        objApi.functionAfterSuccess = "loadSpaceTypesCP";
+        objApi.errorMSG= {}
+        callAPI(objApi, this);
     }
 
     // This function will call the API 
@@ -189,42 +205,48 @@ class ViewPublication extends React.Component {
         this.modalReqInfo.current.changeModalLoadingState(true);
     }
 
-    // This function will call the API
-    confirmReservationVP = (comment) => {
-        var objApi = {}; var PlanSelected = "";
-        switch (this.state.planChosen) {
-            case "HourPrice": PlanSelected = "Hour"; break;
-            case "DailyPrice": PlanSelected = "Day"; break;
-            case "WeeklyPrice": PlanSelected = "Week"; break;
-            case "MonthlyPrice": PlanSelected = "Month"; break;
-        }
-        objApi.objToSend = {
-            "AccessToken": this.props.tokenObj.accesToken,
-            "VOReservation": {
-                "IdPublication": this.state.pubID,
-                "MailCustomer": this.props.userData.Mail,
-                "PlanSelected": PlanSelected,
-                "ReservedQuantity": this.state.quantityPlan,
-                "DateFrom": this.state.date,
-                "HourFrom": this.state.hourFromSelect,
-                "HourTo": this.state.hourToSelect,
-                "People": this.state.quantityPeople,
-                "Comment": comment,
-                "TotalPrice": this.state.totalPrice
-            }
-        }
-
-        objApi.fetchUrl = 'api/reservation';
-        objApi.method = "POST";
-        objApi.successMSG = {
-            SUCC_RESERVATIONCREATED: "",
-        };
-        objApi.functionAfterSuccess = "confirmReservationVP";
-        objApi.functionAfterError = "confirmReservationVP";
-        objApi.errorMSG = {}
-        this.modalSummaryElement.current.changeModalLoadingState(false);
-        callAPI(objApi, this);
+// This function will call the API
+confirmReservationVP = (comment) => {
+    var objApi = {}; var PlanSelected = "";
+    switch (this.state.planChosen) {
+        case "HourPrice": PlanSelected = "Hour"; break;
+        case "DailyPrice": PlanSelected = "Day"; break;
+        case "WeeklyPrice": PlanSelected = "Week"; break;
+        case "MonthlyPrice": PlanSelected = "Month"; break;
     }
+    var hourFrom = null;
+    var hourTo = null;
+    if(PlanSelected == "Hour"){
+        hourFrom = this.state.hourFromSelect;
+        hourTo = this.state.hourToSelect;
+    }
+    objApi.objToSend = {
+        "AccessToken": this.props.tokenObj.accesToken,
+        "VOReservation": {
+            "IdPublication": this.state.pubID,
+            "MailCustomer": this.props.userData.Mail,
+            "PlanSelected": PlanSelected,
+            "ReservedQuantity": this.state.quantityPlan,
+            "DateFrom": this.state.date,
+            "HourFrom": hourFrom,
+            "HourTo": hourTo,
+            "People": this.state.quantityPeople,
+            "Comment": comment,
+            "TotalPrice": this.state.totalPrice
+        }
+    }
+
+    objApi.fetchUrl = 'api/reservation';
+    objApi.method = "POST";
+    objApi.successMSG = {
+        SUCC_RESERVATIONCREATED: "",
+    };
+    objApi.functionAfterSuccess = "confirmReservationVP";
+    objApi.functionAfterError = "confirmReservationVP";
+    objApi.errorMSG = {}
+    this.modalSummaryElement.current.changeModalLoadingState(false);
+    callAPI(objApi, this);
+}
 
 
     triggerSummaryModal() {
@@ -396,6 +418,14 @@ class ViewPublication extends React.Component {
         callAPI(objApi, this);
     }
 
+    printSpaceType = () =>{
+        var spaceTypeSelected = this.state.pubObj.SpaceType;
+        var spaceTypeFound = this.state.spaceTypes.filter(function(obj){
+            return obj.Code == spaceTypeSelected
+        })
+        return (spaceTypeFound[0].Description)
+    } 
+
     render() {
         const { login_status } = this.props;
         const options = {
@@ -447,6 +477,21 @@ class ViewPublication extends React.Component {
                                         <div className="row">
                                             <div className="col-md-12 ">
                                                 <div className="row">
+                                                <div className="breadcrumb full-width ">
+                                                    <div className="background-breadcrumb"></div>
+                                                    <div className="background">
+                                                        <div className="shadow"></div>
+                                                        <div className="pattern">
+                                                            <div className="container" style={{ paddingBottom: '1px' }}>
+                                                                <div className="clearfix">
+                                                                    <ul>
+                                                                        {this.state.pubObj.SpaceType && this.state.spaceTypes ? (this.printSpaceType()) : (null)}
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                     <div className="main-content  full-width ">
                                                         <div className="background-content"></div>
                                                         <div className="background">
@@ -632,7 +677,7 @@ class ViewPublication extends React.Component {
                                                                             </div>
 
                                                                             <div id="tabs" className="htabs">
-                                                                                <a href="#tab-description" onClick={() => this.goToTab(1)} {...(this.state.tabDisplayed == 1 ? { className: "selected" } : {})} >{translate('desription_w')}</a>
+                                                                                <a href="#tab-description" onClick={() => this.goToTab(1)} {...(this.state.tabDisplayed == 1 ? { className: "selected" } : {})} >{translate('description_w')}</a>
                                                                                 <a href="#tab-questions" onClick={() => this.goToTab(3)} {...(this.state.tabDisplayed == 3 ? { className: "selected" } : {})} >{translate('questions_w')} ({this.state.arrQA.length})</a>
                                                                                 <a href="#tab-review" onClick={() => this.goToTab(2)} {...(this.state.tabDisplayed == 2 ? { className: "selected" } : {})} >{translate('reviews_w')} ({this.state.pubObj.Reviews.length})</a>
                                                                                 <a href="#tab-youtube" onClick={() => this.goToTab(4)} {...(this.state.tabDisplayed == 4 ? { className: "selected" } : {})} >{translate('video_w')}</a>

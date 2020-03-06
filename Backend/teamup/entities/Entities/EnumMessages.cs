@@ -77,7 +77,9 @@ namespace backend.Logic
         ERR_PENDINGPREFERENTIALPAYMENT,
         ERR_PENDINGCOMMISSIONPAYMENT,
         //Device token
-        SUCC_TOKENINSERTED
+        SUCC_TOKENINSERTED,
+        //ScheduleJobs
+        SUCC_STATESUPDATES
 
     }
     

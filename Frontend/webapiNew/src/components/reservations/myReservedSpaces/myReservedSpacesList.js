@@ -91,8 +91,12 @@ class MyReservedSpacesList extends React.Component {
     }
 
     confirmEditReservationMRSL=(modalInfo)=> {
-        let {IdReservation, HourFrom, HourTo, TotalPrice, People, ReservedQuantity} = modalInfo.resDataChanged;
+        let {IdReservation, HourFrom, HourTo, TotalPrice, People, ReservedQuantity, PlanSelected} = modalInfo.resDataChanged;
         var objApi = {};
+        if(PlanSelected != "Hour"){
+            HourFrom = null;
+            HourTo = null;
+        }
         objApi.objToSend = {
             AccessToken: this.props.tokenObj.accesToken,
             Mail: this.props.userData.Mail,
@@ -138,6 +142,7 @@ class MyReservedSpacesList extends React.Component {
             case "PAYRESCUST":
                 this.ModalCustResPay.current.toggle(auxParam);
                 break;
+
         }
     }
 
@@ -209,8 +214,8 @@ class MyReservedSpacesList extends React.Component {
             "IdReservation": objPaymentDetails.IdReservation,
             "Comment": objPaymentDetails.paymentComment || "",
             "Evidence": {
-                "Base64String": objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Base64String : "",
-                "Extension": objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Extension : ""
+                "Base64String": objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Base64String : null,
+                "Extension": objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Extension : null
             }
         }
         objApi.fetchUrl = "api/reservationPaymentCustomer";
@@ -239,7 +244,7 @@ class MyReservedSpacesList extends React.Component {
                     <LoadingOverlay
                         active={this.state.loadingReservations}
                         spinner
-                        text='Cargando...'
+                        text={translate('loading_text_small')}
                     >
                     <Header />
                     <div className="main-content  full-width  home" style = {{minHeight:"50vh"}}>

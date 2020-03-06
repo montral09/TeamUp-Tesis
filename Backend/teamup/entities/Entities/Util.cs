@@ -9,7 +9,6 @@ namespace backend.Logic
 {
     public class Util
     {
-
         public static string GetRandomString()
         {
             string path = Path.GetRandomFileName();
@@ -78,17 +77,17 @@ namespace backend.Logic
         /// <returns> amount to be paid </returns>
         public static int RecalculatePrice(int newPlanPrice, int daysLeft, int currentPreferentialPlan, List<PublicationPlan> preferentialPlans)
         {
-            int currentPlanPricePerDay = 0;
-            int newTotalPrice;
+            Double currentPlanPricePerDay = 0;
+            Double newTotalPriceDouble;
             foreach (PublicationPlan publicationPlan in preferentialPlans)
             {
                 if (publicationPlan.IdPlan == currentPreferentialPlan)
                 {
-                    currentPlanPricePerDay = Convert.ToInt32(publicationPlan.Price / publicationPlan.Days);
+                    currentPlanPricePerDay = Convert.ToDouble(publicationPlan.Price / publicationPlan.Days);
                 }
             }
-            newTotalPrice = newPlanPrice - currentPlanPricePerDay * daysLeft;
-            
+            newTotalPriceDouble = newPlanPrice - currentPlanPricePerDay * daysLeft;
+            int newTotalPrice = (int)Math.Floor(newTotalPriceDouble);
             return newTotalPrice;            
         }
 

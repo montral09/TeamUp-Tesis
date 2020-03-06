@@ -83,7 +83,7 @@ class FavPublications extends React.Component {
                         <LoadingOverlay
                             active={loadStatus}
                             spinner
-                            text='Cargando...'
+                            text={translate('loading_text_small')}
                         >
                             <Header />
                             <div className="main-content  full-width  home" style={{ minHeight: "50vh" }}>

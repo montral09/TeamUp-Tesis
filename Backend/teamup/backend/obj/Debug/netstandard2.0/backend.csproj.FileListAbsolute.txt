@@ -25,3 +25,11 @@ C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\backend\bin\Debug\n
 C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\backend\obj\Debug\netstandard2.0\backend.csprojAssemblyReference.cache
 C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\backend\obj\Debug\netstandard2.0\backend.dll
 C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\backend\obj\Debug\netstandard2.0\backend.pdb
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\backend\bin\Debug\netstandard2.0\MLModel.zip
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\backend\bin\Debug\netstandard2.0\commonEntities.dll
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\backend\bin\Debug\netstandard2.0\persistence.dll
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\backend\bin\Debug\netstandard2.0\teamupML.Model.dll
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\backend\bin\Debug\netstandard2.0\commonEntities.pdb
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\backend\bin\Debug\netstandard2.0\persistence.pdb
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\backend\bin\Debug\netstandard2.0\teamupML.Model.pdb
+C:\Users\fitur\Documents\github2\TeamUp-Tesis\Backend\teamup\backend\obj\Debug\netstandard2.0\backend.csproj.CopyComplete

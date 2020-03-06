@@ -8,7 +8,7 @@ class AppFooter extends React.Component {
             <Fragment>
                 <div className="app-footer">
                     <div className="app-footer__inner">
-                        
+                        TeamUp! - 2020
                     </div>
                 </div>
             </Fragment>

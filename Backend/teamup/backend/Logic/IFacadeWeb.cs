@@ -60,10 +60,7 @@ namespace backend.Logic
         VOResponseGetMessages GetMessages(VORequestGetMessages voGetMessages);
         VOResponseUpdateCommissionAmountAdmin UpdateCommissionAmountAdmin(VORequestUpdateCommissionAmountAdmin voUpdateAmount);        
         VOResponseGetReservations GetReservations(VORequestGetReservations voGetReservations);
-        void FinishPublications();
-        void FinishReservations();
-        void StartReservation();
-        void Test();
+        VOResponse RunScheduledJobs();
         VOResponseCreateDeviceToken CreateDeviceToken(VORequestCreateDeviceToken voCreateDeviceToken); 
     }
 }

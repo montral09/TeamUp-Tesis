@@ -2,8 +2,6 @@ import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import cx from 'classnames';
 
-import TitleComponent2 from './PageTitleExamples/Variation2'
-
 class PageTitle extends Component {
 
     render() {
@@ -32,9 +30,6 @@ class PageTitle extends Component {
                                 {subheading}
                             </div>
                         </div>
-                    </div>
-                    <div className="page-title-actions">
-                        {/*<TitleComponent2/> LO SAQUE*/}
                     </div>
                 </div>
             </div>

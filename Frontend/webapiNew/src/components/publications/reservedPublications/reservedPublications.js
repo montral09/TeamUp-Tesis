@@ -98,6 +98,13 @@ class MyReservedPublications extends React.Component {
             case "PAYRESCOM":
                 this.ModalResComPay.current.toggle(auxParam);
                 break;
+            case "COMMENT":
+                modalConfigObj = {
+                    title: this.props.translate('res_publicationsMessageTitle'), mainText: auxParam,
+                    textboxDisplay: false, cancelAvailable: true, cancelText: this.props.translate('reservation_modal_ok'), mode: mode, saveFunction: "closeCommentModal"
+                };
+                this.setState({ modalConfigObj: modalConfigObj, selectedIdRes: IdReservation, selectedResState: auxParam }, () => { this.modalReqInfo.current.toggle(); })
+                break;
         }
     }
 
@@ -155,6 +162,7 @@ class MyReservedPublications extends React.Component {
         switch (saveFunction) {
             case "saveCancelRP": this.saveCancelRP(objData.textboxValue); break;
             case "saveConfirmRP": this.saveConfirmRP(objData.dateSelectValue); break;
+            case "closeCommentModal" :this.modalReqInfo.current.changeModalLoadingState(true); break;
         }
     }
 
@@ -167,8 +175,8 @@ class MyReservedPublications extends React.Component {
             "IdReservation": objPaymentDetails.IdReservation,
             "Comment": objPaymentDetails.paymentComment || "",
             "Evidence": {
-                "Base64String": objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Base64String : "",
-                "Extension": objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Extension : ""
+                "Base64String": objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Base64String : null,
+                "Extension": objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Extension : null
             }
         }
         objApi.fetchUrl = "api/reservationPaymentPublisher";

@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { connect } from 'react-redux';
 import { logOut } from '../../../reducers/auth/actions';
-import Login from '../../../DemoPages/Login';
+import Login from '../../../Pages/Login';
 import {
     DropdownToggle, DropdownMenu,
     Nav, NavItem, UncontrolledButtonDropdown
@@ -17,7 +17,7 @@ class UserBox extends React.Component {
         this.state = {
             active: false,
         };
-        if (!this.props.adminData.Mail) {
+        if (!this.props.adminData || !this.props.adminData.Mail) {
             this.props.logOut()
         }
     }
@@ -29,7 +29,7 @@ class UserBox extends React.Component {
                 <div className="header-btn-lg pr-0">
                     <div className="widget-content p-0">
                         <div className="widget-content-wrapper">
-                            {this.props.adminData.Mail ? (
+                            {this.props.adminData && this.props.adminData.Mail ? (
                                 <Fragment>
                                     <div className="widget-content-left">
 
@@ -43,7 +43,7 @@ class UserBox extends React.Component {
                                             <DropdownMenu right className="rm-pointers dropdown-menu-lg">
                                                 <Nav vertical>
                                                     <NavItem>
-                                                        <a onClick={() => (this.props.logOut())}><i className='pe-7s-back-2'> </i> Cerrar sesión</a>
+                                                        <a href="javascript:void(0);" onClick={() => (this.props.logOut())}><i className='pe-7s-back-2'> </i> Cerrar sesión</a>
                                                     </NavItem>
                                                 </Nav>
                                             </DropdownMenu>
