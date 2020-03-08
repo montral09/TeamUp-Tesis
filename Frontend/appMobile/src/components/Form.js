@@ -181,10 +181,10 @@ const styles = StyleSheet.create({
         color: 'rgba(255,0,0,1)'
     },
     pickerBox: {
-    width:300,
-    backgroundColor:'rgba(255,255,255,0.3)',
-    color:'#ffffff',
-    marginVertical: 10
+        width:300,
+        backgroundColor:'rgba(255,255,255,0.3)',
+        color:'#ffffff',
+        marginVertical: 10
     },
     infoText:{
         fontSize: 18, 

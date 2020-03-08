@@ -295,7 +295,7 @@ class SpaceView extends Component {
                 </View>    
             ) : (<ActivityIndicator
                     animating = {this.state.pubIsLoading}
-                    color = '#bc2b78'
+                    color = 'white'
                     size = "large"
                     style = {styles.activityIndicator}
                  />
