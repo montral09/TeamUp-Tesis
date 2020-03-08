@@ -1524,7 +1524,7 @@ namespace backend.Logic
             VOResponseGetRecommendedPublications response = new VOResponseGetRecommendedPublications();
             try
             {
-                List<SpaceTypeRecommended> recommended = spaces.GetRecommendedPublications(); ;
+                List<SpaceTypeRecommended> recommended = spaces.GetRecommendedPublications();
                 List<VOSpaceTypeRecommended> voRecommended = STypeRecommendedToVOSTypeRecommendedConverter.Convert(recommended);
                 response.Recommended = voRecommended;
                 String message = EnumMessages.SUCC_FAVORITESOK.ToString();

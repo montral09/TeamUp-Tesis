@@ -146,7 +146,10 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             });
         break;
         case "saveAnswerVP":
+            bindThis.props.navigation.goBack();
+        break;
         case "saveQuestionVP":
+            objApi.tabQuestionThis.setState({isLoading : false});
             bindThis.loadPublicationVP(bindThis.state.pubID);
         break;
         case "loadMyReservationsMRSL":
@@ -217,9 +220,6 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             }
             bindThis.setState({ publicationsLoaded: true, publications:objData.Publications, 
                 totalPublications:objData.TotalPublications,totalPages:newTotalPages, pagination: newPagination });
-        break;
-        case "saveQuestionVP":
-            objApi.tabQuestionThis.setState({isLoading : false});
         break;  
         case "submitFavoriteVP":
             bindThis.setState({ pubObj: { ...bindThis.state.pubObj, Favorite: objApi.objToSend.Code === 1 ? true : false } })
@@ -262,8 +262,8 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
         case "deleteUser": 
             bindThis.setState({ isLoading: false });
         break;
-        case "confirmReservationVP":
-            bindThis.modalSummaryElement.current.changeModalLoadingState(false);
+        case "saveConfirmRP":
+            bindThis.setState({ isLoading: false });
         break;
         case "validateEmail":
             bindThis.setState({isLoading: false, isvalid: false});

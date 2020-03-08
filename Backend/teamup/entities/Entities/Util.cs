@@ -83,7 +83,7 @@ namespace backend.Logic
             {
                 if (publicationPlan.IdPlan == currentPreferentialPlan)
                 {
-                    currentPlanPricePerDay = Convert.ToDouble(publicationPlan.Price / publicationPlan.Days);
+                    currentPlanPricePerDay = (Double)publicationPlan.Price / (Double)publicationPlan.Days;
                 }
             }
             newTotalPriceDouble = newPlanPrice - currentPlanPricePerDay * daysLeft;

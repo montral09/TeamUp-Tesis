@@ -3097,8 +3097,6 @@ namespace backend.Data_Access
                 {
                     addedSilver = MAX_GOLD;
                 }
-
-
                 //SILVER
                 SqlCommand selectCommandSilver = new SqlCommand(query, con);
                 List<SqlParameter> prmSilver = new List<SqlParameter>()
@@ -3128,7 +3126,6 @@ namespace backend.Data_Access
                     }
                     spaceTypeListAux.Clear();
                 }
-
                 //BRONZE
                 if (spaceTypeList.Count < MIN_TOTAL)
                 {
@@ -3162,8 +3159,6 @@ namespace backend.Data_Access
                         spaceTypeListAux.Clear();
                     }
                 }
-
-
                 if (spaceTypeList.Count < MIN_TOTAL)
                 {
                     //FREE
@@ -3199,7 +3194,6 @@ namespace backend.Data_Access
                         spaceTypeListAux.Clear();
                     }
                 }
-
             }
             catch (Exception)
             {

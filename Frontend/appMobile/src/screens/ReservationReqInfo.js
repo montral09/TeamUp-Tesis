@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { StyleSheet, Text, View, Picker, ActivityIndicator, TextInput, TouchableOpacity} from 'react-native';
 import { callAPI } from '../common/genericFunctions';
 import { connect } from 'react-redux';
+import { displayErrorMessage } from '../common/genericFunctions';
 import { ML_MODE } from '../common/constants';
 import translations from '../common/translations';
 import DatePicker from '../components/datePicker';
@@ -13,13 +14,14 @@ class ReservationReqInfo extends Component {
         const screenConfigParam = navigation.getParam('screenConfig', 'default value');
         const IdReservationParam = navigation.getParam('selectedIdRes', 'NO-ID');
         const selectedResStateParam = navigation.getParam('selectedResState', 'default value');
+        var dateConverted = this.createDate()
         this.state = {
             modal: false,
             selectedIdRes: IdReservationParam,
             optionalData: {},
             optionValue: 5,
             textboxValue: "",
-            dateSelectValue : "",
+            dateSelectValue : dateConverted,
             selectedResState: selectedResStateParam || "",
             isLoading : false,
             buttonIsDisabled: false,
@@ -29,6 +31,22 @@ class ReservationReqInfo extends Component {
         this.save = this.save.bind(this);
         this.cancel = this.cancel.bind(this);
         this.changeModalLoadingState = this.changeModalLoadingState.bind(this);
+    }
+
+    createDate() {
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1; //January is 0!
+
+        var yyyy = today.getFullYear();
+        if (dd < 10) {
+            dd = '0' + dd;
+        }
+        if (mm < 10) {
+            mm = '0' + mm;
+        }
+        var dateConv = dd + "-" + mm + '-' + yyyy;
+        return dateConv;
     }
 
     changeModalLoadingState(closeModal){
@@ -114,6 +132,7 @@ class ReservationReqInfo extends Component {
     saveConfirmRP = (dateSelectValue) => {
         if (dateSelectValue == "") {
             displayErrorMessage(translations[this.props.systemLanguage].messages['reservedPublications_confirmModal_dateSelectMissingErr']);
+            this.setState({isLoading: false})
         } else {
             var objApi = {};
             var splittedDate = dateSelectValue.split('-')

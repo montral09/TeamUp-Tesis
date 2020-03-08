@@ -37,8 +37,8 @@ class ReservationCustResPay extends Component {
             "IdReservation": this.state.IdReservation,
             "Comment": objPaymentDetails.paymentComment || "",
             "Evidence": {
-                "Base64String": objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Base64String : "",
-                "Extension": objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Extension : ""
+                "Base64String": objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Base64String : null,
+                "Extension": objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Extension : null
             }
         }
         objApi.fetchUrl = "api/reservationPaymentCustomer";

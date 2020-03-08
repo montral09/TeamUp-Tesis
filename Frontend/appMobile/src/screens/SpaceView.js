@@ -46,6 +46,18 @@ class SpaceView extends Component {
     componentDidMount() {
         this.loadInfraestructureVP();
         this.loadPublicationVP(this.state.pubID);
+        this.willFocusSubscription = this.props.navigation.addListener(
+          'willFocus',
+          () => {
+            this.setState({ pubIsLoading : true });
+            this.loadInfraestructureVP();
+            this.loadPublicationVP(this.state.pubID);
+          }
+        );
+    }
+    
+    componentWillUnmount() {
+        this.willFocusSubscription.remove();
     }
 
     loadInfraestructureVP = () => {

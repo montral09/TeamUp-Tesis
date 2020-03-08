@@ -25,6 +25,18 @@ class FavoriteSpaceList extends Component {
     componentDidMount() {
         this.loadSpaceTypesFP();
         this.loadMyFavoritePublications();
+        this.willFocusSubscription = this.props.navigation.addListener(
+          'willFocus',
+          () => {
+            this.setState({ loadingPubs : true });
+            this.loadSpaceTypesFP();
+            this.loadMyFavoritePublications();
+          }
+        );
+      }
+    
+    componentWillUnmount() {
+        this.willFocusSubscription.remove();
     }
 
     // This function will call the API
