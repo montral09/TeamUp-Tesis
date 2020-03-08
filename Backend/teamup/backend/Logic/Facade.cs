@@ -19,7 +19,7 @@ using Microsoft.ML;
 
 namespace backend.Logic
 {
-    public class Facade : IFacadeWeb
+    public class Facade : IFacade
     {
         private IDAOUsers users;
         private IDAOSpaces spaces;
@@ -31,13 +31,15 @@ namespace backend.Logic
         private const int PUBLICATION_REJECTED = 6;
         private string projectName = ConfigurationManager.AppSettings["PROJECT_NAME"];
 
-        public Facade()
+        private Facade()
         {
             users = new DAOUsers();
             spaces = new DAOSpaces();
             util = new DAOUtil();
         }
-        
+
+        public static Facade Instance { get; } = new Facade();
+
         /// <summary>
         /// Checks if the user email exists
         /// </summary>
@@ -1138,7 +1140,7 @@ namespace backend.Logic
                 response.responseCode = message;
                 return response;
             }
-            catch (GeneralException e)
+            catch (Exception e)
             {
                 throw e;
             }
