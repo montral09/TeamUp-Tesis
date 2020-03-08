@@ -267,7 +267,8 @@ const styles = StyleSheet.create({
   },
   infoText2:{
     color: "#FFF",
-    marginLeft: 20,
+    marginLeft: 0,
+    fontSize: 16,
   },
   inputBox: {
     width:300,

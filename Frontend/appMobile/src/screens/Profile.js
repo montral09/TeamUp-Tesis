@@ -176,6 +176,7 @@ class Profile extends Component {
                                 value = {this.state.firstName}
                                 updateMasterState = {this._updateMasterState}
                                 editBool = {this.state.editActive}
+                                passBool={false}
                             />
                             <FloatingTitle
                                 attrName = 'lastName'
@@ -183,6 +184,7 @@ class Profile extends Component {
                                 value = {this.state.lastName}
                                 updateMasterState = {this._updateMasterState}
                                 editBool = {this.state.editActive}
+                                passBool={false}
                             />
                             <FloatingTitle
                                 attrName = 'email'
@@ -190,6 +192,7 @@ class Profile extends Component {
                                 value = {this.state.email}
                                 updateMasterState = {this._updateMasterState}
                                 editBool = {this.state.editActive}
+                                passBool={false}
                             />
                             <FloatingTitle
                                 attrName = 'password'
@@ -197,6 +200,7 @@ class Profile extends Component {
                                 value = {this.state.password}
                                 updateMasterState = {this._updateMasterState}
                                 editBool = {this.state.editActive}
+                                passBool={true}
                             />
                             <FloatingTitle
                                 attrName = 'passwordConfirm'
@@ -204,6 +208,7 @@ class Profile extends Component {
                                 value = {this.state.passwordConfirm}
                                 updateMasterState = {this._updateMasterState}
                                 editBool = {this.state.editActive}
+                                passBool={true}
                             />
                             <FloatingTitle
                                 attrName = 'phone'
@@ -211,6 +216,7 @@ class Profile extends Component {
                                 value = {this.state.phone}
                                 updateMasterState = {this._updateMasterState}
                                 editBool = {this.state.editActive}
+                                passBool={false}
                             />
                             <FloatingTitle
                                 attrName = 'rut'
@@ -218,6 +224,7 @@ class Profile extends Component {
                                 value = {this.state.rut}
                                 updateMasterState = {this._updateMasterState}
                                 editBool = {this.state.editActive}
+                                passBool={false}
                             />
                             <FloatingTitle
                                 attrName = 'razonSocial'
@@ -225,6 +232,7 @@ class Profile extends Component {
                                 value = {this.state.razonSocial}
                                 updateMasterState = {this._updateMasterState}
                                 editBool = {this.state.editActive}
+                                passBool={false}
                             />
                             <FloatingTitle
                                 attrName = 'address'
@@ -232,6 +240,7 @@ class Profile extends Component {
                                 value = {this.state.address}
                                 updateMasterState = {this._updateMasterState}
                                 editBool = {this.state.editActive}
+                                passBool={false}
                             /> 
                             <Text style></Text>
                             <Picker

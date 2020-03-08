@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import { StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import { Ionicons } from "@expo/vector-icons";
 import { connect } from 'react-redux';
 import translations from '../common/translations';
 
@@ -28,9 +29,22 @@ render() {
                     <View style={styles.borderContainer}>
                         <Text style={styles.subTitleText}>{translations[systemLanguage].messages['payment_w']}</Text>
                         <Text style={styles.infoText}>{translations[systemLanguage].messages['payState_'+this.props.objReservationCustomerPayment.reservationPaymentStateText.replace(/\s/g,'')]}</Text>               
-                        <TouchableOpacity style={styles.button} onPress={()=> {this.props.triggerScreen("PAYRESCUST", this.props.obj.IdReservation, this.props.objReservationCustomerPayment)}}> 
-                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['details_w']}</Text>
-                        </TouchableOpacity>
+                        <View style={{flexDirection: 'row'}}>
+                            <TouchableOpacity style={styles.button} onPress={()=> {this.props.triggerScreen("PAYRESCUST", this.props.obj.IdReservation, this.props.objReservationCustomerPayment)}}> 
+                                <Text style={styles.buttonText}>{translations[systemLanguage].messages['details_w']}</Text>
+                            </TouchableOpacity>
+                            <View style={{marginTop: 22}}>
+                              {this.props.obj.Comment != '' ? (
+                                <TouchableOpacity onPress={()=> {this.props.triggerScreen("COMMENT", this.props.obj.IdReservation, this.props.obj.Comment)}}> 
+                                    <Ionicons name="ios-text"
+                                      color="#fff"
+                                      size={20}
+                                    />
+                                </TouchableOpacity>
+                                ) : (null)
+                              }
+                            </View>
+                        </View>
                     </View>
                     <View style={styles.borderContainer}>
                         <Text style={styles.subTitleText}>{translations[systemLanguage].messages['comission_w']}</Text>
