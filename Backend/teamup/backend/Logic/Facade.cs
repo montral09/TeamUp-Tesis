@@ -1140,7 +1140,7 @@ namespace backend.Logic
                 response.responseCode = message;
                 return response;
             }
-            catch (Exception e)
+            catch (GeneralException e)
             {
                 throw e;
             }
@@ -1175,7 +1175,7 @@ namespace backend.Logic
                 response.responseCode = message;
                 return response;
             }
-            catch (Exception e)
+            catch (GeneralException e)
             {
                 throw e;
             }
@@ -1644,7 +1644,7 @@ namespace backend.Logic
                 response.responseCode = message;
                 return response;
             }
-            catch (Exception e)
+            catch (GeneralException e)
             {
                 throw e;
             }
