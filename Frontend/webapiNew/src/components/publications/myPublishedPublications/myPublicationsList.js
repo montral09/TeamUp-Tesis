@@ -85,12 +85,12 @@ class MyPublicationsList extends React.Component {
         return arrayToFilter.slice(startIndex, startIndex + MAX_ELEMENTS_PER_TABLE)
     }
 
-    editPublication = (pubId, currentIDPlan, IdPlan, planPrice, spaceTypeId) => {
-        this.setState({ pubId, currentIDPlan, IdPlan, planPrice, cpMode: 'edit' , spaceTypeId})
+    editPublication = (pubId, currentIDPlan, IdPlan, planPrice, spaceTypeId, stateDescription) => {
+        this.setState({ pubId, currentIDPlan, IdPlan, planPrice, cpMode: 'edit' , spaceTypeId, stateDescription})
     }
 
-    splitPublication = (pubId, currentIDPlan, IdPlan, planPrice, spaceTypeId) => {
-        this.setState({ pubId, currentIDPlan, IdPlan, planPrice, cpMode : 'split' , spaceTypeId})
+    splitPublication = (pubId, currentIDPlan, IdPlan, planPrice, spaceTypeId, stateDescription) => {
+        this.setState({ pubId, currentIDPlan, IdPlan, planPrice, cpMode : 'split' , spaceTypeId, stateDescription})
     }
 
     // This function will call the API
@@ -137,8 +137,8 @@ class MyPublicationsList extends React.Component {
             "IdPublication": objPaymentDetails.IdPublication,
             "Comment": objPaymentDetails.paymentComment || "",
             "Evidence": {
-                "Base64String": objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Base64String : "",
-                "Extension": objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Extension : ""
+                "Base64String": objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Base64String : null,
+                "Extension": objPaymentDetails.archivesUpload ? objPaymentDetails.archivesUpload[0].Extension : null
             }
         }
         objApi.fetchUrl = "api/publicationPlan";
@@ -210,7 +210,7 @@ class MyPublicationsList extends React.Component {
                     </>
                 ) : (
                         <CreatePublication publicationID={this.state.pubId} currentIDPlan={this.state.currentIDPlan} IdPlan={this.state.IdPlan}
-                            planPrice={this.state.planPrice} cpMode={this.state.cpMode} spaceTypeId = {this.state.spaceTypeId} />
+                            planPrice={this.state.planPrice} cpMode={this.state.cpMode} spaceTypeId = {this.state.spaceTypeId} stateDescription= {this.state.stateDescription} />
                     )}
                
             </>

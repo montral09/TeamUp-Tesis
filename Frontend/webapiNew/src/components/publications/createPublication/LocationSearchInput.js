@@ -29,8 +29,7 @@ class LocationSearchInput extends React.Component {
     // and limit the results to addresses only
     const searchOptions = {
       location: new window.google.maps.LatLng(-34, -56),
-      radius: 40000,
-      types: ['address']
+      radius: 100000,
     }
     return (
       <PlacesAutocomplete
