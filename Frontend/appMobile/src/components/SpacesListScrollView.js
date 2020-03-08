@@ -50,7 +50,7 @@ class SpacesListScrollView extends Component {
                                     </TouchableOpacity>
                                 )
                             } 
-                            <TouchableOpacity style={styles.button} onPress={()=>this.props.navigation.navigate('SpaceView', {PubId: this.props.parentData.IdPub})}> 
+                            <TouchableOpacity style={styles.button} onPress={()=>this.props.navigate('SpaceView', {PubId: this.props.parentData.IdPub})}> 
                                 <Text style={styles.buttonText}>{translations[systemLanguage].messages['view_w']}</Text>
                             </TouchableOpacity>   
                         </View>

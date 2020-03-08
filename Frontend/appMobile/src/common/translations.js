@@ -171,7 +171,7 @@ var translations = {
             login_login: 'Iniciar sesión',
             login_dontHaveAccount: '¿No tienes una cuenta?',
             login_forgotPassword: 'Olvido su contraseña?',
-            SUCC_PASSWORDUPDATED: 'Se ha enviado un correo con su nueva password ',
+            SUCC_PASSWORDUPDATED: 'Se ha enviado un correo con su nueva contraseña',
             SUCC_USRLOGSUCCESS : 'Bienvenid@ ',
             ERR_MAILNOTVALIDATED: 'Correo pendiente de validar',
             ERR_USRWRONGPASS: 'Datos incorrectos',

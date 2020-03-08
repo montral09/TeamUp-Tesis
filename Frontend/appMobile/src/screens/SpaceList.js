@@ -132,7 +132,7 @@ class SpaceList extends Component{
                         PremiumTier: publication.PreferentialPlan.Description,
                         SpaceTypeDesc: spaceType2.Description,  
                       }
-                        return (<SpacesListScrollView key={publication.IdPublication} parentData={newObj} changePubState={this.changePubStateMPL}/>);
+                        return (<SpacesListScrollView key={publication.IdPublication} parentData={newObj} changePubState={this.changePubStateMPL} navigate={this.props.navigation.navigate}/>);
                       })
                     }
                   </View>
