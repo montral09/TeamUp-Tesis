@@ -197,7 +197,7 @@ class ModalCustResPay extends React.Component {
                                 </Col>
                             </FormGroup>
                         ) : (null)}
-                        {this.state.objPaymentDetails.reservationPaymentStateText != "PAID" && this.state.objPaymentDetails.reservationPaymentStateText != "CANCELED" ? (
+                        {this.state.objPaymentDetails.reservationPaymentState != "PAID" && this.state.objPaymentDetails.reservationPaymentState != "CANCELED" ? (
                             <FormGroup row>
                                 <Label for="paymentDocumentNew" sm={4}>{translate('myReservedSpacesList_custPay_uploadDocument')}</Label>
                                 <Col sm={8}>
@@ -210,12 +210,12 @@ class ModalCustResPay extends React.Component {
                             <Label for="paymentComment" sm={6}>{translate('comment_w')} ({translate('optional_w')})</Label>
                             <Col sm={12}>
                                 <Input type="textarea" name="paymentComment" id="paymentComment"
-                                    value={this.state.objPaymentDetails.paymentComment} onChange={this.onChange} readOnly={this.state.objPaymentDetails.reservationPaymentStateText == "PAID" || this.state.objPaymentDetails.reservationPaymentStateText == "CANCELED" ? true : false} />
+                                    value={this.state.objPaymentDetails.paymentComment} onChange={this.onChange} readOnly={this.state.objPaymentDetails.reservationPaymentState == "PAID" || this.state.objPaymentDetails.reservationPaymentState == "CANCELED" ? true : false} />
                             </Col>
                         </FormGroup>
                         <FormGroup row>
                             <Col sm={12}>
-                                {this.state.objPaymentDetails.reservationPaymentStateText != "PAID" && this.state.objPaymentDetails.reservationPaymentStateText != "CANCELED" ? (
+                                {this.state.objPaymentDetails.reservationPaymentState != "PAID" && this.state.objPaymentDetails.reservationPaymentState != "CANCELED" ? (
                                     translate('myReservedSpacesList_custPay_alertMsg1') +
                                     translate('myReservedSpacesList_custPay_alertMsg2') 
                                 ) : (
@@ -228,7 +228,7 @@ class ModalCustResPay extends React.Component {
                 </ModalBody>
                 <ModalFooter>
                     <Button color="link" onClick={this.toggle} disabled={this.state.buttonIsDisabled}>{translate('close_w')}</Button>
-                    {this.state.objPaymentDetails.reservationPaymentStateText != "PAID" && this.state.objPaymentDetails.reservationPaymentStateText != "CANCELED" ? (
+                    {this.state.objPaymentDetails.reservationPaymentState != "PAID" && this.state.objPaymentDetails.reservationPaymentState != "CANCELED" ? (
                         <Button color="primary" onClick={this.save} disabled={this.state.buttonIsDisabled}>{translate('save_w')}
                             &nbsp;&nbsp;
                             {this.state.isLoading &&

@@ -89,7 +89,18 @@ class Register extends React.Component {
             message=this.props.translate('register_checkErrorMsg14');
             returnValue = true;
         }
-        
+        if(this.state.rut != "" || this.state.razonSocial != "" || this.state.address != ""){
+            if(this.state.rut == ""){
+                message=this.props.translate('register_checkErrorMsg1');
+                returnValue = true;
+            }else if(this.state.razonSocial == ""){
+                message=this.props.translate('register_checkErrorMsg1');
+                returnValue = true;
+            }else if(this.state.address == ""){
+                message=this.props.translate('register_checkErrorMsg1');
+                returnValue = true;
+            }
+        }
         if(message){
             displayErrorMessage(message);
         }

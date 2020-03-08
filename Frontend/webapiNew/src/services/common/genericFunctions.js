@@ -5,7 +5,7 @@ import store from '../../services/store';
 import { MAIN_URL, MAIN_URL_WEB, MAX_ELEMENTS_PER_TABLE} from './constants';
 
 export const handleErrors = (error, bindThis) => {
-    displayErrorMessage("Hubo un error, intente nuevamente");   
+    displayErrorMessage("Hubo un error / There was an error");   
     window.open(MAIN_URL_WEB+"error", "_self");
 }
 
@@ -94,7 +94,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             bindThis.props.history.push('/account/login');
         break;
         case "registerUser":
-            bindThis.props.history.push('/account/login')
+            bindThis.props.history.push('/account/login');
         break;
 
         case "validateEmail":
@@ -104,7 +104,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
 
         case "loadMessages":
             var newTotalPages = Math.round(parseFloat(objData.Messages.length/MAX_ELEMENTS_PER_TABLE));
-            if(newTotalPages % 2 != 0){
+            if(newTotalPages % 2 != 0 && objData.Messages.length > MAX_ELEMENTS_PER_TABLE){
                 newTotalPages=newTotalPages+1;
             }
             var newPagination = [];
@@ -145,7 +145,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         break;
         case "loadMyReservationsMRSL":
             var newTotalPages = Math.round(parseFloat(objData.Reservations.length/MAX_ELEMENTS_PER_TABLE));
-            if(newTotalPages % 2 != 0){
+            if(newTotalPages % 2 != 0 && objData.Reservations.length > MAX_ELEMENTS_PER_TABLE){
                 newTotalPages=newTotalPages+1;
             }
             var newPagination = [];
@@ -167,9 +167,6 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         case "saveCustReservationPayment":
             bindThis.ModalCustResPay.current.changeModalLoadingState(true);
             bindThis.loadMyReservationsMRSL();
-        break;
-        case "registerUser":
-            objApi.dispatch({ type: objApi.typeSuccess, userData: objApi.objToSend});
         break;
         case "logIn":
             bindThis.toggleButton();
@@ -201,7 +198,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         case "loadSpaceTypesFP"             : bindThis.setState({ spaceTypes: objData.spaceTypes, loadingSpaceTypes: false }); break;
         case "startSearchMP":
             var newTotalPages = Math.round(parseFloat(objData.TotalPublications/bindThis.state.publicationsPerPage));
-            if(newTotalPages % 2 != 0){
+            if(newTotalPages % 2 != 0 && objData.TotalPublications.length > MAX_ELEMENTS_PER_TABLE){
                 newTotalPages=newTotalPages+1;
             }
             var newPagination = [];
@@ -236,7 +233,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         case "changePubStateMPL"    : bindThis.loadMyPublications(); break;
         case "loadMyPublications"   :
             var newTotalPages = Math.round(parseFloat(objData.Publications.length/MAX_ELEMENTS_PER_TABLE));
-            if(newTotalPages % 2 != 0){
+            if(newTotalPages % 2 != 0 && objData.Publications.length > MAX_ELEMENTS_PER_TABLE){
                 newTotalPages=newTotalPages+1;
             }
             var newPagination = [];
@@ -265,7 +262,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
 
         case "loadMyReservationsRP":
             var newTotalPages = Math.round(parseFloat(objData.Reservations.length/MAX_ELEMENTS_PER_TABLE));
-            if(newTotalPages % 2 != 0){
+            if(newTotalPages % 2 != 0 && objData.Reservations.length > MAX_ELEMENTS_PER_TABLE){
                 newTotalPages=newTotalPages+1;
             }
             var newPagination = [];
@@ -291,12 +288,10 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
     switch(trigger){
         case "registerUser":
             bindThis.setState({isLoading: false, buttonIsDisable: false});
+            objApi.dispatch({ type: objApi.typeSuccess, messageObj: { responseCode: objData.responseCode, errorMessage: objApi.errorMSG.ERR_MAILALREADYEXIST}});
         break;
         case "restoreUser":
             bindThis.setState({isLoading: false});
-        break;
-        case "registerUser":
-            objApi.dispatch({ type: objApi.typeSuccess, messageObj: { responseCode: objData.responseCode, errorMessage: objApi.errorMSG.ERR_MAILALREADYEXIST}});
         break;
         case "logIn":
             bindThis.toggleButton(); objApi.dispatch({type: objApi.typeError}); 

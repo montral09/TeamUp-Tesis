@@ -25,10 +25,9 @@ class CreatePublicationStep3 extends React.Component {
     const optionSelected = this.props.parentState.premiumOptions.filter(premOpc => {
       return premOpc.IdPlan == idPlan
     });
-
     if(this.props.parentState.editObject && this.props.parentState.editObject.planPrice != 0 &&
-      this.props.parentState.editObject.currentIDPlan == this.props.parentState.editObject.IdPlan &&
-      optionSelected[0].Price < this.props.parentState.editObject.planPrice && this.props.parentState.editObject.stateDescription != 'PENDING PAYMENT'){
+      optionSelected[0].Price < this.props.parentState.editObject.planPrice && 
+      this.props.parentState.editObject.stateDescription != 'PENDING PAYMENT'){
       displayErrorMessage(this.props.translate('createPub_step4_errorMsg1'));
     }else{
       this.setState({
