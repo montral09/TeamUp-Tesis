@@ -377,6 +377,10 @@ confirmReservationVP = (comment) => {
 
     // This function will call the API
     saveAnswerVP = (answer) => {
+        if(answer.trim() == ""){
+            displayErrorMessage(this.props.translate('createPub_stepNextError'))
+            return;
+        }
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,
@@ -398,6 +402,10 @@ confirmReservationVP = (comment) => {
 
     // This function will call the API
     saveQuestionVP = (question, tabQuestionThis) => {
+        if(question.trim() == ""){
+            displayErrorMessage(this.props.translate('createPub_stepNextError'))
+            return;
+        }
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,
