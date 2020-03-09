@@ -54,7 +54,7 @@ class Upload extends React.Component {
   // This function will check the max filesize allowed
   checkFileSize = (event) => {
     let files = event.target.files
-    let size = 1500000;
+    let size = 2000000;
     let err = "";
     for (var x = 0; x < files.length; x++) {
       if (files[x].size > size) {

@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator} from 'react-native';
+import { callAPI } from '../common/genericFunctions';
 import { connect } from 'react-redux';
 import translations from '../common/translations';
 
@@ -23,14 +24,15 @@ class PasswordRecovery extends Component{
             objApi.fetchUrl = "api/passwordRecovery";
             objApi.method = "POST";
             objApi.successMSG = {
-                SUCC_PASSWORDUPDATED : this.props.translate('SUCC_PASSWORDUPDATED'),
+                SUCC_PASSWORDUPDATED : translations[this.props.systemLanguage].messages['SUCC_PASSWORDUPDATED'],
             };
             objApi.functionAfterSuccess = "restoreUser";
             objApi.functionAfterError = "restoreUser";
             objApi.errorMSG= {
-                ERR_USRMAILNOTEXIST : this.props.translate('ERR_USRMAILNOTEXIST')
+                ERR_USRMAILNOTEXIST : translations[this.props.systemLanguage].messages['ERR_USRMAILNOTEXIST'],
             }
             objApi.logOut = this.props.logOut;
+            this.setState({isLoading:true})
             callAPI(objApi, this);
         }else{
             displayErrorMessage('Por favor ingrese un correo');

@@ -13,7 +13,7 @@ namespace webapi.Controllers
 {
     public class PublicationPlanController : ApiController
     {
-        IFacadeWeb fach = new FacadeFactory().CreateFacadeWeb;      
+        IFacade fach = Facade.Instance;        
         [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpGet]
         [Route("api/publicationPlan")]

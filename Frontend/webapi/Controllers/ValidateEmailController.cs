@@ -12,7 +12,7 @@ namespace webapi.Controllers
 {
     public class ValidateEmailController : ApiController
     {
-        readonly IFacadeWeb fach = new FacadeFactory().CreateFacadeWeb;
+        readonly IFacade fach = Facade.Instance;  
 
         [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpPost]

@@ -1702,8 +1702,8 @@ namespace backend.Data_Access
                         new SqlParameter("@idCustomer", SqlDbType.Int) {Value = user.IdUser},
                         new SqlParameter("@planSelected", SqlDbType.Int) {Value = idPlan},
                         new SqlParameter("@dateFrom", SqlDbType.DateTime) {Value = reservation.DateFrom},
-                        new SqlParameter("@hourFrom", SqlDbType.VarChar) {Value = reservation.HourFrom},
-                        new SqlParameter("@hourTo", SqlDbType.VarChar) {Value = reservation.HourTo},
+                        new SqlParameter("@hourFrom", SqlDbType.VarChar) {Value =  reservation.HourFrom != null ? reservation.HourFrom : ""},
+                        new SqlParameter("@hourTo", SqlDbType.VarChar) {Value = reservation.HourTo != null ? reservation.HourTo : ""},
                         new SqlParameter("@people", SqlDbType.Int) {Value =reservation.People},
                         new SqlParameter("@comment", SqlDbType.VarChar) {Value = reservation.Comment},
                         new SqlParameter("@totalPrice", SqlDbType.Int) {Value = reservation.TotalPrice},
@@ -3097,8 +3097,6 @@ namespace backend.Data_Access
                 {
                     addedSilver = MAX_GOLD;
                 }
-
-
                 //SILVER
                 SqlCommand selectCommandSilver = new SqlCommand(query, con);
                 List<SqlParameter> prmSilver = new List<SqlParameter>()
@@ -3128,7 +3126,6 @@ namespace backend.Data_Access
                     }
                     spaceTypeListAux.Clear();
                 }
-
                 //BRONZE
                 if (spaceTypeList.Count < MIN_TOTAL)
                 {
@@ -3162,8 +3159,6 @@ namespace backend.Data_Access
                         spaceTypeListAux.Clear();
                     }
                 }
-
-
                 if (spaceTypeList.Count < MIN_TOTAL)
                 {
                     //FREE
@@ -3199,7 +3194,6 @@ namespace backend.Data_Access
                         spaceTypeListAux.Clear();
                     }
                 }
-
             }
             catch (Exception)
             {

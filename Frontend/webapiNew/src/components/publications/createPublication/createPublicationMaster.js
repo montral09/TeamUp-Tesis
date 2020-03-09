@@ -352,10 +352,10 @@ class CreatePublication extends React.Component {
     }
 
     render() {
-        const { translate, userData, login_status } = this.props;
+        const { translate, userData, login_status, tokenObj} = this.props;
  
         /* START SECURITY VALIDATIONS */
-        if (login_status != 'LOGGED_IN') return <Redirect to='/' />
+        if (login_status != 'LOGGED_IN' || !tokenObj) return <Redirect to='/' />
         if (this.state.generalError) return <Redirect to='/error' />
         // THIS ONE ONLY FOR PUBLISHER PAGES
         if (userData.PublisherValidated != true) return <Redirect to='/' />
@@ -371,7 +371,7 @@ class CreatePublication extends React.Component {
                     </Helmet>
                     {/*SEO Support End */}
                     <Header />
-                        <div className="col-md-9" id="content">
+                        <div className="col-md-9" id="content" style = {{minHeight:"100vh"}}>
                             <div className="row">
                                 <div className="col-md-3">
                                     <div className="well">
@@ -389,10 +389,12 @@ class CreatePublication extends React.Component {
                                     <CreatePublicationStep3 parentState={this.state} onChange={this.onChange} />
                                     <CreatePublicationStep4 parentState={this.state} onChange={this.onChange} />
                                     <CreatePublicationStep5 parentState={this.state} onChange={this.onChange} />
+                                    <div style={{ marginTop: '5%' }}>
+                                        {this.previousButton}
+                                        {this.nextButton}
+                                        {this.endButton}                                    
+                                    </div>
 
-                                    {this.previousButton}
-                                    {this.nextButton}
-                                    {this.endButton}
                                 </div>
 
                             </div>

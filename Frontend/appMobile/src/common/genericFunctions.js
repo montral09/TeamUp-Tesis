@@ -6,8 +6,12 @@ export const handleErrors = (error, bindThis) => {
     displayErrorMessage("Hubo un error, intente nuevamente");
 }
 export const callAPI = (objApi, bindThis) => {
+    console.log("objApi ")
+    console.log(objApi) 
     if(objApi.method == "GET"){
         fetch(MAIN_URL+objApi.fetchUrl).then(response => response.json()).then(data => {
+            console.log("data.responseCode "+data.responseCode)
+            console.log(data) 
             if (data.responseCode && objApi.successMSG && data.responseCode in objApi.successMSG) {
                 if(objApi.successMSG[data.responseCode] && objApi.successMSG[data.responseCode] != ""){
                     displaySuccessMessage(objApi.successMSG[data.responseCode]);
@@ -27,6 +31,8 @@ export const callAPI = (objApi, bindThis) => {
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify(objApi.objToSend)
         }).then(response => response.json()).then(data => {
+            console.log("data.responseCode "+data.responseCode)
+            console.log(data)
             if (data.responseCode && objApi.successMSG && data.responseCode in objApi.successMSG) {
                 if(objApi.successMSG[data.responseCode] && objApi.successMSG[data.responseCode] != ""){
                     displaySuccessMessage(objApi.successMSG[data.responseCode]);
@@ -49,7 +55,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
     switch(trigger){
         case "registerUser":
             bindThis.setState({isLoading: false, buttonIsDisable: false});
-            objApi.dispatch({ type: objApi.typeSuccess, userData: objApi.objToSend});
+            bindThis.props.navigation.goBack();
         break;
         case "logIn":
             bindThis.setState({ isLoading: false });
@@ -62,13 +68,13 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         break;
         case "restoreUser":
             bindThis.setState({isLoading: false});
-            bindThis.props.history.push('/account/login');
+            bindThis.props.navigation.navigate('Login');
         break;
         case "modifyUser":
             bindThis.setState({ isLoading: false });
             if(objApi.emailChanged){
                 bindThis.props.logOut();
-                bindThis.props.navigation.navigate('Login')
+                bindThis.props.navigation.navigate('Login');
             }else{
                 try{
                     bindThis.props.modifyData({
@@ -140,7 +146,10 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             });
         break;
         case "saveAnswerVP":
+            bindThis.props.navigation.goBack();
+        break;
         case "saveQuestionVP":
+            objApi.tabQuestionThis.setState({isLoading : false});
             bindThis.loadPublicationVP(bindThis.state.pubID);
         break;
         case "loadMyReservationsMRSL":
@@ -211,9 +220,6 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             }
             bindThis.setState({ publicationsLoaded: true, publications:objData.Publications, 
                 totalPublications:objData.TotalPublications,totalPages:newTotalPages, pagination: newPagination });
-        break;
-        case "saveQuestionVP":
-            objApi.tabQuestionThis.setState({isLoading : false});
         break;  
         case "submitFavoriteVP":
             bindThis.setState({ pubObj: { ...bindThis.state.pubObj, Favorite: objApi.objToSend.Code === 1 ? true : false } })
@@ -253,10 +259,52 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
         case "modifyUser":
             bindThis.setState({ isLoading: false });
         break;
-        case "deleteUser": bindThis.setState({ isLoading: false });break;
+        case "deleteUser": 
+            bindThis.setState({ isLoading: false });
+        break;
+        case "saveConfirmRP":
+            bindThis.setState({ isLoading: false });
+        break;
+        case "validateEmail":
+            bindThis.setState({isLoading: false, isvalid: false});
+        break;
+        case "saveQuestionVP":
+            objApi.tabQuestionThis.setState({isLoading : false});
+        break;    
         default:
     }
 
+}
+
+export const handleExpiredToken = (retryObjApi, bindThis) =>{
+    if(retryObjApi.functionAfterSuccess == "updateExpiredToken"){
+        // This is the second attempt -> Log off
+        store.dispatch(logOut());
+        try {
+            displayErrorMessage (bindThis.props.translate('sessionExpired'));
+        } catch (error) {
+            displayErrorMessage ('Su sesion expiro/ Your session has expired');
+        }
+        
+    }else{
+        var objApi = {};
+        objApi.retryObjApi = retryObjApi;
+        objApi.objToSend = {
+            "RefreshToken": bindThis.props.tokenObj.refreshToken,
+            "Mail": bindThis.props.userData.Mail
+        }
+        objApi.fetchUrl = "api/tokens";
+        objApi.method = "PUT";
+        objApi.successMSG = {
+            SUCC_TOKENSUPDATED : '',
+        };
+        objApi.functionAfterSuccess = "updateExpiredToken";
+        objApi.errorMSG= {
+            ERR_REFRESHTOKENEXPIRED : '',
+        };
+        objApi.functionAfterError = "updateExpiredToken";
+        callAPI(objApi, bindThis);
+    }    
 }
 
 export const displayErrorMessage = (message) =>{

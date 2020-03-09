@@ -758,7 +758,7 @@ namespace backend.Data_Access.Query
 
         public String FinishReservations()
         {
-            String query = "update RESERVATIONS set state = 4 OUTPUT INSERTED.idReservation where dateTo < getDate() and (state = 2 or state = 3)";
+            String query = "update RESERVATIONS set state = 4 OUTPUT INSERTED.idReservation where cast(dateTo as date) < cast(getDate() as date) and (state = 2 or state = 3)";
             return query;
         }
 

@@ -43,6 +43,8 @@
   font-size: 16px;
   border-radius: 2px;
   outline: none;
+  z-index: 1000;
+  position: absolute;
 }
 
 .Demo__clear-button,

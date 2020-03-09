@@ -11,33 +11,43 @@ class ValidateEmail extends React.Component {
         this.state = {
             emailtoken: emailtoken,
             isLoading: true,
+            processing: false,
             message: ""
         }
 
     }
     componentDidMount() {
-        this.validateEmail();
+        this.processValidateEmail();
     }
     
+    processValidateEmail = () => {
+        if(this.state.emailtoken){
+
+            if(this.state.processing == false){
+                const localThis = this;
+                this.setState({processing : true}, () =>  {localThis.validateEmail()})
+            }
+
+        }
+    }
+
     // This function will call the API
     validateEmail = () => {
-        if(this.state.emailtoken){
-            var objApi = {};
-            objApi.objToSend = {
-                ActivationCode: this.state.emailtoken
-            }
-            objApi.fetchUrl = "api/validateEmail";
-            objApi.method = "POST";
-            objApi.successMSG = {
-                SUCC_EMAILVALIDATED : this.props.translate('SUCC_EMAILVALIDATED'),
-            };
-            objApi.functionAfterSuccess = "validateEmail";
-            objApi.functionAfterError = "validateEmail";
-            objApi.errorMSG= {
-                ERR_ACTIVATIONCODENOTEXIST : this.props.translate('ERR_ACTIVATIONCODENOTEXIST')
-            }
-            callAPI(objApi, this);
+        var objApi = {};
+        objApi.objToSend = {
+            ActivationCode: this.state.emailtoken
         }
+        objApi.fetchUrl = "api/validateEmail";
+        objApi.method = "POST";
+        objApi.successMSG = {
+            SUCC_EMAILVALIDATED : this.props.translate('SUCC_EMAILVALIDATED'),
+        };
+        objApi.functionAfterSuccess = "validateEmail";
+        objApi.functionAfterError = "validateEmail";
+        objApi.errorMSG= {
+            ERR_ACTIVATIONCODENOTEXIST : this.props.translate('ERR_ACTIVATIONCODENOTEXIST')
+        }
+        callAPI(objApi, this);
     }
 
     render() {

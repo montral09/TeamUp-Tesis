@@ -20,13 +20,14 @@ class SignUp extends Component{
             rut: '',
             razonSocial: '',
             address: '',
+            Language: 'es',
             isLoading : false,
             buttonIsDisable: false
         };
     }
 
     handleCheckPublisher = (checkValue) =>{
-        if (checkValue === 'publisher'){
+        if (checkValue === 'gestor'){
             this.setState({checkPublisher:true})
         }else{
             this.setState({checkPublisher:false})
@@ -37,14 +38,14 @@ class SignUp extends Component{
     checkRequiredInputs = () => {
         let returnValue = false;
         let message = "";
-        if (!this.state.password || !this.state.email || !this.state.firstName
+        if (!this.state.password || !this.state.email || !this.state.name
             || !this.state.lastName || !this.state.phone) {
                 message= translations[this.props.systemLanguage].messages['register_checkErrorMsg1'];
                 returnValue = true;
-        } else if (!this.state.firstName.match(/^[A-Za-z]+$/)) {        
+        } else if (!this.state.name.match(/^[A-Za-z]+$/)) {        
             returnValue = true;
             message = translations[this.props.systemLanguage].messages['register_checkErrorMsg2'];
-        } else if (this.state.firstName.length < 2) {        
+        } else if (this.state.name.length < 2) {        
             returnValue = true;
             message = translations[this.props.systemLanguage].messages['register_checkErrorMsg3'];
         } else if (!this.state.lastName.match(/^[A-Za-z]+$/)) {
@@ -96,10 +97,10 @@ class SignUp extends Component{
             objApi.objToSend = {
                 Password: this.state.password,
                 Mail: this.state.email,
-                Name: this.state.firstName,
+                Name: this.state.name,
                 LastName: this.state.lastName,
                 Phone: this.state.phone,
-                CheckPublisher: this.state.CheckPublisher,
+                CheckPublisher: this.state.checkPublisher,
                 Rut: this.state.rut,
                 RazonSocial: this.state.razonSocial,
                 Address: this.state.address,
@@ -115,6 +116,7 @@ class SignUp extends Component{
             objApi.errorMSG= {
                 ERR_MAILALREADYEXIST : translations[this.props.systemLanguage].messages['ERR_MAILALREADYEXIST']
             }
+            this.setState({isLoading:true})
             callAPI(objApi, this);
         }
     }
@@ -180,7 +182,7 @@ class SignUp extends Component{
                                     secureTextEntry={true}
                                     name = "confirmPassword"
                                     value={this.state.confirmPassword}
-                                    onChangeText={(confirmPassword) => this.setState({confirmPassword})}
+                                    onChangeText={(passwordConfirm) => this.setState({passwordConfirm})}
                             />}
                             {<TextInput style={styles.inputBox} 
                                     underlineColorAndroid='rgba(0,0,0,0)'
@@ -210,7 +212,7 @@ class SignUp extends Component{
                             <TouchableOpacity style={styles.button} onPress={() => {this.props.navigation.goBack()}}>
                                 <Text style={styles.buttonText}>{translations[systemLanguage].messages['cancel_w']}</Text>   
                             </TouchableOpacity>    
-                            <TouchableOpacity style={styles.button} onPress={() => { this.register() }}>
+                            <TouchableOpacity style={styles.button} onPress={() => { this.registerUser() }}>
                                 <Text style={styles.buttonText}>{translations[systemLanguage].messages['registerYourself2_w']}</Text>   
                             </TouchableOpacity>
                             </KeyboardAvoidingView>

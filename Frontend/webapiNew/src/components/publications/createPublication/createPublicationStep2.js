@@ -150,16 +150,7 @@ class CreatePublicationStep2 extends React.Component {
                 <FormFeedback tooltip>{translate('createPub_step2_youtubeURLErrorTxt')}</FormFeedback>
             </FormGroup>
             <Row form>
-                <Col md={8}>
-                    <FormGroup>
-                    <Label for="locationSearch">{translate('location2_w')} (*)</Label>
-                    {this.props.parentState.cpMode == 'split' ? (
-                        <Input value ={this.props.parentState.city} disabled ={true} />
-                    ) : (
-                        <LocationSearchInput onChange={this.props.onChange} city={this.props.parentState.city}/>
-                    )}
-                    </FormGroup>
-                </Col>
+
                 <Col md={8}>
                     <FormGroup>
                         <Label for="locationText">{translate('location_w')} (*)</Label>
@@ -173,10 +164,24 @@ class CreatePublicationStep2 extends React.Component {
                         </InputGroup>
                     </FormGroup>
                 </Col>
+                <Col md={4}>
+                    <FormGroup>
+                    <Label for="locationSearch">{translate('location2_w')} (*)</Label>
+                    {this.props.parentState.cpMode == 'split' ? (
+                        <Input value ={this.props.parentState.city} disabled ={true} />
+                    ) : (
+                        <LocationSearchInput onChange={this.props.onChange} city={this.props.parentState.city}/>
+                    )}
+                    </FormGroup>
+                </Col>
+                <Col md={8}>
+                {this.state.locationTextValidated &&
+                    <Map objGoogleMaps = {{zoom : 17, latitude: this.state.geoLat, longitude: this.state.geoLng}}/>
+                }
+                </Col>
+
             </Row>
-            {this.state.locationTextValidated &&
-                <Map objGoogleMaps = {{zoom : 17, latitude: this.state.geoLat, longitude: this.state.geoLng}}/>
-            }
+
             <FormGroup>
             </FormGroup>
 
