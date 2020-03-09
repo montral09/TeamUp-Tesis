@@ -84,7 +84,7 @@ class ReserveSpaceSummary extends Component {
                             />
                         </View>
                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                            <Text style={styles.subTitleText}>{translations[systemLanguage].messages['ammount_w']} {this.state.summaryObject.planChosenText} </Text>
+                            <Text style={styles.subTitleText}>{translations[systemLanguage].messages['amount_w']} {this.state.summaryObject.planChosenText} </Text>
                             <TextInput style={styles.inputBox} 
                                 underlineColorAndroid='rgba(0,0,0,0)'
                                 placeholder='Valor'

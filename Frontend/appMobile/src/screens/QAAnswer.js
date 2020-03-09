@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, ScrollView, Keyboard, TextInput, TouchableOpacity, ActivityIndicator} from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator} from 'react-native';
 import { connect } from 'react-redux';
+import { displayErrorMessage } from '../common/genericFunctions';
 import { callAPI } from '../common/genericFunctions';
 
 import translations from '../common/translations';
@@ -53,6 +54,10 @@ class QAAnswer extends Component {
     }
 
     saveAnswerVP = (answer) => {
+        if(answer.trim() == ""){
+            displayErrorMessage(translations[this.props.systemLanguage].messages['createPub_stepNextError'])
+            return;
+        }
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,
