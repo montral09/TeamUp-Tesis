@@ -80,7 +80,8 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         break;     
         case "deleteUser": 
             bindThis.setState({ isLoading: false }); 
-            objApi.logOut();
+            bindThis.props.logOut();
+            bindThis.props.navigation.navigate('Login')
         break;
         case "loadSpaceTypesBR":
             bindThis.setState({ spaceTypes: objData.spaceTypes })
@@ -256,6 +257,8 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
         case "saveQuestionVP":
             objApi.tabQuestionThis.setState({isLoading : false});
         break;    
+        case "loadPublicationVP":
+            bindThis.setState({ pubIsLoading : false, infIsLoading: false });
         default:
     }
 

@@ -42,7 +42,7 @@ class SignUp extends Component{
             || !this.state.lastName || !this.state.phone) {
                 message= translations[this.props.systemLanguage].messages['register_checkErrorMsg1'];
                 returnValue = true;
-        } else if (!this.state.name.match(/^[A-Za-z]+$/)) {        
+        } else if (!this.state.name.match(/^[A-Za-z ]+$/)) {        
             returnValue = true;
             message = translations[this.props.systemLanguage].messages['register_checkErrorMsg2'];
         } else if (this.state.name.length < 2) {        

@@ -11,12 +11,13 @@ class ReserveSpace extends Component {
         super(props);
         const { navigation } = this.props;
         const pubObjParams = navigation.getParam('pubObj', 'default value');
+        var dateConverted = this.createDate()
         this.state = {
             quantityPlan        : 1,
             planChosen          : "HourPrice",
             quantityPeople      : '1',
             generalError        : false,
-            date                : new Date(),
+            date                : dateConverted,
             hoursAvailable      : ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13'
                                     , '14', '15', '16', '17', '18', '19', '20', '21', '22', '23'],
             hourFromSelect      : '00',
@@ -25,6 +26,38 @@ class ReserveSpace extends Component {
             reservationComment  : "",
             pubObj              : pubObjParams,
         }
+    }
+
+    componentDidMount(){
+        if (this.state.pubObj.HourPrice > 0){
+            this.setState({planChosen:'HourPrice'})        
+        }else{
+            if(this.state.pubObj.DailyPrice > 0){
+                this.setState({planChosen:'DailyPrice'})
+            }else{
+                if(this.state.pubObj.WeeklyPrice > 0){
+                    this.setState({planChosen:'WeeklyPrice'})
+                }else{
+                    this.setState({planChosen:'MonthlyPrice'})
+                }
+            }
+        }
+    }
+
+    createDate() {
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1; //January is 0!
+
+        var yyyy = today.getFullYear();
+        if (dd < 10) {
+            dd = '0' + dd;
+        }
+        if (mm < 10) {
+            mm = '0' + mm;
+        }
+        var dateConv = dd + "-" + mm + '-' + yyyy;
+        return dateConv;
     }
 
     triggerSummaryScreen(){

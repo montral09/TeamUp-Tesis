@@ -36,7 +36,7 @@ class SpaceView extends Component {
             otherPublicationConfig : [],
             facilities          : [],
             pubIsLoading        : true,
-            infIsLoading        : 1,
+            infIsLoading        : true,
             generalError        : false,
             descriptionCropped  : '',
             arrQA               : [],
@@ -51,7 +51,7 @@ class SpaceView extends Component {
         this.willFocusSubscription = this.props.navigation.addListener(
           'willFocus',
           () => {
-            this.setState({ pubIsLoading : true });
+            this.setState({ pubIsLoading : true, infIsLoading: true });
             this.loadInfraestructureVP();
             this.loadPublicationVP(this.state.pubID);
           }

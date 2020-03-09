@@ -55,7 +55,7 @@ class Profile extends Component {
             || !this.state.lastName || !this.state.phone) {
                 message='Por favor ingrese los campos obligatorios (*)';
                 returnValue = true;
-        } else if (!this.state.firstName.match(/^[A-Za-z]+$/)) {        
+        } else if (!this.state.firstName.match(/^[A-Za-z ]+$/)) {        
             returnValue = true;
             message = "Su nombre debe contener solo letras";
         } else if (this.state.firstName.length < 2) {        
@@ -175,7 +175,7 @@ class Profile extends Component {
                                 title = {translations[systemLanguage].messages['name_w']}
                                 value = {this.state.firstName}
                                 updateMasterState = {this._updateMasterState}
-                                editBool = {this.state.editActive}
+                                editBool = {false}
                                 passBool={false}
                             />
                             <FloatingTitle
@@ -183,7 +183,7 @@ class Profile extends Component {
                                 title = {translations[systemLanguage].messages['lastName_w']}
                                 value = {this.state.lastName}
                                 updateMasterState = {this._updateMasterState}
-                                editBool = {this.state.editActive}
+                                editBool = {false}
                                 passBool={false}
                             />
                             <FloatingTitle
@@ -223,7 +223,7 @@ class Profile extends Component {
                                 title = 'RUT'
                                 value = {this.state.rut}
                                 updateMasterState = {this._updateMasterState}
-                                editBool = {this.state.editActive}
+                                editBool = {false}
                                 passBool={false}
                             />
                             <FloatingTitle
@@ -231,7 +231,7 @@ class Profile extends Component {
                                 title = 'Razón Social'
                                 value = {this.state.razonSocial}
                                 updateMasterState = {this._updateMasterState}
-                                editBool = {this.state.editActive}
+                                editBool = {false}
                                 passBool={false}
                             />
                             <FloatingTitle

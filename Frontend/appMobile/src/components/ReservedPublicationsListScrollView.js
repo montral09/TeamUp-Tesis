@@ -17,7 +17,19 @@ render() {
             <View style={styles.spacesContainer}>
                 <View style={styles.textView}>            
                     <Text style={styles.subTitleText}>{this.props.obj.TitlePublication}</Text>  
-                    <Text style={styles.infoText}>#Ref: {this.props.obj.IdReservation}</Text>          
+                    <Text style={styles.infoText}>#Ref: {this.props.obj.IdReservation}</Text>     
+                    <View style={{flexDirection: 'row'}}>
+                      <Text style={styles.infoText}>{translations[systemLanguage].messages['customerName']}: {this.props.obj.CustomerName} </Text>
+                      {this.props.obj.Comment != '' ? (
+                        <TouchableOpacity onPress={()=> {this.props.triggerScreen("COMMENT", this.props.obj.IdReservation, this.props.obj.Comment)}}> 
+                            <Ionicons name="ios-text"
+                              color="#fff"
+                              size={20}
+                            />
+                        </TouchableOpacity>
+                        ) : (null)
+                      }
+                    </View>     
                     <Text style={styles.infoText}>{translations[systemLanguage].messages['email_w']}: {this.props.obj.MailCustomer}</Text>
                     <Text style={styles.infoText}>{translations[systemLanguage].messages['people_w']}: {this.props.obj.People}</Text>
                     <Text style={styles.infoText}>{translations[systemLanguage].messages['dateFrom_w']}: {this.props.obj.DateFromString}</Text>
@@ -29,22 +41,9 @@ render() {
                     <View style={styles.borderContainer}>
                         <Text style={styles.subTitleText}>{translations[systemLanguage].messages['payment_w']}</Text>
                         <Text style={styles.infoText}>{translations[systemLanguage].messages['payState_'+this.props.objReservationCustomerPayment.reservationPaymentStateText.replace(/\s/g,'')]}</Text>               
-                        <View style={{flexDirection: 'row'}}>
-                            <TouchableOpacity style={styles.button} onPress={()=> {this.props.triggerScreen("PAYRESCUST", this.props.obj.IdReservation, this.props.objReservationCustomerPayment)}}> 
-                                <Text style={styles.buttonText}>{translations[systemLanguage].messages['details_w']}</Text>
-                            </TouchableOpacity>
-                            <View style={{marginTop: 22}}>
-                              {this.props.obj.Comment != '' ? (
-                                <TouchableOpacity onPress={()=> {this.props.triggerScreen("COMMENT", this.props.obj.IdReservation, this.props.obj.Comment)}}> 
-                                    <Ionicons name="ios-text"
-                                      color="#fff"
-                                      size={20}
-                                    />
-                                </TouchableOpacity>
-                                ) : (null)
-                              }
-                            </View>
-                        </View>
+                        <TouchableOpacity style={styles.button} onPress={()=> {this.props.triggerScreen("PAYRESCUST", this.props.obj.IdReservation, this.props.objReservationCustomerPayment)}}> 
+                            <Text style={styles.buttonText}>{translations[systemLanguage].messages['details_w']}</Text>
+                        </TouchableOpacity>                       
                     </View>
                     <View style={styles.borderContainer}>
                         <Text style={styles.subTitleText}>{translations[systemLanguage].messages['comission_w']}</Text>
