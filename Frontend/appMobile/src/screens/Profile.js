@@ -55,7 +55,7 @@ class Profile extends Component {
             || !this.state.lastName || !this.state.phone) {
                 message='Por favor ingrese los campos obligatorios (*)';
                 returnValue = true;
-        } else if (!this.state.firstName.match(/^[A-Za-z]+$/)) {        
+        } else if (!this.state.firstName.match(/^[A-Za-z ]+$/)) {        
             returnValue = true;
             message = "Su nombre debe contener solo letras";
         } else if (this.state.firstName.length < 2) {        
@@ -121,12 +121,12 @@ class Profile extends Component {
             objApi.fetchUrl = "api/user";
             objApi.method = "PUT";
             objApi.successMSG = {
-                SUCC_USRUPDATED : this.state.email == this.state.originalEmail ? this.props.translate('SUCC_USRUPDATED') : this.props.translate('SUCC_USRUPDATED2'),
+                SUCC_USRUPDATED : this.state.email == this.state.originalEmail ? translations[this.props.systemLanguage].messages['SUCC_USRUPDATED'] : translations[this.props.systemLanguage].messages['SUCC_USRUPDATED2'],
             };
             objApi.functionAfterSuccess = "modifyUser";
             objApi.functionAfterError = "modifyUser";
             objApi.errorMSG= {
-                ERR_MAILALREADYEXIST : this.props.translate('ERR_MAILALREADYEXIST')
+                ERR_MAILALREADYEXIST : translations[this.props.systemLanguage].messages['ERR_MAILALREADYEXIST']
             }
             // Custom
             objApi.emailChanged = this.state.email != this.state.originalEmail;
@@ -175,7 +175,7 @@ class Profile extends Component {
                                 title = {translations[systemLanguage].messages['name_w']}
                                 value = {this.state.firstName}
                                 updateMasterState = {this._updateMasterState}
-                                editBool = {this.state.editActive}
+                                editBool = {false}
                                 passBool={false}
                             />
                             <FloatingTitle
@@ -183,7 +183,7 @@ class Profile extends Component {
                                 title = {translations[systemLanguage].messages['lastName_w']}
                                 value = {this.state.lastName}
                                 updateMasterState = {this._updateMasterState}
-                                editBool = {this.state.editActive}
+                                editBool = {false}
                                 passBool={false}
                             />
                             <FloatingTitle
@@ -223,7 +223,7 @@ class Profile extends Component {
                                 title = 'RUT'
                                 value = {this.state.rut}
                                 updateMasterState = {this._updateMasterState}
-                                editBool = {this.state.editActive}
+                                editBool = {false}
                                 passBool={false}
                             />
                             <FloatingTitle
@@ -231,7 +231,7 @@ class Profile extends Component {
                                 title = 'Razón Social'
                                 value = {this.state.razonSocial}
                                 updateMasterState = {this._updateMasterState}
-                                editBool = {this.state.editActive}
+                                editBool = {false}
                                 passBool={false}
                             />
                             <FloatingTitle
@@ -242,11 +242,12 @@ class Profile extends Component {
                                 editBool = {this.state.editActive}
                                 passBool={false}
                             /> 
-                            <Text style></Text>
+                            <Text style={styles.subtitleText}>{translations[systemLanguage].messages['modify_mailLanguage']}</Text>
                             <Picker
                                 style={styles.pickerBox}
-                                selectedValue={this.state.language}
+                                selectedValue={this.state.Language}
                                 onValueChange={this.onSelectionsChangeLanguage}
+                                editable = {this.state.editActive}
                             >
                             {
                                 languages.map((lang) => {

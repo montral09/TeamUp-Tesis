@@ -6,6 +6,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { connect } from 'react-redux';
 import HTMLView from 'react-native-htmlview';
 import { callAPI } from '../common/genericFunctions';
+import { displayErrorMessage } from '../common/genericFunctions';
+import MapView, { Marker } from 'react-native-maps';
 import translations from '../common/translations';
 
 import SpaceImages from '../components/SpaceImagesScrollView';
@@ -34,7 +36,7 @@ class SpaceView extends Component {
             otherPublicationConfig : [],
             facilities          : [],
             pubIsLoading        : true,
-            infIsLoading        : 1,
+            infIsLoading        : true,
             generalError        : false,
             descriptionCropped  : '',
             arrQA               : [],
@@ -49,7 +51,7 @@ class SpaceView extends Component {
         this.willFocusSubscription = this.props.navigation.addListener(
           'willFocus',
           () => {
-            this.setState({ pubIsLoading : true });
+            this.setState({ pubIsLoading : true, infIsLoading: true });
             this.loadInfraestructureVP();
             this.loadPublicationVP(this.state.pubID);
           }
@@ -115,6 +117,10 @@ class SpaceView extends Component {
     }
 
     saveQuestionVP = (question, tabQuestionThis) => {
+        if(question.trim() == ""){
+            displayErrorMessage(translations[this.props.systemLanguage].messages['createPub_stepNextError'])
+            return;
+        }
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,
@@ -259,6 +265,23 @@ class SpaceView extends Component {
                                                         
                                 })}
                                 </> 
+                                <Text style={styles.subtitleText}>{translations[this.props.systemLanguage].messages['location_w']}</Text>
+                                <MapView
+                                    style={{width: Dimensions.get('window').width, height: 300}}
+                                    initialRegion={{
+                                        latitude: this.state.pubObj.Location.Latitude,
+                                        longitude: this.state.pubObj.Location.Longitude,
+                                        latitudeDelta: 0.0922,
+                                        longitudeDelta: 0.0421,
+                                    }}
+                                >
+                                    <Marker
+                                        coordinate={{
+                                        latitude: this.state.pubObj.Location.Latitude,
+                                        longitude: this.state.pubObj.Location.Longitude,
+                                        }}
+                                    />   
+                                </MapView>
                             </>  
                             ) : (
                                     <>

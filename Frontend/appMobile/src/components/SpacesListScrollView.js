@@ -45,14 +45,22 @@ class SpacesListScrollView extends Component {
                                         </TouchableOpacity>
                                     </>
                                 ) : (
-                                    <TouchableOpacity style={styles.button} onPress={() => this.props.changePubState(this.props.parentData.State, this.props.parentData.IdPub)}> 
-                                        <Text style={styles.buttonText}>{translations[systemLanguage].messages['resume_w']}</Text>
-                                    </TouchableOpacity>
+                                    <>
+                                        {this.props.parentData.State === 'PAUSED P' ? (
+                                            <TouchableOpacity style={styles.button} onPress={() => this.props.changePubState(this.props.parentData.State, this.props.parentData.IdPub)}> 
+                                                <Text style={styles.buttonText}>{translations[systemLanguage].messages['resume_w']}</Text>
+                                            </TouchableOpacity>
+                                        ) : (null)
+                                        }
+                                    </>
                                 )
                             } 
-                            <TouchableOpacity style={styles.button} onPress={()=>this.props.navigate('SpaceView', {PubId: this.props.parentData.IdPub})}> 
-                                <Text style={styles.buttonText}>{translations[systemLanguage].messages['view_w']}</Text>
-                            </TouchableOpacity>   
+                            {this.props.parentData.State != 'FINISHED' && this.props.parentData.State != 'NOT VALIDATED' && this.props.parentData.State != 'PAUSED P' && this.props.parentData.State != 'REJECTED' ? (
+                                <TouchableOpacity style={styles.button} onPress={()=>this.props.navigate('SpaceView', {PubId: this.props.parentData.IdPub})}> 
+                                    <Text style={styles.buttonText}>{translations[systemLanguage].messages['view_w']}</Text>
+                                </TouchableOpacity>   
+                                ) : (null)
+                            }
                         </View>
                     </View>       
                 </View>    

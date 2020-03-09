@@ -64,7 +64,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
                 accesToken : objData.AccessToken,
                 refreshToken : objData.RefreshToken,
             }});
-            //registerForPushNotificationsAsync(objData.voUserLog.Mail);
+            registerForPushNotificationsAsync(objData.voUserLog.Mail);
         break;
         case "restoreUser":
             bindThis.setState({isLoading: false});
@@ -72,30 +72,16 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         break;
         case "modifyUser":
             bindThis.setState({ isLoading: false });
-            if(objApi.emailChanged){
-                bindThis.props.logOut();
-                bindThis.props.navigation.navigate('Login');
-            }else{
-                try{
-                    bindThis.props.modifyData({
-                        Mail: bindThis.state.originalEmail,
-                        Name: bindThis.state.firstName,
-                        LastName: bindThis.state.lastName,
-                        Phone: bindThis.state.phone,
-                        Rut: bindThis.state.rut,
-                        RazonSocial: bindThis.state.razonSocial,
-                        Address: bindThis.state.address,
-                        Language: 'es'
-                    });
-                }catch(error){}
-            }
+            bindThis.props.logOut();
+            bindThis.props.navigation.navigate('Login');
         break;   
         case "requestBePublisher":
             bindThis.props.navigation.navigate('Home');
         break;     
         case "deleteUser": 
             bindThis.setState({ isLoading: false }); 
-            objApi.logOut();
+            bindThis.props.logOut();
+            bindThis.props.navigation.navigate('Login')
         break;
         case "loadSpaceTypesBR":
             bindThis.setState({ spaceTypes: objData.spaceTypes })
@@ -271,6 +257,8 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
         case "saveQuestionVP":
             objApi.tabQuestionThis.setState({isLoading : false});
         break;    
+        case "loadPublicationVP":
+            bindThis.setState({ pubIsLoading : false, infIsLoading: false });
         default:
     }
 
