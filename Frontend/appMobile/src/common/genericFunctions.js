@@ -6,12 +6,8 @@ export const handleErrors = (error, bindThis) => {
     displayErrorMessage("Hubo un error, intente nuevamente");
 }
 export const callAPI = (objApi, bindThis) => {
-    console.log("objApi ")
-    console.log(objApi) 
     if(objApi.method == "GET"){
         fetch(MAIN_URL+objApi.fetchUrl).then(response => response.json()).then(data => {
-            console.log("data.responseCode "+data.responseCode)
-            console.log(data) 
             if (data.responseCode && objApi.successMSG && data.responseCode in objApi.successMSG) {
                 if(objApi.successMSG[data.responseCode] && objApi.successMSG[data.responseCode] != ""){
                     displaySuccessMessage(objApi.successMSG[data.responseCode]);
@@ -31,13 +27,10 @@ export const callAPI = (objApi, bindThis) => {
             header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify(objApi.objToSend)
         }).then(response => response.json()).then(data => {
-            console.log("data.responseCode "+data.responseCode)
-            console.log(data)
             if (data.responseCode && objApi.successMSG && data.responseCode in objApi.successMSG) {
                 if(objApi.successMSG[data.responseCode] && objApi.successMSG[data.responseCode] != ""){
                     displaySuccessMessage(objApi.successMSG[data.responseCode]);
                 }
-                console.log(objApi)
                 callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data, objApi, bindThis);
             } else {
                 callFunctionAfterApiError(objApi.functionAfterError, data, objApi, bindThis);
@@ -81,7 +74,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         case "deleteUser": 
             bindThis.setState({ isLoading: false }); 
             bindThis.props.logOut();
-            bindThis.props.navigation.navigate('Login')
+            bindThis.props.navigation.navigate('Login');
         break;
         case "loadSpaceTypesBR":
             bindThis.setState({ spaceTypes: objData.spaceTypes })

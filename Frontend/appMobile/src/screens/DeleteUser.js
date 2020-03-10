@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { connect } from 'react-redux';
 import { callAPI } from '../common/genericFunctions'
+import { logOut } from '../redux/actions/accountActions';
 import translations from '../common/translations';
 
 class DeleteUser extends Component{
@@ -60,7 +61,7 @@ class DeleteUser extends Component{
                                     </TouchableOpacity>
                                 </View>
                                 <View style={{marginLeft:10}}>
-                                    <TouchableOpacity style={styles.button} onPress={this.deleteUser} >
+                                    <TouchableOpacity style={styles.button} onPress={() => {this.deleteUser()}} >
                                         <Text style={styles.buttonText}>{translations[systemLanguage].messages['accept_w']}</Text>
                                     </TouchableOpacity>
                                 </View>
