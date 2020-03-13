@@ -11,7 +11,7 @@
     ],
     "version": "1.0.np",
     "orientation": "portrait",
-    "icon": "./assets/Icon.png",
+    "icon": "./assets/IconiOS.jpg",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -29,6 +29,7 @@
     ],
     "ios": {
       "supportsTablet": true,
+      "bundleIdentifier": "com.TeamUpProject.TeamUpProject",
       "config": {
         "googleMapsApiKey": "AIzaSyCEj158pfwnqjHz5dN21eNjocfma5ck5Ms"
       }
