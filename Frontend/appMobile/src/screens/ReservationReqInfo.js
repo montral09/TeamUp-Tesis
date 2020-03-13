@@ -97,7 +97,6 @@ class ReservationReqInfo extends Component {
         };
         objApi.functionAfterSuccess = "saveCancelRP";
         objApi.errorMSG = {}
-        console.log(objApi.objToSend)
         callAPI(objApi, this);
     }
 

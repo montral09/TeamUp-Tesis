@@ -11,7 +11,6 @@ class UserTypeSelector extends Component{
     handleType = id => {
         const { active } = this.state;
         this.setState({ active: active === id ? null : id });
-        console.log(id)
         this.props.handleCheckPublisher(id)
     }
 

@@ -24,7 +24,6 @@ class Form extends Component{
     }
     
     componentDidMount = () => {
-        console.log(this.props.loginData)
         if (this.props.login_status == 'LOGGED_IN'){
             if (this.props.userData.PublisherValidated == true){
                 return this.props.navigation.navigate('DrawerNavigator', {language:this.state.language});
@@ -76,7 +75,6 @@ class Form extends Component{
     render() {
         const { login_status, systemLanguage } = this.props;
         if (login_status == 'LOGGED_IN'){
-            {console.log(this.props.loginData)}
             if (this.props.userData.PublisherValidated == true){
                 return this.props.navigation.navigate('DrawerNavigator', {language:this.state.language});
             }
