@@ -28,7 +28,7 @@ const MyMessagesTable = (props) =>{
             <tr key={obj.IdQuestion}>
                 <td>{obj.IdPublication}</td>
                 <td>{obj.PublicationTitle}</td>
-                {obj.IsMyPublication == true ? (<td>{obj.Name}</td>) : (<td></td>)}
+                {obj.IsMyPublication == true ? (<td>{obj.Name}</td>) : (imPublisher.length == 0 ? (null) : (<td></td>))}
                 <td>{obj.Question}</td>
                 <td>{obj.CreationDate}</td>
                 {obj.Answer != null ? (
