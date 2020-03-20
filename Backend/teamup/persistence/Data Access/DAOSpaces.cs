@@ -1057,6 +1057,8 @@ namespace backend.Data_Access
                         0, preferentialPlan, isRecommended, 0, false);
                     publications.Add(publication);
                 }
+                publications = Util.ShufflePublications(publications);
+                publications.Sort();
                 dr.Close();
                 result = Tuple.Create(publications, qty);
 
@@ -3081,7 +3083,7 @@ namespace backend.Data_Access
                 if (spaceTypeListAux.Count != 0)
                 {
                     // Sort randomic gold
-                    spaceTypeListAux = Util.ShuffleRecommended(spaceTypeListAux);
+                    spaceTypeListAux = Util.ShufflePublications(spaceTypeListAux);
                     if (spaceTypeListAux.Count < MAX_GOLD)
                     {
                         addedSilver = MAX_GOLD - spaceTypeListAux.Count;
@@ -3115,7 +3117,7 @@ namespace backend.Data_Access
                 if (spaceTypeListAux.Count != 0)
                 {
                     // Sort randomic silver
-                    spaceTypeListAux = Util.ShuffleRecommended(spaceTypeListAux);
+                    spaceTypeListAux = Util.ShufflePublications(spaceTypeListAux);
                     if (spaceTypeListAux.Count < MAX_SILVER + addedSilver)
                     {
                         spaceTypeList.AddRange(spaceTypeListAux);
@@ -3146,7 +3148,7 @@ namespace backend.Data_Access
                     if (spaceTypeListAux.Count != 0)
                     {
                         // Sort randomic bronze
-                        spaceTypeListAux = Util.ShuffleRecommended(spaceTypeListAux);
+                        spaceTypeListAux = Util.ShufflePublications(spaceTypeListAux);
                         int spacesLeft = MIN_TOTAL - spaceTypeList.Count;
                         if (spaceTypeListAux.Count <= spacesLeft)
                         {
@@ -3181,7 +3183,7 @@ namespace backend.Data_Access
                     if (spaceTypeListAux.Count != 0)
                     {
                         // Sort randomic free
-                        spaceTypeListAux = Util.ShuffleRecommended(spaceTypeListAux);
+                        spaceTypeListAux = Util.ShufflePublications(spaceTypeListAux);
                         int spacesLeft = MIN_TOTAL - spaceTypeList.Count;
                         if (spaceTypeListAux.Count <= spacesLeft)
                         {
