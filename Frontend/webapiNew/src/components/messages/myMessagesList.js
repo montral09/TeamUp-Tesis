@@ -12,7 +12,7 @@ import MyMessagesTable from './myMessagesTable';
 import LoadingOverlay from 'react-loading-overlay';
 import ModalReqInfo from '../publications/viewPublication/modalReqInfo';
 import { MAX_ELEMENTS_PER_TABLE } from '../../services/common/constants'
-import { callAPI } from '../../services/common/genericFunctions';
+import { callAPI, displayErrorMessage } from '../../services/common/genericFunctions';
 
 class MyMessagesList extends React.Component {
 
@@ -81,6 +81,10 @@ class MyMessagesList extends React.Component {
 
     // This function will call the API
     saveAnswerMSG = (answer) => {
+        if(answer.trim() == ""){
+            displayErrorMessage(this.props.translate('createPub_stepNextError'))
+            return;
+        }
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,

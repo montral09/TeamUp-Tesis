@@ -75,7 +75,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             });
         break;
         case "submitFavoriteVP":
-            bindThis.setState({ pubObj: { ...bindThis.state.pubObj, Favorite: objApi.objToSend.Code === 1 ? true : false },pubIsLoading: false })
+            bindThis.setState({ pubObj: { ...bindThis.state.pubObj, Favorite: objApi.objToSend.Code === 1 ? true : false }, favIsLoading: false })
         break;
         case "confirmReservationVP":
             bindThis.setState({ isLoading: false, buttonIsDisable: false });

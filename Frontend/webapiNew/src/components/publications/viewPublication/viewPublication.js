@@ -41,6 +41,7 @@ class ViewPublication extends React.Component {
             spaceTypes: [],
             pubIsLoading: true,
             infIsLoading: true,
+            favIsLoading: false,
             planChosen: "HourPrice",
             quantityPeople: 1,
             generalError: false,
@@ -165,8 +166,15 @@ class ViewPublication extends React.Component {
         callAPI(objApi, this);
     }
 
-    // This function will call the API
+    // This function will trigger the favorite call
     submitFavoriteVP = () => {
+        var constThis = this;
+        if(this.state.favIsLoading == true){return;}
+        this.setState({ favIsLoading: true }, () => {constThis.submitFavoriteVPapi()});
+    }
+
+    // This function will call the API
+    submitFavoriteVPapi = () => {
         var objApi = {};
         var code = this.state.pubObj.Favorite === false ? 1 : 2;
         objApi.objToSend = {
@@ -184,7 +192,6 @@ class ViewPublication extends React.Component {
         objApi.functionAfterSuccess = "submitFavoriteVP";
         objApi.functionAfterError = "submitFavoriteVP";
         objApi.errorMSG = {}
-        this.setState({ pubIsLoading: true });
         callAPI(objApi, this);
     }
 
@@ -377,6 +384,10 @@ confirmReservationVP = (comment) => {
 
     // This function will call the API
     saveAnswerVP = (answer) => {
+        if(answer.trim() == ""){
+            displayErrorMessage(this.props.translate('createPub_stepNextError'))
+            return;
+        }
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,
@@ -398,6 +409,10 @@ confirmReservationVP = (comment) => {
 
     // This function will call the API
     saveQuestionVP = (question, tabQuestionThis) => {
+        if(question.trim() == ""){
+            displayErrorMessage(this.props.translate('createPub_stepNextError'))
+            return;
+        }
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,

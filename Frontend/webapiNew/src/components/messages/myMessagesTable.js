@@ -8,12 +8,15 @@ const MyMessagesTable = (props) =>{
     const { translate, messages } = props;
     const columnsName = ['#Ref',translate('publication_w'),translate('name_w'),translate('question_w'),translate('questionDate_w'),
                         translate('answer_w'),translate('answerDate_w'),'action'];
+    const imPublisher = messages.filter(function (msgObj){
+        return msgObj.IsMyPublication == true;
+    })
     const columnsTable = columnsName.map( colName => {
         var valToRet = <th className="text-center" key={colName}>{colName}</th>;
         switch(colName){
             case "action": valToRet = <th className="text-center" key={colName}><i className="fa fa-asterisk" aria-hidden="true"></i></th>; break;
             case translate('name_w') : 
-                if(messages[0] && messages[0].IsMyPublication != true)
+                if(imPublisher.length == 0 )
                     valToRet = null
             break;
         }
@@ -25,7 +28,7 @@ const MyMessagesTable = (props) =>{
             <tr key={obj.IdQuestion}>
                 <td>{obj.IdPublication}</td>
                 <td>{obj.PublicationTitle}</td>
-                {obj.IsMyPublication == true ? (<td>{obj.Name}</td>) : (null)}
+                {obj.IsMyPublication == true ? (<td>{obj.Name}</td>) : (imPublisher.length == 0 ? (null) : (<td></td>))}
                 <td>{obj.Question}</td>
                 <td>{obj.CreationDate}</td>
                 {obj.Answer != null ? (
