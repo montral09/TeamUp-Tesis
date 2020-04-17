@@ -26,7 +26,7 @@ class AllUsers extends Component {
             adminData: this.props.adminData,
             isLoading : true,
         }
-        this.modalElement = React.createRef(); // esto hace unas magias para cambiar el estado de un componente hijo
+        this.modalElement = React.createRef();
     }
     
     // This function will trigger the save function inside the modal to update the values

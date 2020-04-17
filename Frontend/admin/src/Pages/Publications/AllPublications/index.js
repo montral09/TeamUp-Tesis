@@ -30,7 +30,7 @@ class AllPublications extends Component {
             spaceTypes: null,
             facilities: []
         }
-        this.modalElement = React.createRef(); // esto hace unas magias para cambiar el estado de un componente hijo
+        this.modalElement = React.createRef(); 
         this.modalElementAppRej = React.createRef();
     }
 
@@ -93,6 +93,9 @@ class AllPublications extends Component {
         this.modalElement.current.toggle(publData[0], this.state.admTokenObj, this.props.adminData, this.state.spaceTypes, this.state.facilities);
     }
 
+    pauseUnpausePub = (state) =>{
+        alert("TBD");
+    }
     render() {
         return (
             <Fragment>
@@ -114,7 +117,8 @@ class AllPublications extends Component {
                             <Card className="main-card mb-3">
                                 <CardBody>
                                     <CardTitle>Publicaciones</CardTitle>
-                                    <AllPublicationsTable isLoading = {this.state.allPubl == null} publ={this.state.allPublToDisplay} editPublication={this.editPublication} spaceTypes={this.state.spaceTypes} publisherData = {false}/>
+                                    <AllPublicationsTable isLoading = {this.state.allPubl == null} publ={this.state.allPublToDisplay} 
+                                    editPublication={this.editPublication} spaceTypes={this.state.spaceTypes} publisherData = {false} pauseUnpausePub={this.pauseUnpausePub}/>
                                 </CardBody>
                             </Card>
                         </Col>
