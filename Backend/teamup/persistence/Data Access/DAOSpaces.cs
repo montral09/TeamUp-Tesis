@@ -894,8 +894,8 @@ namespace backend.Data_Access
                 };
                 updateCommand.Parameters.AddRange(prm.ToArray());
                 updateCommand.ExecuteNonQuery();
-                bool publicationActiveOrRejected = IsPublicationActiveOrRejected(newCodeState, con);
-                if (isAdmin && publicationActiveOrRejected)
+                bool publicationActiveOrRejectedOrPaused = IsPublicationActiveOrRejectedOrPaused(newCodeState, con);
+                if (isAdmin && publicationActiveOrRejectedOrPaused)
                 {
                     String queryGetPublisher = cns.GetPublisherMailFromPublication();
                     SqlCommand selectCommand = new SqlCommand(queryGetPublisher, con);
@@ -938,7 +938,7 @@ namespace backend.Data_Access
         /// <param name="newCodeState"></param>
         /// <param name="con"></param>
         /// <returns> true if is active or rejected </returns>
-        private bool IsPublicationActiveOrRejected(int newCodeState, SqlConnection con)
+        private bool IsPublicationActiveOrRejectedOrPaused(int newCodeState, SqlConnection con)
         {
             bool isPublicationActiveOrRejected = false;
             String query = cns.IsPublicationActiveOrRejected();
@@ -1053,7 +1053,7 @@ namespace backend.Data_Access
                     publication = new Publication(Convert.ToInt32(dr["idPublication"]), 0, Convert.ToString(dr["mail"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToInt32(dr["spaceType"]), creationDateString, dateToString, Convert.ToString(dr["title"]), Convert.ToString(dr["description"]), Convert.ToString(dr["address"]),
                         location, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
                         Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]),
-                        facilitiesId, images, null, quantityRented, reviews, ranking, Convert.ToString(dr["city"]), Convert.ToInt32(dr["totalViews"]), Convert.ToBoolean(dr["individualRent"]), 0, false,
+                        facilitiesId, images, Convert.ToString(dr["spaceStateDescription"]), quantityRented, reviews, ranking, Convert.ToString(dr["city"]), Convert.ToInt32(dr["totalViews"]), Convert.ToBoolean(dr["individualRent"]), 0, false,
                         0, preferentialPlan, isRecommended, 0, false);
                     publications.Add(publication);
                 }

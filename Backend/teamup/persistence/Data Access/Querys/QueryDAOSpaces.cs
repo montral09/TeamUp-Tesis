@@ -122,14 +122,14 @@ namespace backend.Data_Access.Query
         public String GetPublicationsWithFilter(List<int> facilities, int spaceType, int capacity, string city, int maxPublicationsPage, int state)
         {
             StringBuilder query = new StringBuilder();
-            string selectColumns = "p.idPublication, u.name, u.lastName, u.mail, u.phone, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.city, p.totalViews, p.expirationDate, s.individualRent ";
+            string selectColumns = "p.idPublication, u.name, u.lastName, u.mail, u.phone, p.spaceType, p.creationDate, p.title, p.description, p.address, p.locationLat, p.locationLong, p.capacity, p.videoURL, p.hourPrice, p.dailyPrice, p.weeklyPrice, p.monthlyPrice, p.availability, p.city, p.totalViews, p.expirationDate, s.individualRent, ss.description as spaceStateDescription ";
             query.Append("select ");
-            query.Append(selectColumns).Append("from PUBLICATIONS p,  Users u, SPACE_TYPES s ");
+            query.Append(selectColumns).Append("from PUBLICATIONS p,  Users u, SPACE_TYPES s, SPACE_STATES ss ");
             if (facilities != null && facilities.Count != 0)
             {
                 query.Append(", PUBLICATION_FACILITIES pf ");
             }
-            query.Append("where p.idUser = u.idUser and s.idSpaceType = p.spaceType ");
+            query.Append("where p.idUser = u.idUser and s.idSpaceType = p.spaceType and p.state = ss.idSpaceState ");
             if (state != 0)
             {
                 query.Append("and p.state = @state ");
@@ -779,7 +779,7 @@ namespace backend.Data_Access.Query
 
         public String IsPublicationActiveOrRejected()
         {
-            String query = "select idSpaceState from SPACE_STATES where idSpaceState = @state and (idSpaceState = 2 or idSpaceState = 6)";
+            String query = "select idSpaceState from SPACE_STATES where idSpaceState = @state and (idSpaceState = 2 or idSpaceState = 6 or idSpaceState = 4)";
             return query;
         }
 
