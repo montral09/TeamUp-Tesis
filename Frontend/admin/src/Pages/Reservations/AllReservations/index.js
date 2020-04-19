@@ -27,7 +27,7 @@ class AllReservations extends Component {
             reservationsToDisplay : [],
             isLoading : true
         }
-        this.modalElement = React.createRef(); // esto hace unas magias para cambiar el estado de un componente hijo
+        this.modalElement = React.createRef();
     }
 
     loadReservations() {

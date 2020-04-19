@@ -136,13 +136,10 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             var commissions = objData.Commissions;
             var paymentsPendingConfirmation = commissions.filter(commission => {
                 return commission.CommissionState === 'PENDING CONFIRMATION'
-            });
-            var paymentsComission = commissions.filter(commission => {
-                return commission.CommissionState != 'PENDING CONFIRMATION'
-            });               
+            });             
             bindThis.setState({ 'paymentsPendingConfirmation': paymentsPendingConfirmation, 
                     paymentsPendingConfirmationToDisplay : filterInitialElementsToDisplay(paymentsPendingConfirmation), 
-                    paymentsComission : paymentsComission, paymentsComissionToDisplay : filterInitialElementsToDisplay(paymentsComission)});
+                    paymentsComission : commissions, paymentsComissionToDisplay : filterInitialElementsToDisplay(commissions)});
         break;
         case "appRejCommissionPayment" :
             bindThis.setState({
@@ -161,7 +158,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         break;
         case "editCommission" :
             bindThis.modalElementUpdate.current.toggleLoading(true);
-        bindThis.loadCommissionsUnpaid(); 
+            bindThis.loadCommissionsUnpaid(); 
             break;
         case "gestPendApp":
             var sanitizedValues = objData.voUsers.filter(voUsr =>{
@@ -195,7 +192,7 @@ export const translateStates = (states) => {
         case "IN PROGRESS": textToReturn="En progreso"; break;
         case "CANCELED": textToReturn="Cancelado"; break;
         case "PENDING PAYMENT" : textToReturn="Pendiente de pago"; break;
-        case "PENDING CONFIRMATION": textToReturn="Pendiente de confirmar"; break;
+        case "PENDING CONFIRMATION": textToReturn="Pendiente de aprobación"; break;
         case "PAID": textToReturn="Pago"; break;
     }
     return textToReturn;

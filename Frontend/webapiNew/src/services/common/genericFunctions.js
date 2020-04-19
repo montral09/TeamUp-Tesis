@@ -10,47 +10,52 @@ export const handleErrors = (error, bindThis) => {
 }
 
 export const callAPI = (objApi, bindThis) => {
-    console.log("objApi ")
-    console.log(objApi)   
-    if(objApi.method == "GET"){
-        fetch(MAIN_URL+objApi.fetchUrl).then(response => response.json()).then(data => {
-            console.log("data.responseCode "+data.responseCode)
-            console.log(data)   
-            if (data.responseCode && objApi.successMSG && data.responseCode in objApi.successMSG) {
-                if(objApi.successMSG[data.responseCode] && objApi.successMSG[data.responseCode] != ""){
-                    displaySuccessMessage(objApi.successMSG[data.responseCode]);
+    try{
+        console.log("objApi ")
+        console.log(objApi)   
+        if(objApi.method == "GET"){
+            fetch(MAIN_URL+objApi.fetchUrl).then(response => response.json()).then(data => {
+                console.log("data.responseCode "+data.responseCode);
+                console.log(data);
+                if (data.responseCode && objApi.successMSG && data.responseCode in objApi.successMSG) {
+                    if(objApi.successMSG[data.responseCode] && objApi.successMSG[data.responseCode] != ""){
+                        displaySuccessMessage(objApi.successMSG[data.responseCode]);
+                    }
+                    callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data, objApi, bindThis);
+                } else {
+                    callFunctionAfterApiError(objApi.functionAfterError, data, objApi, bindThis);
                 }
-                callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data, objApi, bindThis);
-            } else {
-                callFunctionAfterApiError(objApi.functionAfterError, data, objApi, bindThis);
             }
-        }
-        ).catch(error => {
-            handleErrors(error, bindThis);
-        }
-        )
-    }else{
-        fetch(MAIN_URL+objApi.fetchUrl, {
-            method: objApi.method,
-            header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify(objApi.objToSend)
-        }).then(response => response.json()).then(data => {
-            console.log("data.responseCode "+data.responseCode)
-            console.log(data)
-            if (data.responseCode && objApi.successMSG && data.responseCode in objApi.successMSG) {
-                if(objApi.successMSG[data.responseCode] && objApi.successMSG[data.responseCode] != ""){
-                    displaySuccessMessage(objApi.successMSG[data.responseCode]);
+            ).catch(error => {
+                handleErrors(error, bindThis);
+            }
+            )
+        }else{
+            fetch(MAIN_URL+objApi.fetchUrl, {
+                method: objApi.method,
+                header: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify(objApi.objToSend)
+            }).then(response => response.json()).then(data => {
+                console.log("data.responseCode "+data.responseCode);
+                console.log(data);
+                if (data.responseCode && objApi.successMSG && data.responseCode in objApi.successMSG) {
+                    if(objApi.successMSG[data.responseCode] && objApi.successMSG[data.responseCode] != ""){
+                        displaySuccessMessage(objApi.successMSG[data.responseCode]);
+                    }
+                    callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data, objApi, bindThis);
+                } else {
+                    callFunctionAfterApiError(objApi.functionAfterError, data, objApi, bindThis);
                 }
-                callFunctionAfterApiSuccess(objApi.functionAfterSuccess, data, objApi, bindThis);
-            } else {
-                callFunctionAfterApiError(objApi.functionAfterError, data, objApi, bindThis);
             }
+            ).catch(error => {
+                handleErrors(error, bindThis);
+            }
+            )
         }
-        ).catch(error => {
-            handleErrors(error, bindThis);
-        }
-        )
+    }catch(error){
+        handleErrors(error,this);
     }
+    
     
 }
 
@@ -276,6 +281,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
 }
 
 export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>{
+    console.log("callFunctionAfterApiError")
     //Check for expired TOKEN
     if (objData.responseCode == 'ERR_INVALIDACCESSTOKEN' || 
         objData.responseCode == 'ERR_ACCESSTOKENEXPIRED' || 
@@ -288,7 +294,6 @@ export const callFunctionAfterApiError = (trigger, objData, objApi, bindThis) =>
     switch(trigger){
         case "registerUser":
             bindThis.setState({isLoading: false, buttonIsDisable: false});
-            objApi.dispatch({ type: objApi.typeSuccess, messageObj: { responseCode: objData.responseCode, errorMessage: objApi.errorMSG.ERR_MAILALREADYEXIST}});
         break;
         case "restoreUser":
             bindThis.setState({isLoading: false});

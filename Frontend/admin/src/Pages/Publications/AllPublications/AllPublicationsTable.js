@@ -3,9 +3,9 @@ import { Table, Progress } from 'reactstrap';
 
 
 // This component will render the table with the values passed as parameters -props-
-const AllPublicationsTable = ({publ, editPublication, isLoading, spaceTypes}) =>{
+const AllPublicationsTable = ({publ, editPublication, isLoading, spaceTypes, pauseUnpausePub}) =>{
 
-    const columnsName = ['ID Pub','Mail','Nombre','Telefono','Fecha Creado','Titulo','Capacidad', 'Tipo de espacio','Editar'];
+    const columnsName = ['ID Pub','Mail','Nombre','Telefono','Fecha Creado','Titulo','Capacidad', 'Tipo de espacio','Editar','Pausar/Reanudar'];
 
     const columnsTable = columnsName.map( colName => {
         return (<th key={colName}>{colName}</th>)
@@ -28,7 +28,8 @@ const AllPublicationsTable = ({publ, editPublication, isLoading, spaceTypes}) =>
                 <td>{obj.Title}</td>
                 <td>{obj.Capacity}</td>
                 <td>{obj.SpaceTypeDesc}</td>
-                <td><a href='javascript:void(0);' onClick={() => { editPublication(obj.IdPublication) }}><i className="lnr lnr-pencil"></i></a></td>                
+                <td><a href='javascript:void(0);' onClick={() => { editPublication(obj.IdPublication) }}><i className="lnr lnr-pencil"></i></a></td>
+                <td><a href='javascript:void(0);' onClick={() => { pauseUnpausePub(obj.State) }}><i className={obj.State == 'PAUSED A' ? "lnr lnr-checkmark-circle" : "lnr lnr-cross-circle"}></i></a></td>
             </tr>
             )
         })
