@@ -9,7 +9,7 @@ namespace webapi.Controllers
 {
     public class FavoriteController : ApiController
     {
-        IFacadeWeb fach = new FacadeFactory().CreateFacadeWeb;
+        IFacade fach = Facade.Instance;  
 
         [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpPost]

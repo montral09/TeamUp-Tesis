@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace backend.Logic.Entities
 {
-    public class Publication
+    public class Publication : IComparable<Publication>
     {
         public int IdPublication { get; set; }
         public string Mail { get; set; }
@@ -85,6 +85,15 @@ namespace backend.Logic.Entities
             IsRecommended = isRecommended;
             IdParentPublication = idParentPublication;
             IsChildPublication = isChildPublication;
-        }        
+        }
+
+        public int CompareTo(Publication other)
+        {
+            if (other.IsRecommended)
+            {
+                return 1;
+            }
+            return -1;
+        }
     }
 }

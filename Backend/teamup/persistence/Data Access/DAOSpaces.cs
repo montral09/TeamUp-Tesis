@@ -894,8 +894,8 @@ namespace backend.Data_Access
                 };
                 updateCommand.Parameters.AddRange(prm.ToArray());
                 updateCommand.ExecuteNonQuery();
-                bool publicationActiveOrRejected = IsPublicationActiveOrRejected(newCodeState, con);
-                if (isAdmin && publicationActiveOrRejected)
+                bool publicationActiveOrRejectedOrPaused = IsPublicationActiveOrRejectedOrPaused(newCodeState, con);
+                if (isAdmin && publicationActiveOrRejectedOrPaused)
                 {
                     String queryGetPublisher = cns.GetPublisherMailFromPublication();
                     SqlCommand selectCommand = new SqlCommand(queryGetPublisher, con);
@@ -938,7 +938,7 @@ namespace backend.Data_Access
         /// <param name="newCodeState"></param>
         /// <param name="con"></param>
         /// <returns> true if is active or rejected </returns>
-        private bool IsPublicationActiveOrRejected(int newCodeState, SqlConnection con)
+        private bool IsPublicationActiveOrRejectedOrPaused(int newCodeState, SqlConnection con)
         {
             bool isPublicationActiveOrRejected = false;
             String query = cns.IsPublicationActiveOrRejected();
@@ -1053,10 +1053,12 @@ namespace backend.Data_Access
                     publication = new Publication(Convert.ToInt32(dr["idPublication"]), 0, Convert.ToString(dr["mail"]), Convert.ToString(dr["name"]), Convert.ToString(dr["lastName"]), Convert.ToString(dr["phone"]), Convert.ToInt32(dr["spaceType"]), creationDateString, dateToString, Convert.ToString(dr["title"]), Convert.ToString(dr["description"]), Convert.ToString(dr["address"]),
                         location, Convert.ToInt32(dr["capacity"]), Convert.ToString(dr["videoURL"]), Convert.ToInt32(dr["hourPrice"]),
                         Convert.ToInt32(dr["dailyPrice"]), Convert.ToInt32(dr["weeklyPrice"]), Convert.ToInt32(dr["monthlyPrice"]), Convert.ToString(dr["availability"]),
-                        facilitiesId, images, null, quantityRented, reviews, ranking, Convert.ToString(dr["city"]), Convert.ToInt32(dr["totalViews"]), Convert.ToBoolean(dr["individualRent"]), 0, false,
+                        facilitiesId, images, Convert.ToString(dr["spaceStateDescription"]), quantityRented, reviews, ranking, Convert.ToString(dr["city"]), Convert.ToInt32(dr["totalViews"]), Convert.ToBoolean(dr["individualRent"]), 0, false,
                         0, preferentialPlan, isRecommended, 0, false);
                     publications.Add(publication);
                 }
+                publications = Util.ShufflePublications(publications);
+                publications.Sort();
                 dr.Close();
                 result = Tuple.Create(publications, qty);
 
@@ -1702,8 +1704,8 @@ namespace backend.Data_Access
                         new SqlParameter("@idCustomer", SqlDbType.Int) {Value = user.IdUser},
                         new SqlParameter("@planSelected", SqlDbType.Int) {Value = idPlan},
                         new SqlParameter("@dateFrom", SqlDbType.DateTime) {Value = reservation.DateFrom},
-                        new SqlParameter("@hourFrom", SqlDbType.VarChar) {Value = reservation.HourFrom},
-                        new SqlParameter("@hourTo", SqlDbType.VarChar) {Value = reservation.HourTo},
+                        new SqlParameter("@hourFrom", SqlDbType.VarChar) {Value =  reservation.HourFrom != null ? reservation.HourFrom : ""},
+                        new SqlParameter("@hourTo", SqlDbType.VarChar) {Value = reservation.HourTo != null ? reservation.HourTo : ""},
                         new SqlParameter("@people", SqlDbType.Int) {Value =reservation.People},
                         new SqlParameter("@comment", SqlDbType.VarChar) {Value = reservation.Comment},
                         new SqlParameter("@totalPrice", SqlDbType.Int) {Value = reservation.TotalPrice},
@@ -3081,7 +3083,7 @@ namespace backend.Data_Access
                 if (spaceTypeListAux.Count != 0)
                 {
                     // Sort randomic gold
-                    spaceTypeListAux = Util.ShuffleRecommended(spaceTypeListAux);
+                    spaceTypeListAux = Util.ShufflePublications(spaceTypeListAux);
                     if (spaceTypeListAux.Count < MAX_GOLD)
                     {
                         addedSilver = MAX_GOLD - spaceTypeListAux.Count;
@@ -3097,8 +3099,6 @@ namespace backend.Data_Access
                 {
                     addedSilver = MAX_GOLD;
                 }
-
-
                 //SILVER
                 SqlCommand selectCommandSilver = new SqlCommand(query, con);
                 List<SqlParameter> prmSilver = new List<SqlParameter>()
@@ -3117,7 +3117,7 @@ namespace backend.Data_Access
                 if (spaceTypeListAux.Count != 0)
                 {
                     // Sort randomic silver
-                    spaceTypeListAux = Util.ShuffleRecommended(spaceTypeListAux);
+                    spaceTypeListAux = Util.ShufflePublications(spaceTypeListAux);
                     if (spaceTypeListAux.Count < MAX_SILVER + addedSilver)
                     {
                         spaceTypeList.AddRange(spaceTypeListAux);
@@ -3128,7 +3128,6 @@ namespace backend.Data_Access
                     }
                     spaceTypeListAux.Clear();
                 }
-
                 //BRONZE
                 if (spaceTypeList.Count < MIN_TOTAL)
                 {
@@ -3149,7 +3148,7 @@ namespace backend.Data_Access
                     if (spaceTypeListAux.Count != 0)
                     {
                         // Sort randomic bronze
-                        spaceTypeListAux = Util.ShuffleRecommended(spaceTypeListAux);
+                        spaceTypeListAux = Util.ShufflePublications(spaceTypeListAux);
                         int spacesLeft = MIN_TOTAL - spaceTypeList.Count;
                         if (spaceTypeListAux.Count <= spacesLeft)
                         {
@@ -3162,8 +3161,6 @@ namespace backend.Data_Access
                         spaceTypeListAux.Clear();
                     }
                 }
-
-
                 if (spaceTypeList.Count < MIN_TOTAL)
                 {
                     //FREE
@@ -3186,7 +3183,7 @@ namespace backend.Data_Access
                     if (spaceTypeListAux.Count != 0)
                     {
                         // Sort randomic free
-                        spaceTypeListAux = Util.ShuffleRecommended(spaceTypeListAux);
+                        spaceTypeListAux = Util.ShufflePublications(spaceTypeListAux);
                         int spacesLeft = MIN_TOTAL - spaceTypeList.Count;
                         if (spaceTypeListAux.Count <= spacesLeft)
                         {
@@ -3199,7 +3196,6 @@ namespace backend.Data_Access
                         spaceTypeListAux.Clear();
                     }
                 }
-
             }
             catch (Exception)
             {

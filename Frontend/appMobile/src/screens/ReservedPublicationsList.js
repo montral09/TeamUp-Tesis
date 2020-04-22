@@ -18,7 +18,7 @@ class ReservedPublicationsList extends Component {
             reservations : [],
             reservationsToDisplay: [],
             loadingStatusChange : false,
-            modalConfigObj : {},
+            screenConfigObj : {},
             selectedIdRes : null,
             generalError : false,
             selectedResState : "",
@@ -88,6 +88,13 @@ class ReservedPublicationsList extends Component {
             case "PAYRESCOM": 
                 this.props.navigation.navigate('ReservationResComPay', {IdReservationParam: IdReservation, auxParam: auxParam});
             break;
+            case "COMMENT":
+                screenConfigObj = {
+                    title: translations[this.props.systemLanguage].messages['res_publicationsMessageTitle'], mainText: auxParam,
+                    textboxDisplay: false, cancelAvailable: true, cancelText: translations[this.props.systemLanguage].messages['reservation_modal_ok2'], mode: mode, saveFunction: "closeCommentModal"
+                };
+                this.props.navigation.navigate('ReservationReqInfo', {screenConfig: screenConfigObj, selectedIdRes: IdReservation, selectedResState: auxParam });
+            break;
         }
     }
  
@@ -108,7 +115,7 @@ class ReservedPublicationsList extends Component {
             (
                 <ActivityIndicator
                     animating = {this.state.loadingReservations || this.state.loadingStatusChange ? true : false}
-                    color = '#bc2b78'
+                    color = 'white'
                     size = "large"
                     style = {styles.activityIndicator}
                 />      
@@ -131,7 +138,8 @@ class ReservedPublicationsList extends Component {
                                 paymentComment: obj.CustomerPayment.PaymentComment,
                                 reservationPaymentAmmount: obj.TotalPrice,
                                 reservationpaymentDate: obj.CustomerPayment.PaymentDate,
-                                IdReservation: obj.IdReservation
+                                IdReservation: obj.IdReservation,
+                                reservationComment: obj.Comment
                              }
                             var objCommissionPayment = {
                                 paymentStatus: obj.CommissionPayment.PaymentDescription, 

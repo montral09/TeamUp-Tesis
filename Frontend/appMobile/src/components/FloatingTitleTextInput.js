@@ -9,6 +9,7 @@ export default class FloatingTitleTextInputField extends Component {
     value: string.isRequired,
     updateMasterState: func.isRequired,
     editBool: bool,
+    passBool: bool,
   }
 
   constructor(props) {
@@ -75,6 +76,7 @@ export default class FloatingTitleTextInputField extends Component {
             onBlur = {this._handleBlur}
             onChangeText = {this._onChangeText}
             editable = {this.props.editBool}
+            secureTextEntry={this.props.passBool}
         />
       </KeyboardAvoidingView>
     )

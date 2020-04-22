@@ -13,7 +13,7 @@ namespace webapi.Controllers
 {
     public class ReservationPublisherController : ApiController
     {
-        IFacadeWeb fach = new FacadeFactory().CreateFacadeWeb;      
+        IFacade fach = Facade.Instance;        
         [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpPost]
         [Route("api/reservationPublisher")]

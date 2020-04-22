@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
         height: bannerHeight,
     },
     image:{
-        width: 412,
+        width: Dimensions.get('window').width,
         height: 200,
     },
 });

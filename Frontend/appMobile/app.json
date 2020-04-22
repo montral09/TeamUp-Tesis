@@ -11,11 +11,15 @@
     ],
     "version": "1.0.np",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/IconiOS.jpg",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#2196f3"
+    },
+    "notification":{
+      "icon": "./assets/IconPUSH.png",
+      "color": "#2196f3"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -25,6 +29,7 @@
     ],
     "ios": {
       "supportsTablet": true,
+      "bundleIdentifier": "com.TeamUpProject.TeamUpProject",
       "config": {
         "googleMapsApiKey": "AIzaSyCEj158pfwnqjHz5dN21eNjocfma5ck5Ms"
       }

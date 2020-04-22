@@ -12,7 +12,7 @@ namespace webapi.Controllers
 {
     public class RecommendedPublicationsController : ApiController
     {
-        IFacadeWeb fach = new FacadeFactory().CreateFacadeWeb;      
+        IFacade fach = Facade.Instance;        
         [EnableCors(origins: "*", headers: "*", methods: "*")]
         [HttpGet]
         [Route("api/recommendedPublications")]

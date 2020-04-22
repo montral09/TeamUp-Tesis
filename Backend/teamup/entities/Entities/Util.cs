@@ -45,18 +45,18 @@ namespace backend.Logic
             return "";
         }
 
-        public static List<T> ShuffleRecommended<T>(IList<T> recommended)
+        public static List<T> ShufflePublications<T>(IList<T> publications)
         {
-            List<T> randomRecommended = new List<T>();
+            List<T> randomPublications = new List<T>();
             Random randomNumber = new Random();            
-            while (recommended.Count() > 0)
+            while (publications.Count() > 0)
             {                
-                var nextIndex = randomNumber.Next(0, recommended.Count());                
-                T value = recommended[nextIndex];                
-                randomRecommended.Add(value);
-                recommended.RemoveAt(nextIndex);
+                var nextIndex = randomNumber.Next(0, publications.Count());                
+                T value = publications[nextIndex];
+                randomPublications.Add(value);
+                publications.RemoveAt(nextIndex);
             }
-            return randomRecommended;
+            return randomPublications;
         }
 
         public static int CalculateReservationCommission(int reservationPrice)
@@ -83,7 +83,7 @@ namespace backend.Logic
             {
                 if (publicationPlan.IdPlan == currentPreferentialPlan)
                 {
-                    currentPlanPricePerDay = Convert.ToDouble(publicationPlan.Price / publicationPlan.Days);
+                    currentPlanPricePerDay = (Double)publicationPlan.Price / (Double)publicationPlan.Days;
                 }
             }
             newTotalPriceDouble = newPlanPrice - currentPlanPricePerDay * daysLeft;

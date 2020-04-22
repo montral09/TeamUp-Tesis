@@ -4,6 +4,7 @@ import { withNavigation } from 'react-navigation';
 import { connect } from 'react-redux';
 import { logIn, changeLanguage } from '../redux/actions/accountActions';
 import { displayErrorMessage } from '../common/genericFunctions';
+import { AsyncStorage } from 'react-native';
 import languages from '../common/languages'
 import translations from '../common/translations';
 
@@ -20,6 +21,17 @@ class Form extends Component{
             bindThis : this,
             language : 'es'
         }
+    }
+    
+    componentDidMount = () => {
+        if (this.props.login_status == 'LOGGED_IN'){
+            if (this.props.userData.PublisherValidated == true){
+                return this.props.navigation.navigate('DrawerNavigator', {language:this.state.language});
+            }
+            else{
+                return this.props.navigation.navigate('DrawerNavigatorC', {language:this.state.language});
+            }
+        } 
     }
 
     handleChangeEmail = (typedText) => {
@@ -124,7 +136,8 @@ const mapStateToProps = (state) => {
     return {
         login_status: state.loginData.login_status,
         userData: state.loginData.userData,
-        systemLanguage: state.loginData.systemLanguage
+        systemLanguage: state.loginData.systemLanguage,
+        loginData: state.loginData,
     }
 }
 
@@ -181,10 +194,10 @@ const styles = StyleSheet.create({
         color: 'rgba(255,0,0,1)'
     },
     pickerBox: {
-    width:300,
-    backgroundColor:'rgba(255,255,255,0.3)',
-    color:'#ffffff',
-    marginVertical: 10
+        width:300,
+        backgroundColor:'rgba(255,255,255,0.3)',
+        color:'#ffffff',
+        marginVertical: 10
     },
     infoText:{
         fontSize: 18, 

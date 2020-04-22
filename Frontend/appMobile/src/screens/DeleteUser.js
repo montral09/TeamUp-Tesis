@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { connect } from 'react-redux';
-import { withNavigation } from 'react-navigation';
-import LoadingOverlay from 'react-native-loading-spinner-overlay';
 import { callAPI } from '../common/genericFunctions'
+import { logOut } from '../redux/actions/accountActions';
 import translations from '../common/translations';
 
-class DeleteUser extends Component<>{
+class DeleteUser extends Component{
     constructor() {
         super();
         this.state = {
@@ -16,7 +15,6 @@ class DeleteUser extends Component<>{
 
     // This function will call the main API and delete the user if everything checks out
     deleteUser = () => {
-        const { systemLanguage } = this.props;
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,
@@ -25,18 +23,19 @@ class DeleteUser extends Component<>{
         objApi.fetchUrl = "api/user";
         objApi.method = "DELETE";
         objApi.successMSG = {
-            SUCC_USRDELETED: translations[systemLanguage].messages['SUCC_USRDELETED']
+            SUCC_USRDELETED: translations[this.props.systemLanguage].messages['SUCC_USRDELETED']
         };
         objApi.functionAfterSuccess = "deleteUser";
         objApi.functionAfterError = "deleteUser";
         objApi.errorMSG = {
-            ERR_PENDINGRESERVATIONCUSTOMER: translations[systemLanguage].messages['ERR_PENDINGRESERVATIONCUSTOMER'],
-            ERR_PENDINGRESERVATIONPAYMENT: translations[systemLanguage].messages['ERR_PENDINGRESERVATIONPAYMENT'],
-            ERR_PENDINGPUBLICATION: translations[systemLanguage].messages['ERR_PENDINGPUBLICATION'],
-            ERR_PENDINGRESERVATIONPUBLISHER: translations[systemLanguage].messages['ERR_PENDINGRESERVATIONPUBLISHER'],
-            ERR_PENDINGPREFERENTIALPAYMENT: translations[systemLanguage].messages['ERR_PENDINGPREFERENTIALPAYMENT'],
-            ERR_PENDINGCOMMISSIONPAYMENT: translations[systemLanguage].messages['ERR_PENDINGCOMMISSIONPAYMENT'],
+            ERR_PENDINGRESERVATIONCUSTOMER: translations[this.props.systemLanguage].messages['ERR_PENDINGRESERVATIONCUSTOMER'],
+            ERR_PENDINGRESERVATIONPAYMENT: translations[this.props.systemLanguage].messages['ERR_PENDINGRESERVATIONPAYMENT'],
+            ERR_PENDINGPUBLICATION: translations[this.props.systemLanguage].messages['ERR_PENDINGPUBLICATION'],
+            ERR_PENDINGRESERVATIONPUBLISHER: translations[this.props.systemLanguage].messages['ERR_PENDINGRESERVATIONPUBLISHER'],
+            ERR_PENDINGPREFERENTIALPAYMENT: translations[this.props.systemLanguage].messages['ERR_PENDINGPREFERENTIALPAYMENT'],
+            ERR_PENDINGCOMMISSIONPAYMENT: translations[this.props.systemLanguage].messages['ERR_PENDINGCOMMISSIONPAYMENT'],
         }
+        objApi.logOut = this.props.logOut;
         this.setState({ isLoading: true });
         callAPI(objApi, this);
     }
@@ -46,9 +45,11 @@ class DeleteUser extends Component<>{
         return (
             <View style={styles.container}>
                 {this.state.isLoading ? (
-                    <LoadingOverlay
-                        visible={this.state.isLoading}
-                        textContent={'Cargando...'}
+                    <ActivityIndicator
+                        animating = {this.state.isLoading}
+                        color = 'white'
+                        size = "large"
+                        style = {styles.activityIndicator}
                     />
                 ) : (
                         <>
@@ -60,7 +61,7 @@ class DeleteUser extends Component<>{
                                     </TouchableOpacity>
                                 </View>
                                 <View style={{marginLeft:10}}>
-                                    <TouchableOpacity style={styles.button} onPress={this.deleteUser} >
+                                    <TouchableOpacity style={styles.button} onPress={() => {this.deleteUser()}} >
                                         <Text style={styles.buttonText}>{translations[systemLanguage].messages['accept_w']}</Text>
                                     </TouchableOpacity>
                                 </View>
@@ -80,7 +81,14 @@ const mapStateToProps = (state) => {
         systemLanguage: state.loginData.systemLanguage
     }
 }
-export default connect(mapStateToProps, null)(withNavigation(DeleteUser));
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        logOut: () => { dispatch(logOut()) }
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(DeleteUser);
 
 const styles = StyleSheet.create({
     container: {
@@ -116,5 +124,12 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '500',
         color: '#ffffff'
+    },
+    activityIndicator: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#2196f3',
+        height: 80,
     },
 });

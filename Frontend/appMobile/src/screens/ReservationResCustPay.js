@@ -127,7 +127,7 @@ class ReservationResCustPay extends Component {
                                     underlineColorAndroid='rgba(0,0,0,0)'
                                     placeholder={translations[systemLanguage].messages['myReservedSpacesList_custPay_paymentStatusTxt']}
                                     placeholderTextColor="#ffffff"
-                                    value={this.state.objPaymentDetails.reservationPaymentStateText}
+                                    value={translations[systemLanguage].messages['payState_'+this.state.objPaymentDetails.reservationPaymentStateText]}
                                     editable = {false}
                                 />
                             </View>

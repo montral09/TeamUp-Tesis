@@ -47,7 +47,7 @@ class TabQuestions extends Component {
                                 {QA.Answer ? (
                                     <View style={{marginLeft: 25}}>
                                         <View style={{flexDirection: 'row'}}>
-                                            <Text style={styles.subTitleText}>{translations[systemLanguage].messages['anwser_w']} {QA.Answer.CreationDate}</Text>
+                                            <Text style={styles.subTitleText}>{translations[systemLanguage].messages['answer_w']} {QA.Answer.CreationDate}</Text>
                                         </View>
                                         <Text style={styles.answerText}>{QA.Answer.Answer}</Text>
                                     </View>
@@ -72,7 +72,7 @@ class TabQuestions extends Component {
                                 value={this.props.userData.Name || ""}
                                 editable = {false}
                             />
-                            <Text style={styles.infoText}>{translations[systemLanguage].messages['question_w']}</Text>  
+                            <Text style={styles.infoText}>{translations[systemLanguage].messages['question_w']}(*)</Text>  
                             <TextInput style={styles.inputBox} 
                                 underlineColorAndroid='rgba(0,0,0,0)'
                                 value={this.state.textQuestion}

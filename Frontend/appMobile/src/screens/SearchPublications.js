@@ -230,12 +230,12 @@ class SearchPublications extends Component {
                             <Text style={styles.subtitleText}>{translations[systemLanguage].messages['searchNo_pubs']}</Text>
                         ) : (   
                                 <>
-                                    <SearchSpaceList publications = {this.state.publications} navigate={this.props.navigation.navigate}/>
-                                    {this.state.pagination.map(page => {
+                                    <SearchSpaceList publications={this.state.publications} navigate={this.props.navigation.navigate}/>
+                                    {this.state.pagination.map((page) => {
                                         return (
                                             <>
-                                                {this.state.currentPage === page ? 'active' : ''} 
-                                                <TouchableOpacity style={styles.button} key={page} onClick={() => this.onChange({target:{id:'currentPage',value:page}})}><Text style={styles.buttonText}>{page}</Text></TouchableOpacity>>
+                                                
+                                                <TouchableOpacity style={styles.button} key={page} onClick={() => this.onChange({target:{id:'currentPage',value:page}})}><Text style={styles.buttonText}>{page}</Text></TouchableOpacity>
                                             </>
                                         );
                                     })}
@@ -338,3 +338,5 @@ const mapStateToProps = (state) => {
 }
 
 export default connect(mapStateToProps)(SearchPublications);
+
+//{this.state.currentPage === page ? ('active') : ('')} 

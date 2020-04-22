@@ -5,8 +5,9 @@ import { AsyncStorage } from 'react-native';
         const serializedState = AsyncStorage.getItem('state');
         if (serializedState === null) {
             return undefined;
-        }
-        return {loginData: JSON.parse(serializedState)};
+        }else{
+            return {loginData: JSON.parse(serializedState)};
+        }  
         } catch (error) {
         return undefined;
         }

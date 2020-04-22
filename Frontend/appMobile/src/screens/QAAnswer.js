@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
-import { StyleSheet, Text, View, ScrollView, Keyboard, TextInput, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator} from 'react-native';
 import { connect } from 'react-redux';
+import { displayErrorMessage } from '../common/genericFunctions';
 import { callAPI } from '../common/genericFunctions';
 
 import translations from '../common/translations';
@@ -53,6 +54,10 @@ class QAAnswer extends Component {
     }
 
     saveAnswerVP = (answer) => {
+        if(answer.trim() == ""){
+            displayErrorMessage(translations[this.props.systemLanguage].messages['createPub_stepNextError'])
+            return;
+        }
         var objApi = {};
         objApi.objToSend = {
             "AccessToken": this.props.tokenObj.accesToken,
@@ -68,6 +73,7 @@ class QAAnswer extends Component {
         objApi.functionAfterSuccess = "saveAnswerVP";
         objApi.functionAfterError = "saveAnswerVP";
         objApi.errorMSG= {}
+        this.setState({isLoading:true})
         callAPI(objApi, this);
     }
 
@@ -80,6 +86,8 @@ class QAAnswer extends Component {
     render() {
         const { systemLanguage } = this.props;
         return (
+            <>
+            {this.state.isLoading == false ? (
             <>
                 {this.state.screenConfig ? (
                     <View style={styles.container}>
@@ -116,6 +124,16 @@ class QAAnswer extends Component {
                     </View>
                 ) : (null)}                
             </>   
+            ) : (
+                    <ActivityIndicator
+                        animating = {this.state.isLoading}
+                        color = 'white'
+                        size = "large"
+                        style = {styles.activityIndicator}
+                    />
+                )
+            }
+            </>
         );
     }
         
@@ -168,6 +186,13 @@ const styles = StyleSheet.create({
     fontSize:16,
     fontWeight:'500',
     color:'#ffffff'
+  },
+  activityIndicator: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#2196f3',
+    height: 80,
   },
 });
 

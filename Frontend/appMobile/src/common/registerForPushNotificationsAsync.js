@@ -29,7 +29,7 @@ const PUSH_ENDPOINT = MAIN_URL+'api/deviceToken';
     },
     body: JSON.stringify({
       DeviceToken: token,
-      Mail: 'teamup_gestor1@yopmail.com',
+      Mail: mail,
     }),
   });
 }
