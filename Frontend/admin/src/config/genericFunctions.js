@@ -169,6 +169,9 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         case "loadSpaceTypes":
             bindThis.setState({ spaceTypes: objData.spaceTypes })
         break;
+        case "pauseUnpausePub":
+            bindThis.loadAllPublications();
+        break;
     } 
 }
 

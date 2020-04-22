@@ -29,7 +29,7 @@ const AllPublicationsTable = ({publ, editPublication, isLoading, spaceTypes, pau
                 <td>{obj.Capacity}</td>
                 <td>{obj.SpaceTypeDesc}</td>
                 <td><a href='javascript:void(0);' onClick={() => { editPublication(obj.IdPublication) }}><i className="lnr lnr-pencil"></i></a></td>
-                <td><a href='javascript:void(0);' onClick={() => { pauseUnpausePub(obj.State) }}><i className={obj.State == 'PAUSED A' ? "lnr lnr-checkmark-circle" : "lnr lnr-cross-circle"}></i></a></td>
+                <td><a href='javascript:void(0);' onClick={() => { pauseUnpausePub(obj.State, obj.IdPublication) }}><i className={obj.State == 'PAUSED A' ? "lnr lnr-checkmark-circle" : "lnr lnr-cross-circle"}></i></a></td>
             </tr>
             )
         })

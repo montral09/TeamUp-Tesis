@@ -93,8 +93,39 @@ class AllPublications extends Component {
         this.modalElement.current.toggle(publData[0], this.state.admTokenObj, this.props.adminData, this.state.spaceTypes, this.state.facilities);
     }
 
-    pauseUnpausePub = (state) =>{
-        alert("TBD");
+    pauseUnpausePub = (state, idpub) =>{
+
+        var newState = "";
+        if(state == "ACTIVE"){
+            if(!window.confirm('Desea pausar la publicación?')){
+                return;
+            }
+            newState = 'PAUSED A';
+        }else if (state == "PAUSED A"){
+            if(!window.confirm('Desea reanudar la publicación?')){
+                return;
+            }
+            newState = 'ACTIVE';
+        }
+        this.setState({
+            allPubl : null, allPublToDisplay: null
+        });
+        var objApi = {};    
+        objApi.objToSend ={
+        Mail: this.state.adminMail,
+        RejectedReason : "",
+        OldState: state,
+        NewState: newState,
+        AccessToken: this.state.admTokenObj.accesToken,
+        IdPublication: idpub
+        }
+        objApi.fetchUrl = "api/publication";
+        objApi.method = "PUT";
+        objApi.successMSG = {
+            SUCC_PUBLICATIONUPDATED : 'Solicitud ejecutada correctamente',
+        };
+        objApi.functionAfterSuccess = "pauseUnpausePub";
+        callAPI(objApi, this);     
     }
     render() {
         return (

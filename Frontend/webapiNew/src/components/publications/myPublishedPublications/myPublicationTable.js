@@ -55,7 +55,7 @@ const MyPublicationTable = (props) =>{
                 <td>{obj.QuestionsWithoutAnswer}</td>
                 <td>{obj.TotalViews}</td>
                 <td>
-                    {obj.State != 'FINISHED' && obj.State != 'NOT VALIDATED' && obj.State != 'PAUSED P' && obj.State != 'REJECTED'? (<a href={url}><span><i className="col-md-3 fa fa-eye"></i></span> {translate('view_w')}</a>) : (null)}
+                    {obj.State != 'FINISHED' && obj.State != 'NOT VALIDATED' && obj.State != 'PAUSED P'  && obj.State != 'PAUSED A' && obj.State != 'REJECTED'? (<a href={url}><span><i className="col-md-3 fa fa-eye"></i></span> {translate('view_w')}</a>) : (null)}
                 </td>
                 {obj.State === 'ACTIVE' ? (
                     <>
