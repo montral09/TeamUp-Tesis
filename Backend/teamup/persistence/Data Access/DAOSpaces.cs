@@ -1400,45 +1400,53 @@ namespace backend.Data_Access
                     InsertFacility(idPublication, facility, con, objTrans);
                 }
                 //Step 6: update preferential plan
-                PreferentialPlan currentPreferentialPlan = GetPreferentialPlanInfo(idPublication, con, objTrans);
-                int currentPreferentialPlanId = currentPreferentialPlan.IdPlan;
-                if (currentPreferentialPlanId != publication.IdPlan)
+                if (publication.IdPlan != 0)
                 {
-                    bool paid = currentPreferentialPlan.StateCode == PAYMENT_PAID_STATE;
-                    int newPlanPrice = GetPriceByPlanId(publication.IdPlan, con, objTrans);
-                    bool upgradingPlan = currentPreferentialPlan.Price < newPlanPrice;
-                    if (paid && upgradingPlan)
+                    PreferentialPlan currentPreferentialPlan = GetPreferentialPlanInfo(idPublication, con, objTrans);
+                    int currentPreferentialPlanId = currentPreferentialPlan.IdPlan;
+                    if (currentPreferentialPlanId != publication.IdPlan)
                     {
-                        //Step 6.1: recalculate price
-                        int daysLeft = GetDaysLeftPublication(idPublication, con, objTrans);
-                        List<PublicationPlan> publicationPlans = GetPublicationPlans();
-                        PreferentialPlan prefPlan = GetPreferentialPlanInfo(idPublication, con, objTrans);
-                        bool oldPricePaid = prefPlan.StateCode == PAYMENT_PAID_STATE ? true : false;
-                        int newPrice = Util.RecalculatePrice(newPlanPrice, daysLeft, currentPreferentialPlanId, publicationPlans);
-                        //Step 6.2: update preferential plan and payment
-                        UpdatePreferentialPlanUpgraded(idPublication, publication.IdPlan, newPrice, con, objTrans);
-                    }
-                    else
-                    {
-                        if (!paid)
+                        bool paid = currentPreferentialPlan.StateCode == PAYMENT_PAID_STATE;
+                        int newPlanPrice = GetPriceByPlanId(publication.IdPlan, con, objTrans);
+                        bool upgradingPlan = currentPreferentialPlan.Price < newPlanPrice;
+                        if (paid && upgradingPlan)
                         {
-                            bool isFreeCurrentPlan = IsFreePreferentialPlan(currentPreferentialPlanId, con, objTrans);
-                            if (isFreeCurrentPlan)
+                            //Step 6.1: recalculate price
+                            int daysLeft = GetDaysLeftPublication(idPublication, con, objTrans);
+                            List<PublicationPlan> publicationPlans = GetPublicationPlans();
+                            PreferentialPlan prefPlan = GetPreferentialPlanInfo(idPublication, con, objTrans);
+                            bool oldPricePaid = prefPlan.StateCode == PAYMENT_PAID_STATE ? true : false;
+                            int newPrice = Util.RecalculatePrice(newPlanPrice, daysLeft, currentPreferentialPlanId, publicationPlans);
+                            //Step 6.2: update preferential plan and payment
+                            UpdatePreferentialPlanUpgraded(idPublication, publication.IdPlan, newPrice, con, objTrans);
+                        }
+                        else
+                        {
+                            if (!paid)
                             {
-                                //If current plan is free, create a preferential plan
-                                CreatePreferentialPayment(idPublication, 0, publication.IdPlan, con, objTrans);
-                            }
-                            else
-                            {
-                                //If current plan it is not free
-                                bool isFreeNewPlan = IsFreePreferentialPlan(publication.IdPlan, con, objTrans);
-                                if (!upgradingPlan)
+                                bool isFreeCurrentPlan = IsFreePreferentialPlan(currentPreferentialPlanId, con, objTrans);
+                                if (isFreeCurrentPlan)
                                 {
-                                    if (isFreeNewPlan)
+                                    //If current plan is free, create a preferential plan
+                                    CreatePreferentialPayment(idPublication, 0, publication.IdPlan, con, objTrans);
+                                }
+                                else
+                                {
+                                    //If current plan it is not free
+                                    bool isFreeNewPlan = IsFreePreferentialPlan(publication.IdPlan, con, objTrans);
+                                    if (!upgradingPlan)
                                     {
-                                        //Delete preferential plan and update publication price = 0
-                                        DeletePreferentialPlan(idPublication, con, objTrans);
-                                        SetPreferentialPlanPrice(idPublication, publication.IdPlan, 0, con, objTrans);
+                                        if (isFreeNewPlan)
+                                        {
+                                            //Delete preferential plan and update publication price = 0
+                                            DeletePreferentialPlan(idPublication, con, objTrans);
+                                            SetPreferentialPlanPrice(idPublication, publication.IdPlan, 0, con, objTrans);
+                                        }
+                                        else
+                                        {
+                                            //Update preferential plan and update publication price
+                                            UpdatePreferentialPlanUpgraded(idPublication, publication.IdPlan, newPlanPrice, con, objTrans);
+                                        }
                                     }
                                     else
                                     {
@@ -1446,15 +1454,9 @@ namespace backend.Data_Access
                                         UpdatePreferentialPlanUpgraded(idPublication, publication.IdPlan, newPlanPrice, con, objTrans);
                                     }
                                 }
-                                else
-                                {
-                                    //Update preferential plan and update publication price
-                                    UpdatePreferentialPlanUpgraded(idPublication, publication.IdPlan, newPlanPrice, con, objTrans);
-                                }
                             }
                         }
                     }
-
                 }
                 //Step 7: update publication
                 string query = cns.UpdatePublication();
@@ -1484,7 +1486,7 @@ namespace backend.Data_Access
                 keyValuePairs = GetPublicationInfoAfterUpdate(idPublication, con);
                 return keyValuePairs;
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 if (objTrans != null && objTrans.Connection != null)
                 {
@@ -3839,7 +3841,7 @@ namespace backend.Data_Access
                 }
                 dr.Close();
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 throw new GeneralException(EnumMessages.ERR_SYSTEM.ToString());
             }
