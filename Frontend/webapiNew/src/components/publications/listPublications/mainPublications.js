@@ -273,7 +273,7 @@ class MainPublications extends React.Component {
                                                                                 })}
                                                                             </ul>
                                                                         </div>
-                                                                        <div className="col-md-6 text-right">{translate('showing_w')} {this.state.publications.length} {translate('publications_w')} {translate('of_w')} {this.state.totalPublications}</div>
+                                                                        <div className="col-md-6 text-right">{translate('showing_w')} {this.currentPage == 1 ? (this.state.publications.length) : ( (MAX_ELEMENTS_PER_TABLE * this.state.currentPage) - (MAX_ELEMENTS_PER_TABLE - this.state.publications.length ) )} {translate('publications_w')} {translate('of_w')} {this.state.totalPublications}</div>
                                                                     </div>
                                                                 </>
                                                             )}

@@ -100,7 +100,19 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             bindThis.props.updateTable(); 
             break;
         case "getPublicationsPendingApproval" : bindThis.setState({ 'publ': objData.Publications,publToDisplay: filterInitialElementsToDisplay(objData.Publications), isLoading : false  }); break;
-        case "getAllPublications" : bindThis.setState({ 'allPubl': objData.Publications, allPublToDisplay: filterInitialElementsToDisplay(objData.Publications), isLoading : false }); break;
+        case "getAllPublications" : 
+            var newTotalPages = Math.round(parseFloat(objData.TotalPublications/MAX_ELEMENTS_PER_TABLE));
+            if(newTotalPages % 2 != 0 && objData.TotalPublications > MAX_ELEMENTS_PER_TABLE){
+                newTotalPages=newTotalPages+1;
+            }
+            var newPagination = [];
+            for(var i=1;i<=newTotalPages;i++){
+                newPagination.push(i);
+            }
+            bindThis.setState({ allPubl: objData.Publications, allPublToDisplay: filterInitialElementsToDisplay(objData.Publications), isLoading : false,
+                totalPublications: objData.TotalPublications, totalPages: newTotalPages, pagination: newPagination });
+
+            break;
         case "editPublication" : 
         bindThis.setState({ 
             modal: !bindThis.state.modal,

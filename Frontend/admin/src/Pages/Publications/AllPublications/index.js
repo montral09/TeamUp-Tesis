@@ -1,13 +1,14 @@
 import React, { Fragment, Component } from 'react';
 import { connect } from 'react-redux';
+import {Button} from 'reactstrap';
 
 // Extra
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import PageTitle from '../../../Layout/AppMain/PageTitle';
 import ModifyPublicationModal from '../modifyPublication';
 import AllPublicationsTable from './AllPublicationsTable'
-import Pagination from '../../Common/pagination';
 import { callAPI } from '../../../config/genericFunctions';
+import {MAX_ELEMENTS_PER_TABLE} from '../../../config/constants';
 
 // Table
 
@@ -21,14 +22,19 @@ class AllPublications extends Component {
     constructor(props) {
         super(props);
         const admTokenObj = props.admTokenObj;
-        const adminMail = props.adminData.Mail
+        const adminMail = props.adminData.Mail;
+
         this.state = {
             allPubl: null,
             allPublToDisplay : null,
             admTokenObj: admTokenObj,
             adminMail: adminMail,
             spaceTypes: null,
-            facilities: []
+            facilities: [],
+            pagination: [1],
+            currentPage: 1,
+            totalPages: 1,
+            totalPublications: 0
         }
         this.modalElement = React.createRef(); 
         this.modalElementAppRej = React.createRef();
@@ -74,7 +80,8 @@ class AllPublications extends Component {
         objApi.objToSend = {
             "AccessToken": this.state.admTokenObj.accesToken,
             "AdminMail": this.state.adminMail,
-            "PublicationsPerPage": 10                  
+            "PublicationsPerPage": MAX_ELEMENTS_PER_TABLE,
+            "PageNumber": parseInt(this.state.currentPage) - 1,        
         }
         objApi.fetchUrl = "api/publications";
         objApi.method = "POST";
@@ -83,6 +90,10 @@ class AllPublications extends Component {
         };
         objApi.functionAfterSuccess = "getAllPublications";
         callAPI(objApi, this);
+    }
+
+    changePage = (pageSelected) =>{
+        this.setState({currentPage : pageSelected}, () => {this.loadAllPublications()})
     }
 
     // This function will trigger the save function inside the modal to update the values
@@ -154,7 +165,22 @@ class AllPublications extends Component {
                             </Card>
                         </Col>
                         <Col lg="12">
-                            {this.state.allPubl != null ? (<Pagination originalArray = {this.state.allPubl} updateElementsToDisplay = {this.updateElementsToDisplay} />) : (null)} 
+                            <br />
+                            {this.state.allPubl != null ? (
+                                <div className="row pagination-results">
+                                    <div className="col-md-6 text-left">
+                                        <ul className="pagination">
+                                            {this.state.pagination.map(page => {
+                                                return (
+                                                    <Button className="mb-2 mr-2" key={page} {... (this.state.currentPage === page ? {active: true} : {})} onClick={() => this.changePage(page)} color="primary">{page}</Button>
+                                                );
+                                            })}
+                                        </ul>
+                                    </div>
+                                    <div className="col-md-6 text-right">Mostrando {this.currentPage == 1 ? (this.state.allPublToDisplay.length) : ( (MAX_ELEMENTS_PER_TABLE * this.state.currentPage) - (MAX_ELEMENTS_PER_TABLE - this.state.allPubl.length ) )} de {this.state.totalPublications}</div>
+                                </div>
+                            ) : (null)}
+                        
                         </Col>
                     </Row>
                 </ReactCSSTransitionGroup>
