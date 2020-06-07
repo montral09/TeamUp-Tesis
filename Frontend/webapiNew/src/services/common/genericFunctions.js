@@ -203,7 +203,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
         case "loadSpaceTypesFP"             : bindThis.setState({ spaceTypes: objData.spaceTypes, loadingSpaceTypes: false }); break;
         case "startSearchMP":
             var newTotalPages = Math.round(parseFloat(objData.TotalPublications/bindThis.state.publicationsPerPage));
-            if(newTotalPages % 2 != 0 && objData.TotalPublications.length > MAX_ELEMENTS_PER_TABLE){
+            if(newTotalPages % 2 != 0 && objData.TotalPublications > MAX_ELEMENTS_PER_TABLE){
                 newTotalPages=newTotalPages+1;
             }
             var newPagination = [];

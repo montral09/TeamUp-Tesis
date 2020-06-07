@@ -10,6 +10,8 @@ import PublicationGrid from "./publicationGrid";
 import { withRouter } from "react-router";
 import LoadingOverlay from 'react-loading-overlay';
 import { callAPI } from '../../../services/common/genericFunctions';
+import {MAX_ELEMENTS_PER_TABLE} from '../../../services/common/constants';
+
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual';
 import { compose } from 'redux';
@@ -37,7 +39,7 @@ class MainPublications extends React.Component {
             spaceTypeSelectedText: "",
             capacity: capacity == "empty" ? "" : capacity,
             city: city == "empty" ? "" : city,
-            totalPublications: 10,
+            totalPublications: MAX_ELEMENTS_PER_TABLE,
             spaceTypesLoaded: false,
             publicationsLoaded: false,
             grid: grid,
@@ -46,7 +48,7 @@ class MainPublications extends React.Component {
             product_list: product_list,
             currentPage: 1,
             totalPages: 1,
-            publicationsPerPage: 10,
+            publicationsPerPage: MAX_ELEMENTS_PER_TABLE,
             pagination: [1],
             generalError: false,
             facilitiesSelected: [],
@@ -57,13 +59,25 @@ class MainPublications extends React.Component {
     // This function will handle the onchange event from the fields
     onChange = (e) => {
         const targetId = e.target.id;
-        this.setState({
-            [targetId]: e.target.value
-        }, () => {
-            if (targetId == "publicationsPerPage" || targetId == "currentPage" || targetId == "facilitiesSelected" || targetId == "spacetypeSelected" || targetId == "capacity" || "city") {
+
+        if(targetId == "publicationsPerPage"){
+            this.setState({
+                [targetId]: e.target.value,
+                currentPage : 1
+            }, () => {
                 this.startSearchMP();
-            }
-        });
+            });
+        }else{
+            this.setState({
+                [targetId]: e.target.value
+            }, () => {
+                if (targetId == "currentPage" || targetId == "facilitiesSelected" || targetId == "spacetypeSelected" || targetId == "capacity" || "city") {
+                    this.startSearchMP();
+                }
+            });
+        }
+
+
     }
 
     // This function will handle the onchange event from the sort by selection
@@ -226,7 +240,7 @@ class MainPublications extends React.Component {
                                                                 <div className="limit">
                                                                     {translate('show_w')}:
 																<select id="publicationsPerPage" onChange={this.onChange}>
-                                                                        <option value="10">10</option>
+                                                                        <option value="15">15</option>
                                                                         <option value="30">30</option>
                                                                         <option value="50">50</option>
                                                                     </select>

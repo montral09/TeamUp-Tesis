@@ -186,11 +186,6 @@ class MyReservedPublications extends React.Component {
         };
         objApi.functionAfterSuccess = "saveComissionPayment";
         objApi.errorMSG = {}
-        console.log("saveComissionPayment")
-        console.log(objPaymentDetails)
-
-        console.log(objApi)
-        alert("STOP"); return;
         this.ModalResComPay.current.changeModalLoadingState(false);
         callAPI(objApi, this);
     }

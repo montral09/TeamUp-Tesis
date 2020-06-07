@@ -109,14 +109,6 @@ class ModalResComPay extends React.Component {
 
     // End Upload image functions
     onChange = (evt) => {
-        console.log("evt.target.id")
-        console.log(evt.target.id)
-        console.log("evt.target.files")
-        console.log(evt.target.files)
-        console.log("SSSSSTRE.target.files")
-
-        console.log(JSON.stringify(evt.target.files))
-
         if(evt.target.id == 'paymentDocumentNew'){
             if (this.maxSelectFile(evt) && this.checkMimeType(evt) && this.checkFileSize(evt)) {
                 this.setState({ spaceImages: [], tempFiles: evt.target.files }, () => {
@@ -204,7 +196,7 @@ class ModalResComPay extends React.Component {
                             <FormGroup row>
                                 <Label for="paymentDocument" sm={4}>{translate('myReservedSpacesList_custPay_uploadedDocument')}</Label>
                                 <Col sm={8}>
-                                    <a href={this.state.objPaymentDetails.paymentDocument || ""} target="_blank">LINK</a>
+                                    <a href={this.state.objPaymentDetails.paymentDocument} target="_blank">LINK</a>
                                 </Col>
                             </FormGroup>
                         ) : (null)}

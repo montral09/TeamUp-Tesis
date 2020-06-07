@@ -95,7 +95,7 @@ class ModalResCustPay extends React.Component {
                             <FormGroup row>
                                 <Label for="paymentDocument" sm={4}>{translate('modalResCusPay_documentUploadedByCust')}</Label>
                                 <Col sm={8}>
-                                    <a href={this.state.objPaymentDetails.paymentDocument || ""} target="_blank">LINK</a>
+                                    <a href={this.state.objPaymentDetails.paymentDocument} target="_blank">LINK</a>
                                 </Col>
                             </FormGroup>
                         ) : (null)}

@@ -73,7 +73,7 @@ var module = {
             no_reviews : 'Sin reviews',
             recPubs_recommendedPubls: 'Publicaciones recomendadas',
             singInLinks_wantToPublish: 'Quiero publicar',
-            singInLinks_wantToPublishBody: 'Si quieres ser uno de nuestros colaboradores, pudiendo realizar publicaciones en el sitio, haz click en el boton "Quiero!". Se enviara una solicitud y uno de nuestros representantes se comunicara contigo a la brevedad.',
+            singInLinks_wantToPublishBody: 'Si quieres ser uno de nuestros colaboradores, pudiendo realizar publicaciones en el sitio, haz click en el botón "Quiero!". Se enviara una solicitud y uno de nuestros representantes se comunicará contigo a la brevedad.',
             singInLinks_wantToPublishButton: 'Quiero!',
             singInLinks_notwantToPublishBody: 'Me lo pierdo',
             singInLinks_head_myPublications: 'Mis publicaciones',

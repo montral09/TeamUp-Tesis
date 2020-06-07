@@ -216,7 +216,7 @@ class ModalDetailPayment extends React.Component {
                                 <Label for="paymentDocumentNew" sm={4}>{translate('myReservedSpacesList_custPay_uploadDocument')}</Label>
                                 <Col sm={8}>
                                     <Input type="file" name="paymentDocumentNew" id="paymentDocumentNew"
-                                        value={this.state.objPaymentDetails.paymentDocumentNew || ""} onChange={this.onChange} />
+                                        value={this.state.objPaymentDetails.paymentDocumentNew} onChange={this.onChange} />
                                 </Col>
                             </FormGroup>
                         ) : (null)}
