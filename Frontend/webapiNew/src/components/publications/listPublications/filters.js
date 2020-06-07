@@ -4,9 +4,22 @@ import { withRouter } from "react-router";
 import { compose } from 'redux';
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual';
+import {
+	InputGroup,
+	InputGroupAddon,
+	Input,
+	Button
+   } from 'reactstrap';
 
 class Filters extends React.Component {
-
+	constructor(props) {
+        super(props);
+        this.state = {
+		   newCapacity : this.props.capacitySelected || "",
+		   newLocation : this.props.locationSelected || ""
+        };
+	}
+	
 	componentDidMount() {
 		$(".open-filter").click(function () {
 			$(".aside, .close-aside-box").addClass("active");
@@ -18,6 +31,22 @@ class Filters extends React.Component {
 			$("body").css("overflow", "visible");
 		});
 	}
+	
+	// This function will handle the onchange event from the fields
+	onChange = (e) => {
+		this.setState({
+			[e.target.id]: e.target.value
+		})
+	}
+	// This function will handle capacity change
+	handleCapacityChange = (capacity) => {
+		this.props.onChange({target:{id:'capacity',value:capacity}})
+	}
+	// This function will handle location change
+	handleLocationChange = (location) => {
+		this.props.onChange({target:{id:'city',value:location}})
+	}
+	
 	// This function will handle the checkbox behavior
 	handleCheckbox(facilityCode){
 		var facilityIndex = this.props.facilitiesSelected.indexOf(facilityCode);
@@ -80,6 +109,29 @@ class Filters extends React.Component {
 									<div className="mfilter-clearfix"></div>
 								</div>
 							</li>
+							<li className="mfilter-filter-item mfilter-tree mfilter-categories">
+								<div className="mfilter-heading">
+									<div className="mfilter-heading-content">
+										<div className="mfilter-heading-text">
+											<span>{translate('capacity_w')}</span>
+										</div>
+										<i className="mfilter-head-icon"></i>
+									</div>
+								</div>
+								<div className="mfilter-content-opts">
+									<div className="mfilter-opts-container">
+										<div className="col-sm-12">
+											<InputGroup>
+												<Input style={{ width: '40%' }} maxLength="5" id="newCapacity" value={this.state.newCapacity || ""} onChange={this.onChange} />
+												<InputGroupAddon addonType="append">
+												<Button onClick={ () => this.handleCapacityChange(this.state.newCapacity)} style={{ marginTop: '6%' }}><i className="fas fa-redo"></i></Button>
+												</InputGroupAddon>
+											</InputGroup>				            
+										</div>
+									</div>
+
+								</div>
+							</li>
 							<li className="mfilter-filter-item mfilter-checkbox mfilter-manufacturers">
 								<div className="mfilter-heading">
 									<div className="mfilter-heading-content">
@@ -115,6 +167,29 @@ class Filters extends React.Component {
 										<div className="mfilter-clearfix"></div>
 									</div>
 									<div className="mfilter-clearfix"></div>
+								</div>
+							</li>
+							<li className="mfilter-filter-item mfilter-tree mfilter-categories">
+								<div className="mfilter-heading">
+									<div className="mfilter-heading-content">
+										<div className="mfilter-heading-text">
+											<span>{translate('location_w')}</span>
+										</div>
+										<i className="mfilter-head-icon"></i>
+									</div>
+								</div>
+								<div className="mfilter-content-opts">
+									<div className="mfilter-opts-container">
+										<div className="col-sm-12">
+											<InputGroup>
+												<Input id="newLocation" value={this.state.newLocation || ""} onChange={this.onChange} />
+												<InputGroupAddon addonType="append">
+												<Button onClick={ () => this.handleLocationChange(this.state.newLocation)} style={{ marginTop: '6%' }}><i className="fas fa-redo"></i></Button>
+												</InputGroupAddon>
+											</InputGroup>		            
+										</div>
+									</div>
+
 								</div>
 							</li>
 						</ul>

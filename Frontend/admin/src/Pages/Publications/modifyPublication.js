@@ -91,8 +91,8 @@ class ModifyPublicationModal extends React.Component {
                 "Address": this.state.publDataChanged.Address,
                 "City": this.state.publDataChanged.City,
                 "Location": {
-                    "Latitude": this.state.publDataChanged.Latitude,
-                    "Longitude": this.state.publDataChanged.Longitude
+                    "Latitude": this.state.publDataChanged.Location.Latitude,
+                    "Longitude": this.state.publDataChanged.Location.Longitude
                 },
                 "Capacity": parseInt(this.state.publDataChanged.Capacity),
                 "VideoURL": this.state.publDataChanged.VideoURL,

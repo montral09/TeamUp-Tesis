@@ -210,7 +210,7 @@ export const callFunctionAfterApiSuccess = (trigger, objData, objApi, bindThis) 
             for(var i=1;i<=newTotalPages;i++){
                 newPagination.push(i);
             }
-            bindThis.setState({ publicationsLoaded: true, publications:objData.Publications, 
+            bindThis.setState({ publicationsLoaded: true, publications:objData.Publications, currentSort: 'default',
                 totalPublications:objData.TotalPublications,totalPages:newTotalPages, pagination: newPagination });
         break;
         case "loadSpaceTypesMPL"    : bindThis.setState({ spaceTypes: objData.spaceTypes, loadingSpaceTypes: false }); break;

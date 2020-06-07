@@ -14,18 +14,13 @@ class ModalResComPay extends React.Component {
         this.state = {
             modal: false,
             objPaymentDetails: {},
-            reservationComment: "",
             isLoading: false,
             buttonIsDisabled: false
         };
-        this.toggle = this.toggle.bind(this);
-        this.save = this.save.bind(this);
-        this.changeModalLoadingState = this.changeModalLoadingState.bind(this);
-        this.getBase64 = this.getBase64.bind(this);
     }
 
     // This function will toggle on or off the modal and save the paymentdetails if any
-    toggle(objPaymentDetails) {
+    toggle = (objPaymentDetails) => {
         if (!this.state.isLoading) {
             this.setState({
                 modal: !this.state.modal,
@@ -35,7 +30,7 @@ class ModalResComPay extends React.Component {
     }
 
     // This function will toggle on or off the modal and also the loading states
-    changeModalLoadingState(closeModal) {
+    changeModalLoadingState = (closeModal) => {
         if (closeModal) {
             this.setState({
                 modal: !this.state.modal,
@@ -50,7 +45,7 @@ class ModalResComPay extends React.Component {
         }
     }
 
-    save() {
+    save = () => {
         this.changeModalLoadingState(false);
         this.props.saveComissionPayment(this.state.objPaymentDetails);
     }
@@ -114,7 +109,15 @@ class ModalResComPay extends React.Component {
 
     // End Upload image functions
     onChange = (evt) => {
-        if(evt.target.id != 'paymentComment'){
+        console.log("evt.target.id")
+        console.log(evt.target.id)
+        console.log("evt.target.files")
+        console.log(evt.target.files)
+        console.log("SSSSSTRE.target.files")
+
+        console.log(JSON.stringify(evt.target.files))
+
+        if(evt.target.id == 'paymentDocumentNew'){
             if (this.maxSelectFile(evt) && this.checkMimeType(evt) && this.checkFileSize(evt)) {
                 this.setState({ spaceImages: [], tempFiles: evt.target.files }, () => {
                     for (var i = 0; i < this.state.tempFiles.length; i++) {
@@ -136,7 +139,7 @@ class ModalResComPay extends React.Component {
 
     }
 
-    getBase64(file) {
+    getBase64 = (file) => {
         var f = file; // FileList object
         var reader = new FileReader();
         // Closure to capture the file information.

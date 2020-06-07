@@ -205,7 +205,7 @@ class AnalyticsDashboard1 extends Component {
                                                 {this.state.arrDataUsers == null ? ("--") : (this.state.arrDataUsers.length)}
                                             </div>
                                             <div className="widget-subheading">
-                                                Usuarios
+                                                Usuarios activos
                                             </div>
                                             <div className="widget-progress-wrapper mt-3">
                                                 {this.state.arrDataUsers == null ? (<Progress className="progress-bar-sm progress-bar-animated-alt" color="primary"
@@ -223,7 +223,7 @@ class AnalyticsDashboard1 extends Component {
                                                 {this.state.arrDataUsers == null ? ("--") : (this.state.arrDataUsers.filter(function (element) { return element.CheckPublisher == true }).length)}
                                             </div>
                                             <div className="widget-subheading">
-                                                Gestores
+                                                Gestores activos
                                             </div>
                                             <div className="widget-progress-wrapper mt-3">
                                                 {this.state.arrDataUsers == null ? (<Progress className="progress-bar-sm progress-bar-animated-alt" color="primary"

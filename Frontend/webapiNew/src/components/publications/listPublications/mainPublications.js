@@ -13,6 +13,8 @@ import { callAPI } from '../../../services/common/genericFunctions';
 // Multilanguage
 import { withTranslate } from 'react-redux-multilingual';
 import { compose } from 'redux';
+
+
 class MainPublications extends React.Component {
     constructor(props) {
         super(props);
@@ -47,7 +49,8 @@ class MainPublications extends React.Component {
             publicationsPerPage: 10,
             pagination: [1],
             generalError: false,
-            facilitiesSelected: []
+            facilitiesSelected: [],
+            currentSort : "default"
         };
     }
 
@@ -57,12 +60,32 @@ class MainPublications extends React.Component {
         this.setState({
             [targetId]: e.target.value
         }, () => {
-            if (targetId == "publicationsPerPage" || targetId == "currentPage" || targetId == "facilitiesSelected" || targetId == "spacetypeSelected") {
+            if (targetId == "publicationsPerPage" || targetId == "currentPage" || targetId == "facilitiesSelected" || targetId == "spacetypeSelected" || targetId == "capacity" || "city") {
                 this.startSearchMP();
             }
         });
     }
 
+    // This function will handle the onchange event from the sort by selection
+    onChangeSortBy = (e) => {
+        var newPublicationsArr = this.state.publications;
+        switch(e.target.value){
+            case "default": this.startSearchMP(); break;
+            case "capacityMax": newPublicationsArr.sort(this.compareCapacity); this.setState({currentSort: e.target.value,publications:newPublicationsArr.reverse()}); break;
+            case "camacityMin": newPublicationsArr.sort(this.compareCapacity); this.setState({currentSort: e.target.value, publications:newPublicationsArr});break;
+        }
+    }
+
+    compareCapacity = ( a, b ) => {
+        if ( a.Capacity < b.Capacity ){
+          return -1;
+        }
+        if ( a.Capacity > b.Capacity ){
+          return 1;
+        }
+        return 0;
+      }
+      
     // This function will handle the grid or list view selector
     handleView(view) {
         localStorage.setItem("view", view);
@@ -176,8 +199,8 @@ class MainPublications extends React.Component {
                                 <div className="container">
                                     <div className="row">
                                         <div className="col-md-3 " id="column-left">
-                                            <Filters facilitiesList={this.state.facilities} spaceTypesList={this.state.spaceTypes}
-                                                facilitiesSelected={this.state.facilitiesSelected} onChange={this.onChange} />
+                                            <Filters facilitiesList={this.state.facilities} spaceTypesList={this.state.spaceTypes} locationSelected = {this.state.city}
+                                                facilitiesSelected={this.state.facilitiesSelected} capacitySelected={this.state.capacity} onChange={this.onChange} />
                                         </div>
                                         <div className="col-md-9">
                                             <div className="row">
@@ -194,8 +217,10 @@ class MainPublications extends React.Component {
                                                             <div className="list-options">
                                                                 <div className="sort">
                                                                     {translate('sortBy_w')}:
-																<select>
-                                                                        <option value="1">{translate('default_w')}</option>
+																    <select id="sortBy" onChange={this.onChangeSortBy} value={this.state.currentSort}>
+                                                                        <option value="default">{translate('default_w')}</option>
+                                                                        <option value="capacityMax">{translate('higher_w')+ " "+ translate('capacity_w')}</option>
+                                                                        <option value="camacityMin">{translate('lower_w')+ " "+ translate('capacity_w')}</option>
                                                                     </select>
                                                                 </div>
                                                                 <div className="limit">

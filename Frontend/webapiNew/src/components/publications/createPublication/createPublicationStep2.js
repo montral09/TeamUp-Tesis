@@ -15,6 +15,7 @@ class CreatePublicationStep2 extends React.Component {
     constructor(props) {
         super(props);
         var locationTextValidatedInitial = false;
+        console.log("GEO LAT : "+this.props.parentState.geoLat)
         if(this.props.parentState.geoLat != 0){
             locationTextValidatedInitial = true;
         }
@@ -92,7 +93,12 @@ class CreatePublicationStep2 extends React.Component {
                            scope.props.onChange({target :{value:lng,id:"geoLng"}});
                         },
                         error => {
-                            throw error;
+                            scope.setState({
+                                locationTextLoading: false,
+                                locationTextValidated: false,
+                                locationTextSuccess: false,
+                                locationTextError: true,
+                            });
                         }
                       );
                 }catch(e){

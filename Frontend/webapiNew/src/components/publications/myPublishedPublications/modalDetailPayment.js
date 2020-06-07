@@ -106,6 +106,13 @@ class ModalDetailPayment extends React.Component {
 
     // End Upload image functions
     onChange = (evt) => {
+        console.log("evt.target.id")
+        console.log(evt.target.id)
+        console.log("evt.target.files")
+        console.log(evt.target.files)
+        console.log("SSSSSTRE.target.files")
+
+        console.log(JSON.stringify(evt.target.files))
         if(evt.target.id == 'paymentDocumentNew'){
             if (this.maxSelectFile(evt) && this.checkMimeType(evt) && this.checkFileSize(evt)) {
                 this.setState({ spaceImages: [], tempFiles: evt.target.files }, () => {
@@ -172,21 +179,21 @@ class ModalDetailPayment extends React.Component {
                             <Label for="plan" sm={4}>{translate('plan_w')}</Label>
                             <Col sm={8}>
                                 <Input type="text" name="plan" id="plan"
-                                    value={this.state.objPaymentDetails.plan} readOnly />
+                                    value={this.state.objPaymentDetails.plan || ""} readOnly />
                             </Col>
                         </FormGroup>
                         <FormGroup row>
                             <Label for="paymentAmmount" sm={4}>{translate('amount_w')}</Label>
                             <Col sm={8}>
                                 <Input type="text" name="paymentAmmount" id="paymentAmmount"
-                                    value={this.state.objPaymentDetails.paymentAmmount} readOnly />
+                                    value={this.state.objPaymentDetails.paymentAmmount || ""} readOnly />
                             </Col>
                         </FormGroup>
                         <FormGroup row>
                             <Label for="paymentStatusText" sm={4}>{translate('myReservedSpacesList_custPay_paymentStatusTxt')}</Label>
                             <Col sm={8}>
                                 <Input type="text" name="paymentStatusText" id="paymentStatusText"
-                                    value={this.state.objPaymentDetails.paymentStatusText} readOnly />
+                                    value={this.state.objPaymentDetails.paymentStatusText || ""} readOnly />
                             </Col>
                         </FormGroup>
                         <FormGroup row>
@@ -200,7 +207,7 @@ class ModalDetailPayment extends React.Component {
                             <FormGroup row>
                                 <Label for="paymentDocument" sm={4}>{translate('myReservedSpacesList_custPay_uploadedDocument')}</Label>
                                 <Col sm={8}>
-                                    <a href={this.state.objPaymentDetails.paymentDocument} target="_blank">LINK</a>
+                                    <a href={this.state.objPaymentDetails.paymentDocument || ""} target="_blank">LINK</a>
                                 </Col>
                             </FormGroup>
                         ) : (null)}
@@ -209,7 +216,7 @@ class ModalDetailPayment extends React.Component {
                                 <Label for="paymentDocumentNew" sm={4}>{translate('myReservedSpacesList_custPay_uploadDocument')}</Label>
                                 <Col sm={8}>
                                     <Input type="file" name="paymentDocumentNew" id="paymentDocumentNew"
-                                        value={this.state.objPaymentDetails.paymentDocumentNew} onChange={this.onChange} />
+                                        value={this.state.objPaymentDetails.paymentDocumentNew || ""} onChange={this.onChange} />
                                 </Col>
                             </FormGroup>
                         ) : (null)}
@@ -217,7 +224,7 @@ class ModalDetailPayment extends React.Component {
                             <Label for="paymentComment" sm={6}>{translate('comment_w')} ({translate('optional_w')})</Label>
                             <Col sm={12}>
                                 <Input type="textarea" name="paymentComment" id="paymentComment"
-                                    value={this.state.objPaymentDetails.paymentComment} onChange={this.onChange} readOnly={this.state.objPaymentDetails.paymentStatus != "PAID" && this.state.objPaymentDetails.paymentStatus != "CANCELED" ? false : true} />
+                                    value={this.state.objPaymentDetails.paymentComment || ""} onChange={this.onChange} readOnly={this.state.objPaymentDetails.paymentStatus != "PAID" && this.state.objPaymentDetails.paymentStatus != "CANCELED" ? false : true} />
                             </Col>
                         </FormGroup>
                         <FormGroup row>
