@@ -746,7 +746,7 @@ namespace backend.Data_Access.Query
 
         public String FinishPublications()
         {
-            String query = "update PUBLICATIONS set state = 5 OUTPUT INSERTED.idPublication where expirationDate < getDate() and (state = 2 or state = 3 or state = 4)";
+            String query = "update PUBLICATIONS set state = 5 OUTPUT INSERTED.idPublication where DATEDIFF(day, getdate(), expirationDate) < 0 and (state = 2 or state = 3 or state = 4)";
             return query;
         }
 
@@ -758,7 +758,7 @@ namespace backend.Data_Access.Query
 
         public String FinishReservations()
         {
-            String query = "update RESERVATIONS set state = 4 OUTPUT INSERTED.idReservation where cast(dateTo as date) < cast(getDate() as date) and (state = 2 or state = 3)";
+            String query = "update RESERVATIONS set state = 4 OUTPUT INSERTED.idReservation where DATEDIFF(day, getdate(), dateTo) < 0 and (state = 2 or state = 3)";
             return query;
         }
 
